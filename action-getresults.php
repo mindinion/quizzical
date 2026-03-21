@@ -113,6 +113,7 @@
 			if ($postid != null) {
 				if ($lastpostid != $postid) {
 					$lastpostid = $postid;
+					$results[$count_posts] = new Post();
 					$results[$count_posts]->poster_filename = $row['poster_filename'];
 					$results[$count_posts]->poster_first_name = $row['poster_first_name'];
 					$results[$count_posts]->poster_last_name = $row['poster_last_name'];
