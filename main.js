@@ -583,6 +583,7 @@ document.cookie="feedItems=50";
 				var context = "digs";
 				var digCount = 0;
 				var mineFlag = 0;
+				var mine = 0;
 				digs.forEach(function(dig) {
 					mine = 0;
 					digUserId = dig.dig_user_id;
