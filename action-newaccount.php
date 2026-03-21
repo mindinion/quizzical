@@ -2,8 +2,7 @@
 
 	require_once 'dblogin.php';
 	require_once 'security.php';
-	require_once 'getsettings.php';
-	
+
 	if (isset($_GET['firstname'])) $firstname = sanitizeString($_GET['firstname']);
 	if (isset($_GET['lastname'])) $lastname = sanitizeString($_GET['lastname']);	
 	if (isset($_GET['email'])) $email = sanitizeString($_GET['email']);	
