@@ -8,7 +8,7 @@
 	$q = "SELECT * FROM Properties";
 	
 	
-	$result = mysqli_query($db_server, $q);		
+	$result = $conn->query($q);		
 
 	if (mysqli_num_rows($result) > 0) {
 		echo 'accounting_ref,';

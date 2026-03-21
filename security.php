@@ -5,8 +5,8 @@
 		return $var;
 	}
 	function sanitizeMySQL($var) {
-		global $db_server;
-		$var = mysqli_real_escape_string($db_server, $var);
+		global $conn;
+		$var = $conn->real_escape_string($var);
 		$var = sanitizeString($var);
 		return $var;
 	}

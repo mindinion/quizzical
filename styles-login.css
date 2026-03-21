@@ -54,39 +54,61 @@ fieldset.largeform {
 #LoginButton {
 	width:300px;
 	font-family: verdana,arial,sans-serif;	
-	font-size:24px;
-	-webkit-appearance:
-	-webkit-appearance: none;
-	-webkit-border-radius:20px;
-    -moz-border-radius:20px;
+	font-size:18px;
+	color:white;
+	font-weight:bold;
     border-radius:20px;
-    background-color:FFC266;
-    border-color:brown;
-	height:50px;
+    background-color:e67300;
+	height:40px;
+	text-align:center;
+	border:none !important;
+	cursor:pointer;
+	margin:auto;
+	padding-top:14px
+}
+#LoginButton:Hover {
+	background-color:cc6600  
+	
 }
 
 #NewAccountButton {
 	width:300px;
 	font-family: verdana,arial,sans-serif;	
-	-webkit-appearance: none;
-	-webkit-border-radius:20px;
-    -moz-border-radius:20px;
+	font-size:18px;
+	color:white;
+	font-weight:bold;
     border-radius:20px;
-    background-color:FFC266;
-    border-color:brown;
-	height:30px;
+    background-color:e67300;
+	height:40px;
+	text-align:center;
+	border:none !important;
+	cursor:pointer;
+	padding-top:14px;
+	margin:auto;
+}
+#NewAccountButton:Hover {
+	background-color:cc6600  
+	
 }
 
 #ForgotPasswordButton {
 	width:300px;
 	font-family: verdana,arial,sans-serif;	
-	-webkit-appearance: none;
-	-webkit-border-radius:20px;
-    -moz-border-radius:20px;
+	font-size:18px;
+	color:white;
+	font-weight:bold;
     border-radius:20px;
-    background-color:FFC266;
-    border-color:brown;
-	height:30px;
+    background-color:e67300;
+	height:40px;
+	text-align:center;
+	border:none !important;
+	cursor:pointer;
+	padding-top:14px;
+	margin:auto;
+}
+#ForgotPasswordButton:Hover {
+	background-color:cc6600  
+	
 }
 
 #LoginBlock {
@@ -116,7 +138,7 @@ fieldset.largeform {
 #ForgotPasswordBlock {
 	background-color:FFFFB2;
 	width:50%;
-	height:450px;
+	max-height:510px;
 	margin:auto;
 	border-color:FFC266;
 	border-style:solid;
@@ -140,4 +162,10 @@ Body {
 #Logo {
 	width:60px;
 	height:60px;
+}
+
+
+#Notify {
+	color:red;
+	text-align:center;
 }

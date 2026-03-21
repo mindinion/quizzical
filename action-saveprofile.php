@@ -25,7 +25,7 @@
 	// First make sure the current password is correct
 	$passwordOldHash = md5($passwordOld);
 	$q = "SELECT COUNT(*) as passed FROM Users WHERE id = $userid and password_hash = '$passwordOldHash';";
-	$result = mysqli_query($db_server, $q);		
+	$result = $conn->query($q);		
 	if (mysqli_num_rows($result) > 0) {    	
 		while($row = mysqli_fetch_assoc($result)) {	
 			if ($row['passed'] != 1 ) {
@@ -56,7 +56,7 @@
 	
 	$q.= "timezone='$timezone' WHERE id = $userid;";
 	
-	$result = mysqli_query($db_server, $q);
+	$result = $conn->query($q);
 	echo $q;		
 
 ?>

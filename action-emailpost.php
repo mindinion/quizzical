@@ -13,7 +13,7 @@
 	
 	// Get the details of the result
 	$q = "SELECT default_group, Users.id as 'userid', first_name, last_name FROM QuizFeed INNER JOIN Users ON QuizFeed.user_id = Users.id WHERE QuizFeed.id = $postId ;";
-	$result = mysqli_query($db_server, $q);		
+	$result = $conn->query($q);		
 	if (mysqli_num_rows($result) > 0) {    	
 		while($row = mysqli_fetch_assoc($result)) {
 			$firstName = $row['first_name'];
@@ -26,7 +26,7 @@
 		
 	// Email users the notification
 	$q = "SELECT id,email FROM Users WHERE notify_message = 1 and Users.default_group = $groupid;";
-	$result = mysqli_query($db_server, $q);		
+	$result = $conn->query($q);		
 	if (mysqli_num_rows($result) > 0) {    	
 		while($row = mysqli_fetch_assoc($result)) {
 			$email = $row['email'];

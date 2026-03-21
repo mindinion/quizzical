@@ -1,0 +1,222 @@
+<html>
+
+<head>
+	<style>
+	
+	Body {
+		margin:0px;
+	}
+
+	NavSideBar {
+		width:400px;
+		max-height:100%;
+		position:absolute;
+		background-color:fee9cd;
+		padding-left:20px;
+		padding-top:40px;
+		bottom:0px;
+		top:0px;
+
+	}
+	
+	NavSideBarItem {
+		font-family:verdana;
+		font-size:20px;
+		min-width:280px;
+		position:absolute;
+	}.selected {
+		color:#b30000;
+	}
+	NavSideBarItem:hover {
+		color:#b30000;
+		cursor:pointer;
+	}
+	
+	NavSideBarButton {
+		bottom:20px;
+		padding-bottom:15px;
+		position:absolute;
+		border:solid #b30000 1px;
+		margin:5px;
+		border-radius:15px;
+		width:140px;
+		text-align:center;
+		padding-top:15px;
+		font-family:verdana;
+		font-size:16px;
+	}.primary {
+		right:20px;
+		background-color:#b30000;
+		color:white;
+	}.secondary {
+		left:20px;
+	}
+	
+	hr {
+		width:70%;
+		left:0px;
+		margin-left:0px;
+		margin-top:30px;
+		border:solid 0.5px grey;
+	}
+	
+	ProfilePanel {
+		min-height:100%;
+		position:fixed;
+		left:420px;
+		right:0px;
+	}
+	
+	#Profile {
+		display:inline;
+	}
+	#Password {
+		display:none;
+	}
+	#Notifications {
+		display:none;
+	}
+	
+	ProfileHeading {
+		width:100%;
+		position:absolute;
+		background-color:#000033;
+		font-family:verdana;
+		font-size:24px;
+		color:white;
+		text-align:center;
+		padding-top:20px;
+		padding-bottom:20px;
+	}
+	
+	form {
+		float:left;
+		position:relative;
+		margin-left:30px;
+		font-family:verdana;
+		font-size:16px;
+		color:000033;
+	}
+	
+	label {
+		display: inline-block;
+    	float: left;
+    	clear: left;
+    	width: 180px;
+    	text-align: left;
+    	padding-top:4px;
+	}
+	
+	input,select {
+		display: inline-block;
+  		float: left;
+  		border:solid 0.5px;
+  		height:30px;
+  		width:300px;
+  		background-color:white;
+  		padding-left:5px;
+
+	}.profilephoto {
+		height:260px;
+		width:260px;
+		border:dotted 0.5px;
+		background-size:260px;
+	    background-repeat: no-repeat;
+		background-image:url("http://quizzical.co.nz/user7.jpg");
+		margin-left:500px;
+		top:0px;
+		position:absolute;
+	}
+	
+	
+	
+	
+	
+	
+
+	</style>
+</head>
+	
+
+<body>
+
+<script>
+
+	function switchProfile(area) {
+		if (area==1) {
+			document.getElementById("Profile").style.display = "inline";
+			document.getElementById("Password").style.display = "none";
+			//document.getElementById("Notifications").style.display = "none";
+			document.getElementById("menu_1").className = "Selected";
+			document.getElementById("menu_2").className = "";
+			document.getElementById("menu_3").className = "";
+		} else if (area==2) {
+			document.getElementById("Profile").style.display = "none";
+			document.getElementById("Password").style.display = "inline";
+			//document.getElementById("Notifications").style.display = "none";
+			document.getElementById("menu_1").className = "";
+			document.getElementById("menu_2").className = "Selected";
+			document.getElementById("menu_3").className = "";
+
+		} else if (area==3) {
+			//document.getElementById("Profile").style.display = "none";
+			//document.getElementById("Password").style.display = "none";
+			//document.getElementById("Notifications").style.display = "inline";
+			//document.getElementById("menu_1").className = "";
+			//document.getElementById("menu_2").className = "";
+			//document.getElementById("menu_3").className = "Selected";
+
+		}
+	}
+	
+</script>
+
+
+<NavSideBar>
+	<NavSideBarItem id="menu_1" class="selected" onclick="switchProfile(1)">Profile</NavSideBarItem><br>
+	<hr><br>
+	<NavSideBarItem id="menu_2" onclick="switchProfile(2)">Password</NavSideBarItem><br>
+	<hr><br>
+	<NavSideBarItem id="menu_3" onclick="switchProfile(3)">Notifications</NavSideBarItem><br>
+
+	<NavSideBarButton class="Primary">Save Changes</NavSideBarButton>
+	<NavSideBarButton class="Secondary">Cancel</NavSideBarButton>
+</NavSideBar>
+	
+<ProfilePanel id="Profile">
+	<ProfileHeading>Your Profile</ProfileHeading>
+	<br><br><br><br><br><br>
+	<form action="/tbd.php">
+  		<label for="fname">First name</label>
+  		<input type="text" id="fname" name="fname"><br><br><br>
+  		<label for="lname">Last name</label>
+  		<input type="text" id="lname" name="lname"><br><br><br>
+  		<label for="lname">Email</label>
+  		<input type="email" id="email" name="email"><br><br><br>
+  		<label for="timezone">Timezone</label>
+  		<select type="text" id="timezone" name="timezone">
+  		</select><br><br><br>
+  		<label for="timezone">Group</label>
+  		<select type="text" id="group" name="group">
+		</select><br><br><br>
+		<input type="file"  class="profilephoto" name="profilephoto" accept="image/png, image/jpeg, image/gif"/>
+	</form>	
+</ProfilePanel>
+	
+<ProfilePanel id="Password">
+	<ProfileHeading>Your Profile</ProfileHeading>
+	<br><br><br><br><br><br>
+	<form action="/tbd.php">
+  		<label for="pwcurrent">Current Password</label>
+  		<input type="password" id="pwcurrent" name="pwcurrent"><br><br><br>
+  		<label for="pwnew1">New Password</label>
+  		<input type="password" id="pwnew1" name="pwnew1"><br><br><br>
+  		<label for="pwnew2">And again...</label>
+  		<input type="password" id="pwnew2" name="pwnew2"><br><br><br>
+	</form>	
+</ProfilePanel>	
+	
+
+</body>
+
+</html>

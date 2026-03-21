@@ -9,8 +9,8 @@
 	
 	// Get the details of the post
 	$q = "SELECT Digger.first_name as diggerfirstname, Digger.last_name as diggerlastname, Commentor.email as commenteremail, Comment.comment as thecomment FROM Digs INNER JOIN Comment ON Digs.commentid = Comment.id INNER JOIN Users AS Digger ON Digs.userid = Digger.id INNER JOIN Users AS Commentor ON Comment.user_id = Commentor.id WHERE Digs.id = $id;";
-	mysqli_query($db_server, $q);	
-	$result = mysqli_query($db_server, $q);		
+	$conn->query($q);	
+	$result = $conn->query($q);		
 	if (mysqli_num_rows($result) > 0) {    	
 		while($row = mysqli_fetch_assoc($result)) {        	
 			$diggerNameFirst	= $row['diggerfirstname'];

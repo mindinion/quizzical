@@ -25,7 +25,7 @@
 
 		GROUP BY user ORDER BY average DESC;";
 	
-	$rankings = mysqli_query($db_server, $q);
+	$rankings = $conn->query($q);
 	
 	class Users {
 		public $userid = "";

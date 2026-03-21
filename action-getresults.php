@@ -57,7 +57,7 @@
 	ORDER BY QuizFeed.id DESC, Results.id DESC, Comment.id ASC, CommentDigs.id DESC, PostDigs.id DESC;";
 	
 	
-	$result = mysqli_query($db_server, $q);		
+	$result = $conn->query($q);		
 	
 	class Post {
 		public $postid = "";

@@ -1,0 +1,153 @@
+<script src="moment.js"></script>
+<script src="moment-timezone-with-data-2010-2020.js"></script>
+<script src="date.js"></script>
+
+<script src="jquery.js"></script>
+<script src="main.js"></script>
+
+
+
+
+
+
+
+
+<script>
+
+	if (getCookie("session") == null) window.location.href = 'index.html';
+	
+</script>
+
+
+<html>
+	
+	<title>Quizzical</title>
+	
+	<head>
+		<link href="styles-main.css" type="text/css" rel="stylesheet" />
+		<link href="styles-profile.css" type="text/css" rel="stylesheet" />
+		<link rel="icon" type="image/png" href="quizzical_logo.png">
+	</head>
+
+	<body>
+					
+	<div id="Header">
+		<img src="quizzical_logo.png" class="QuizzicalLogo"></img>
+		<a href=http://www.stuff.co.nz/national/quizzes?label=Quizzes target="_blank" style="text-decoration:none;">
+			<img src ="/all-site-nav-logo.gif" class="StuffLogo"></img>
+		</a>
+	
+		
+		<div id=RightButtons>	
+			<a href="javascript:showProfile();">
+				<div id="MenuButton" class=right>
+					<div id="MenuButtonGraphic">
+						<img src = "profileicon.png" class="menu">
+					</div id="MenuButtonGraphic">	
+				</div id="MenuButton">
+			</a>	
+			<a href="action-logout.php">
+				<div id="MenuButton" class=right>
+					<div id="MenuButtonLogout">
+						<img src = "logouticon.png" class="menu">
+					</div id="MenuButtonLogout">	
+				</div id="MenuButton">
+			</a>
+		</div>	
+		<div id="NewPost">		
+			<span>
+				<input type="number" name="score" id="NewResultScore" min="0">
+				<div id="NewScoreLabelScore">
+					<div id = "MiddleText" >Out Of</div>
+				</div>
+				<input type="number" name="questions" id ="NewResultTotal" value=15 min="0">
+				<div id="NewScoreLabelType">Type</div>
+				<select name="type" id="NewScoreType">
+					<option value="Morning">Morning</option>
+					<option value="Afternoon">Afternoon</option>
+					<option value="Daily">Daily</option>
+					<option value="Biz">Biz</option>
+					<option value="Sports">Sports</option>
+					<option value="Kids">Kids</option>
+					<option value="Other">Other</option>
+				</select>
+				<div id="NewScoreLabelWhen">When</div>
+				<select name="date" id="NewScoreDate">
+					<option value="Today">Today</option>
+					<option value="Yesterday">Yesterday</option>		
+				</select>
+				<div id="NewResultSubmit" onclick="addResult();">Post</div>
+				<div id="NewCommentBox">
+					<textarea class ="NewComment" placeholder="Or, post a new comment here..." id="NewCommentTextArea"></textarea>
+				</div>
+				<br><br><br><br>
+				<div id="NewCommentSubmit" onclick="postComment();">Add Comment</div>
+				<br>
+			</span>		
+		</div id="NewPost">		
+	</div id="Header">
+
+
+		
+	<div id="MainContent">		
+		<div id="QuizFeed"></div id="QuizFeed">
+		<div id="Profile">
+			<div id="Title">Your Profile</div>
+			<fieldset class="settings">
+				<br>
+				<label for="newemail" class="titlelong">Email Address</label>
+				<input type="text" class = "fieldlong" name="newemail" id="email" > <br> 
+				<br><br>
+				<label for="newfirstname" class="titlelong">First Name</label>
+				<input type="text" class = "fieldlong" name="newfirstname" id="namefirst" > <br>
+				<br>
+				<label for="newlastname" class="titlelong">Last Name</label>
+				<input type="text" class = "fieldlong" name="newlastname" id="namelast" > <br>
+				<br><br>
+				<label for="oldpass" class="titlelong">Current Password</label>
+				<input type="password" class = "fieldlong" name="oldpass" id="oldpass"><br>
+				<br>
+				<label for="passwordA" class="titlelong">New Password</label>
+				<input type="password" class = "fieldlong" name="passwordA" id="PassA"><br>
+				<br>
+				<label for="passwordB" class="titlelong">Confirm New Password</label>
+				<input type="password" class = "fieldlong" name="passwordB" id="PassB">
+				<br><br><br>
+				<label for="notifyresults" class="titlelongcheck">Email Results Notifications</label>
+				<input type="checkbox" class = "fieldlong" id="notifyresult" name="notifyresults" value="1"> <br>
+				<br>
+				<label for="notifymessages" class="titlelongcheck">Email Message Notifications</label>
+				<input type="checkbox" class = "fieldlong" id="notifymessage" name="notifymessages" value="1"><br>
+				<br><br>
+				<label for="timezone" class="titlelongdropdown">Timezone</label>
+				<select name="timezone" class ="fieldlong" id="timezone" onchange=""></select>
+				<br><br><br>
+				<label for="defaultgroup" class="titlelong">Group</label>
+				<select size="2"; name = "defaultgroup" class = "listlong" id="defaultgroup" ></select>
+				<br><br><br><br><br>
+				<label for="profilepic" class="titlelong">New Profile Photo</label>
+				<form id="FileForm">
+					<input type="file" name="profilepic" id="upload" onchange="triggerUpload();">
+					<br><br><br>
+					<input type="submit" name="upload" value="Upload" style="display:none" >
+				<form>
+
+				
+				
+			</fieldset>
+			<div style="text-align:center">
+				<input class="submit" type="button" value="Save Changes" id="ButtonSave" onclick="script:saveProfile();">
+				<input class="submit" type="button" value="Cancel" id="ButtonCancel" onclick="script:hideProfile();">
+			</div>
+			<br><br>
+		</div>
+	</div id="MainContent">
+
+
+	<div id="Footer">
+				<div id="UserRankings"></div id="UserRankings">			
+	</div id="Footer">
+			
+												
+
+			

@@ -24,16 +24,16 @@
 		password_hash = '$passwordhash',
 		default_group = $groupid";
 		
-	mysqli_query($db_server, $q);	
-	$last_id = mysqli_insert_id($db_server);
+	$conn->query($q);	
+	$last_id = mysqli_insert_id($conn);
 	
 
     
 	
 	if ($last_id != null) {
 		$q = "INSERT INTO Memberships (group_id, user_id) VALUES ($groupid, $last_id)";
-		mysqli_query($db_server, $q);	
-		$last_id = mysqli_insert_id($db_server);
+		$conn->query($q);	
+		$last_id = mysqli_insert_id($conn);
 		if ($last_id != null) {
 			echo $last_id;
 		} else {

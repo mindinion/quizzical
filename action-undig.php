@@ -18,13 +18,13 @@
 	}	
 
 	// Check to see if the dig exists and is for the user that generated the request. If it is, remove it
-	$result = mysqli_query($db_server, $q);		
+	$result = $conn->query($q);		
 	if (mysqli_num_rows($result) > 0) {    	
 		while($row = mysqli_fetch_assoc($result)) {   
 			if ($row['userid'] == $userid) {
 				$id = $row['id'];
 				$q = "UPDATE Digs SET status='deleted' WHERE id = $id";
-				$deleted = mysqli_query($db_server, $q);
+				$deleted = $conn->query($q);
 			} else {
 				$deleted = "Unauthorised";
 			}

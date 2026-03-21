@@ -27,7 +27,7 @@
 		
 
 	
-	$user = mysqli_query($db_server, $q);		
+	$user = $conn->query($q);		
 	
 	class User {
 		public $group_id = "";

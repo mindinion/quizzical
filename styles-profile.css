@@ -1,28 +1,52 @@
+#Profile {
+	display:none;	
+}
+
 fieldset.settings {
-	width: 470px;
-	margin: 10px auto 10px auto;
-	float: center;
-	font-family: verdana,arial,sans-serif;
+	font-family: verdana;
 	font-size: 13px;
 	border-style:none;
 	}
 
 .titlelong {
-	font-weight: bold;
 	vertical-align: bottom;
 	float: left;
-	width: 220px;
+	width: 200px;
 	text-align: right;
 	position:absolute;
-	right:55%;
+	right:52%;
+	padding-top:6px;
+}
+
+.titlelongcheck {
+	vertical-align: bottom;
+	float: left;
+	width: 200px;
+	text-align: right;
+	position:absolute;
+	right:52%;
+	padding-top:9px;
+}
+
+.titlelongdropdown {
+	vertical-align: bottom;
+	float: left;
+	width: 200px;
+	text-align: right;
+	position:absolute;
+	right:52%;
+	padding-top:0px;
 }
 
 .fieldlong {
 	width: 200px;
-	height: 20px;
+	height: 30px;
 	text-align: left;
 	position:absolute;
-	left:55%;
+	left:52%;
+	padding-left:5px;
+	font-family: verdana;
+	font-size: 13px;
 	}
 
 .listlong {
@@ -30,28 +54,106 @@ fieldset.settings {
 	height: 50px;
 	text-align: left;
 	position:absolute;
-	left:55%;
+	left:52%;
+	font-family: verdana;
+	font-size: 13px;
 }
 
 #Title {
 	background-color:orange;
 	height:35px;
-	padding-top:27px;
+	padding-top:20px;
 	text-align:center;
 }
 
 #ButtonSave { 
+	width:300px;
+	font-family: verdana,arial,sans-serif;	
+	font-size:18px;
+	color:white;
+	font-weight:bold;
+    border-radius:20px;
+    background-color:e67300;
+	height:40px;
+	text-align:center;
+	border:none !important;
+	cursor:pointer;
+	padding-top:4px;
+	margin:auto;
 	position:absolute;
 	left:55%;
+	margin-bottom:30px;
 }
 
 #ButtonCancel { 
+	width:300px;
+	font-family: verdana,arial,sans-serif;	
+	font-size:18px;
+	color:white;
+	font-weight:bold;
+    border-radius:20px;
+    background-color:e67300;
+	height:40px;
+	text-align:center;
+	border:none !important;
+	cursor:pointer;
+	padding-top:4px;
+	margin:auto;
 	position:absolute;
 	right:55%;	
+	margin-bottom:30px;
 }
 
 #profilepic {
 	text-align:center;
 	width:160px;
 	padding-top:10px;
+}
+
+#Upload {
+	width: 200px;
+	height: 30px;
+	text-align: left;
+	position:absolute;
+	left:52%;
+	padding-top:6px;
+
+}
+
+#LoadingGroups {
+	color:grey;
+}
+
+#ProfileWarning {
+	text-align:center;
+	color:red;
+	font-weight:bold;
+	padding-bottom:20px;
+}
+
+#ProfileSuccess {
+	text-align:center;
+	color:green;
+	font-weight:bold;
+	padding-bottom:20px;
+}
+
+#SaveProfileLoading {
+	text-align:center;
+}
+
+#FileForm {
+	float:left;
+	text-align:center;
+	width:100%;
+}
+
+#FileForm {
+	border-style:dashed;
+	border-width:thin;
+	max-width:200px;
+	height:170px;
+	padding-top:14px;
+	left:52%;
+	position:absolute;
 }

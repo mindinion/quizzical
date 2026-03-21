@@ -16,7 +16,7 @@
 	
 	
 	$q = "INSERT INTO Comment (user_id, quizfeed_id, comment) VALUES" . "('$userid','$quizFeedId','$comment' );";
-	mysqli_query($db_server, $q);	
+	$conn->query($q);	
 	
 	echo $quizFeedId;
 

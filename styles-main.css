@@ -5,8 +5,22 @@
 }
 
 
+@media (max-width: 1000px) {
+
+Quizfeed {
+	max-width:300px;
+}
+
+}
+
+
+
 HTML {
 	padding:none;
+	height:100%;
+	background-color: f0fff0   ;
+
+
 }
 
 Body {
@@ -23,27 +37,28 @@ Img {}
 	height:30px;
 }
 .UserLogo {
-	width:50px;
-	height:50px;
+	width:70px;
+	height:70px;
+
 }
 .QuizzicalLogo {
-	width:50px;
-	height:50px;
+	height:70%;
 	padding-left:10px;
 	padding-top:12px;
 	float:left;
 }
 .StuffLogo {
 	width:120px;
-	height:50px;
+	height:40px;
 	padding-left:30px;
-	padding-top:10px;
+	padding-top:20px;
 	padding-right:20px;
 	float:left;
 }
-.Loading {
+.Loader {
 	margin-left:auto;
 	margin-right:auto;
+	display:block;
 }
 
 TextArea {}
@@ -53,15 +68,34 @@ TextArea {}
 }
 .NewComment {
 	width:100%;
-	height:62px;
+	height:61px;
 	font-size:14px;
-	border-top-style:none;
-	border-left-style:none;
-	border-right-style:none;
-	border-bottom-style:solid;
-	background-color:FFF5E6 ;
-	border-color:BEBEBE  ;
+	border-bottom:solid #b3e6cc thin;
+	border-right:solid #b3e6cc thin;
+	border-top:none;
+	border-left:none;
 	padding:5px;
+	position:relative;
+
+}
+
+#NewPost {
+	top:80px;
+	position:absolute;
+}
+
+#NewResultTotal {
+	border:solid #b3e6cc thin;
+	background-color:#ffebcc  ;
+
+}
+
+#QuizFeedInfoName {
+	color:red;
+	font-weight:bold;
+	font-family:verdana;
+	color:ff6600 ;
+
 }
 
 #NewResultScore	{
@@ -70,13 +104,13 @@ TextArea {}
 	font-size:24px;
 	padding-left:14px;
 	float:left;
-	border-top-style:none;
-	border-left-style:none;
-	border-bottom-style:solid;
-	border-bottom-color:BEBEBE ;
-	border-width:thin;
+	border:solid #b3e6cc thin;
+	border-left:none;
 	-webkit-appearance: none;
 	-webkit-border-radius:0px;	
+	background-color:#ffebcc;
+	position:fixed;
+	left:0px;
 }
 
 #NewResultTotal	{
@@ -85,13 +119,11 @@ TextArea {}
 	font-size:24px;
 	padding-left:14px;
 	float:left;
-	border-top-style:none;
-	border-left-style:none;
-	border-bottom-style:solid;
-	border-bottom-color:BEBEBE ;
-	border-width:thin;
+	border-bottom:solid #b3e6cc thin;
 	-webkit-appearance: none;
 	-webkit-border-radius:0px;
+	position:fixed;
+	left:108px;
 }
 
 #NewScoreLabelScore {
@@ -101,18 +133,22 @@ TextArea {}
 	float:left;
 	padding-left:8px;
 	padding-right:8px;
-	height:61px;
+	height:60px;
 	text-align:center;
-	border-bottom-style:solid;
-	border-bottom-color:BEBEBE ;
-	border-width:thin;
+	border-bottom:solid #b3e6cc thin;
+	border-top:solid #b3e6cc thin;
+	position:fixed;
+	left:62px;
+
+
+
 }
 
 #MiddleText {
 	vertical-align:middle;	
-	top:16px;
 	width:30px;
-	position:absolute;
+	color:ff6600 ;
+	padding-top:13px;
 }
 
 #NewScoreLabelType {
@@ -125,10 +161,10 @@ TextArea {}
 	padding-top:25px;
 	height:36px;
 	text-align:center;
-		border-bottom-style:solid;
-	border-bottom-color:BEBEBE ;
-	border-width:thin;
+	border-bottom:solid #b3e6cc thin;
 	display:none;
+	position:fixed;
+	left:170px;
 }
 
 #NewScoreLabelWhen {
@@ -141,10 +177,10 @@ TextArea {}
 	padding-top:25px;
 	height:36px;
 	text-align:center;
-	border-bottom-style:solid;
-	border-bottom-color:BEBEBE ;
-	border-width:thin;
+	border-bottom:solid #b3e6cc thin;
 	display:none;
+	position:fixed;
+	left:322px;
 }
 
 #NewScoreType {
@@ -160,10 +196,10 @@ TextArea {}
 	height:62px;
 	border-style:none;
 	background-color:white;
-	border-bottom-style:solid;
-	border-bottom-color:BEBEBE ;
-	border-width:thin;
+	border-bottom:solid #b3e6cc thin;
 	display:none;
+	position:fixed;
+	left:222px;
 }
 
 #NewScoreDate {
@@ -179,30 +215,31 @@ TextArea {}
 	height:62px;
 	border-style:none;
 	background-color:white;
-	border-bottom-style:solid;
-	border-bottom-color:BEBEBE ;
-	border-width:thin;
-	border-right-style:solid;
+	border-right:solid #b3e6cc thin;
+	border-bottom:solid #b3e6cc thin;
 	display:none;
+	position:fixed;
+	left:382px;
 }
 
 #NewResultSubmit {
 	border-style:solid;
 	padding:22px;
-	background-color:FFD699 ;
+	background-color:ff9933   ;
 	text-align:center;
 	cursor:pointer;
 	position:absolute;
-	right:0px;
+	right:130px;
 	height:17px;
 	border-right-style:none;
 	left:562px;
+	right:0px;
 	display:none;
-	border-color:BEBEBE;
-	border-width:thin;
-	border-left-style:none;
-	border-top-style:none;
-
+	border:none;
+	color:white;
+	position:fixed;
+	fonnt-family:verdana;
+	font-weight:bold;
 
 
 }
@@ -210,33 +247,33 @@ TextArea {}
 
 #NewCommentBox {
 	left:170px;
-	right:0px;
-	position:absolute;
+	right:130px;
 	float:left;
-	border-left-style:solid;
-	border-left-width:thin;
-	border-color:BEBEBE;
+	border-top:solid #b3e6cc thin;
+	border-right:none;
+	position:fixed;
+	right:0px;
+
 }
 
 #NewCommentSubmit {
 	border-style:solid;
-	padding:10px;
-	border-color:green;
-	background-color:FFD699;
+	padding:20px;
+	border-color:red;
+	background-color:ff9933   ;
 	display:none;
 	text-align:center;
 	cursor:pointer;
-	border-color:BEBEBE;
-	border-width:thin;
-	border-left-style:none;
-	border-right-style:none;
-	border-top-style:none;
-	border-top-style:none;
+	border:none;
 	position:absolute;
-	top:62px;
+	top:142px;
 	left:0px;
 	right:0px;
-	
+	color:white;
+	font-weight:bold;
+	position:fixed;
+	height:20px;
+	font-family:verdana;
 
 }
 
@@ -257,30 +294,17 @@ A {}
 	
 
 #MainBorder {
-	border-style:solid;
-	border-color:orange;
-	position:absolute;
-	top:10px;
-	bottom:10px;
-	left:10px;
-	right:10px;
 }
 
-#GroupPanel {
-	min-width:200px;
-	width:300px;
-	border-left-style:none;
-	border-right-style:solid;
-	border-left-width:thin;
-	border-right-width:thin;
-	height:100%;
-	border-color:BEBEBE ;
-	float:left;
-}
 
 #GroupTitle {
-	height:40px;
+	height:51px;
 	padding-bottom:10px;
+	color:green;
+	border-top-style:solid;
+	border-width:thin;
+	border-color:red;
+	
 }
 
 #GroupLogoName {
@@ -303,15 +327,14 @@ A {}
 #GroupChange {
 	font-size:12px;
 	text-decoration:underline;
-	color:grey;
+	color:green;
 }
 
 #Groups {
 	border-style:solid;
 	border-width:thin;
-	border-color:EEEEEE;
+	border-color:red;
 	background-color:#FFF5E6;
-	position:absolute;
 	left:70px;
 	width:200px;
 	text-align:center;
@@ -325,10 +348,12 @@ A {}
 
 #RankingsTitle {
 	font-size:18px;
-	background-color:#EEEEEE;
+	background-color:red;
 	text-align:center;
 	height:30px;
-	padding-top:14px;
+	padding-top:8px;
+	color:white;
+	font-weight:bold;
 }
 
 #RankingsType {
@@ -337,40 +362,43 @@ A {}
 	text-align:center;
 	border-bottom-style:solid;
 	border-width:thin;
-	height:25px;
-	padding-top:13px;
-	border-color:BEBEBE;
+	height:15px;
+	padding-top:10px;
+	padding-bottom:10px;
+	border-color:red;
 }
 .Selected {
-	background-color:#A9D098;
+	background-color:green;
+	color:white;
 }
 #RankingsType:hover {
 	background-color:green;
 }
 
 #UserRanking {
-	padding-left:10px;
-	width:90%;
-	height:50px;
+	padding-right:40px;
+	float:left;
+	position:relative;
+	margin-top:10px;
+
 }
 
 #RankingPhoto {
-	max-width:50px;
-	float:left;
 	position:relative;
-	text-align:right;
-	padding-right:10px;
+	bottom:0px;
+	
+
 }
 
 #RankingPlace {
 	position:absolute;
-	top:30px;
-	left:25px;
+	top:40px;
+	left:40px;
 	text-align:center;
-	background-color:green;
+	background-color:003300;
 	border-radius:50px;
-	height:20px;
-	width:20px;
+	height:30px;
+	width:30px;
 	font-size:12px;
 	padding-top:9px;
 	padding-bottom:5px;
@@ -379,24 +407,23 @@ A {}
 	color:white;	
 }
 
-#RankingName {
-	float:left;
-	padding-left:10px;
-	padding-top:3px;
-	line-height:150%;
+#PlacingScore {
+	padding-top:1px;
+	font-size:10px;
+	font-weight:bold;
+	font-family:verdana;
 }
 
 
 #MenuButton {
-	width:155px;
-	height:58px;
 	float:left;
 	padding-top:12px;
 }
 .right {
-	position: absolute;
     right:0px;
     top:0px;
+    padding-left:30px;
+
 }
 
 #MenuButtonGraphic {
@@ -404,42 +431,61 @@ A {}
 	float:left;
 }
 
-#MenuButton:hover {
-	background-color:FFEBCC ;
-	text-size:50px;
+#MenuButtonLogout {
+	float:left;
 }
-
-
 
 #MenuButtonText {
 	color:grey;
 	padding-top:17px;
-	padding-left:5px;
+	padding-left:10px;
 	float:left;
+	color:black;
+	font-weight:bold;
+	font-family:verdana;
+	font-size:18px;
+}
+
+#Header {
+	background-color:fee9cd           ;
+	height:80px;
+	width:100%;
+	position:fixed;
+	z-index:1000;
+	left:0px;
+	top:0px;
+	right:0px;
+	
 }
 
 #MainContent {
-	border-color:BEBEBE ;
+	border-color:red ;
 	border-width:thin;
 	float:left;
+	width:100%;
+	max-height:100%;
 	position:absolute;
-	left:300px;
+	min-width:500px;
+	overflow:scroll;
+	top:145px;
+	bottom:85px;
 	right:0px;
-	top:70px;
-	bottom:0px;
-	border-style:solid;
-	border-bottom-style:none;
-	border-right-style:none;
+
+
 }
 
 #QuizFeed {
-	right:0px;
-	left:0px;
 	float:left;
-	overflow-y:scroll;
-	top:62px;
-	bottom:0px;
-	position:absolute;
+	 top:-10px !important;
+
+	padding-left:13px;
+	max-width:600px;
+	position: absolute;
+  left: 50%;
+  margin-left: -405px;
+  background-color:white;
+  
+
 	
 }
 
@@ -447,8 +493,7 @@ A {}
 	float:left;
 	width:100%;
 	padding-top:20px;
-	padding-bottom:30px;
-
+	padding-bottom:20px;
 }
 
 #QuizFeedInfo {
@@ -464,6 +509,7 @@ A {}
 #QuizFeedInfoText {
 	float:left;
 	width:70%;
+	font-family:verdana;
 }
 #QuizFeedInfoText.NoBubble {
 	max-width:100%;
@@ -485,47 +531,53 @@ A {}
 
 #QuizFeedInfoTimestamp {
 	font-size:10px;
-	color:grey;
-	padding-left:4px;
+	color:ffa366 ;
+	padding-left:0px;
+	font-family:verdana;
+	padding-top:3px;
 }
 
 #QuizFeedInfoStatus {
-	color:grey;
+	color:black;
 	font-size:13px;
 	padding-top:2px;
 	padding-bottom:1px;
+	font-family:verdana;
+	max-width:300px
 }
 
 #QuizFeedInfoComment {
 }
 .Primary {
-	padding-top:2px;
+	padding-top:7px;
 	font-size:14px;
 	width:95%;
-	padding-bottom:4px;
 	line-height:110%;
+	color:black;
 }
 .OtherUser {
-	font-size:12px;
-	padding-top:8px;
-	padding-bottom:2px;
+	font-size:10px;
+	padding-top:4px;
+	padding-bottom:5px;
 	color:403F3D;
 	background-color:F2F2F2;
-	min-height:20px;
 	max-width:100%;
+	padding-left:130px;
 }
 
 #QuizFeedInfoReplyName {
-	font-size:12px;
+	font-size:10px;
 	color:black;
 	font-weight:bold;
-	padding-top:8px;
-	padding-bottom:2px;
+	padding-top:4px;
+	padding-bottom:5px;
 	float:left;
 	padding-right:8px;
 	background-color:F2F2F2;
-	height:1px;
+	height:12px;
 	padding-left:10px;
+	background-color:c2d6d6 ;
+	width:100px;
 }
 
 #QuizFeedInfoReplyLink {
@@ -534,6 +586,7 @@ A {}
 	padding-top:12px;
 	font-size:12px;
 	cursor:pointer;
+	font-family:verdana;
 }
 #QuizFeedInfoReplyLink:hover {text-decoration: underline; }
 
@@ -543,8 +596,19 @@ A {}
 	padding-top:12px;
 	font-size:12px;
 	cursor:pointer;
+	font-family:verdana;
 }
 #QuizFeedInfoDigLink:hover {text-decoration: underline; }
+
+#QuizFeedInfoDelete {
+	color:grey;
+	size:10px;
+	padding-top:12px;
+	font-size:12px;
+	cursor:pointer;
+	font-family:verdana;
+}
+#QuizFeedInfoDelete:hover {text-decoration: underline; }
 
 #Digs {
 	color:DB944D ;
@@ -553,28 +617,34 @@ A {}
 }
 
 #DigsComment{
-	float:right;
 	padding-right:10px;
-	color:DB944D      ;
-
+	color:DB944D;
+	right:0px;
+	position:relative;
 }
 
 #QuizFeedBubble {
-	min-width:30%;
-	display:inline;
-	background-color:#FEE087;
-	color:#CB0012;
-	border-top-left-radius: 8px;
+	min-width:200px;
+	position:absolute;
+	background-color:e67300 ;
+	color:white;
+	border-radius: 8px;
 	border-bottom-left-radius: 8px;
 	padding:8px;
 	font-size:12px;
-	float:right;
+	width:40px;
+	height:30px;
+	padding-top:25px;
+	font-family:verdana;
+	text-align:center;
+	right:20px;
+}
+.Loading {
+	background-color:white !important;
+	
 }
 
 #DigCommentLink {
-	display:inline;
-	float:right;
-	padding-left:7px;
 	color:AEAEAE;
 	cursor:pointer;
 }
@@ -670,9 +740,53 @@ A {}
 }
 
 #CommentRow {
-
 }
 
 #Comments {
-	padding-bottom:6px;
+	padding-bottom:1px;
+}
+
+#Footer {
+	background-color:fee9cd;
+	position:absolute;
+	bottom:0px;
+	height:100px;
+	border-top:solid #fdd39b  thin;
+	overflow-y:auto;
+	padding-left:10px;
+	left:0px;
+	right:0px;
+
+}
+
+#QuizFeedLoading {
+	text-align:center;
+	padding-top:20px;
+}
+
+#QuizFeedLoadingPost {
+	text-align:center;
+	padding-top:80px;
+}
+
+#RightButtons {
+	position:absolute;
+	right:0px;
+	padding-right:20px;
+	width:170px;
+}
+
+#CommentText {
+
+}
+
+#BlurredImage {
+	background-image: url("k_stick.jpg");
+	background-size: 100%;
+	background-repeat: repeat;
+	opacity:0.1;
+	min-width:100%;
+	min-height:100%;
+	position:fixed;
+
 }

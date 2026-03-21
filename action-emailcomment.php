@@ -10,7 +10,7 @@
 	
 	// Get the details of the post
 	$q = "SELECT Users.id as userid, first_name, last_name FROM QuizFeed INNER JOIN Users ON QuizFeed.user_id = Users.id WHERE QuizFeed.id = $postId;";
-	$result = mysqli_query($db_server, $q);		
+	$result = $conn->query($q);		
 	if (mysqli_num_rows($result) > 0) {    	
 		while($row = mysqli_fetch_assoc($result)) {
 			$firstName = $row['first_name'];
@@ -22,7 +22,7 @@
 	
 	// Get the details of the user
 	$q = "SELECT first_name, last_name, email FROM Users WHERE id = $posterId;";
-	$result = mysqli_query($db_server, $q);		
+	$result = $conn->query($q);		
 	if (mysqli_num_rows($result) > 0) {    	
 		while($row = mysqli_fetch_assoc($result)) {
 			$name = $row['first_name'] . " " . $row['last_name'];
@@ -38,7 +38,7 @@
 		
 	// Email users the notification
 	$q = "SELECT DISTINCT(Comment.user_id), Users.email as useremail FROM QuizFeed INNER JOIN Comment ON QuizFeed.id = Comment.quizfeed_id INNER JOIN Users ON Comment.user_id = Users.id WHERE QuizFeed.id = $postId;";
-	$result = mysqli_query($db_server, $q);		
+	$result = $conn->query($q);		
 	if (mysqli_num_rows($result) > 0) {    	
 		while($row = mysqli_fetch_assoc($result)) {
 			$email = $row['useremail'];

@@ -6,7 +6,7 @@
 	
 	$q = "SELECT id, name FROM Groups WHERE status = 'active'";
 	
-	$query = mysqli_query($db_server, $q);		
+	$query = $conn->query($q);		
 	
 	class Group {
 		public $id = "";

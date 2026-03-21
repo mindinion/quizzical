@@ -16,8 +16,8 @@
 	if ($postid == "")    $q = "INSERT INTO Digs (userid, commentid) values ($userid, $commentid);";
 	if ($commentid == "") $q = "INSERT INTO Digs (userid, postid) values ($userid, $postid);";
 
-	mysqli_query($db_server, $q);	
-	$last_id = mysqli_insert_id($db_server);
+	$conn->query($q);	
+	$last_id = mysqli_insert_id($conn);
 
 	echo $last_id;
 	 	

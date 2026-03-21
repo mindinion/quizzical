@@ -9,7 +9,7 @@
 
 	$q = "SELECT id FROM Users WHERE email = '$email';";
 
-	$user = mysqli_query($db_server, $q);
+	$user = $conn->query($q);
 
 	while($row = mysqli_fetch_assoc($user)) {
 		$id = $row['id'];

@@ -2,71 +2,66 @@
 	error_reporting(-1);
 	ini_set('display_errors', 'On');
 	
-	//session_start();
-	//$userid = $_SESSION['userid'];
-	
-	require_once 'dblogin.php';
 	require_once 'security.php';
-	require_once 'getsettings.php';
+	require_once 'dblogin.php';
+
+	// Retrieve the json data
+	if (isset($_POST['json'])) $profileJson = $_POST['json'];
+	$profile = json_decode ($profileJson  ) ;
 	
+	// Make sure the current password is correct
+	$email 			= $profile->email;
+	$firstname 		= $profile->firstname;
+	$lastname 		= $profile->lastname;
+	$passwordOld 	= $profile->password;
+	$passwordNew 	= $profile->passwordNew;
+	$notifyEmail 	= $profile->notifyEmail;
+	$notifyMessage 	= $profile->notifyMessage;
+	$timezone 		= $profile->timezone;
+	$groupid 		= $profile->groupid;
+	$userid 		= $profile->userid;
 	
-		
-	if (isset($_POST['newemail'])) $newEmail = sanitizeString($_POST['newemail']);
-	else $newEmail = $email;
-	if (isset($_POST['newfirstname'])) $newFirstName = sanitizeString($_POST['newfirstname']);
-	else $newFirstName = $nameFirst;
-	if (isset($_POST['newlastname'])) $newLastName = sanitizeString($_POST['newlastname']);
-	else $newLastName = $nameLast;
-	if (isset($_POST['passwordA'])) $newPa = ($_POST['passwordA']);
-	else $newPa = "d";
-	if (isset($_POST['passwordB'])) $newPb = ($_POST['passwordB']);
-	else $newPb = "d";
-	
-	if (isset($_POST['defaultgroup'])) $newGroupcode = sanitizeString($_POST['defaultgroup']);
-	if ($newGroupcode == "") $newGroupcode = "public";
-	if (isset($_POST['numresults'])) $newNumResults = sanitizeString($_POST['numresults']);
-	else $newNumResults = $numResults;
-	if (isset($_POST['nummessages'])) $newNumMessages = sanitizeString($_POST['nummessages']);
-	else $newNumMessages = $numMessages;
-	if ((isset($_POST['notifyresults'])) and (isset($_POST['notifyresults'])) == "1") $newNotifyResults = 1; else $newNotifyResults = 0;
-	if ((isset($_POST['notifymessages'])) and (isset($_POST['notifymessages'])) == "1") $newNotifyMessages = 1; else $newNotifyMessages = 0;
-	if (isset($_POST['timezone'])) $newTimezone = sanitizeString($_POST['timezone']);
-			
-	// If either password field contains a value, either return to the profile screen if they don't match, or update the password if they do
-	if ($newPa != $newPb) {
-		//header( "Location: profile.php?mode=1" );
-		//exit;
+	// First make sure the current password is correct
+	$passwordOldHash = md5($passwordOld);
+	$q = "SELECT COUNT(*) as passed FROM Users WHERE id = $userid and password_hash = '$passwordOldHash';";
+	$result = $conn->query($q);		
+	if (mysqli_num_rows($result) > 0) {    	
+		while($row = mysqli_fetch_assoc($result)) {	
+			if ($row['passed'] != 1 ) {
+				header("HTTP/1.1 400 Incorrect password");
+				exit;
+			}
+		 	else header("HTTP/1.1 200 OK");
+		}
 	}
-	if ($newPa == "" or $newPb == "") {
-		$newPassword = $password;
+	
+	// Generate the query to update the users data
+	$passwordNewHash = md5($passwordNew);
+	if ($passwordNew == "") {
+		$q = "UPDATE Users SET 
+			first_name='$firstname', 
+			last_name='$lastname', 
+			email='$email', 
+			notify_results=$notifyEmail, 
+			notify_message=$notifyMessage, 
+			default_group=$groupid,
+			timezone='$timezone'
+			WHERE id = $userid;";
 	} else {
-		$newPassword = $newPa;
+		$q = "UPDATE Users SET 
+			first_name='$firstname', 
+			last_name='$lastname', 
+			email='$email', 
+			password_hash='$passwordNewHash', 
+			notify_results=$notifyEmail, 
+			notify_message=$notifyMessage, 
+			default_group=$groupid,
+			timezone='$timezone'
+			WHERE id = $userid;";
 	}
-	
-	// Hash the new password
-	$newpasswordhash = crypt($newPassword, CRYPT_BLOWFISH);
-	
+	$result = $conn->query($q);		
+
 	/*
-	// Take the group code and get the group ID from it if it exists, otherwise put them in the public group
-	$idCodeQuery = mysqli_query($db_server, "SELECT id FROM Groups WHERE group_code = '$newGroupcode';");
-	if (mysqli_num_rows($idCodeQuery) == 0) {
-		$groupid = 2;
-	} else {
-		$groupid = mysql_result($idCodeQuery, 0, "id");
-	}
-	$result = mysqli_query($db_server, "UPDATE Users SET 
-		first_name='$newFirstName', 
-		last_name='$newLastName', 
-		email='$newEmail', 
-		password_hash='$newpasswordhash', 
-		num_results=$newNumResults, 
-		num_messages=$newNumMessages, 
-		notify_results=$newNotifyResults, 
-		notify_message=$newNotifyMessages, 
-		Users.default_group=$groupid,
-		timezone='$newTimezone'
-		WHERE id = $userid;"
-	);*/
 	
 	// Upload pic and update database with filename for pics
 	if($_FILES['profilepic']['name']) {
@@ -74,9 +69,9 @@
 		$newFileName = strtolower($newFileName);
 		move_uploaded_file($_FILES["profilepic"]["tmp_name"], $newFileName);
 		if($error) print $error;
-		$result = mysqli_query($db_server, "UPDATE Users SET pic_filename = '$newFileName' WHERE id = $userid;");
+		$result = mysql_query("UPDATE Users SET pic_filename = '$newFileName' WHERE id = $userid;");
 	}
 	 
 	//header( "Location: main.php");		
-	
+	*/
 ?>

@@ -10,7 +10,7 @@
 
 	$q = "SELECT id FROM Users WHERE email = '$email' and password_hash = '$passhash';";
 
-	$user = mysqli_query($db_server, $q);
+	$user = $conn->query($q);
 
 	while($row = mysqli_fetch_assoc($user)) {
 		$userid = $row['id'];
@@ -23,7 +23,7 @@
 			$location = $_SERVER['REMOTE_ADDR'];
 			$client = $_SERVER['HTTP_USER_AGENT'];
 			$q = "INSERT INTO _SESSION (userid, token, location, client) VALUES ('$userid', '$token', '$location', '$client')";
-			$query = mysqli_query($db_server, $q);
+			$query = $conn->query($q);
 			
 			// Create persistent cookies
 			SetCookie ("session", $token, time() + (10 * 365 * 24 * 60 * 60));

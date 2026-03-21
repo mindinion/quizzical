@@ -16,7 +16,7 @@ $filename = 'user' . $userid . "." . $extension;
 
 if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile)) {
 	$q = "UPDATE Users SET pic_filename = '$filename' WHERE id = '$userid' ;";
-	$result = mysqli_query($db_server, $q);
+	$result = $conn->query($q);
     $r = "File is valid, and was successfully uploaded.\n";
 } else {
     $r = "Possible file upload attack!\n";

@@ -10,7 +10,7 @@
 	
 	// First have a look to see if they'vew done the daily quiz for today, then send back what their default quiz type should be
 	$q = "SELECT type FROM Results WHERE user = $userid and DATE(date) = DATE(SYSDATE()) and status = 'active' ORDER BY date DESC;";
-	$result = mysqli_query($db_server, $q);		
+	$result = $conn->query($q);		
 
 	$i = 0;
 	$daily = 0;

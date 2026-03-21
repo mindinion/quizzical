@@ -5,8 +5,8 @@ session_start();
 	require_once 'security.php';
 	require_once 'getsettings.php';
 	
-		$queryDefaultGroup = mysqli_query($db_server, "SELECT group_code FROM Users INNER JOIN Groups ON (Users.default_group = Groups.id) WHERE Users.id = $userid;");
-	$queryMemberships = mysqli_query($db_server, "SELECT group_code FROM Users INNER JOIN Memberships ON (Users.id = Memberships.user_id) INNER JOIN Groups ON (Memberships.group_id = Groups.id) WHERE Users.id = $userid;"); 
+		$queryDefaultGroup = $conn->query("SELECT group_code FROM Users INNER JOIN Groups ON (Users.default_group = Groups.id) WHERE Users.id = $userid;");
+	$queryMemberships = $conn->query("SELECT group_code FROM Users INNER JOIN Memberships ON (Users.id = Memberships.user_id) INNER JOIN Groups ON (Memberships.group_id = Groups.id) WHERE Users.id = $userid;"); 
 	$defaultGroup = mysql_result($queryDefaultGroup,0,"group_code");
 	
 	

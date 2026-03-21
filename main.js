@@ -2,11 +2,6 @@
 // Initialise the number of results in the quiz feed
 document.cookie="feedItems=50";
 
-// When the window loads, load the quiz feed	
-	window.onload = function() {
-		$('#QuizFeed').load('div-quizfeed.php');
-
-	}
 
 // Retrieve a cookie	
 	function getCookie(c_name) {
@@ -54,17 +49,16 @@ document.cookie="feedItems=50";
 	})
 	
 	function deletePost(id) {
-		document.getElementById('DeletingNotifyPost').style.display = 'block';
-		disableSite();	
+		$('*[data-quizfeedtext="' + id + '"]').append("<div id=CommentLoadingPost><img src='ajax-loader.gif'></img></div>");
 		$.get("action-deletepost.php", {
-			id:id
+			id:id,
+			userid:getSetting("user_id")
 		},
 		function(data,status){
-			document.getElementById('DeletingNotifyPost').style.display = 'none';
-			enableSite();
 			if (status == "success") {
-				$('#QuizFeed').load('div-quizfeed.php');
-				$('#UserRankings').load('div-userrankings.php');
+				downloadResults(1);
+				downloadRankings(7);
+				refreshNewPost();	
 			} else {
 				alert("Result Not Deleted");
 
@@ -82,7 +76,7 @@ document.cookie="feedItems=50";
 			var feeditems = Number(getCookie("feedItems"));
 			feeditems = feeditems + 10;
 			document.cookie="feedItems=" + feeditems;
-			$('#QuizFeed').load('div-quizfeed.php');		
+			getResults();		
 		}
 	}
 	
@@ -120,32 +114,42 @@ document.cookie="feedItems=50";
 	}
 	
 	
-		function showReplyBox (boxDiv ) {
-		if ($("#" + boxDiv).css("display") == "none") {
-			document.getElementById(boxDiv).style.display = 'block';
-			document.getElementById(boxDiv).focus();
+	function showReplyBox (id ) {
+		if ($('*[data-replyboxid="' + id + '"]').css("display") == "none") {
+			$('*[data-replyboxid="' + id + '"]').css("display","block");    	
+			$('*[data-replyboxid="' + id + '"]').focus();  
 		} else {
-			document.getElementById(boxDiv).style.display = 'none';
-		}
+			$('*[data-replyboxid="' + id + '"]').css("display","none");
+		}	
 	}
 	
-	function sendComment (boxDiv, quizFeedId) {
-		disableSite();
-
-		document.getElementById('LoadingNotifyComment').style.display = 'block';
+	function sendComment (e,quizFeedId) {
+		//console.log(e.keycode);
+		if (e.keyCode != 13) return;
+		comment = $('*[data-replyboxid="' + quizFeedId + '"]').val();
+		$('*[data-replyboxid="' + quizFeedId + '"]').blur();
+		console.log(quizFeedId);
+		console.log(comment);
+		$('*[data-quizfeedtext="' + quizFeedId + '"]').append("<div id=CommentLoadingPost><img src='ajax-loader.gif'></img></div>");
 		$.get("action-newcomment.php", {
 				quizFeedId:quizFeedId,
-				comment:document.getElementById(boxDiv).value
+				comment:comment,
+				userid:getSetting("user_id")
 			},
 			function(data,status){
+				console.log(data);
+				//$('*[data-quizfeedtext="' + quizFeedId + '"]').remove();
 				if (status == "success") {
-					$('#QuizFeed').load('div-quizfeed.php');
-					document.getElementById('LoadingNotifyComment').style.display = 'none';
-					enableSite();
+					downloadResults(1);
+					downloadRankings(7);
+					refreshNewPost();	
 					
-					// Email notifications
+					// Email notifications 
 					$.get("action-emailcomment.php", 
-						{ postId:data },
+						{ 
+							postId:data,
+							userid:getSetting("user_id")
+						},
 						function(response) {  }
 					);
 					
@@ -157,69 +161,118 @@ document.cookie="feedItems=50";
 	}
 	
 	function digPost(id) {
-		disableSite();
-		document.getElementById('SavingDig').style.display = 'block';
+		$('*[data-quizfeedtext="' + id + '"]').append("<div id=CommentLoadingPost><img src='ajax-loader.gif'></img></div>");		
 		$.get("action-newdig.php", 
-			{ postid:id },
+			{ 
+				postid:id,
+				userid:getSetting("user_id")
+			},
 			function(data, status) { 
-				$('#QuizFeed').load('div-quizfeed.php');
-				document.getElementById('SavingDig').style.display = 'none';
-				enableSite();
+				downloadResults(1);
+				downloadRankings(7);
+				refreshNewPost();
+							 		
 				$.get("action-emaildig.php", 
 					{ id:data },
-					function(response) {  }
+					function(data, status) {  
+						console.log(data);
+					}
 				);
+				
 			}
 		);
 	}
 	
-	function undigPost(id) {
+	function undigPost(postid) {
+		$('*[data-quizfeedtext="' + postid + '"]').append("<div id=CommentLoadingPost><img src='ajax-loader.gif'></img></div>");		
+		$.get("action-undig.php", 
+			{	postid:postid,
+				userid:getCookie("userid")
+			},
+			function(response) { 
+				downloadResults(1);
+				downloadRankings(7);
+				refreshNewPost();
+			}
+		);
+	}
+	
+	function undig(id) {
 		disableSite();
 		document.getElementById('SavingDig').style.display = 'block';
 		$.get("action-undig.php", 
-			{ id:id },
+			{ 
+				id:id,
+				userid:getCookie("userid")
+			},
 			function(response) { 
-				$('#QuizFeed').load('div-quizfeed.php');
+				getResults();
 				document.getElementById('SavingDig').style.display = 'none';
 				enableSite();
 			}
 		);
 	}
 	
+	function undigComment(commentid) {
+		$('*[data-comment="' + commentid + '"]').append("<div id=CommentLoadingPost><img src='ajax-loader.gif'></img></div>");
+		$.get("action-undig.php", 
+			{ 
+				commentid:commentid,
+				userid:getCookie("userid")
+			},
+			function(response) { 
+				downloadResults(1);
+				downloadRankings(7);
+				refreshNewPost();						
+			}
+		);
+	}
+
+	
 	function digComment(id) {
-		disableSite();
-		document.getElementById('SavingDig').style.display = 'block';
+		$('*[data-comment="' + id + '"]').append("<div id=CommentLoadingPost><img src='ajax-loader.gif'></img></div>");
 		$.get("action-newdig.php", 
-			{ commentid:id },
+			{ 
+				commentid:id,
+				userid:getSetting("user_id")
+			},
 			function(data, status) { 
-				$('#QuizFeed').load('div-quizfeed.php');
-				document.getElementById('SavingDig').style.display = 'none';
-				enableSite();
- 				$.get("action-emaildigcomment.php", 
-					{ id:data },
-					function(response) {  }
+				console.log(data);
+				downloadResults(1);
+				downloadRankings(7);
+				refreshNewPost();			 				
+				$.get("action-emaildigcomment.php", 
+				{ 
+					id:data,
+					userid:getSetting("user_id")
+				},
+				function(response) {  }
 				);
 			}
 		);
 	}
 	
 	function postComment () {
-		disableSite();
 	
-		document.getElementById('LoadingNotifyPost').style.display = 'block';
+		// SHow the loading image
+		$("#QuizFeed").prepend("<div id=QuizfeedLoadingPost><img src='ajax-loader.gif'></img></div>");
+		
 		$.get("action-newcommentpost.php", {
-				comment:document.getElementById("NewCommentTextArea").value
+				comment:document.getElementById("NewCommentTextArea").value,
+				userid:getSetting("user_id"),
+				timezone:getSetting("timezone")
 			},
 			function(data,status){
 				if (status == "success") {
-					$('#QuizFeed').load('div-quizfeed.php');
-					document.getElementById('LoadingNotifyPost').style.display = 'none';
-					enableSite();
+					console.log(data);
+					downloadResults(1);
+					downloadRankings(7);
+					refreshNewPost();				
 					
 					//Email notifications
 					$.get("action-emailpost.php", 
 						{ postId:data },
-						function(response) {  }
+						function(data) { console.log(data);  }
 					);
 							
 					document.getElementById("NewCommentTextArea").value = '';
@@ -234,8 +287,6 @@ document.cookie="feedItems=50";
 	}
 	
 	function addResult() {
-		document.getElementById('LoadingNotifyResult').style.display = 'block';
-		disableSite();
 		if ( document.getElementById("NewScoreDate").value == "Today" ) {
 			$dateOption = "today";
 		} else if ( document.getElementById("NewScoreDate").value == "Yesterday" ) {
@@ -243,17 +294,25 @@ document.cookie="feedItems=50";
 		} else {
 			$dateOption =  "other";
 		}		
+		
+		// SHow the loading image
+		$("#QuizFeed").prepend("<div id=QuizfeedLoading><img src='ajax-loader.gif'></img></div>");
+		
 		$.get("action-newresult.php", {
 			type:document.getElementById("NewScoreType").value,
 			score:document.getElementById("NewResultScore").value,
 			questions:document.getElementById("NewResultTotal").value,
 			date:document.getElementById("NewScoreDate").value,
-			dateOption:$dateOption
+			dateOption:$dateOption,
+			userid:getSetting("user_id"),
+			timezone:getSetting("timezone")
+			
 		},
 		function(data){
 			if (data > 0) {
-				$('#QuizFeed').load('div-quizfeed.php');
-				$('#UserRankings').load('div-userrankings.php');
+				downloadResults(1);
+				downloadRankings(7);
+				refreshNewPost();				
 				document.getElementById("NewScoreType").value = 'Daily';
 				document.getElementById("NewResultScore").value = '';
 				document.getElementById("NewResultTotal").value = '15';
@@ -266,19 +325,16 @@ document.cookie="feedItems=50";
 				document.getElementById('NewCommentTextArea').style.display = 'block';
 				$.get("action-emailresult.php", 
 					{ resultId:data },
-					function(response) {  }
+					function(response) { console.log(response); }
 				);
-				refreshNewPost();
 			} else {
 				alert("You have already added a result for that quiz today!");
 			}
-			document.getElementById('LoadingNotifyResult').style.display = 'none';
-			enableSite();
 		});
 	}
 	
 	function profileHide() {
-		$('#QuizFeed').load('div-quizfeed.php');
+		getResults();
 	}
 	
 	function saveProfile() {
@@ -308,7 +364,7 @@ document.cookie="feedItems=50";
 				profilepic:document.getElementById("profilepic").value
 			},
 			function(data, status) {
-				$('#QuizFeed').load('div-quizfeed.php');
+				getResults();
 				$('#UserRankings').load('div-userrankings.php');
 				document.getElementById('SavingNotifyProfile').style.display = 'none';
 				enableSite();
@@ -331,19 +387,717 @@ document.cookie="feedItems=50";
 				} 
 			}
 		);
+		
+		// Populate the list of dates for the last two weeks
+		var days = 2;
+		while (days <= 14) {
+			aDate = moment().subtract(days, 'days').format('YYYY-MM-DD');
+			aDateDisplay = moment().subtract(days, 'days').format('dddd, MMM-DD');
+			$("#NewScoreDate").append("<option value='" + aDate + "'>" + aDateDisplay + "</option>");
+			days++;		
+		}	
 	}
 	
-	// Run long-polling PHP script to refresh quizfeed
-	function refreshQuizfeed() {
-		$.get("action-refreshquizfeed.php", 
-			{pause:window.pause},
-			function(data, status) {
-				if (data == 1) {
-					$('#QuizFeed').load('div-quizfeed.php');
-					refreshQuizfeed();		
+	
+	
+	
+	function downloadResults(dontPreload) {		
+		var groupid = getSetting("group_id");
+		var limit = 50;
+		var results = sessionStorage.getItem("results");
+		
+		// Show the preloader
+		$("#QuizFeed").append("<img src = 'ajax-loader.gif' data-loader=quizfeed class=Loader></img>");
+		
+		// First display the cached results, if we have them
+		if (results != null && dontPreload == null) {
+			displayResults(results,1);
+		} else {
+			var firstTime = 1;
+		}
+
+		
+		// Now download and display the most recent results
+		$.get("action-getresults.php", 
+			{ 
+				groupid:groupid,
+				limit:limit
+			},	
+			function(data, status) { 
+				if (sessionStorage.getItem("results") != data || firstTime == 1 ) {
+					displayResults(data,0);
+				} else {
+					resultsObj = JSON.parse(data);
+					results =  $.map(resultsObj, function(el) { return el });
+					loadBubbles(results);
+				}
+				$('*[data-loader=quizfeed]').remove();
+				sessionStorage.results = data;
+			}
+		);
+	}
+	
+	
+	
+	function displayResults(resultsJson,preLoad) {
+	
+		// First clear the current quizfeed
+		$("#QuizFeed").html("");
+			
+		resultsObj = JSON.parse(resultsJson);
+		results =  $.map(resultsObj, function(el) { return el });
+	
+	
+		var myuserid = getSetting("user_id");
+		
+		results.forEach(function(result) {
+		
+			// Grab the post data
+			var quizfeedId = result.postid;
+			var picFilename = result.poster_filename;
+			var nameFirst = result.poster_first_name;
+			var nameLast = result.poster_last_name;
+			var userId = result.poster_id;
+			var timestamp = result.post_timestamp;
+			var ts = result.post_timestamp;
+			var comment = result.post_comment;
+
+			// Grab the result data (if applicable)
+			if (result.result != null) {
+				var resultId = result.result.resultid;
+				var date = result.result.result_date;
+				var score = result.result.result_score;
+				var max = result.result.result_max;
+				var type = result.result.result_type;
+			}
+	
+			// Create the main quizitem DOM
+    		$("#QuizFeed").append("<div id=QuizFeedItem data-quizfeed=" + quizfeedId + ">");
+    				
+			// Make room for the bubble if it is a result post
+			if (resultId == null) {
+				$('*[data-quizfeed="' + quizfeedId + '"]').html("<div id=QuizFeedInfo data-quizfeedinfo=" + quizfeedId + " class=NoBubble>");
+				$('*[data-quizfeedinfo="' + quizfeedId + '"]').html("<div id=QuizFeedInfoPhoto><img src='" + picFilename + "'height=50 width=50></img>");
+				$('*[data-quizfeedinfo="' + quizfeedId + '"]').append("<div id=QuizFeedInfoText class=nobubble data-quizfeedtext=" + quizfeedId + ">");
+
+			} else {
+				$('*[data-quizfeed="' + quizfeedId + '"]').html("<div id=QuizFeedInfo data-quizfeedinfo=" + quizfeedId + " >");
+				$('*[data-quizfeedinfo="' + quizfeedId + '"]').html("<div id=QuizFeedInfoPhoto><img src='" + picFilename + "'height=50 width=50></img>");
+				$('*[data-quizfeedinfo="' + quizfeedId + '"]').append("<div id=QuizFeedInfoText data-quizfeedtext=" + quizfeedId + ">");
+			}
+		
+			// Convert the timestamp into something intelligible
+			var timestamp_local = moment.tz(ts, getSetting("timezone"));
+			var timestamp_server = moment.tz(ts, getSetting("old_timezone"));
+			var diff = 0 ;
+			//var diff = -timestamp_local._offset ;
+			//var diff = timestamp_local._offset - timestamp_server._offset;
+			var newTimestamp = timestamp_local.add(diff, "minutes" );
+			//var ago = moment(newTimestamp, "YYYY-MM-DD hh::mm:ss").fromNow();
+			var ago = moment(newTimestamp, "YYYY-MM-DD hh::mm:ss").fromNow();
+			
+			//console.log(timestamp_local);
+			//console.log(timestamp_local);
+			//console.log(timestamp_server);
+			//console.log(ts);
+
+
+			// Create the different quizitem elements
+			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=QuizFeedInfoName data-quizfeedname=" + quizfeedId + ">" + nameFirst + " " + nameLast );
+			$('*[data-quizfeedname="' + quizfeedId + '"]').append("<div id=QuizFeedInfoTimestamp data-quizfeedts=" + quizfeedId + ">" + ago );
+			if (resultId != null)  $('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=QuizFeedInfoStatus>Scored " + score + "/" + max + " in the " + Date.parse(date).toString("MMM dd") + " " + type + " quiz </div id=QuizFeedInfoStatus>");
+			$('*[data-quizfeedname="' + quizfeedId + '"]').append("<a href='javascript:deletePost(" + quizfeedId + ") class=Underline> Delete </a>" );
+			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=QuizFeedInfoComment class=Primary>" + comment + "</div id=QuizFeedInfoComment>");    				
+			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<span id=QuizFeedInfoReplyLink onclick='showReplyBox(" + quizfeedId + ");'> Comment </span>");    				
+			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("- <span id=QuizFeedInfoDigLink data-dig=" + quizfeedId + " onclick='digPost(" + quizfeedId + ");'>Dig </span>");    				
+			
+			if (userId == getSetting("user_id"))
+			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("- <span id=QuizFeedInfoDelete data-deleteid=" + quizfeedId + " onclick='deletePost(" + quizfeedId + ");'>Delete </span>");    				
+			
+			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<textarea rows=3 class=QuizFeedInfoReplyInput onkeydown='sendComment(event," + quizfeedId + ")' data-replyboxid=" + quizfeedId + " style=display:none;></textarea>");    				
+
+			// Grab the comments data for the post and display them
+			if (result.comments != null) {
+				var comments = result.comments;
+				comments.forEach(function(comment) {
+					var commentid = comment.commentid;
+					var text = comment.comment_comment;
+					var name = comment.comment_first_name + " " + comment.comment_last_name;
+					var timestamp = comment.comment_timestamp;
+					$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=Comments><div id=CommentRow><div id=QuizFeedInfoReplyName>" + name + "</div><div id=QuizFeedInfoComment class=OtherUser data-comment=" + commentid + "><div id=CommentText>" + text + "</div><div id=DigsComment data-commentid=" + commentid +"><span id='DigCommentLink' data-linkcommentid=" + commentid + " > </span></div></div></div>");
+				
+					// Grab the digs data for each comment and display them
+					window.res = comment.digs;
+					if (comment.digs != null && comment.digs != "") {
+						var digs = comment.digs;
+						var names = "";
+						var context = "digs";
+						var digCount = 0;
+						var mineFlag = 0;
+						digs.forEach(function(dig) {
+							if (dig.digstatus != "deleted" ) {
+								mine = 0;
+								digUserId = dig.dig_user_id;
+								if (digUserId == myuserid) mine = 1;
+								if (mine ) handle = "You "; 
+									else handle = dig.dig_first_name;
+								names += handle;
+								if (digCount == (digs.length-2)) {				// If the current dig is the second last dig, write 'and'
+									names += " and ";
+								} else if (digCount == (digs.length-1)) { 		// If the current dig is the last dig, write ''
+									names += "";
+								} else {										// Otherwise, write ','
+									names += ", ";
+								}	
+								digCount++;
+								mineFlag = mine;
+							}
+						});
+						if (digCount > 1 || mineFlag > 0) context = "dig";
+				
+						// Determine dig/undig, depending on whether a dig is theirs or not
+						if (mine) {
+							digLink = "<span id='DigCommentLink' data-linkcommentid=" + commentid + " onclick='undigComment(" + commentid + ");'> Undig</span>";
+						} else {
+							digLink = "<span id='DigCommentLink' data-linkcommentid=" + commentid + " onclick='digComment(" + commentid + "," + myuserid + ");'> Dig</span>";
+						}
+						
+						// Show the digs, as well as the link to dig/undig
+						$('*[data-comment="' + commentid + '"]').append("<div id=DigsComment>" + names + " "  + context + " this</div>");		
+								
+						$('*[data-linkcommentid="' + commentid + '"]').html(digLink);
+					} else {
+						digLink = "<span id='DigCommentLink' data-linkcommentid=" + commentid + " onclick='digComment(" + commentid + "," + myuserid + ");'> Dig</span>";
+						$('*[data-linkcommentid="' + commentid + '"]').html(digLink);
+					}
+							
+				
+				
+				});
+			}
+			
+			// Grab the digs data for the post and display them
+			if (result.digs != null) {
+				var digs = result.digs;
+				var names = "";
+				var context = "digs";
+				var digCount = 0;
+				var mineFlag = 0;
+				digs.forEach(function(dig) {
+					mine = 0;
+					digUserId = dig.dig_user_id;
+					if (digUserId == myuserid) mine = 1;
+					if (mine ) handle = "You "; 
+						else handle = dig.dig_first_name;
+					names += handle;					
+					if (digCount == (digs.length-2)) {
+						names += " and ";
+					} else if (digCount == (digs.length-1)) {
+						names += "";
+					} else {
+						names += ", ";
+					}					
+					
+					digCount++;
+					mineFlag = mine;
+				});
+				if (digCount > 1 || mineFlag > 0) context = "dig";
+				
+				// First add the 'undig' button
+				if (mine) $('*[data-dig="' + quizfeedId + '"]').replaceWith("<span id=QuizFeedInfoDigLink data-dig=" + quizfeedId + " onclick='undigPost(" + quizfeedId + ");'>Undig </span>");
+
+				// Display the dig(s)
+				$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=Digs>" + names + " "  + context + " this</div>");
+			}
+
+		});
+		
+		if (preLoad != 1) loadBubbles(results);
+
+	}
+	
+	
+	function loadBubbles(results) {
+		window.res = results;
+		
+		// First populate each bubble with the preloader
+		results.forEach(function(result) {
+			if (result.result != null && result.poster_id != getCookie("userid"))
+				$('*[data-quizfeed="' + result.postid + '"]').append("<div id=QuizFeedBubble class=Loading><img src = 'ajax-loader.gif' data-loader=bubble data-postid=" + result.postid + " class=Loader></img></div>");
+		});
+		
+		//Now populate each bubble with the data
+		results.forEach(function(result) {
+			if (result.result != null && result.poster_id != getCookie("userid")) {
+				$.get("action-checkresult.php", 
+					{ 
+						date:result.result.result_date.split(" ")[0],
+						type:result.result.result_type,
+						userid:getCookie("userid")
+					},	
+					function(data, status) { 
+						var score = someText = data.replace(/(\r\n|\n|\r)/gm,"");
+						$('*[data-postid="' + result.postid + '"]').remove();
+						if (score != "failed" ) {
+							var message = "You scored " + score + "/" + result.result.result_max + " in this quiz";
+							$('*[data-quizfeed="' + result.postid + '"]').append("<div id=QuizFeedBubble class=ScreenHide>" + message + "</div>");
+						} else {
+							var message = "You haven't done this quiz yet";
+							$('*[data-quizfeed="' + result.postid + '"]').append("<div id=QuizFeedBubble class=ScreenHide>" + message + "</div>");
+						}
+					}
+				);	
+			}		
+				
+		});
+		
+		
+	}
+	
+	
+	function getSettings() {
+	$.get("action-getsettings.php", 
+		{ 
+			userid:getCookie("userid")
+		},	
+		
+		function(data, status) { 
+			sessionStorage.usersettings = data;		
+			downloadResults();	
+			downloadRankings(7);
+			refreshNewPost();
+		});
+	}
+	
+	function getSetting(type) {
+		obj = JSON.parse(sessionStorage.usersettings);
+		return eval ( "obj." + type ) ;
+	}
+	
+	function downloadRankings(period) {
+		var groupid = getSetting("group_id");
+		var rankings = sessionStorage.getItem("rankings");
+		
+		// Show the preloader
+		$("#UserRankings").append("<img src = 'ajax-loader.gif' data-loader=rankings class=Loader></img>");
+		
+		//First display the cached results, if we have them
+		if (rankings != null) {
+			displayRankings(rankings);
+		} 
+
+		
+		// Now download and display the most recent rankings
+		$.get("action-getrankings.php", 
+			{ 
+				groupid:groupid,
+				period:period
+			},	
+			function(data, status) { 
+				if (sessionStorage.getItem("rankings") != data) {
+					displayRankings(data);
+				} else {
+					rankingsObj = JSON.parse(data);
+					rankings =  $.map(rankingsObj, function(el) { return el });
+				}
+				$('*[data-loader=rankings]').remove();
+				sessionStorage.rankings = data;
+			}
+		);
+	}
+	
+	function displayRankings(rankingsJson) {
+		$("#UserRankings").html("");
+		if (rankingsJson == null) return;
+			
+		rankingsObj = JSON.parse(rankingsJson);
+		rankings =  $.map(rankingsObj, function(el) { return el });
+		placingnum = 0;
+		
+		$("#UserRankings").html("");
+		
+		rankings.forEach(function(ranking) {
+			placingnum++;
+			var name = ranking.first_name + " " + ranking.last_name;
+			var average = ranking.average;
+			var pic_filename = ranking.pic_filename;
+			var userid = ranking.userid;
+			if (placingnum.toString().slice(-1) == 1) {
+				placing = placingnum + "st";
+			} else if (placingnum.toString().slice(-1) == 2) {
+				placing = placingnum + "nd";
+			} else if (placingnum.toString().slice(-1) == 3) {
+				placing = placingnum + "rd";
+			} else {
+				placing = placingnum + "th";
+			}
+    		$("#UserRankings").append("<span id=UserRanking data-ranking=" + userid + ">");
+			$('*[data-ranking="' + userid + '"]').append("<div id='RankingPhoto' data-rankingphoto=" + userid + ">");
+			$('*[data-rankingphoto="' + userid + '"]').append("<img src='" + pic_filename + "' class='UserLogo'></img>");
+			$('*[data-rankingphoto="' + userid + '"]').append("<div id='RankingPlace'>" + placing + "<br><div id=PlacingScore>" + average + "%</div></div id='RankingPlace'>");
+			$('*[data-ranking="' + userid + '"]').append("</div id='RankingPhoto'>");
+    		$("#UserRankings").append("	</span id='UserRanking'>");
+		
+
+			
+		});
+	}
+	
+	function refreshNewPost() {
+		$.get("action-getresult.php", {
+				userid:getSetting("user_id")
+			},
+			function(data,status){
+				console.log(data);
+				if (status == "success") {
+					document.getElementById('NewScoreType').value=data;
+				} 
+			}
+		);
+	}
+	
+	function activateListeners() {
+		// If entering a score, reveal the rest of the score fields
+		document.getElementById("NewResultScore").addEventListener("keyup", function(){ 
+			if (document.activeElement.value != "") {
+				document.getElementById('NewScoreLabelType').style.display = 'block';
+				document.getElementById('NewScoreType').style.display = 'block';
+				document.getElementById('NewScoreLabelWhen').style.display = 'block';
+				document.getElementById('NewScoreDate').style.display = 'block';
+				document.getElementById('NewResultSubmit').style.display = 'block';
+				document.getElementById('NewCommentTextArea').style.display = 'none';
+				document.getElementById('NewCommentSubmit').style.display = 'none';
+				document.getElementById('QuizFeed').style.top = '70px';
+				refreshNewPost();
+			} else {
+				document.getElementById('NewScoreLabelType').style.display = 'none';
+				document.getElementById('NewScoreType').style.display = 'none';
+				document.getElementById('NewScoreLabelWhen').style.display = 'none';
+				document.getElementById('NewScoreDate').style.display = 'none';
+				document.getElementById('NewResultSubmit').style.display = 'none';
+				document.getElementById('NewCommentTextArea').style.display = 'block';
+			}
+		}, false);
+
+
+		// If the result is changed (via the spinner), show the extra result elements ('undefined' caveat stops it from triggering off an empty field)
+		document.getElementById("NewResultScore").addEventListener("change", function() {
+		if (document.activeElement.value != undefined) {
+				document.getElementById('NewScoreLabelType').style.display = 'block';
+				document.getElementById('NewScoreType').style.display = 'block';
+				document.getElementById('NewScoreLabelWhen').style.display = 'block';
+				document.getElementById('NewScoreDate').style.display = 'block';
+				document.getElementById('NewResultSubmit').style.display = 'block';
+				document.getElementById('NewCommentTextArea').style.display = 'none';
+				document.getElementById('NewCommentSubmit').style.display = 'none';
+				document.getElementById('QuizFeed').style.top = '70px';
+				refreshNewPost();
+			}
+		}, false);
+	
+		// If a comment is provided, show the submit button
+		document.getElementById("NewCommentTextArea").addEventListener("keyup", function(){ 
+			if (document.activeElement.value != "") {
+				document.getElementById('NewCommentSubmit').style.display = 'block';
+				document.getElementById('QuizFeed').style.top = '100px';
+			} else {
+				document.getElementById('NewCommentSubmit').style.display = 'none';
+				document.getElementById('QuizFeed').style.top = '70px';
+		}
+		});
+			
+	}
+	
+	function showProfile() {
+		window.newFile = "";
+		if ($("#NewPost").css("display") == "none") {
+			hideProfile();
+			return;
+		}
+		$("#QuizFeed").html("");
+		$("#NewPost").hide();
+		$("#MainContent").css("top","80px");
+		$("#Profile").show();
+		
+		// Populate the fields
+		$("#email").val(getSetting("email"));
+		$("#namefirst").val(getSetting("first_name"));
+		$("#namelast").val(getSetting("last_name"));
+		$("#oldpass").val("");
+		$("#PassA").val("");
+		$("#PassB").val("");
+		if (getSetting("notify_results") == 1) $("#notifyresult").prop("checked", true);
+		if (getSetting("notify_messages") == 1) $("#notifymessage").prop("checked", true);		
+		$("#notifyresult").prop("checked", getSetting("notify_results")==1 ? true : false);
+		$("#notifymessage").prop("checked", getSetting("notify_message")==1 ? true : false);
+		
+		var timezones = ["NZ", "Australia/Melbourne", "Australia/Brisbane"];
+		timezones.forEach(function(timezone) {
+			if (getSetting("timezone") == timezone) {
+				$("#timezone").append("<option value='" + timezone + "' selected>" + timezone + "</option>");
+			} else {
+				$("#timezone").append("<option value='" + timezone + "'>" + timezone + "</option>");
+			}
+		});
+		
+		// Download the groups and display them
+		$("#defaultgroup").html("");
+		$("#defaultgroup").prop('disabled', true);
+		$("#defaultgroup").append("<option id=LoadingGroups>Loading Groups...</option>");
+		$.get("action-getgroups.php", 
+			function(data, status) { 
+				$("#LoadingGroups").remove();
+				$("#defaultgroup").prop('disabled', false);
+				groupsObj = JSON.parse(data);
+				groups =  $.map(groupsObj, function(el) { return el });
+				groups.forEach(function(group) {
+				if (getSetting("group_id") == group.id) {
+					$("#defaultgroup").append("<option value='" + group.id + "' selected>" + group.name + "</option>");
+				} else {
+					$("#defaultgroup").append("<option value='" + group.id + "'>" + group.name + "</option>");
+				}
+			});
+			}
+		);
+		
+		// Prepare the form for image upload
+		var files;
+		$('input[type=file]').on('change', prepareUpload);
+		function prepareUpload(event) {
+  			files = event.target.files;
+		}	
+		
+		
+		// Handle the file upload on submit
+		$('#FileForm').on('submit', uploadFiles);
+
+		// Catch the form submit and upload the files
+		function uploadFiles(event)
+		{
+		  event.stopPropagation(); // Stop stuff happening
+			event.preventDefault(); // Totally stop stuff happening
+			
+			console.log("hit it");
+
+			$('#FileForm').append("<div id=SaveProfileLoading><img src=ajax-loader.gif></img></div>");
+			$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);			
+
+			// Create a formdata object and add the files
+			var data = new FormData();
+			$.each(files, function(key, value)
+			{
+				data.append(key, value);
+			});
+
+			$.ajax({
+				url: 'action-uploadphoto.php?files',
+				type: 'POST',
+				data: data,
+				cache: false,
+				dataType: 'json',
+				processData: false, // Don't process the files
+				contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+				success: function(data, textStatus, jqXHR)
+				{
+					$.get("action-renamefile.php", {
+						from:'t_temp.jpg',
+						to:"t_" + getSetting("user_id") + ".jpg",
+						userid:getSetting("user_id")
+					},
+						function(data,status) {
+							console.log(data);
+						}
+					);
+					
+					if(typeof data.error === 'undefined')
+					{
+						// Success so call function to process the form
+						submitForm(event, data);
+					}
+					else
+					{
+						// Handle errors here
+						console.log('ERRORS: ' + data.error);
+					}
+				},
+				error: function(jqXHR, textStatus, errorThrown)
+				{
+				$.get("action-renamefile.php", {
+					from:'t_temp.jpg',
+					to:"t_" + getSetting("user_id") + ".jpg",
+					userid:getSetting("user_id")
+				},
+					function(data,status) {
+						console.log(data);
+					}
+				);
+					// Handle errors here
+					console.log('ERRORS: ' + textStatus);
+					$('#SaveProfileLoading').remove();
+
+				}
+			});
+		}
+		
+		// Handle the form submit
+		function submitForm(event, data) {
+		  // Create a jQuery object from the form
+			$form = $(event.target);
+
+			// Serialize the form data
+			var formData = $form.serialize();
+			//window.fd = formData;
+
+			// You should sterilise the file names
+			$.each(data.files, function(key, value)
+			{
+				formData = formData + '&filenames[]=' + value;
+				window.newFile = value;
+			});
+			
+			$.ajax({
+				url: 'action-uploadphoto.php',
+				type: 'POST',
+				data: formData,
+				cache: false,
+				dataType: 'json',
+				success: function(data, textStatus, jqXHR)
+				{
+					if(typeof data.error === 'undefined')
+					{
+						// Success so call function to process the form
+						console.log('SUCCESS: ' + data.success);
+						console.log(data);
+					}
+					else
+					{
+						// Handle errors here
+						console.log('ERRORS: ' + data.error);
+					}
+				},
+				error: function(jqXHR, textStatus, errorThrown)
+				{
+					// Handle errors here
+					console.log('ERRORS: ' + textStatus);
+				},
+				complete: function()
+				{
+					$('#SaveProfileLoading').remove();
+
+				}
+			});
+		}
+	
+		
+	}
+	
+	function hideProfile() {
+		$("#NewPost").show();
+		$("#MainContent").css("top","145px");
+		$("#Profile").hide();
+		downloadResults();
+	}
+	
+	
+	function saveProfile() {
+	
+		// First clear any warnings
+		$("#ProfileWarning").remove();
+	
+		// If no current password is supplied
+		if ( $("#oldpass").val() == "") {
+			$('#Profile').append("<br><div id=ProfileWarning>Please enter your current password<br></div>");
+			$("#oldpass").focus(function(){
+   				$("#ProfileWarning").remove();
+			});
+			$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);			
+			return;
+			
+		}
+		
+		// If the new password fields don't match
+		if ( $("#PassA").val() != $("#PassB").val()) {
+			$('#Profile').append("<div id=ProfileWarning><br>Your new password doesn't match<br></div>");
+			$("#PassA").focus(function(){
+   				$("#ProfileWarning").remove();
+			});
+			$("#PassB").focus(function(){
+   				$("#ProfileWarning").remove();
+			});
+			$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);			
+			return;
+		}
+
+	
+	
+	
+		var profile = {
+			email:$("#email").val(),
+			firstname:$("#namefirst").val(),
+			lastname:$("#namelast").val(),
+			password:$("#oldpass").val(),
+			passwordNew:$("#PassA").val(),
+			notifyEmail:$("#notifyresult").is(":checked") ? 1 : 0,
+			notifyMessage:$("#notifymessage").is(":checked") ? 1 : 0,
+			timezone:$("#timezone").val(),
+			groupid:$("#defaultgroup").val(),
+			userid:getCookie("userid"),
+			photo:"t_" + window.newFile.replace(/\.[^/.]+$/, "") + ".jpg"
+		}
+		var profileJson = JSON.stringify(profile);
+		console.log(profileJson );
+		
+		// Show the loading graphic
+		$('#Profile').append("<div id=SaveProfileLoading><img src=ajax-loader.gif></img></div>");
+	
+		$.ajax({
+			type:"POST",
+			url:"action-saveprofile.php",
+			data: {	json:profileJson },
+			statusCode: {
+				400: function() { 
+					$("#SaveProfileLoading").remove();
+					$('#Profile').append("<div id=ProfileWarning><br>Your current password is incorrect<br></div>");
+					$("#oldpass").focus(function(){
+						$("#ProfileWarning").remove();
+					});
+					$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);			
+				},
+				200: function(data) { 
+					console.log(data);
+					$("#SaveProfileLoading").remove();
+					getSettings();
+					$('#Profile').append("<div id=ProfileSuccess><br>Your changes have been saved<br></div>");
+					$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);			
+					setTimeout(function(){
+						$("#ProfileSuccess").remove();
+    					hideProfile();
+    					downloadResults();
+						downloadRankings(7);
+					}, 2000);
 				}
 			}
-		);	
+		});
 	}
 	
+	function triggerUpload() {
+		setTimeout(function() {
+			$('#FileForm').submit();
+		}, 100);
+	}
 	
+	$( document ).ready(function() {
+		console.log(Dropzone.autoDiscover);
+		console.log("made it");
+		getSettings();
+		activateListeners();
+		$("#userid").val(getSetting("user_id"));
+	});
+	
+	
+	
+	
+	//getResults();
+	
+	//downloadResults();
+		

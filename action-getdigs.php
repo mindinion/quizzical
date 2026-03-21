@@ -15,7 +15,7 @@
 		$q = "SELECT GROUP_CONCAT(first_name SEPARATOR ', ') AS names, GROUP_CONCAT(userid SEPARATOR ',') AS userids, Digs.id, commentid, postid FROM Digs INNER JOIN Users ON Digs.userid = Users.id WHERE postid >= $pidmin AND Digs.status = 'active' GROUP BY postid;";
 	}	
 	
-	$result = mysqli_query($db_server, $q);		
+	$result = $conn->query($q);		
 	
 	if (mysqli_num_rows($result) > 0) {    	
 		while($row = mysqli_fetch_assoc($result)) {        	

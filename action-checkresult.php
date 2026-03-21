@@ -8,7 +8,7 @@
 	if (isset($_GET['userid'])) $userid = sanitizeString($_GET['userid']);
 
 	$q = "SELECT score FROM Results WHERE DATE_FORMAT(date,'%Y-%m-%d') = '$date' AND type = '$type' AND user = $userid and status = 'active';";
-	$result = mysqli_query($db_server, $q);
+	$result = $conn->query($q);
 
 
 	if (mysqli_num_rows($result) > 0) {

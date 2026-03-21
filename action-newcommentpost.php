@@ -13,7 +13,7 @@
 	
 	// Find out the first name of the poster
 	$q = "SELECT first_name, last_name FROM Users WHERE id = '$userid';";
-	$result = mysqli_query($db_server, $q);		
+	$result = $conn->query($q);		
 	if (mysqli_num_rows($result) > 0) {    	
 		while($row = mysqli_fetch_assoc($result)) {
 			$name = $row['first_name'] . " " . $row['last_name'];
@@ -24,8 +24,8 @@
 	date_default_timezone_set($timezone);
 	$dt = date("Y-m-d H:i:s");
 	$q = "INSERT INTO QuizFeed (user_id, comment, timestamp) VALUES" . "('$userid', '$comment', '$dt');";
-	$result = mysqli_query($db_server, $q);		
-	$postId = mysqli_insert_id($db_server);
+	$result = $conn->query($q);		
+	$postId = mysqli_insert_id($conn);
 
 	echo $postId;
 

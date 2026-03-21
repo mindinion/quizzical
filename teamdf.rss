@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
+  
+  <channel>
+
+    <title>Team DF Weekly IDLE</title>
+    <description>Recording of Digital Fusion's Weekly IDLE</description>
+    <link>http://teamdf.com</link>
+    <image>
+    	<url>https://www.fusionplugins.com/images/df_logo.png</url>
+    	<link>https://www.teamdf.com</link>
+	</image>
+    <language>en-us</language>
+    <copyright>Copyright 2017</copyright>
+    <lastBuildDate>Fri, 4 May 2017 22:00:00</lastBuildDate>
+    <pubDate>Fri, 31 March 2017 15:30:00</pubDate>
+    <webMaster>kris@teamdf.com</webMaster>
+
+    
+
+<item>
+<title>April 21 IDLE</title>
+<guid>https://ruby.teamdf.com/podcasts/Apr21_2017.m4a</guid>
+<description> April 21, 2017</description>
+<enclosure url="https://ruby.teamdf.com/podcasts/Apr21_2017.m4a" length="11779397" type="audio/mpeg"/>
+<category>Podcasts</category>
+<pubDate>Fri, 21 April 2017 15:30:00</pubDate>
+</item>
+
+<item>
+<title>April 04 IDLE</title>
+<guid>https://ruby.teamdf.com/podcasts/Apr04_2017.m4a</guid>
+<description> April 04, 2017</description>
+<enclosure url="https://ruby.teamdf.com/podcasts/Apr04_2017.m4a" type="audio/mpeg"/>
+<category>Podcasts</category>
+<pubDate>Fri, 04 April 2017 15:30:00</pubDate>
+</item>
+
+<item>
+<title>February 24 IDLE</title>
+<guid>https://ruby.teamdf.com/podcasts/Feb24_2017.m4a</guid>
+<description> February 24, 2017</description>
+<enclosure url="https://ruby.teamdf.com/podcasts/Feb24_2017.m4a" type="audio/mpeg"/>
+<category>Podcasts</category>
+<pubDate>Fri, 24 February 2017 15:30:00</pubDate>
+</item>
+
+<item>
+<title>March 10 IDLE</title>
+<guid>https://ruby.teamdf.com/podcasts/Mar10_2017.m4a</guid>
+<description> March 10, 2017</description>
+<enclosure url="https://ruby.teamdf.com/podcasts/Mar10_2017.m4a" type="audio/mpeg"/>
+<category>Podcasts</category>
+<pubDate>Fri, 10 March 2017 15:30:00</pubDate>
+</item>
+
+<item>
+<title>March 31 IDLE</title>
+<guid>https://ruby.teamdf.com/podcasts/Mar31_2017.m4a</guid>
+<description> March 31, 2017</description>
+<enclosure url="https://ruby.teamdf.com/podcasts/Mar31_2017.m4a" type="audio/mpeg"/>
+<category>Podcasts</category>
+<pubDate>Fri, 31 March 2017 15:30:00</pubDate>
+</item>
+
+
+
+
+</channel>
+
+</rss>

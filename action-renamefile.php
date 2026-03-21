@@ -14,7 +14,7 @@
 	require_once 'security.php';
 	require_once 'dblogin.php';
 	$q = "UPDATE Users SET pic_filename='$to' WHERE id = $userid";
-	$result = mysqli_query($db_server, $q);   
+	$result = $conn->query($q);   
 	var_dump($result);
 	
 ?>

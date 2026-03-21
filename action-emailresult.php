@@ -12,7 +12,7 @@
 	
 	// Get the details of the quiz
 	$q = "SELECT default_group, Users.id as 'userid', first_name, last_name, type FROM Results INNER JOIN Users ON Results.user = Users.id WHERE Results.id = $resultId;";
-	$result = mysqli_query($db_server, $q);		
+	$result = $conn->query($q);		
 	if (mysqli_num_rows($result) > 0) {    	
 		while($row = mysqli_fetch_assoc($result)) {
 			$firstName = $row['first_name'];
@@ -25,7 +25,7 @@
 	
 	// Find out the people we need to email, and email them
 	$q = "SELECT id,email FROM Users WHERE notify_results = 1 and Users.default_group = $groupid;";
-	$result = mysqli_query($db_server, $q);		
+	$result = $conn->query($q);		
 	if (mysqli_num_rows($result) > 0) {    	
 		while($row = mysqli_fetch_assoc($result)) {
 			$email = $row['email'];

@@ -11,7 +11,7 @@
 	
 	// Make sure we're allowed to delete this, and grab the result id
 	$q = "SELECT result_id, user_id FROM QuizFeed WHERE QuizFeed.id = '$postid' ;";
-	$result = mysqli_query($db_server, $q);
+	$result = $conn->query($q);
 
 
 	if (mysqli_num_rows($result) > 0) {
@@ -22,9 +22,9 @@
 			// Delete the result and post if we're allowed to
 			if ($postUser == $userid) {
 				$q = "UPDATE Results SET status = 'deleted' WHERE id = '$resultId' ;";
-				$result = mysqli_query($db_server, $q);
+				$result = $conn->query($q);
 				$q = "UPDATE QuizFeed SET status = 'deleted' WHERE id = '$postid' ;";
-				$result = mysqli_query($db_server, $q);
+				$result = $conn->query($q);
 			}
     	}
     }
