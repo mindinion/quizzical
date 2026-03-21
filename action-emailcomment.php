@@ -50,7 +50,7 @@
 		}
 	}
 	
-	echo $response;
+	echo $response ?? '';
 	 		
 		
 ?>

@@ -12,7 +12,7 @@
 		$userid = $row['id'];
 	}
 		
-	if ($userid == "") {
+	if (($userid ?? "") == "") {
 		echo "Failed";
 	} else {
 		// Create new random password and set it

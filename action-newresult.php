@@ -14,7 +14,7 @@
 	else $dateOption = "";
 	if (isset($_GET['date'])) $date = sanitizeString($_GET['date']);
 	else $date = "";
-	if (isset($_GET['comment'])) $comment = sanitizeMySQL($_GET['comment']));
+	if (isset($_GET['comment'])) $comment = sanitizeMySQL($_GET['comment']);
 	else $comment = "";	
 	if (isset($_GET['userid'])) $userid = sanitizeString($_GET['userid']);
 	else $userid = "";

@@ -200,5 +200,5 @@
 		}
 	}
 
-    echo JSON_ENCODE($results);
+    echo json_encode(array_values($results ?? []));
 ?>

@@ -15,7 +15,7 @@
 		$id = $row['id'];
 	}
 
-	if ($id != null) {
+	if (isset($id) && $id != null) {
 		echo "Exists";
 	} else {
 		echo "Free";

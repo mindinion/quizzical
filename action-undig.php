@@ -9,9 +9,9 @@
 	if (isset($_GET['postid'])) $postid = $_GET['postid'];
 
 	
-	if ($commentid != null) {
+	if (($commentid ?? null) != null) {
 		$q = "SELECT id, userid FROM Digs WHERE commentid = $commentid and userid = $userid";
-	} elseif ($postid !=null) {
+	} elseif (($postid ?? null) != null) {
 		$q = "SELECT id, userid FROM Digs WHERE postid = $postid and userid = $userid";
 	} else {
 		$q = "SELECT id, userid FROM Digs WHERE id = $id;";

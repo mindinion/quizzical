@@ -7,8 +7,7 @@
 	
 	// Get the details of the post
 	$q = "SELECT Digger.first_name as diggerfirstname, Digger.last_name as diggerlastname, Digs.postid as postid, Poster.email as posteremail, QuizFeed.comment as quizfeedcomment, QuizFeed.result_id as quizfeedresult, Results.Score as score, Results.max as max, Results.type as type, QuizFeed.timestamp as quizfeedtimestamp FROM Digs INNER JOIN QuizFeed ON Digs.postid = QuizFeed.id INNER JOIN Users as Poster ON QuizFeed.user_id = Poster.id INNER JOIN Users as Digger ON Digs.userid = Digger.id LEFT JOIN Results ON QuizFeed.result_id = Results.id WHERE Digs.id = $id;";
-	$conn->query($q);	
-	$result = $conn->query($q);		
+	$result = $conn->query($q);
 	if (mysqli_num_rows($result) > 0) {    	
 		while($row = mysqli_fetch_assoc($result)) {        	
 			$diggerNameFirst	= $row['diggerfirstname'];
@@ -41,7 +40,7 @@
 	//echo "Subject: " . $emailSubject ;
 	//echo "COntent: " . $emailContent;
 
-	 echo $timestamp;
+	 echo $timestamp ?? '';
 
 
 		
