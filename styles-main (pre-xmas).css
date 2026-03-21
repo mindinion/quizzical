@@ -1,0 +1,678 @@
+@media screen and (max-width:1600px) {
+    .ScreenHide {
+       background-color:red;
+    }
+}
+
+
+HTML {
+	padding:none;
+}
+
+Body {
+	font-family: helvetica,arial;
+}
+
+Img {}
+.Menu {
+	width:50px;
+	height:50px;
+}
+.GroupLogo {
+	width:30px;
+	height:30px;
+}
+.UserLogo {
+	width:50px;
+	height:50px;
+}
+.QuizzicalLogo {
+	width:50px;
+	height:50px;
+	padding-left:10px;
+	padding-top:12px;
+	float:left;
+}
+.StuffLogo {
+	width:120px;
+	height:50px;
+	padding-left:30px;
+	padding-top:10px;
+	padding-right:20px;
+	float:left;
+}
+.Loading {
+	margin-left:auto;
+	margin-right:auto;
+}
+
+TextArea {}
+.QuizFeedInfoReplyInput {
+	width:100%;
+	display:none;
+}
+.NewComment {
+	width:100%;
+	height:62px;
+	font-size:14px;
+	border-top-style:none;
+	border-left-style:none;
+	border-right-style:none;
+	border-bottom-style:solid;
+	background-color:FFF5E6 ;
+	border-color:BEBEBE  ;
+	padding:5px;
+}
+
+#NewResultScore	{
+	width:62px;
+	height:62px;
+	font-size:24px;
+	padding-left:14px;
+	float:left;
+	border-top-style:none;
+	border-left-style:none;
+	border-bottom-style:solid;
+	border-bottom-color:BEBEBE ;
+	border-width:thin;
+	-webkit-appearance: none;
+	-webkit-border-radius:0px;	
+}
+
+#NewResultTotal	{
+	width:62px;
+	height:62px;
+	font-size:24px;
+	padding-left:14px;
+	float:left;
+	border-top-style:none;
+	border-left-style:none;
+	border-bottom-style:solid;
+	border-bottom-color:BEBEBE ;
+	border-width:thin;
+	-webkit-appearance: none;
+	-webkit-border-radius:0px;
+}
+
+#NewScoreLabelScore {
+	width:30px;
+	background-color:E0EBCC ;
+	color:grey;
+	float:left;
+	padding-left:8px;
+	padding-right:8px;
+	height:61px;
+	text-align:center;
+	border-bottom-style:solid;
+	border-bottom-color:BEBEBE ;
+	border-width:thin;
+}
+
+#MiddleText {
+	vertical-align:middle;	
+	top:16px;
+	width:30px;
+	position:absolute;
+}
+
+#NewScoreLabelType {
+	width:36px;
+	background-color:E0EBCC ;
+	color:grey;
+	float:left;
+	padding-left:8px;
+	padding-right:8px;
+	padding-top:25px;
+	height:36px;
+	text-align:center;
+		border-bottom-style:solid;
+	border-bottom-color:BEBEBE ;
+	border-width:thin;
+	display:none;
+}
+
+#NewScoreLabelWhen {
+	width:44px;
+	background-color:E0EBCC ;
+	color:grey;
+	float:left;
+	padding-left:8px;
+	padding-right:8px;
+	padding-top:25px;
+	height:36px;
+	text-align:center;
+	border-bottom-style:solid;
+	border-bottom-color:BEBEBE ;
+	border-width:thin;
+	display:none;
+}
+
+#NewScoreType {
+	width: 100px;
+	text-align: center;
+	padding-top:2px;
+	height:30px;
+	text-indent:10px;
+	font-size:16px;
+	-webkit-appearance: none;
+	-webkit-border-radius:0px;
+	float:left;
+	height:62px;
+	border-style:none;
+	background-color:white;
+	border-bottom-style:solid;
+	border-bottom-color:BEBEBE ;
+	border-width:thin;
+	display:none;
+}
+
+#NewScoreDate {
+	width: 180px;
+	text-align: center;
+	padding-top:2px;
+	height:30px;
+	-webkit-appearance: none;
+	text-indent:10px;
+	font-size:16px;
+	-webkit-border-radius:0px;
+	float:left;
+	height:62px;
+	border-style:none;
+	background-color:white;
+	border-bottom-style:solid;
+	border-bottom-color:BEBEBE ;
+	border-width:thin;
+	border-right-style:solid;
+	display:none;
+}
+
+#NewResultSubmit {
+	border-style:solid;
+	padding:22px;
+	background-color:FFD699 ;
+	text-align:center;
+	cursor:pointer;
+	position:absolute;
+	right:0px;
+	height:17px;
+	border-right-style:none;
+	left:562px;
+	display:none;
+	border-color:BEBEBE;
+	border-width:thin;
+	border-left-style:none;
+	border-top-style:none;
+
+
+
+}
+	
+
+#NewCommentBox {
+	left:170px;
+	right:0px;
+	position:absolute;
+	float:left;
+	border-left-style:solid;
+	border-left-width:thin;
+	border-color:BEBEBE;
+}
+
+#NewCommentSubmit {
+	border-style:solid;
+	padding:10px;
+	border-color:green;
+	background-color:FFD699;
+	display:none;
+	text-align:center;
+	cursor:pointer;
+	border-color:BEBEBE;
+	border-width:thin;
+	border-left-style:none;
+	border-right-style:none;
+	border-top-style:none;
+	border-top-style:none;
+	position:absolute;
+	top:62px;
+	left:0px;
+	right:0px;
+	
+
+}
+
+A {}
+.NoFormatting {
+	text-decoration:none;
+	color:inherit;
+}
+.Underline {
+	text-decoration:none;
+	color:inherit;
+	font-size:12px;
+	color:#997A7A;
+}
+.Underline:hover {
+	text-decoration:underline;
+}
+	
+
+#MainBorder {
+	border-style:solid;
+	border-color:orange;
+	position:absolute;
+	top:10px;
+	bottom:10px;
+	left:10px;
+	right:10px;
+}
+
+#GroupPanel {
+	min-width:200px;
+	width:300px;
+	border-left-style:none;
+	border-right-style:solid;
+	border-left-width:thin;
+	border-right-width:thin;
+	height:100%;
+	border-color:BEBEBE ;
+	float:left;
+}
+
+#GroupTitle {
+	height:40px;
+	padding-bottom:10px;
+}
+
+#GroupLogoName {
+	width:130px;
+  	display: block;
+  	margin-left: auto;
+  	margin-right: auto;
+  	padding-top:8px;
+}
+
+#GroupLogo {
+	float:left;
+	padding-right:10px;
+}
+
+#GroupName {
+	text-align:center;
+}
+
+#GroupChange {
+	font-size:12px;
+	text-decoration:underline;
+	color:grey;
+}
+
+#Groups {
+	border-style:solid;
+	border-width:thin;
+	border-color:EEEEEE;
+	background-color:#FFF5E6;
+	position:absolute;
+	left:70px;
+	width:200px;
+	text-align:center;
+	display:none;
+	padding:10px;
+}
+
+#GroupOption:hover {
+	color:red;
+}
+
+#RankingsTitle {
+	font-size:18px;
+	background-color:#EEEEEE;
+	text-align:center;
+	height:30px;
+	padding-top:14px;
+}
+
+#RankingsType {
+	float:left;
+	width:50%;
+	text-align:center;
+	border-bottom-style:solid;
+	border-width:thin;
+	height:25px;
+	padding-top:13px;
+	border-color:BEBEBE;
+}
+.Selected {
+	background-color:#A9D098;
+}
+#RankingsType:hover {
+	background-color:green;
+}
+
+#UserRanking {
+	padding-left:10px;
+	width:90%;
+	height:50px;
+}
+
+#RankingPhoto {
+	max-width:50px;
+	float:left;
+	position:relative;
+	text-align:right;
+	padding-right:10px;
+}
+
+#RankingPlace {
+	position:absolute;
+	top:30px;
+	left:25px;
+	text-align:center;
+	background-color:green;
+	border-radius:50px;
+	height:20px;
+	width:20px;
+	font-size:12px;
+	padding-top:9px;
+	padding-bottom:5px;
+	padding-left:7px;
+	padding-right:7px;
+	color:white;	
+}
+
+#RankingName {
+	float:left;
+	padding-left:10px;
+	padding-top:3px;
+	line-height:150%;
+}
+
+
+#MenuButton {
+	width:155px;
+	height:58px;
+	float:left;
+	padding-top:12px;
+}
+.right {
+	position: absolute;
+    right:0px;
+    top:0px;
+}
+
+#MenuButtonGraphic {
+	padding-left:10px;
+	float:left;
+}
+
+#MenuButton:hover {
+	background-color:FFEBCC ;
+	text-size:50px;
+}
+
+
+
+#MenuButtonText {
+	color:grey;
+	padding-top:17px;
+	padding-left:5px;
+	float:left;
+}
+
+#MainContent {
+	border-color:BEBEBE ;
+	border-width:thin;
+	float:left;
+	position:absolute;
+	left:300px;
+	right:0px;
+	top:70px;
+	bottom:0px;
+	border-style:solid;
+	border-bottom-style:none;
+	border-right-style:none;
+}
+
+#QuizFeed {
+	right:0px;
+	left:0px;
+	float:left;
+	overflow-y:scroll;
+	top:62px;
+	bottom:0px;
+	position:absolute;
+	
+}
+
+#QuizFeedItem {
+	float:left;
+	width:100%;
+	padding-top:20px;
+	padding-bottom:30px;
+
+}
+
+#QuizFeedInfo {
+	padding-left:10px;
+	float:left;
+	min-width:63%;
+
+}
+#QuizFeedInfo.NoBubble {
+	min-width:98%;
+}
+
+#QuizFeedInfoText {
+	float:left;
+	width:70%;
+}
+#QuizFeedInfoText.NoBubble {
+	max-width:100%;
+}
+
+
+#QuizFeedInfoPhoto {
+	max-width:50px;
+	float:left;
+	position:relative;
+	text-align:right;
+	padding-right:20px;
+}
+
+#QuizFeedInfoUser {
+	padding-top:3px;
+	line-height:150%;
+}
+
+#QuizFeedInfoTimestamp {
+	font-size:10px;
+	color:grey;
+	padding-left:4px;
+}
+
+#QuizFeedInfoStatus {
+	color:grey;
+	font-size:13px;
+	padding-top:2px;
+	padding-bottom:1px;
+}
+
+#QuizFeedInfoComment {
+}
+.Primary {
+	padding-top:2px;
+	font-size:14px;
+	width:95%;
+	padding-bottom:4px;
+	line-height:110%;
+}
+.OtherUser {
+	font-size:12px;
+	padding-top:8px;
+	padding-bottom:2px;
+	color:403F3D;
+	background-color:F2F2F2;
+	min-height:20px;
+	max-width:100%;
+}
+
+#QuizFeedInfoReplyName {
+	font-size:12px;
+	color:black;
+	font-weight:bold;
+	padding-top:8px;
+	padding-bottom:2px;
+	float:left;
+	padding-right:8px;
+	background-color:F2F2F2;
+	height:1px;
+	padding-left:10px;
+}
+
+#QuizFeedInfoReplyLink {
+	color:grey;
+	size:10px;
+	padding-top:12px;
+	font-size:12px;
+	cursor:pointer;
+}
+#QuizFeedInfoReplyLink:hover {text-decoration: underline; }
+
+#QuizFeedInfoDigLink {
+	color:grey;
+	size:10px;
+	padding-top:12px;
+	font-size:12px;
+	cursor:pointer;
+}
+#QuizFeedInfoDigLink:hover {text-decoration: underline; }
+
+#Digs {
+	color:DB944D ;
+	font-size:12px;
+	padding-bottom:5px;
+}
+
+#DigsComment{
+	float:right;
+	padding-right:10px;
+	color:DB944D      ;
+
+}
+
+#QuizFeedBubble {
+	min-width:30%;
+	display:inline;
+	background-color:#FEE087;
+	color:#CB0012;
+	border-top-left-radius: 8px;
+	border-bottom-left-radius: 8px;
+	padding:8px;
+	font-size:12px;
+	float:right;
+}
+
+#DigCommentLink {
+	display:inline;
+	float:right;
+	padding-left:7px;
+	color:AEAEAE;
+	cursor:pointer;
+}
+
+#BubbleUnderline {
+	font-size:12px;
+	text-decoration:underline;
+	cursor:pointer;
+}
+
+#LoadingNotifyResult {
+	display:none;
+	position:absolute;
+	left:50%;
+	top:50%;
+	background-color:orange;
+	border-style:solid;
+	padding:20px;
+	z-index:5001;
+	border-color:darkgreen;
+	border-width:thick;
+	text-align:center;
+}
+
+#LoadingNotifyPost {
+	display:none;
+	position:absolute;
+	left:50%;
+	top:50%;
+	background-color:orange;
+	border-style:solid;
+	padding:20px;
+	z-index:5001;
+	border-color:darkgreen;
+	border-width:thick;
+	text-align:center;
+}
+
+#LoadingNotifyComment {
+	display:none;
+	position:absolute;
+	left:50%;
+	top:50%;
+	background-color:orange;
+	border-style:solid;
+	padding:20px;
+	z-index:5001;
+	border-color:darkgreen;
+	border-width:thick;
+	text-align:center;
+}
+
+#DeletingNotifyPost {
+	display:none;
+	position:absolute;
+	left:50%;
+	top:50%;
+	background-color:orange;
+	border-style:solid;
+	padding:20px;
+	z-index:5001;
+	border-color:darkgreen;
+	border-width:thick;
+	text-align:center;
+}
+
+#SavingNotifyProfile {
+	display:none;
+	position:absolute;
+	left:50%;
+	top:50%;
+	background-color:orange;
+	border-style:solid;
+	padding:20px;
+	z-index:5001;
+	border-color:darkgreen;
+	border-width:thick;
+	text-align:center;
+}
+
+#SavingDig {
+	display:none;
+	position:absolute;
+	left:50%;
+	top:50%;
+	background-color:orange;
+	border-style:solid;
+	padding:20px;
+	z-index:5001;
+	border-color:darkgreen;
+	border-width:thick;
+	text-align:center;
+}
+
+#CommentRow {
+
+}
+
+#Comments {
+	padding-bottom:6px;
+}

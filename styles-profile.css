@@ -1,0 +1,57 @@
+fieldset.settings {
+	width: 470px;
+	margin: 10px auto 10px auto;
+	float: center;
+	font-family: verdana,arial,sans-serif;
+	font-size: 13px;
+	border-style:none;
+	}
+
+.titlelong {
+	font-weight: bold;
+	vertical-align: bottom;
+	float: left;
+	width: 220px;
+	text-align: right;
+	position:absolute;
+	right:55%;
+}
+
+.fieldlong {
+	width: 200px;
+	height: 20px;
+	text-align: left;
+	position:absolute;
+	left:55%;
+	}
+
+.listlong {
+	width: 200px;
+	height: 50px;
+	text-align: left;
+	position:absolute;
+	left:55%;
+}
+
+#Title {
+	background-color:orange;
+	height:35px;
+	padding-top:27px;
+	text-align:center;
+}
+
+#ButtonSave { 
+	position:absolute;
+	left:55%;
+}
+
+#ButtonCancel { 
+	position:absolute;
+	right:55%;	
+}
+
+#profilepic {
+	text-align:center;
+	width:160px;
+	padding-top:10px;
+}

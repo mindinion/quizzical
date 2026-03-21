@@ -1,0 +1,143 @@
+
+/* The generic large form */
+fieldset.largeform {
+	width: 380px;
+	margin: 10px auto 10px auto;
+	border-style: hidden;
+	float: center;
+	font-family: verdana,arial,sans-serif;	
+	}
+	.title {
+		font-weight:bold;
+		vertical-align:bottom;
+		font-family: verdana,arial,sans-serif;	
+		float:left;
+		width: 120px;
+		text-align:right;
+		font-size:15px;
+		height:20px;
+		padding-top:5px;
+		padding-right:20px;
+	}
+	.field {
+		text-indent:10px;
+		width: 200px;
+		height: 30px;
+		text-align:left;
+		font-size:15px;
+		-webkit-appearance: none;
+			-webkit-border-radius:10px;
+    -moz-border-radius:10px;
+    border-radius:10px;
+    	background-color:F5EBCC;
+
+	}
+/* Used for titles, or anything else really that needs centering */
+#Title {
+	text-align:center;
+}
+
+/* The bottom of the login screen that shows disclaimer and update info */
+#disclaimer {
+		width: 500;
+		text-align: left;
+		color: black;
+		margin:auto;
+}
+
+
+#Center {
+	text-align:center;
+	margin:auto;
+}
+
+#LoginButton {
+	width:300px;
+	font-family: verdana,arial,sans-serif;	
+	font-size:24px;
+	-webkit-appearance:
+	-webkit-appearance: none;
+	-webkit-border-radius:20px;
+    -moz-border-radius:20px;
+    border-radius:20px;
+    background-color:FFC266;
+    border-color:brown;
+	height:50px;
+}
+
+#NewAccountButton {
+	width:300px;
+	font-family: verdana,arial,sans-serif;	
+	-webkit-appearance: none;
+	-webkit-border-radius:20px;
+    -moz-border-radius:20px;
+    border-radius:20px;
+    background-color:FFC266;
+    border-color:brown;
+	height:30px;
+}
+
+#ForgotPasswordButton {
+	width:300px;
+	font-family: verdana,arial,sans-serif;	
+	-webkit-appearance: none;
+	-webkit-border-radius:20px;
+    -moz-border-radius:20px;
+    border-radius:20px;
+    background-color:FFC266;
+    border-color:brown;
+	height:30px;
+}
+
+#LoginBlock {
+	background-color:FFFFB2;
+	width:50%;
+	height:500px;
+	margin:auto;
+	border-color:FFC266;
+	border-style:solid;
+	margin: auto;
+ 	position: absolute;
+  	top: 0; left: 0; bottom: 0; right: 0;
+}
+
+#NewAccountBlock {
+	background-color:FFFFB2;
+	width:50%;
+	height:550px;
+	margin:auto;
+	border-color:FFC266;
+	border-style:solid;
+	margin: auto;
+ 	position: absolute;
+  	top: 0; left: 0; bottom: 0; right: 0;
+}
+
+#ForgotPasswordBlock {
+	background-color:FFFFB2;
+	width:50%;
+	height:450px;
+	margin:auto;
+	border-color:FFC266;
+	border-style:solid;
+	margin: auto;
+ 	position: absolute;
+  	top: 0; left: 0; bottom: 0; right: 0;
+}
+
+Body {
+	font-family: verdana,arial,sans-serif;	
+	font-size:15px;
+}
+
+#TitleText {
+	font-size:48px;
+	vertical-align:top;
+	height:300px;
+	color:522900;
+}
+
+#Logo {
+	width:60px;
+	height:60px;
+}
