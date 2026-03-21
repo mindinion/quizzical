@@ -1,29 +1,24 @@
 <?php
 	require_once 'dblogin.php';
 	require_once 'security.php';
-	
-	// Connect to the database
-	$db_server = mysql_connect($db_hostname, $db_username, $db_password);
-	if (!$db_server) die("Unable to connect to DB: " . mysqlerror());
-	mysql_select_db($db_database) or die("Unable to connect to DB: " . mysql_error());
-	
+
 	// Initialise the login variables
 	$email = "";
-	$userpass = "";	
+	$userpass = "";
 	if (isset($_POST['email'])) $email = sanitizeString($_POST['email']);
 	else $email = "";
 	if (isset($_POST['userpass'])) $userpass = sanitizeString($_POST['userpass']);
 	else $userpass = "";
-	
+
 	// Query the database for the login details
-	$resUser = mysql_query("SELECT * FROM Users WHERE email = '" . $email . "';");
-	if (mysql_num_rows($resUser) > 0) {
-		$passhash = sanitizeMySQL(mysql_result($resUser, 0	, 'password_hash'));
+	$resUser = mysqli_query($db_server, "SELECT * FROM Users WHERE email = '" . sanitizeMySQL($email) . "';");
+	if (mysqli_num_rows($resUser) > 0) {
+		$passhash = mysql_result($resUser, 0, 'password_hash');
 		$userpasshash = crypt($userpass, CRYPT_BLOWFISH);
-		
-		$id = sanitizeMySQL(mysql_result($resUser, 0	, 'id'));	
-		$groupid = sanitizeMySQL(mysql_result($resUser, 0	, 'default_group'));	
-		
+
+		$id = mysql_result($resUser, 0, 'id');
+		$groupid = mysql_result($resUser, 0, 'default_group');
+
 		// If the password is correct, then generate a new session token
 		// Then add this token to the database as a session for the user
 		// And create a cookie for this session and user
@@ -32,19 +27,19 @@
 			$token = bin2hex(openssl_random_pseudo_bytes(128));
 			$location = $_SERVER['REMOTE_ADDR'];
 			$client = $_SERVER['HTTP_USER_AGENT'];
-			$uploadToken = mysql_query("INSERT INTO _SESSION (userid, token, location, client) VALUES ('$id', '$token', '$location', '$client')");
+			$uploadToken = mysqli_query($db_server, "INSERT INTO _SESSION (userid, token, location, client) VALUES ('$id', '$token', '$location', '$client')");
 
 			// Create persistent cookies
 			SetCookie ("session", $token, time() + (10 * 365 * 24 * 60 * 60));
 
 			// Go to the main page
-			 			header( "Location: main.php");
+			header( "Location: main.php");
 		}
 		else {
-			 			header( "Location: index.php?mode=1" );
-		}	
+			header( "Location: index.php?mode=1" );
+		}
 	} else {
-		 		header( "Location: index.php?mode=2" );
+		header( "Location: index.php?mode=2" );
 	}
-		
+
 ?>

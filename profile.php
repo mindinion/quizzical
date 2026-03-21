@@ -5,11 +5,8 @@ session_start();
 	require_once 'security.php';
 	require_once 'getsettings.php';
 	
-	$db_server = mysql_connect($db_hostname, $db_username, $db_password);
-	if (!$db_server) die("Unable to connect to DB: " . mysqlerror());
-	mysql_select_db($db_database) or die("Unable to connect to DB: " . mysql_error());
-	$queryDefaultGroup = mysql_query("SELECT group_code FROM Users INNER JOIN Groups ON (Users.default_group = Groups.id) WHERE Users.id = $userid;");
-	$queryMemberships = mysql_query("SELECT group_code FROM Users INNER JOIN Memberships ON (Users.id = Memberships.user_id) INNER JOIN Groups ON (Memberships.group_id = Groups.id) WHERE Users.id = $userid;"); 
+		$queryDefaultGroup = mysqli_query($db_server, "SELECT group_code FROM Users INNER JOIN Groups ON (Users.default_group = Groups.id) WHERE Users.id = $userid;");
+	$queryMemberships = mysqli_query($db_server, "SELECT group_code FROM Users INNER JOIN Memberships ON (Users.id = Memberships.user_id) INNER JOIN Groups ON (Memberships.group_id = Groups.id) WHERE Users.id = $userid;"); 
 	$defaultGroup = mysql_result($queryDefaultGroup,0,"group_code");
 	
 	
@@ -61,7 +58,7 @@ session_start();
 							<select size="2"; name = "defaultgroup"; class = "listlong">
 								<option selected><?php echo $defaultGroup;
 								$i = 0;
-								$num = mysql_numrows($queryMemberships);
+								$num = mysqli_num_rows($queryMemberships);
 								while ($i < $num) {	
 									$group = mysql_result($queryMemberships,$i,"group_code");
 									if ($group != $defaultGroup) {

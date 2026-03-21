@@ -10,10 +10,7 @@
 	require_once 'getsettings.php';
 	
 	
-	$db_server = mysql_connect($db_hostname, $db_username, $db_password);
-	if (!$db_server) die("Unable to connect to DB: " . mysqlerror());
-	mysql_select_db($db_database) or die("Unable to connect to DB: " . mysql_error());
-	
+		
 	if (isset($_POST['newemail'])) $newEmail = sanitizeString($_POST['newemail']);
 	else $newEmail = $email;
 	if (isset($_POST['newfirstname'])) $newFirstName = sanitizeString($_POST['newfirstname']);
@@ -51,13 +48,13 @@
 	
 	/*
 	// Take the group code and get the group ID from it if it exists, otherwise put them in the public group
-	$idCodeQuery = mysql_query("SELECT id FROM Groups WHERE group_code = '$newGroupcode';");
-	if (mysql_num_rows($idCodeQuery) == 0) {
+	$idCodeQuery = mysqli_query($db_server, "SELECT id FROM Groups WHERE group_code = '$newGroupcode';");
+	if (mysqli_num_rows($idCodeQuery) == 0) {
 		$groupid = 2;
 	} else {
 		$groupid = mysql_result($idCodeQuery, 0, "id");
 	}
-	$result = mysql_query("UPDATE Users SET 
+	$result = mysqli_query($db_server, "UPDATE Users SET 
 		first_name='$newFirstName', 
 		last_name='$newLastName', 
 		email='$newEmail', 
@@ -77,7 +74,7 @@
 		$newFileName = strtolower($newFileName);
 		move_uploaded_file($_FILES["profilepic"]["tmp_name"], $newFileName);
 		if($error) print $error;
-		$result = mysql_query("UPDATE Users SET pic_filename = '$newFileName' WHERE id = $userid;");
+		$result = mysqli_query($db_server, "UPDATE Users SET pic_filename = '$newFileName' WHERE id = $userid;");
 	}
 	 
 	//header( "Location: main.php");		

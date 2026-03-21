@@ -5,9 +5,9 @@
 	
 	//SESSION_START();	
 	$feedItems = $_COOKIE["feedItems"];
-	$queryQuizFeed = mysql_query("SELECT Results.id, Users.pic_filename, Users.first_name, Users.last_name, Users.id, QuizFeed.timestamp, Results.date, Results.score, Results.max, Results.type, QuizFeed.comment, QuizFeed.id FROM QuizFeed INNER JOIN Users ON (QuizFeed.user_id = Users.id) INNER JOIN Memberships ON (Memberships.user_id = Users.id) LEFT JOIN Results ON (QuizFeed.result_id = Results.id) WHERE Memberships.group_id = 2 and QuizFeed.status = 'active' ORDER BY QuizFeed.timestamp DESC LIMIT $feedItems;");
+	$queryQuizFeed = mysqli_query($db_server, "SELECT Results.id AS result_id, Users.pic_filename, Users.first_name, Users.last_name, Users.id AS user_id, QuizFeed.timestamp, Results.date, Results.score, Results.max, Results.type, QuizFeed.comment, QuizFeed.id AS feed_id FROM QuizFeed INNER JOIN Users ON (QuizFeed.user_id = Users.id) INNER JOIN Memberships ON (Memberships.user_id = Users.id) LEFT JOIN Results ON (QuizFeed.result_id = Results.id) WHERE Memberships.group_id = 2 and QuizFeed.status = 'active' ORDER BY QuizFeed.timestamp DESC LIMIT $feedItems;");
 	
-	$num = mysql_numrows($queryQuizFeed);
+	$num = mysqli_num_rows($queryQuizFeed);
 	$i = 0;
 	while ($i < $num) {
 		$photo = mysql_result($queryQuizFeed,$i,"Users.pic_filename");
@@ -18,9 +18,9 @@
 		$max = mysql_result($queryQuizFeed,$i,"Results.max");
 		$quizType = mysql_result($queryQuizFeed,$i,"Results.type");
 		$comment = mysql_result($queryQuizFeed,$i,"QuizFeed.comment");
-		$id = mysql_result($queryQuizFeed,$i,"QuizFeed.id");
-		$quizzer = mysql_result($queryQuizFeed,$i,"Users.id");
-		$resultId = mysql_result($queryQuizFeed,$i,"Results.id");	
+		$id = mysql_result($queryQuizFeed,$i,"feed_id");
+		$quizzer = mysql_result($queryQuizFeed,$i,"user_id");
+		$resultId = mysql_result($queryQuizFeed,$i,"result_id");	
 		
 		$feedDate = strtotime($timestamp) - $tzDiff;;
 		
@@ -113,9 +113,9 @@
 					<div id="QuizFeedInfoComment" class="Primary"><?php echo $comment ?></div id="QuizFeedInfoComment">					
 					
 					<?php
-					$queryComments = mysql_query("SELECT Comment.id,first_name, last_name, comment, timestamp FROM Comment INNER JOIN Users ON Comment.user_id = Users.id WHERE quizfeed_id = '$id' ORDER BY timestamp ASC;");
+					$queryComments = mysqli_query($db_server, "SELECT Comment.id,first_name, last_name, comment, timestamp FROM Comment INNER JOIN Users ON Comment.user_id = Users.id WHERE quizfeed_id = '$id' ORDER BY timestamp ASC;");
 					
-					$numJ = mysql_numrows($queryComments);
+					$numJ = mysqli_num_rows($queryComments);
 					$j = 0;
 					if ($numJ > 0) echo '<div id="Comments">';
 					while ($j < $numJ) {
@@ -127,8 +127,8 @@
 						<div id="CommentRow">
 						<div id="QuizFeedInfoReplyName"><?php echo $commenter ?></div id="QuizFeedInfoReplyName">	
 						<div id="QuizFeedInfoComment" class="OtherUser"><?php echo $theComment;
-						$queryDigs = mysql_query("SELECT Digs.id, userid, CONCAT(first_name, ' ', last_name) as name FROM Digs INNER JOIN Users ON Digs.userid = Users.id WHERE Digs.commentid = $commentid and Digs.status = 'active';");
-						$digsNum = mysql_numrows($queryDigs);
+						$queryDigs = mysqli_query($db_server, "SELECT Digs.id, userid, CONCAT(first_name, ' ', last_name) as name FROM Digs INNER JOIN Users ON Digs.userid = Users.id WHERE Digs.commentid = $commentid and Digs.status = 'active';");
+						$digsNum = mysqli_num_rows($queryDigs);
 						$dug = 0;
 						$diggers = "";
 						if ($digsNum > 0) {
@@ -161,8 +161,8 @@
 						$j++;
 					}
 					if ($numJ > 0) echo "</div id='Comments'>";
-					$queryDigs = mysql_query("SELECT Digs.id, userid, CONCAT(first_name, ' ', last_name) as name FROM Digs INNER JOIN Users ON Digs.userid = Users.id WHERE Digs.postid = $id and Digs.status = 'active';");
-					$digsNum = mysql_numrows($queryDigs);
+					$queryDigs = mysqli_query($db_server, "SELECT Digs.id, userid, CONCAT(first_name, ' ', last_name) as name FROM Digs INNER JOIN Users ON Digs.userid = Users.id WHERE Digs.postid = $id and Digs.status = 'active';");
+					$digsNum = mysqli_num_rows($queryDigs);
 					$diggers = "";
 					$dug = 0;
 					if ($digsNum > 0) {
@@ -196,8 +196,8 @@
 			</div id="QuizFeedInfo">
 				<?php
 				if ($showBubble) {
-					$check = mysql_query("SELECT score, max FROM Results WHERE user='$userid' AND type='$quizType' AND DAY(date) = DAY('$quizDate') and MONTH(date) = MONTH('$quizDate') and YEAR(date) = YEAR('$quizDate');");			
-					if (mysql_num_rows($check) > 0) {
+					$check = mysqli_query($db_server, "SELECT score, max FROM Results WHERE user='$userid' AND type='$quizType' AND DAY(date) = DAY('$quizDate') and MONTH(date) = MONTH('$quizDate') and YEAR(date) = YEAR('$quizDate');");			
+					if (mysqli_num_rows($check) > 0) {
 						$yourScore = mysql_result($check,0,"score");
 						$yourMax = mysql_result($check,0,"max");
 						?>
@@ -233,6 +233,6 @@
 		<?php 
 		$i++;
 	}
-	mysql_close($db_server); 
+	mysqli_close($db_server); 
 ?>
 		

@@ -86,8 +86,8 @@
 			
 			<div id="Groups">
 				<?php
-					$queryGroups = mysql_query("SELECT name,id FROM Groups;");
-					$num = mysql_numrows($queryGroups);
+					$queryGroups = mysqli_query($db_server, "SELECT name,id FROM Groups;");
+					$num = mysqli_num_rows($queryGroups);
 					$i = 0;
 					while ($i < $num) {
 						$name = mysql_result($queryGroups,$i,"name");
