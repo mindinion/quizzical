@@ -517,7 +517,7 @@ document.cookie="feedItems=50";
 			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<textarea rows=3 class=QuizFeedInfoReplyInput onkeydown='sendComment(event," + quizfeedId + ")' data-replyboxid=" + quizfeedId + " style=display:none;></textarea>");    				
 
 			// Grab the comments data for the post and display them
-			if (result.comments != null) {
+			if (result.comments != null && result.comments.length > 0) {
 				var comments = result.comments;
 				comments.forEach(function(comment) {
 					var commentid = comment.commentid;
@@ -528,7 +528,7 @@ document.cookie="feedItems=50";
 				
 					// Grab the digs data for each comment and display them
 					window.res = comment.digs;
-					if (comment.digs != null && comment.digs != "") {
+					if (comment.digs != null && comment.digs.length > 0) {
 						var digs = comment.digs;
 						var names = "";
 						var context = "digs";
@@ -577,7 +577,7 @@ document.cookie="feedItems=50";
 			}
 			
 			// Grab the digs data for the post and display them
-			if (result.digs != null) {
+			if (result.digs != null && result.digs.length > 0) {
 				var digs = result.digs;
 				var names = "";
 				var context = "digs";
