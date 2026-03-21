@@ -1,0 +1,130 @@
+
+<script src="jquery.js"></script>
+
+<script>
+
+	function addAccount() {
+		$("#Notify").html("<img src = 'ajax-loader.gif'></img>");
+		var firstName = $("input[name=firstname]").val();
+		var lastName = $("input[name=lastname]").val();
+		var email = $("input[name=email]").val();
+		var password = $("input[name=password]").val();
+		
+		if (firstName == "" || lastName == "" || email == "" || password == "") {
+			$("#Notify").html("Please ensure you provide all details");
+			return;
+		}
+		
+				
+		// First make sure the email address is free
+		$.get("action-checkemail.php", 
+		{ 
+			email:$("input[name=email]").val()
+		},	
+	
+		function(data, status) { 
+			if (data.indexOf("Exists") == -1) {
+			
+				// Now go and create the records in the database
+				$.get("action-newaccount.php", 
+				{ 
+					firstname:firstName,
+					lastname:lastName,
+					email:email,
+					password:password
+				},	
+	
+				function(data, status) { 
+					console.log(data);
+					if (data.indexOf("Failed") == -1) {
+						$("#Notify").html("Your account has been created");
+					} else {
+						$("#Notify").html("There was a problem creating your account, please contact the webmaster");
+					}
+				});
+			} else {
+				$("#Notify").html("This email address already has an account");
+			}
+		});
+				
+	}
+
+	function checkEmail() {
+		$.get("action-checkemail.php", 
+		{ 
+			email:$("input[name=email]").val()
+		},	
+	
+		function(data, status) { 
+			window.res = data;
+			if (data.indexOf("Exists") > -1) {
+				$("#Notify").html("This email address already has an account");
+			} else {
+				$("#Notify").html("");
+			}
+		});
+	}
+	
+	function clearNotify() {
+		$("#Notify").html("");	
+	}
+
+
+</script>
+
+
+
+
+
+<html>
+		
+	<head>
+		<title>Quizzical</title>
+		<link href="styles-login.css" type="text/css" rel="stylesheet" />
+		<link rel="icon" type="image/png" href="quizzical_logo.png">
+	</head>
+
+	<body>
+	<div id="newaccountblock">
+		<br>
+		<br> 
+		<div id="center">
+			<span id="TitleText"z>
+				<img src="quizzical_logo.png" id="logo"></img>
+				u i z z i c a l
+			</span>
+		</div>
+		<fieldset class="largeform">
+			<h3 id="title">Create Account</h3>
+			<br>	
+		
+			<label for="firstname" class="title">First Name:</label>
+			<input type="text"; class = "field" name="firstname" onblur="checkEmail();" ><br>
+			<br>
+		
+			<label for="lastname" class="title">Last Name:</label>
+			<input type="text"; class = "field" name="lastname" onblur="checkEmail();" ><br>
+			<br>
+		
+			<label for="email" class="title">Email:</label>
+			<input type="text"; class = "field" name="email" onblur="checkEmail();" onfocus="clearNotify();"><br>
+			<br>
+		
+			<label for="password" class="title">Password:</label>
+			<input type="password"; class = "field" name="password" onblur="checkEmail();" ><br>
+			<br>
+			<div id="title">
+				<div id="newaccountbutton" onclick="addAccount();">Create Account</div><br><br>
+				<div id=Notify></div>
+
+			</div>
+			<br><br>
+			<div id="title">
+				Site Designed by <a href="mailto:widdakay@gmail.com">Kris Weyling</a> 2013
+			</div>
+		
+		</fieldset>
+	</div>
+	</body>
+	
+</html>
