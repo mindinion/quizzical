@@ -145,7 +145,7 @@
 					if ($lastcommentid != $commentid) {
 						$lastcommentid = $commentid;
 						$newComment[] = new Comment();
-						if ($lastcommentpostid != $postid) $newComment = "";
+						if ($lastcommentpostid != $postid) $newComment = [];
 						$newComment[$count_comments]->commentid = $commentid;
 						$newComment[$count_comments]->comment_first_name = $row['comment_first_name'];
 						$newComment[$count_comments]->comment_last_name = $row['comment_last_name'];
@@ -166,7 +166,7 @@
 					if ($lastdigpostid != $digpostid) {
 						$lastdigpostid = $digpostid;
 						$newPostDig[] = new Dig();
-						if ($lastdigpostidpost != $postid) $newPostDig = "";
+						if ($lastdigpostidpost != $postid) $newPostDig = [];
 						$newPostDig[$count_postdigs]->digid = $digpostid;
 						$newPostDig[$count_postdigs]->dig_first_name = $row['post_dig_first_name'];
 						$newPostDig[$count_postdigs]->dig_user_id = $row['post_dig_user_id'];
@@ -182,7 +182,7 @@
 					if ($lastdigcommentid != $digcommentid) {
 						$lastdigcomment = $digcommentid;
 						$newCommentDig[] = new Dig();
-						if ($lastdigcommentidcomment != $commentid) $newCommentDig = "";
+						if ($lastdigcommentidcomment != $commentid) $newCommentDig = [];
 						$newCommentDig[$count_commentdigs]->digid = $digcommentid;
 						$newCommentDig[$count_commentdigs]->dig_first_name = $row['comment_dig_first_name'];
 						$newCommentDig[$count_commentdigs]->dig_user_id = $row['comment_dig_user_id'];
