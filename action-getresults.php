@@ -67,9 +67,9 @@
 		public $poster_id = "";
 		public $post_timestamp = "";
 		public $post_comment = "";
-		public $result = "";
-		public $comments = "";
-		public $digs = "";
+		public $result = null;
+		public $comments = [];
+		public $digs = [];
 	}
 
 	class Result  {
@@ -87,7 +87,7 @@
 		public $comment_comment = "";
 		public $comment_timestamp = "";
 		public $comment_user_id = "";
-		public $digs = "";
+		public $digs = [];
 	}
 
 	class Dig {
