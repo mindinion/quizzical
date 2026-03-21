@@ -1,12 +1,20 @@
-<?php	
+<?php
+/**
+ * action-getsettings.php
+ *
+ * Returns a JSON object containing the profile and preference settings for a given user.
+ * Joins Users with Groups to include the user's current group name.
+ * The old_timezone field is set to "Australia/Melbourne" as a hardcoded fallback —
+ * it reflects the server's previous default timezone rather than a dynamic value.
+ * Called by the front-end profile/settings panel to pre-populate form fields.
+ */
 
 	//ini_set('error_reporting', E_STRICT);
 
 	require_once 'dblogin.php';
 	require_once 'security.php';
 	require_once 'getsettings.php';
-	
-	
+
 	if (isset($_GET['userid'])) $userid = sanitizeString($_GET['userid']);
 	$q = "
 		SELECT 

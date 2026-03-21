@@ -1,10 +1,21 @@
-<?php	
+<?php
+/**
+ * getsettingsNEW.php
+ *
+ * Updated version of action-getsettings.php. Returns a JSON object of user settings
+ * for a given userid. Unlike the original, this version reads the server's current
+ * timezone via date_default_timezone_get() to populate old_timezone dynamically,
+ * rather than using a hardcoded "Australia/Melbourne" string.
+ * Joins Users with Groups to include the user's current group name alongside all
+ * profile and preference fields.
+ */
+
 	ini_set('error_reporting', E_STRICT);
 
 	require_once 'dblogin.php';
 	require_once 'security.php';
 	require_once 'getsettings.php';
-	
+
 	if (isset($_GET['userid'])) $userid = sanitizeString($_GET['userid']);
 
 	$q = "

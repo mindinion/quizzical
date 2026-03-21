@@ -1,5 +1,15 @@
+<?php
+/**
+ * create_account.php
+ *
+ * Renders the account creation form for the traditional (non-AJAX) login flow.
+ * On submission, POSTs to action-createaccount.php.
+ * Displays an error message if mode=1 is in the query string, which indicates the
+ * email address submitted is already registered.
+ */
+?>
 <html>
-		
+
 	<head>
 		<title>Quizzical</title>
 		<link href="styles-login.css" type="text/css" rel="stylesheet" />

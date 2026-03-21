@@ -1,12 +1,27 @@
 <?php
+/**
+ * profile.php
+ *
+ * Standalone server-rendered profile edit page (not part of the AJAX SPA flow).
+ * Fetches the user's current default group and all group memberships to populate
+ * the group selector. On form submission, POSTs to saveprofile.php.
+ * Displays a "Passwords do not match" error if mode=1 is in the query string,
+ * which saveprofile.php sets when the two password fields differ.
+ *
+ * This is functionally equivalent to backup_profile.php — both appear to be
+ * older server-rendered alternatives to the div-profile.php AJAX panel.
+ */
+
 session_start();
-	
+
 	require_once 'dblogin.php';
 	require_once 'security.php';
 	require_once 'getsettings.php';
-	
-		$queryDefaultGroup = $conn->query("SELECT group_code FROM Users INNER JOIN Groups ON (Users.default_group = Groups.id) WHERE Users.id = $userid;");
-	$queryMemberships = $conn->query("SELECT group_code FROM Users INNER JOIN Memberships ON (Users.id = Memberships.user_id) INNER JOIN Groups ON (Memberships.group_id = Groups.id) WHERE Users.id = $userid;"); 
+
+	// Fetch the user's current default group code for pre-selection in the group dropdown
+	$queryDefaultGroup = $conn->query("SELECT group_code FROM Users INNER JOIN Groups ON (Users.default_group = Groups.id) WHERE Users.id = $userid;");
+	// Fetch all group memberships to populate the full group selector
+	$queryMemberships = $conn->query("SELECT group_code FROM Users INNER JOIN Memberships ON (Users.id = Memberships.user_id) INNER JOIN Groups ON (Memberships.group_id = Groups.id) WHERE Users.id = $userid;");
 	$defaultGroup = mysql_result($queryDefaultGroup,0,"group_code");
 	
 	

@@ -1,4 +1,20 @@
 <?php
+/**
+ * action-getresults.php
+ *
+ * The primary data endpoint for the Quizzical feed. Returns a JSON array of the 50 most
+ * recent active posts for a given group, with all related data nested inside each post object:
+ *   - Post metadata (poster, timestamp, optional text comment)
+ *   - Associated quiz result (score, max, type, date) if the post is a result post
+ *   - All active comments on the post, each with their own nested digs
+ *   - All active digs on the post itself
+ *
+ * The query uses a subquery (Last50Feeds) to efficiently scope to the 50 latest posts before
+ * joining the full comment, dig, and user data. Multiple LEFT JOINs mean a single post can
+ * produce many rows; the PHP loop de-duplicates these back into a nested object graph using
+ * "last seen id" tracking variables to detect when a new entity starts.
+ */
+
 	ini_set('error_reporting', E_STRICT);
 
 	require_once 'dblogin.php';
@@ -109,7 +125,7 @@
 			$digpostid = $row['post_dig_id'];
 			$digcommentid = $row['comment_dig_id'];
 
-			// If it's a post (they all should be) then create it
+			// Each SQL row always belongs to a post; detect a new post when the id changes
 			if ($postid != null) {
 				if ($lastpostid != $postid) {
 					$lastpostid = $postid;
@@ -121,12 +137,13 @@
 					$results[$count_posts]->postid = $postid;
 					$results[$count_posts]->post_timestamp = $row['post_timestamp'];
 					$results[$count_posts]->post_comment = $row['post_comment'];
+					// $lastPost tracks the array index of the current post for child attachment
 					$lastPost = $count_posts;
 					$count_postdigs = 0;
 					$count_comments = 0;
 				}
 
-				// If it's a result then create it, and insert it into the post
+				// Attach the result sub-object once per unique result id
 				if ($resultid != null) {
 					if ($lastresultid != $resultid) {
 						$lastresultid = $resultid;
@@ -140,7 +157,9 @@
 					}
 				}
 
-				// If it's a comment then create it, and insert it into the post
+				// Build and attach a new Comment object when the comment id changes.
+				// Reset the comment array when the post changes to avoid carrying over
+				// comments from the previous post.
 				if ($commentid != null) {
 					if ($lastcommentid != $commentid) {
 						$lastcommentid = $commentid;
@@ -160,7 +179,8 @@
 					}
 				}
 
-				// If it's a post dig then create it, and insert it into the post
+				// Build and attach a new Dig for the post when the dig id changes.
+				// Reset the dig array when the post changes.
 				if ($digpostid != null) {
 					if ($lastdigpostid != $digpostid) {
 						$lastdigpostid = $digpostid;
@@ -175,7 +195,8 @@
 					}
 				}
 
-				// If it's a comment dig then create it, and insert it into the comment
+				// Build and attach a Dig for the current comment when the comment-dig id changes.
+				// Reset the comment-dig array when the comment changes.
 				if ($digcommentid != null) {
 					if ($lastdigcommentid != $digcommentid) {
 						$lastdigcomment = $digcommentid;
@@ -184,6 +205,7 @@
 						$newCommentDig[$count_commentdigs]->digid = $digcommentid;
 						$newCommentDig[$count_commentdigs]->dig_first_name = $row['comment_dig_first_name'];
 						$newCommentDig[$count_commentdigs]->dig_user_id = $row['comment_dig_user_id'];
+						// Nest the dig inside the correct comment using $lastComment index
 						$results[$lastPost]->comments[$lastComment]->digs = $newCommentDig;
 						$lastdigcommentid = $digcommentid;
 						$lastdigcommentidcomment = $commentid;
@@ -191,7 +213,6 @@
 						$count_commentdigs++;
 					}
 				}
-
 
 
 			}

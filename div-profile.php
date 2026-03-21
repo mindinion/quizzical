@@ -1,12 +1,26 @@
 <?php
+/**
+ * div-profile.php
+ *
+ * Renders the profile/settings panel loaded into the SPA via AJAX (e.g., when the user
+ * clicks their avatar or a settings link). Displays a form for editing account details,
+ * notification preferences, timezone, and group. Posts to action-saveprofile.php.
+ *
+ * The group selector is pre-populated with the user's current default group, followed
+ * by any other groups they are a member of. A "Cancel" button calls profileHide() in JS
+ * to dismiss the panel without reloading the page.
+ */
+
 session_start();
-	
+
 	require_once 'dblogin.php';
 	require_once 'security.php';
 	require_once 'getsettings.php';
-	
-		$queryDefaultGroup = $conn->query("SELECT group_code FROM Users INNER JOIN Groups ON (Users.default_group = Groups.id) WHERE Users.id = $userid;");
-	$queryMemberships = $conn->query("SELECT group_code FROM Users INNER JOIN Memberships ON (Users.id = Memberships.user_id) INNER JOIN Groups ON (Memberships.group_id = Groups.id) WHERE Users.id = $userid;"); 
+
+	// Fetch the user's current default group code for pre-selection
+	$queryDefaultGroup = $conn->query("SELECT group_code FROM Users INNER JOIN Groups ON (Users.default_group = Groups.id) WHERE Users.id = $userid;");
+	// Fetch all group memberships to populate the full group selector
+	$queryMemberships = $conn->query("SELECT group_code FROM Users INNER JOIN Memberships ON (Users.id = Memberships.user_id) INNER JOIN Groups ON (Memberships.group_id = Groups.id) WHERE Users.id = $userid;");
 	$defaultGroup = mysql_result($queryDefaultGroup,0,"group_code");
 	
 	

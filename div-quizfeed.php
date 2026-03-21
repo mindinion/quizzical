@@ -1,9 +1,26 @@
-
 <?php
+/**
+ * div-quizfeed.php
+ *
+ * Legacy server-rendered version of the quiz feed. Fetches and outputs the feed HTML
+ * directly from PHP, including per-post comments, digs, and the "quiz bubble" comparison
+ * panel (shown when another user posts a result for a quiz the viewer has also completed).
+ *
+ * This file uses the older mysql_result() compatibility shim and outputs raw HTML with
+ * nested PHP loops. It has largely been superseded by action-getresults.php + client-side
+ * rendering in the current SPA architecture, but is kept for reference.
+ *
+ * Key logic:
+ *   - $feedItems: number of feed items to display, read from a cookie set by the client.
+ *   - $tzDiff: server-to-user timezone offset (seconds), applied to all displayed timestamps.
+ *   - Relative timestamp display: seconds/minutes/hours ago, or Today/Yesterday/N Days Ago.
+ *   - Quiz bubble: only shown for result posts by other users on non-iPad devices.
+ */
+
 	require_once 'dblogin.php';
 	require_once 'getsettings.php';
-	
-	//SESSION_START();	
+
+	//SESSION_START();
 	$feedItems = $_COOKIE["feedItems"];
 	$queryQuizFeed = mysqli_query($db_server, "SELECT Results.id AS result_id, Users.pic_filename, Users.first_name, Users.last_name, Users.id AS user_id, QuizFeed.timestamp, Results.date, Results.score, Results.max, Results.type, QuizFeed.comment, QuizFeed.id AS feed_id FROM QuizFeed INNER JOIN Users ON (QuizFeed.user_id = Users.id) INNER JOIN Memberships ON (Memberships.user_id = Users.id) LEFT JOIN Results ON (QuizFeed.result_id = Results.id) WHERE Memberships.group_id = 2 and QuizFeed.status = 'active' ORDER BY QuizFeed.timestamp DESC LIMIT $feedItems;");
 	
@@ -22,15 +39,16 @@
 		$quizzer = mysql_result($queryQuizFeed,$i,"user_id");
 		$resultId = mysql_result($queryQuizFeed,$i,"result_id");	
 		
-		$feedDate = strtotime($timestamp) - $tzDiff;;
-		
-		
+		// Apply the server-to-user timezone offset to the stored UTC-like timestamp
+	$feedDate = strtotime($timestamp) - $tzDiff;;
+
 		$today = strtotime(date("y-m-d H:i:s"));
-		$yesterday = strtotime("yesterday"); 
+		$yesterday = strtotime("yesterday");
 		$todayDay = date('d', $today);
 		$timenow = date("H:i:s");
 		$resultDay = date('d', $feedDate);
 		$yesterdayDay = date('d', $yesterday);
+		// Pre-compute time differences at various granularities for the relative timestamp display
 		$daysDiff = floor(($today-$feedDate) /60/60/24);
 		$hoursDiff = floor(($today-$feedDate) /60/60);
 		$minutesDiff = floor(($today-$feedDate) /60);
@@ -74,12 +92,12 @@
 			$when = floor($daysDiff) . " Days Ago";
 		}
 						
-		// Check to see if we need to show a bubble
-		if ($quizzer != $userid && $resultId != null && $iPad != 1) {	
+		// Show the comparison bubble only for other users' result posts, and not on iPad
+		if ($quizzer != $userid && $resultId != null && $iPad != 1) {
 				$showBubble = 1;
-			} else {	
+			} else {
 				$showBubble = 0;
-			} 
+			}
 		?>
 			
 		<div id="QuizFeedItem">			
@@ -113,8 +131,9 @@
 					<div id="QuizFeedInfoComment" class="Primary"><?php echo $comment ?></div id="QuizFeedInfoComment">					
 					
 					<?php
-					$queryComments = mysqli_query($db_server, "SELECT Comment.id,first_name, last_name, comment, timestamp FROM Comment INNER JOIN Users ON Comment.user_id = Users.id WHERE quizfeed_id = '$id' ORDER BY timestamp ASC;");
-					
+					// Fetch all comments for this feed item, ordered chronologically
+				$queryComments = mysqli_query($db_server, "SELECT Comment.id,first_name, last_name, comment, timestamp FROM Comment INNER JOIN Users ON Comment.user_id = Users.id WHERE quizfeed_id = '$id' ORDER BY timestamp ASC;");
+
 					$numJ = mysqli_num_rows($queryComments);
 					$j = 0;
 					if ($numJ > 0) echo '<div id="Comments">';
@@ -122,7 +141,7 @@
 						$commenter = mysql_result($queryComments,$j,"Users.first_name") . " " . mysql_result($queryComments,$j,"Users.last_name");
 						$theComment = mysql_result($queryComments,$j,"Comment.comment");
 						$commentid = mysql_result($queryComments,$j,"Comment.id");
-						// Check for digs
+						// Fetch digs for this comment to determine if the current user has dug it
 						?>
 						<div id="CommentRow">
 						<div id="QuizFeedInfoReplyName"><?php echo $commenter ?></div id="QuizFeedInfoReplyName">	
@@ -161,6 +180,7 @@
 						$j++;
 					}
 					if ($numJ > 0) echo "</div id='Comments'>";
+					// Fetch digs for the post itself and build the digger name list
 					$queryDigs = mysqli_query($db_server, "SELECT Digs.id, userid, CONCAT(first_name, ' ', last_name) as name FROM Digs INNER JOIN Users ON Digs.userid = Users.id WHERE Digs.postid = $id and Digs.status = 'active';");
 					$digsNum = mysqli_num_rows($queryDigs);
 					$diggers = "";
@@ -169,17 +189,20 @@
 						echo "<div id='Digs'>";
 						$k = 0;
 						while ($k < $digsNum) {
+							// Replace the current user's name with "You" for a friendly display
 							if (mysql_result($queryDigs,$k,"userid") == $userid) {
 								echo "You";
 								$dug = 1;
 								$digid = mysql_result($queryDigs,$k,"Digs.id");
 								$diggers = "You";
 							}
-							else echo mysql_result($queryDigs,$k,"name"); 
+							else echo mysql_result($queryDigs,$k,"name");
+							// Add "and" before the last digger, commas between others
 							if      ($digsNum > 1 && $k == ($digsNum - 2)) echo " and ";
 							else if ($digsNum > 1 && $k != ($digsNum - 1)) echo ", ";
 							$k++;
 						}
+						// Grammatically correct "digs" vs "dig this" suffix
 						if ( $digsNum == 1 && $diggers != "You") echo " digs this.";
 						else echo " dig this.";
 						echo "</br></div id='Digs'>";
@@ -196,7 +219,8 @@
 			</div id="QuizFeedInfo">
 				<?php
 				if ($showBubble) {
-					$check = mysqli_query($db_server, "SELECT score, max FROM Results WHERE user='$userid' AND type='$quizType' AND DAY(date) = DAY('$quizDate') and MONTH(date) = MONTH('$quizDate') and YEAR(date) = YEAR('$quizDate');");			
+					// Check whether the current user has completed the same quiz on the same day
+					$check = mysqli_query($db_server, "SELECT score, max FROM Results WHERE user='$userid' AND type='$quizType' AND DAY(date) = DAY('$quizDate') and MONTH(date) = MONTH('$quizDate') and YEAR(date) = YEAR('$quizDate');");
 					if (mysqli_num_rows($check) > 0) {
 						$yourScore = mysql_result($check,0,"score");
 						$yourMax = mysql_result($check,0,"max");

@@ -1,12 +1,26 @@
 <?php
+/**
+ * backup_profile.php
+ *
+ * Backup/archive copy of profile.php. Renders the full profile edit form as a standalone
+ * PHP page (not loaded via AJAX). Posts to saveprofile.php on form submission.
+ * Fetches the user's default group and all group memberships to populate the group
+ * selector, showing the current default as the first (pre-selected) option.
+ *
+ * This file appears to be an older server-rendered version kept as a fallback.
+ * The active version of the profile UI is div-profile.php (AJAX-loaded into the SPA).
+ */
+
 session_start();
-	
+
 	require_once 'dblogin.php';
 	require_once 'security.php';
 	require_once 'getsettings.php';
-	
-		$queryDefaultGroup = $conn->query("SELECT group_code FROM Users INNER JOIN Groups ON (Users.default_group = Groups.id) WHERE Users.id = $userid;");
-	$queryMemberships = $conn->query("SELECT group_code FROM Users INNER JOIN Memberships ON (Users.id = Memberships.user_id) INNER JOIN Groups ON (Memberships.group_id = Groups.id) WHERE Users.id = $userid;"); 
+
+	// Fetch the user's current default group code for pre-selection in the dropdown
+	$queryDefaultGroup = $conn->query("SELECT group_code FROM Users INNER JOIN Groups ON (Users.default_group = Groups.id) WHERE Users.id = $userid;");
+	// Fetch all groups the user belongs to, for populating the full group selector list
+	$queryMemberships = $conn->query("SELECT group_code FROM Users INNER JOIN Memberships ON (Users.id = Memberships.user_id) INNER JOIN Groups ON (Memberships.group_id = Groups.id) WHERE Users.id = $userid;");
 	$defaultGroup = mysql_result($queryDefaultGroup,0,"group_code");
 	
 	

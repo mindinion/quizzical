@@ -1,4 +1,11 @@
 <?php
+/**
+ * action-checkresult.php
+ *
+ * Looks up whether a specific user has already submitted a result for a given date and quiz type.
+ * Returns the score if a result is found, or echoes "failed" if no matching active result exists.
+ * Used to prevent duplicate submissions and to display a user's existing score.
+ */
 
 	require_once 'dblogin.php';
 	require_once 'security.php';
@@ -8,15 +15,16 @@
 	if (isset($_GET['userid'])) $userid = sanitizeString($_GET['userid']);
 	$score = "";
 
+	// Match on the formatted date string to avoid time-component mismatches
 	$q = "SELECT score FROM Results WHERE DATE_FORMAT(date,'%Y-%m-%d') = '$date' AND type = '$type' AND user = $userid and status = 'active';";
 	$result = $conn->query($q);
-
 
 	if (mysqli_num_rows($result) > 0) {
 		while($row = mysqli_fetch_assoc($result)) {
 			$score = $row['score'];
     	}
 	} else {
+		// Signal to the caller that no result was found
     	echo "failed";
     }
     echo $score;

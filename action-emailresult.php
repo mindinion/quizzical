@@ -1,19 +1,27 @@
-<?php	
+<?php
+/**
+ * action-emailresult.php
+ *
+ * Sends email notifications to group members when a new quiz result is posted.
+ * Only users who share the poster's default group and have opted in to result
+ * notifications (notify_results = 1) are contacted. The result submitter is excluded.
+ * Returns a count of emails sent, or "No input" if no resultId was provided.
+ */
 
 	require_once 'dblogin.php';
 	require_once 'security.php';
-	
+
 	date_default_timezone_set($timezone);
-	
+
 	if (isset($_GET['resultId'])) $resultId = sanitizeString($_GET['resultId']);
 	else $resultId = "";
-	
+
 	if ($resultId == "") $response = "No input";
-	
-	// Get the details of the quiz
+
+	// Fetch the submitter's details and their group from the Results table
 	$q = "SELECT default_group, Users.id as 'userid', first_name, last_name, type FROM Results INNER JOIN Users ON Results.user = Users.id WHERE Results.id = $resultId;";
-	$result = $conn->query($q);		
-	if (mysqli_num_rows($result) > 0) {    	
+	$result = $conn->query($q);
+	if (mysqli_num_rows($result) > 0) {
 		while($row = mysqli_fetch_assoc($result)) {
 			$firstName = $row['first_name'];
 			$lastName = $row['last_name'];
@@ -22,11 +30,11 @@
 			$groupid = $row['default_group'];
 		}
 	}
-	
-	// Find out the people we need to email, and email them
+
+	// Email subscribed group members, skipping the person who submitted the result
 	$q = "SELECT id,email FROM Users WHERE notify_results = 1 and Users.default_group = $groupid;";
-	$result = $conn->query($q);		
-	if (mysqli_num_rows($result) > 0) {    	
+	$result = $conn->query($q);
+	if (mysqli_num_rows($result) > 0) {
 		while($row = mysqli_fetch_assoc($result)) {
 			$email = $row['email'];
 			$id = $row['id'];
@@ -36,8 +44,7 @@
 			}
 		}
 	}
-	
+
 	echo $response ?? '';
-	
-	 		
+
 ?>

@@ -1,3 +1,20 @@
+<?php
+/**
+ * div-newpost.php
+ *
+ * Renders the "new post" input area loaded into the top of the main page.
+ * Contains two mutually exclusive input modes:
+ *   1. Quiz result entry: score, total questions, quiz type, and date. These controls
+ *      appear dynamically via JavaScript when the user types a score.
+ *   2. Plain text comment: a textarea that appears when the score field is empty.
+ *
+ * The date selector is populated server-side with PHP, offering "Today", "Yesterday",
+ * and the previous 14 days as options.
+ *
+ * JavaScript event listeners handle toggling visibility between the two modes and
+ * call addResult() or postComment() on submission.
+ */
+?>
 <span>
 	<input type="number" name="score" id="NewResultScore" min="0">
 

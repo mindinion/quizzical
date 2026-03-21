@@ -1,16 +1,26 @@
-<?php	
+<?php
+/**
+ * action-getproperties.php
+ *
+ * Exports all records from the Properties table as a browser-rendered CSV-style report.
+ * Outputs a header row of field names followed by one row per property, with fields
+ * separated by commas and rows separated by <br> tags.
+ * This appears to be a utility/admin tool unrelated to the main Quizzical quiz feed,
+ * likely included in the project for property management data reporting.
+ */
+
 	ini_set('error_reporting', E_STRICT);
 
 	require_once 'dblogin.php';
 	require_once 'security.php';
 	require_once 'getsettings.php';
-	
+
 	$q = "SELECT * FROM Properties";
-	
-	
-	$result = $conn->query($q);		
+
+	$result = $conn->query($q);
 
 	if (mysqli_num_rows($result) > 0) {
+		// Print the CSV header row — field names match the Properties table columns
 		echo 'accounting_ref,';
 		echo 'address,';
 		echo 'ct,';

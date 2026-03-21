@@ -1,5 +1,15 @@
+<?php
+/**
+ * forgotpassword.php
+ *
+ * Renders the "Forgot Password" page. Displays a form that accepts the user's email address
+ * and POSTs it to action-forgotpassword.php, which generates and emails a new password.
+ * Displays "Incorrect Details" if mode=1 is present in the query string (set on failure
+ * by action-forgotpassword.php in a former version — the current action always redirects).
+ */
+?>
 <html>
-		
+
 	<head>
 		<title>Quiz Quantification Quotient</title>
 		<link href="styles-login.css" type="text/css" rel="stylesheet" />
