@@ -734,7 +734,7 @@ document.cookie="feedItems=50";
 			}
     		$("#UserRankings").append("<span id=UserRanking data-ranking=" + userid + ">");
 			$('*[data-ranking="' + userid + '"]').append("<div id='RankingPhoto' data-rankingphoto=" + userid + ">");
-			$('*[data-rankingphoto="' + userid + '"]').append("<img src='" + pic_filename + "' class='UserLogo'></img>");
+			$('*[data-rankingphoto="' + userid + '"]').append("<img src='" + pic_filename + "?t=" + Date.now() + "' class='UserLogo'></img>");
 			$('*[data-rankingphoto="' + userid + '"]').append("<div id='RankingPlace'>" + placing + "<br><div id=PlacingScore>" + average + "%</div></div id='RankingPlace'>");
 			$('*[data-ranking="' + userid + '"]').append("</div id='RankingPhoto'>");
     		$("#UserRankings").append("	</span id='UserRanking'>");
