@@ -810,7 +810,10 @@ document.cookie="feedItems=50";
 	}
 	
 	function showProfile() {
-		window.newFile = "";
+		croppedBlob = null;
+		document.getElementById("profilepic").value = "";
+		$("#photo-preview").hide().attr("src", "");
+		$("#photo-label-text").text("Choose a photo...");
 		if ($("#NewPost").css("display") == "none") {
 			hideProfile();
 			return;
@@ -870,13 +873,14 @@ document.cookie="feedItems=50";
 	}
 	
 	
-	function saveDetails() {
-		var fileInput = document.getElementById("profilepic");
+	var cropper = null;
+	var croppedBlob = null;
 
-		if (fileInput && fileInput.files.length > 0) {
+	function saveDetails() {
+		if (croppedBlob) {
 			$('#Profile').append("<div id=SaveProfileLoading><img src=ajax-loader.gif></img></div>");
 			var formData = new FormData();
-			formData.append("file", fileInput.files[0]);
+			formData.append("file", croppedBlob, "profile.jpg");
 			formData.append("userid", getCookie("userid"));
 			$.ajax({
 				url: "action-uploadphoto.php",
@@ -1001,11 +1005,46 @@ document.cookie="feedItems=50";
 		if (input.files && input.files[0]) {
 			var reader = new FileReader();
 			reader.onload = function(e) {
-				$("#photo-preview").attr("src", e.target.result).show();
-				$("#photo-label-text").text(input.files[0].name);
+				var img = document.getElementById("CropImage");
+				img.src = e.target.result;
+				document.getElementById("CropModal").style.display = "flex";
+				if (cropper) { cropper.destroy(); }
+				cropper = new Cropper(img, {
+					aspectRatio: 1,
+					viewMode: 1,
+					dragMode: "move",
+					autoCropArea: 1,
+					cropBoxMovable: false,
+					cropBoxResizable: false,
+					toggleDragModeOnDblclick: false,
+					responsive: true
+				});
 			};
 			reader.readAsDataURL(input.files[0]);
 		}
+	}
+
+	function cropRotate(degrees) {
+		if (cropper) cropper.rotate(degrees);
+	}
+
+	function confirmCrop() {
+		if (!cropper) return;
+		cropper.getCroppedCanvas({ width: 400, height: 400 }).toBlob(function(blob) {
+			croppedBlob = blob;
+			var url = URL.createObjectURL(blob);
+			$("#photo-preview").attr("src", url).show();
+			$("#photo-label-text").text("Change photo...");
+			document.getElementById("CropModal").style.display = "none";
+			cropper.destroy();
+			cropper = null;
+		}, "image/jpeg", 0.9);
+	}
+
+	function cancelCrop() {
+		document.getElementById("CropModal").style.display = "none";
+		if (cropper) { cropper.destroy(); cropper = null; }
+		document.getElementById("profilepic").value = "";
 	}
 
 	$( document ).ready(function() {

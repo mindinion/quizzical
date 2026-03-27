@@ -5,7 +5,8 @@
 <script src="date.js"></script>
 
 <script src="jquery.js"></script>
-<script src="main.js?id=5"></script>
+<script src="cropper.min.js"></script>
+<script src="main.js?id=6"></script>
 
 
 
@@ -27,7 +28,8 @@
 	
 	<head>
 		<link href="styles-main.css?id=1235" type="text/css" rel="stylesheet" />
-		<link href="styles-profile.css?id=10" type="text/css" rel="stylesheet" />
+		<link href="styles-profile.css?id=11" type="text/css" rel="stylesheet" />
+		<link href="cropper.min.css" type="text/css" rel="stylesheet" />
 		<link rel="icon" type="image/png" href="quizzical_logo.png">
 	</head>
 
@@ -154,7 +156,7 @@
 					<label for="profilepic" id="photo-label">
 						<span id="photo-label-text">Choose a photo...</span>
 					</label>
-					<input type="file" id="profilepic" name="profilepic" accept="image/jpeg,image/png,image/gif" onchange="profilePhotoPreview(this)">
+					<input type="file" id="profilepic" name="profilepic" accept="image/*" onchange="profilePhotoPreview(this)">
 				</div>
 
 				<div id="ProfileSuccess" style="display:none">Your changes have been saved</div>
@@ -169,8 +171,25 @@
 
 
 	<div id="Footer">
-				<div id="UserRankings"></div id="UserRankings">			
+				<div id="UserRankings"></div id="UserRankings">
 	</div id="Footer">
+
+	<div id="CropModal">
+		<div id="CropHeader">
+			<span id="CropTitle">Edit Photo</span>
+		</div>
+		<div id="CropImageWrap">
+			<img id="CropImage" src="" alt="">
+		</div>
+		<div id="CropControls">
+			<button id="CropRotateLeft" onclick="cropRotate(-90)">&#8634; Rotate Left</button>
+			<button id="CropRotateRight" onclick="cropRotate(90)">&#8635; Rotate Right</button>
+		</div>
+		<div id="CropButtons">
+			<button id="CropCancel" onclick="cancelCrop()">Cancel</button>
+			<button id="CropConfirm" onclick="confirmCrop()">Use Photo</button>
+		</div>
+	</div>
 			
 												
 
