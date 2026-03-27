@@ -166,21 +166,25 @@
 	background-color: #e0e0e0;
 }
 
-#ProfileWarning {
-	background-color: #fff3f0;
-	border-left: 4px solid #cc3300;
-	color: #aa2200;
-	padding: 10px 14px;
-	border-radius: 3px;
+.field-error {
+	margin: -4px 0 8px 202px;
 	font-family: verdana, arial, sans-serif;
-	font-size: 12px;
-	font-weight: bold;
-	margin: 16px 0 4px;
-	animation: profAlertIn 0.2s ease;
+	font-size: 11px;
+	color: #cc3300;
+	animation: fieldErrorIn 0.15s ease;
+}
+
+.field-error::before {
+	content: "⚠ ";
+}
+
+.prof-input.input-error {
+	border-color: #cc3300;
+	background-color: #fff8f7;
 }
 
 #ProfileSuccess {
-	background-color: #f0fff4;
+	background-color: #f2fff5;
 	border-left: 4px solid #2e7d32;
 	color: #1b5e20;
 	padding: 10px 14px;
@@ -189,11 +193,15 @@
 	font-size: 12px;
 	font-weight: bold;
 	margin: 16px 0 4px;
-	animation: profAlertIn 0.2s ease;
+	animation: fieldErrorIn 0.2s ease;
 }
 
-@keyframes profAlertIn {
-	from { opacity: 0; transform: translateY(-6px); }
+#ProfileSuccess::before {
+	content: "✓  ";
+}
+
+@keyframes fieldErrorIn {
+	from { opacity: 0; transform: translateY(-4px); }
 	to   { opacity: 1; transform: translateY(0); }
 }
 

@@ -27,7 +27,7 @@
 	
 	<head>
 		<link href="styles-main.css?id=1235" type="text/css" rel="stylesheet" />
-		<link href="styles-profile.css?id=7" type="text/css" rel="stylesheet" />
+		<link href="styles-profile.css?id=8" type="text/css" rel="stylesheet" />
 		<link rel="icon" type="image/png" href="quizzical_logo.png">
 	</head>
 
@@ -115,6 +115,7 @@
 					<label for="oldpass" class="prof-label">Current Password</label>
 					<input type="password" class="prof-input" name="oldpass" id="oldpass">
 				</div>
+				<div class="field-error" id="oldpass-error" style="display:none"></div>
 				<div class="prof-row">
 					<label for="PassA" class="prof-label">New Password <span class="prof-hint">(optional)</span></label>
 					<input type="password" class="prof-input" name="passwordA" id="PassA">
@@ -123,6 +124,7 @@
 					<label for="PassB" class="prof-label">Confirm New Password</label>
 					<input type="password" class="prof-input" name="passwordB" id="PassB">
 				</div>
+				<div class="field-error" id="passmatch-error" style="display:none"></div>
 
 				<div class="prof-section-header">Preferences</div>
 				<div class="prof-row">
@@ -151,8 +153,7 @@
 					<input type="file" id="profilepic" name="profilepic" accept="image/jpeg,image/png,image/gif" onchange="profilePhotoPreview(this)">
 				</div>
 
-				<div id="ProfileWarning" style="display:none"></div>
-				<div id="ProfileSuccess" style="display:none"></div>
+				<div id="ProfileSuccess" style="display:none">Your changes have been saved</div>
 
 				<div class="prof-buttons">
 					<input type="button" value="Cancel" id="ButtonCancel" onclick="hideProfile();">

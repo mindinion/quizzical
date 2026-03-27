@@ -872,20 +872,16 @@ document.cookie="feedItems=50";
 	
 	function saveProfile() {
 
-		$("#ProfileWarning").hide();
+		$(".field-error").hide();
+		$(".prof-input").removeClass("input-error");
 
 		if ($("#oldpass").val() == "") {
-			$("#ProfileWarning").html("⚠&nbsp; Please enter your current password").show();
-			$("#oldpass").one("focus", function() { $("#ProfileWarning").hide(); });
-			$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);
+			showFieldError("oldpass-error", "oldpass", "Please enter your current password");
 			return;
 		}
 
 		if ($("#PassA").val() != $("#PassB").val()) {
-			$("#ProfileWarning").html("⚠&nbsp; New passwords don't match").show();
-			$("#PassA").one("focus", function() { $("#ProfileWarning").hide(); });
-			$("#PassB").one("focus", function() { $("#ProfileWarning").hide(); });
-			$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);
+			showFieldError("passmatch-error", "PassA PassB", "Passwords don't match");
 			return;
 		}
 
@@ -943,15 +939,12 @@ document.cookie="feedItems=50";
 			statusCode: {
 				400: function() {
 					$("#SaveProfileLoading").remove();
-					$("#ProfileWarning").html("⚠&nbsp; Your current password is incorrect").show();
-					$("#oldpass").one("focus", function() { $("#ProfileWarning").hide(); });
-					$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);
+					showFieldError("oldpass-error", "oldpass", "Incorrect password");
 				},
 				200: function() {
 					$("#SaveProfileLoading").remove();
 					getSettings();
-					$("#ProfileSuccess").html("✓&nbsp; Your changes have been saved").show();
-					$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);
+					$("#ProfileSuccess").show();
 					setTimeout(function() {
 						$("#ProfileSuccess").hide();
 						hideProfile();
@@ -963,6 +956,16 @@ document.cookie="feedItems=50";
 		});
 	}
 	
+	function showFieldError(errorId, fieldIds, message) {
+		$("#" + errorId).html(message).show();
+		$.each(fieldIds.split(" "), function(_, id) {
+			$("#" + id).addClass("input-error").one("focus", function() {
+				$("#" + errorId).hide();
+				$.each(fieldIds.split(" "), function(__, fid) { $("#" + fid).removeClass("input-error"); });
+			});
+		});
+	}
+
 	function profilePhotoPreview(input) {
 		if (input.files && input.files[0]) {
 			var reader = new FileReader();
