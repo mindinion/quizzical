@@ -870,26 +870,10 @@ document.cookie="feedItems=50";
 	}
 	
 	
-	function saveProfile() {
-
-		var currentError = $(".field-error:visible").attr("id") || "";
-		$(".field-error").hide();
-		$(".prof-input").removeClass("input-error");
-
-		if ($("#oldpass").val() == "") {
-			showFieldError("oldpass-error", "oldpass", "Please enter your current password", currentError === "oldpass-error");
-			return;
-		}
-
-		if ($("#PassA").val() != $("#PassB").val()) {
-			showFieldError("passmatch-error", "PassA PassB", "Passwords don't match", currentError === "passmatch-error");
-			return;
-		}
-
+	function saveDetails() {
 		var fileInput = document.getElementById("profilepic");
 
 		if (fileInput && fileInput.files.length > 0) {
-			// Upload photo first, then save profile data
 			$('#Profile').append("<div id=SaveProfileLoading><img src=ajax-loader.gif></img></div>");
 			var formData = new FormData();
 			formData.append("file", fileInput.files[0]);
@@ -903,25 +887,23 @@ document.cookie="feedItems=50";
 				success: function(response) {
 					$("#SaveProfileLoading").remove();
 					var result = JSON.parse(response);
-					doSaveProfile(result.filename || "");
+					doSaveDetails(result.filename || "");
 				},
 				error: function() {
 					$("#SaveProfileLoading").remove();
-					doSaveProfile("");
+					doSaveDetails("");
 				}
 			});
 		} else {
-			doSaveProfile("");
+			doSaveDetails("");
 		}
 	}
 
-	function doSaveProfile(photoFilename) {
+	function doSaveDetails(photoFilename) {
 		var profile = {
 			email: $("#email").val(),
 			firstname: $("#namefirst").val(),
 			lastname: $("#namelast").val(),
-			password: $("#oldpass").val(),
-			passwordNew: $("#PassA").val(),
 			notifyEmail: $("#notifyresult").is(":checked") ? 1 : 0,
 			notifyMessage: $("#notifymessage").is(":checked") ? 1 : 0,
 			timezone: $("#timezone").val(),
@@ -929,14 +911,58 @@ document.cookie="feedItems=50";
 			userid: getCookie("userid"),
 			photo: photoFilename
 		};
-		var profileJson = JSON.stringify(profile);
 
 		$('#Profile').append("<div id=SaveProfileLoading><img src=ajax-loader.gif></img></div>");
 
 		$.ajax({
 			type: "POST",
 			url: "action-saveprofile.php",
-			data: { json: profileJson },
+			data: { json: JSON.stringify(profile) },
+			success: function() {
+				$("#SaveProfileLoading").remove();
+				$("#ProfileSuccess").show();
+				setTimeout(function() {
+					$("#ProfileSuccess").hide();
+					hideProfile();
+					getSettings();
+				}, 2000);
+			},
+			error: function() {
+				$("#SaveProfileLoading").remove();
+			}
+		});
+	}
+
+	function savePassword() {
+		var currentError = $(".field-error:visible").attr("id") || "";
+		$(".field-error").hide();
+		$(".prof-input").removeClass("input-error");
+
+		if ($("#oldpass").val() == "") {
+			showFieldError("oldpass-error", "oldpass", "Please enter your current password", currentError === "oldpass-error");
+			return;
+		}
+
+		if ($("#PassA").val() == "") {
+			showFieldError("passmatch-error", "PassA", "Please enter a new password", currentError === "passmatch-error");
+			return;
+		}
+
+		if ($("#PassA").val() != $("#PassB").val()) {
+			showFieldError("passmatch-error", "PassA PassB", "Passwords don't match", currentError === "passmatch-error");
+			return;
+		}
+
+		$('#Profile').append("<div id=SaveProfileLoading><img src=ajax-loader.gif></img></div>");
+
+		$.ajax({
+			type: "POST",
+			url: "action-savepassword.php",
+			data: { json: JSON.stringify({
+				passwordOld: $("#oldpass").val(),
+				passwordNew: $("#PassA").val(),
+				userid: getCookie("userid")
+			})},
 			statusCode: {
 				400: function() {
 					$("#SaveProfileLoading").remove();
@@ -944,12 +970,11 @@ document.cookie="feedItems=50";
 				},
 				200: function() {
 					$("#SaveProfileLoading").remove();
-					$("#ProfileSuccess").show();
-					setTimeout(function() {
-						$("#ProfileSuccess").hide();
-						hideProfile();
-						getSettings();
-					}, 2000);
+					$("#oldpass").val("");
+					$("#PassA").val("");
+					$("#PassB").val("");
+					$("#PasswordSuccess").show();
+					setTimeout(function() { $("#PasswordSuccess").hide(); }, 3000);
 				}
 			}
 		});

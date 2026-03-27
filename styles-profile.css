@@ -205,6 +205,46 @@
 	to   { opacity: 1; transform: translateY(0); }
 }
 
+.prof-pass-buttons {
+	display: flex;
+	justify-content: flex-start;
+	margin: 16px 0 4px 202px;
+}
+
+#ButtonUpdatePassword {
+	height: 34px;
+	padding: 0 20px;
+	font-family: verdana, arial, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: white;
+	background-color: #e67300;
+	border: none;
+	border-radius: 17px;
+	cursor: pointer;
+}
+
+#ButtonUpdatePassword:hover {
+	background-color: #cc6600;
+}
+
+#PasswordSuccess {
+	background-color: #f2fff5;
+	border-left: 4px solid #2e7d32;
+	color: #1b5e20;
+	padding: 10px 14px;
+	border-radius: 3px;
+	font-family: verdana, arial, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	margin: 8px 0 4px;
+	animation: fieldErrorIn 0.2s ease;
+}
+
+#PasswordSuccess::before {
+	content: "\2713\A0\A0";
+}
+
 #SaveProfileLoading {
 	text-align: center;
 	padding: 10px 0;

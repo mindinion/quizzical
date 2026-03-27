@@ -5,7 +5,7 @@
 <script src="date.js"></script>
 
 <script src="jquery.js"></script>
-<script src="main.js?id=3"></script>
+<script src="main.js?id=4"></script>
 
 
 
@@ -27,7 +27,7 @@
 	
 	<head>
 		<link href="styles-main.css?id=1235" type="text/css" rel="stylesheet" />
-		<link href="styles-profile.css?id=9" type="text/css" rel="stylesheet" />
+		<link href="styles-profile.css?id=10" type="text/css" rel="stylesheet" />
 		<link rel="icon" type="image/png" href="quizzical_logo.png">
 	</head>
 
@@ -117,7 +117,7 @@
 				</div>
 				<div class="field-error" id="oldpass-error" style="display:none"></div>
 				<div class="prof-row">
-					<label for="PassA" class="prof-label">New Password <span class="prof-hint">(optional)</span></label>
+					<label for="PassA" class="prof-label">New Password</label>
 					<input type="password" class="prof-input" name="passwordA" id="PassA">
 				</div>
 				<div class="prof-row">
@@ -125,6 +125,10 @@
 					<input type="password" class="prof-input" name="passwordB" id="PassB">
 				</div>
 				<div class="field-error" id="passmatch-error" style="display:none"></div>
+				<div id="PasswordSuccess" style="display:none">Password updated</div>
+				<div class="prof-pass-buttons">
+					<input type="button" value="Update Password" id="ButtonUpdatePassword" onclick="savePassword();">
+				</div>
 
 				<div class="prof-section-header">Preferences</div>
 				<div class="prof-row">
@@ -157,7 +161,7 @@
 
 				<div class="prof-buttons">
 					<input type="button" value="Cancel" id="ButtonCancel" onclick="hideProfile();">
-					<input type="button" value="Save Changes" id="ButtonSave" onclick="saveProfile();">
+					<input type="button" value="Save Changes" id="ButtonSave" onclick="saveDetails();">
 				</div>
 			</div>
 		</div>
