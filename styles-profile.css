@@ -93,6 +93,38 @@
 	margin: 10px 0 10px 202px;
 }
 
+#photo-preview {
+	display: none;
+	width: 72px;
+	height: 72px;
+	object-fit: cover;
+	border-radius: 50%;
+	border: 2px solid #e67300;
+	margin-bottom: 8px;
+}
+
+#photo-label {
+	display: inline-block;
+	padding: 5px 14px;
+	background-color: #ffebcc;
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	cursor: pointer;
+	font-family: verdana, arial, sans-serif;
+	font-size: 12px;
+	color: #555;
+}
+
+#photo-label:hover {
+	background-color: #fee9cd;
+	border-color: #e67300;
+	color: #333;
+}
+
+#profilepic {
+	display: none;
+}
+
 .prof-buttons {
 	display: flex;
 	justify-content: center;

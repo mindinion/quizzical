@@ -2,44 +2,51 @@
 /**
  * action-uploadphoto.php
  *
- * Handles profile photo uploads. Moves the uploaded file to the public web root,
- * naming it "user{userid}.{extension}" (e.g., "user42.jpg"), then updates the
- * Users table with the new filename.
- *
- * A debug email is sent to the developer for every upload — this should be removed
- * before production deployment.
- *
- * Note: There is no file type validation beyond extracting the extension from the
- * original filename, which could be spoofed. mime_content_type() or similar should
- * be used to verify the file is actually an image.
+ * Handles profile photo uploads. Validates the uploaded file is a genuine image
+ * using MIME type detection (not just extension), saves it as user{userid}.{ext}
+ * in the web root, updates the Users table, and returns JSON with the filename.
  */
-
-// Note: In PHP versions earlier than 4.1.0, $HTTP_POST_FILES should be used instead of $_FILES.
 
 require_once 'dblogin.php';
 require_once 'security.php';
 
-if (isset($_POST['userid'])) $userid = addslashes($_POST['userid']);
-else $userid = "";
+header('Content-Type: application/json');
 
-$uploaddir = '/home/quizz245/public_html/';
-// Extract the file extension from the original uploaded filename
-$extension = substr(strrchr(basename($_FILES['file']['name']),'.'),1);
-// Build the destination path and the filename stored in the database
-$uploadfile = $uploaddir . 'user' . $userid . "." . $extension;
-$filename = 'user' . $userid . "." . $extension;
-
-if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile)) {
-	// Update the user's photo reference in the database to point to the new file
-	$q = "UPDATE Users SET pic_filename = '$filename' WHERE id = '$userid' ;";
-	$result = $conn->query($q);
-    $r = "File is valid, and was successfully uploaded.\n";
-} else {
-    $r = "Possible file upload attack!\n";
+if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+	echo json_encode(['error' => 'No file uploaded or upload error']);
+	exit;
 }
 
-// Debug email — remove before going to production
-mail("widdakay@gmail.com","Quizzical: Debugging", $uploadfile, "From: Quizzical");
+$userid = isset($_POST['userid']) ? (int)$_POST['userid'] : 0;
+if (!$userid) {
+	echo json_encode(['error' => 'Invalid user']);
+	exit;
+}
 
+// Validate it is actually an image using MIME type, not just the file extension
+$finfo = finfo_open(FILEINFO_MIME_TYPE);
+$mimeType = finfo_file($finfo, $_FILES['file']['tmp_name']);
+finfo_close($finfo);
 
+$allowedTypes = [
+	'image/jpeg' => 'jpg',
+	'image/png'  => 'png',
+	'image/gif'  => 'gif',
+];
+
+if (!array_key_exists($mimeType, $allowedTypes)) {
+	echo json_encode(['error' => 'File must be a JPEG, PNG or GIF image']);
+	exit;
+}
+
+$extension  = $allowedTypes[$mimeType];
+$filename   = 'user' . $userid . '.' . $extension;
+$uploadPath = __DIR__ . '/' . $filename;
+
+if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadPath)) {
+	$conn->query("UPDATE Users SET pic_filename = '$filename' WHERE id = $userid");
+	echo json_encode(['filename' => $filename]);
+} else {
+	echo json_encode(['error' => 'Could not save file — check server write permissions']);
+}
 ?>

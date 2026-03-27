@@ -27,7 +27,7 @@
 	
 	<head>
 		<link href="styles-main.css?id=1235" type="text/css" rel="stylesheet" />
-		<link href="styles-profile.css?id=4" type="text/css" rel="stylesheet" />
+		<link href="styles-profile.css?id=5" type="text/css" rel="stylesheet" />
 		<link rel="icon" type="image/png" href="quizzical_logo.png">
 	</head>
 
@@ -144,9 +144,11 @@
 
 				<div class="prof-section-header">Profile Photo</div>
 				<div class="prof-photo-wrap">
-					<form action="action-uploadphoto.php" class="dropzone" id="fileform">
-						<input type="hidden" id="userid" name="userid">
-					</form>
+					<img id="photo-preview" src="" alt="Preview">
+					<label for="profilepic" id="photo-label">
+						<span id="photo-label-text">Choose a photo...</span>
+					</label>
+					<input type="file" id="profilepic" name="profilepic" accept="image/jpeg,image/png,image/gif" onchange="profilePhotoPreview(this)">
 				</div>
 
 				<div class="prof-buttons">

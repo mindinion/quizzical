@@ -16,9 +16,6 @@
  * debugging artifact and should be removed before production use.
  */
 
-	error_reporting(-1);
-	ini_set('display_errors', 'On');
-
 	require_once 'security.php';
 	require_once 'dblogin.php';
 
@@ -76,6 +73,5 @@
 	$q.= "timezone='$timezone' WHERE id = $userid;";
 
 	$result = $conn->query($q);
-	echo $q;  // Debug: echoes the executed SQL query — remove for production
 
 ?>

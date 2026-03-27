@@ -827,11 +827,10 @@ document.cookie="feedItems=50";
 		$("#oldpass").val("");
 		$("#PassA").val("");
 		$("#PassB").val("");
-		if (getSetting("notify_results") == 1) $("#notifyresult").prop("checked", true);
-		if (getSetting("notify_messages") == 1) $("#notifymessage").prop("checked", true);		
-		$("#notifyresult").prop("checked", getSetting("notify_results")==1 ? true : false);
-		$("#notifymessage").prop("checked", getSetting("notify_message")==1 ? true : false);
-		
+		$("#notifyresult").prop("checked", getSetting("notify_results") == 1);
+		$("#notifymessage").prop("checked", getSetting("notify_message") == 1);
+
+		$("#timezone").empty();
 		var timezones = ["NZ", "Australia/Melbourne", "Australia/Brisbane"];
 		timezones.forEach(function(timezone) {
 			if (getSetting("timezone") == timezone) {
@@ -861,135 +860,6 @@ document.cookie="feedItems=50";
 			}
 		);
 		
-		// Prepare the form for image upload
-		var files;
-		$('input[type=file]').on('change', prepareUpload);
-		function prepareUpload(event) {
-  			files = event.target.files;
-		}	
-		
-		
-		// Handle the file upload on submit
-		$('#FileForm').on('submit', uploadFiles);
-
-		// Catch the form submit and upload the files
-		function uploadFiles(event)
-		{
-		  event.stopPropagation(); // Stop stuff happening
-			event.preventDefault(); // Totally stop stuff happening
-			
-			console.log("hit it");
-
-			$('#FileForm').append("<div id=SaveProfileLoading><img src=ajax-loader.gif></img></div>");
-			$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);			
-
-			// Create a formdata object and add the files
-			var data = new FormData();
-			$.each(files, function(key, value)
-			{
-				data.append(key, value);
-			});
-
-			$.ajax({
-				url: 'action-uploadphoto.php?files',
-				type: 'POST',
-				data: data,
-				cache: false,
-				dataType: 'json',
-				processData: false, // Don't process the files
-				contentType: false, // Set content type to false as jQuery will tell the server its a query string request
-				success: function(data, textStatus, jqXHR)
-				{
-					$.get("action-renamefile.php", {
-						from:'t_temp.jpg',
-						to:"t_" + getSetting("user_id") + ".jpg",
-						userid:getSetting("user_id")
-					},
-						function(data,status) {
-							console.log(data);
-						}
-					);
-					
-					if(typeof data.error === 'undefined')
-					{
-						// Success so call function to process the form
-						submitForm(event, data);
-					}
-					else
-					{
-						// Handle errors here
-						console.log('ERRORS: ' + data.error);
-					}
-				},
-				error: function(jqXHR, textStatus, errorThrown)
-				{
-				$.get("action-renamefile.php", {
-					from:'t_temp.jpg',
-					to:"t_" + getSetting("user_id") + ".jpg",
-					userid:getSetting("user_id")
-				},
-					function(data,status) {
-						console.log(data);
-					}
-				);
-					// Handle errors here
-					console.log('ERRORS: ' + textStatus);
-					$('#SaveProfileLoading').remove();
-
-				}
-			});
-		}
-		
-		// Handle the form submit
-		function submitForm(event, data) {
-		  // Create a jQuery object from the form
-			$form = $(event.target);
-
-			// Serialize the form data
-			var formData = $form.serialize();
-			//window.fd = formData;
-
-			// You should sterilise the file names
-			$.each(data.files, function(key, value)
-			{
-				formData = formData + '&filenames[]=' + value;
-				window.newFile = value;
-			});
-			
-			$.ajax({
-				url: 'action-uploadphoto.php',
-				type: 'POST',
-				data: formData,
-				cache: false,
-				dataType: 'json',
-				success: function(data, textStatus, jqXHR)
-				{
-					if(typeof data.error === 'undefined')
-					{
-						// Success so call function to process the form
-						console.log('SUCCESS: ' + data.success);
-						console.log(data);
-					}
-					else
-					{
-						// Handle errors here
-						console.log('ERRORS: ' + data.error);
-					}
-				},
-				error: function(jqXHR, textStatus, errorThrown)
-				{
-					// Handle errors here
-					console.log('ERRORS: ' + textStatus);
-				},
-				complete: function()
-				{
-					$('#SaveProfileLoading').remove();
-
-				}
-			});
-		}
-	
-		
 	}
 	
 	function hideProfile() {
@@ -1001,79 +871,91 @@ document.cookie="feedItems=50";
 	
 	
 	function saveProfile() {
-	
-		// First clear any warnings
+
 		$("#ProfileWarning").remove();
-	
-		// If no current password is supplied
-		if ( $("#oldpass").val() == "") {
+
+		if ($("#oldpass").val() == "") {
 			$('#Profile').append("<br><div id=ProfileWarning>Please enter your current password<br></div>");
-			$("#oldpass").focus(function(){
-   				$("#ProfileWarning").remove();
-			});
-			$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);			
-			return;
-			
-		}
-		
-		// If the new password fields don't match
-		if ( $("#PassA").val() != $("#PassB").val()) {
-			$('#Profile').append("<div id=ProfileWarning><br>Your new password doesn't match<br></div>");
-			$("#PassA").focus(function(){
-   				$("#ProfileWarning").remove();
-			});
-			$("#PassB").focus(function(){
-   				$("#ProfileWarning").remove();
-			});
-			$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);			
+			$("#oldpass").focus(function() { $("#ProfileWarning").remove(); });
+			$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);
 			return;
 		}
 
-	
-	
-	
-		var profile = {
-			email:$("#email").val(),
-			firstname:$("#namefirst").val(),
-			lastname:$("#namelast").val(),
-			password:$("#oldpass").val(),
-			passwordNew:$("#PassA").val(),
-			notifyEmail:$("#notifyresult").is(":checked") ? 1 : 0,
-			notifyMessage:$("#notifymessage").is(":checked") ? 1 : 0,
-			timezone:$("#timezone").val(),
-			groupid:$("#defaultgroup").val(),
-			userid:getCookie("userid"),
-			photo:"t_" + window.newFile.replace(/\.[^/.]+$/, "") + ".jpg"
+		if ($("#PassA").val() != $("#PassB").val()) {
+			$('#Profile').append("<div id=ProfileWarning><br>Your new password doesn't match<br></div>");
+			$("#PassA").focus(function() { $("#ProfileWarning").remove(); });
+			$("#PassB").focus(function() { $("#ProfileWarning").remove(); });
+			$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);
+			return;
 		}
+
+		var fileInput = document.getElementById("profilepic");
+
+		if (fileInput && fileInput.files.length > 0) {
+			// Upload photo first, then save profile data
+			$('#Profile').append("<div id=SaveProfileLoading><img src=ajax-loader.gif></img></div>");
+			var formData = new FormData();
+			formData.append("file", fileInput.files[0]);
+			formData.append("userid", getCookie("userid"));
+			$.ajax({
+				url: "action-uploadphoto.php",
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function(response) {
+					$("#SaveProfileLoading").remove();
+					var result = JSON.parse(response);
+					doSaveProfile(result.filename || "");
+				},
+				error: function() {
+					$("#SaveProfileLoading").remove();
+					doSaveProfile("");
+				}
+			});
+		} else {
+			doSaveProfile("");
+		}
+	}
+
+	function doSaveProfile(photoFilename) {
+		var profile = {
+			email: $("#email").val(),
+			firstname: $("#namefirst").val(),
+			lastname: $("#namelast").val(),
+			password: $("#oldpass").val(),
+			passwordNew: $("#PassA").val(),
+			notifyEmail: $("#notifyresult").is(":checked") ? 1 : 0,
+			notifyMessage: $("#notifymessage").is(":checked") ? 1 : 0,
+			timezone: $("#timezone").val(),
+			groupid: $("#defaultgroup").val(),
+			userid: getCookie("userid"),
+			photo: photoFilename
+		};
 		var profileJson = JSON.stringify(profile);
-		console.log(profileJson );
-		
-		// Show the loading graphic
+
 		$('#Profile').append("<div id=SaveProfileLoading><img src=ajax-loader.gif></img></div>");
-	
+
 		$.ajax({
-			type:"POST",
-			url:"action-saveprofile.php",
-			data: {	json:profileJson },
+			type: "POST",
+			url: "action-saveprofile.php",
+			data: { json: profileJson },
 			statusCode: {
-				400: function() { 
+				400: function() {
 					$("#SaveProfileLoading").remove();
 					$('#Profile').append("<div id=ProfileWarning><br>Your current password is incorrect<br></div>");
-					$("#oldpass").focus(function(){
-						$("#ProfileWarning").remove();
-					});
-					$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);			
+					$("#oldpass").focus(function() { $("#ProfileWarning").remove(); });
+					$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);
 				},
-				200: function(data) { 
-					console.log(data);
+				200: function() {
 					$("#SaveProfileLoading").remove();
 					getSettings();
 					$('#Profile').append("<div id=ProfileSuccess><br>Your changes have been saved<br></div>");
-					$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);			
-					setTimeout(function(){
+					$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);
+					setTimeout(function() {
 						$("#ProfileSuccess").remove();
-    					hideProfile();
-    					downloadResults();
+						hideProfile();
+						downloadResults();
 						downloadRankings(7);
 					}, 2000);
 				}
@@ -1081,14 +963,18 @@ document.cookie="feedItems=50";
 		});
 	}
 	
-	function triggerUpload() {
-		setTimeout(function() {
-			$('#FileForm').submit();
-		}, 100);
+	function profilePhotoPreview(input) {
+		if (input.files && input.files[0]) {
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				$("#photo-preview").attr("src", e.target.result).show();
+				$("#photo-label-text").text(input.files[0].name);
+			};
+			reader.readAsDataURL(input.files[0]);
+		}
 	}
-	
+
 	$( document ).ready(function() {
-		console.log(Dropzone.autoDiscover);
 		console.log("made it");
 		getSettings();
 		activateListeners();
