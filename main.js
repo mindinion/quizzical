@@ -477,12 +477,12 @@ document.cookie="feedItems=50";
 			// Make room for the bubble if it is a result post
 			if (resultId == null) {
 				$('*[data-quizfeed="' + quizfeedId + '"]').html("<div id=QuizFeedInfo data-quizfeedinfo=" + quizfeedId + " class=NoBubble>");
-				$('*[data-quizfeedinfo="' + quizfeedId + '"]').html("<div id=QuizFeedInfoPhoto><img src='" + picFilename + "'height=50 width=50></img>");
+				$('*[data-quizfeedinfo="' + quizfeedId + '"]').html("<div id=QuizFeedInfoPhoto><img src='" + picFilename + "?t=" + Date.now() + "'height=50 width=50></img>");
 				$('*[data-quizfeedinfo="' + quizfeedId + '"]').append("<div id=QuizFeedInfoText class=nobubble data-quizfeedtext=" + quizfeedId + ">");
 
 			} else {
 				$('*[data-quizfeed="' + quizfeedId + '"]').html("<div id=QuizFeedInfo data-quizfeedinfo=" + quizfeedId + " >");
-				$('*[data-quizfeedinfo="' + quizfeedId + '"]').html("<div id=QuizFeedInfoPhoto><img src='" + picFilename + "'height=50 width=50></img>");
+				$('*[data-quizfeedinfo="' + quizfeedId + '"]').html("<div id=QuizFeedInfoPhoto><img src='" + picFilename + "?t=" + Date.now() + "'height=50 width=50></img>");
 				$('*[data-quizfeedinfo="' + quizfeedId + '"]').append("<div id=QuizFeedInfoText data-quizfeedtext=" + quizfeedId + ">");
 			}
 		
