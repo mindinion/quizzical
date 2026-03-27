@@ -4,40 +4,41 @@
 
 #ProfileTitle {
 	background-color: #fee9cd;
-	height: 55px;
-	line-height: 55px;
+	height: 45px;
+	line-height: 45px;
 	text-align: center;
 	font-family: verdana, arial, sans-serif;
-	font-size: 18px;
+	font-size: 16px;
 	font-weight: bold;
 	color: #333;
 	border-bottom: 1px solid #fdd39b;
 }
 
 #ProfileForm {
-	max-width: 500px;
+	max-width: 460px;
 	margin: 0 auto;
-	padding: 10px 20px 40px;
+	padding: 10px 24px 32px;
 	font-family: verdana, arial, sans-serif;
 	font-size: 13px;
+	background-color: rgba(255,255,255,0.7);
+	border-radius: 0 0 6px 6px;
 }
 
 .prof-section-header {
-	background-color: #fee9cd;
-	border-left: 4px solid #e67300;
-	padding: 6px 10px;
-	margin: 20px 0 12px;
+	border-left: 3px solid #e67300;
+	padding: 3px 8px;
+	margin: 18px 0 10px;
 	font-weight: bold;
-	font-size: 11px;
-	color: #555;
-	letter-spacing: 0.5px;
+	font-size: 10px;
+	color: #e67300;
+	letter-spacing: 0.8px;
 	text-transform: uppercase;
 }
 
 .prof-row {
 	display: flex;
 	align-items: center;
-	margin-bottom: 10px;
+	margin-bottom: 7px;
 	gap: 12px;
 }
 
@@ -57,18 +58,18 @@
 
 .prof-input {
 	flex: 1;
-	height: 32px;
+	height: 28px;
 	padding: 0 8px;
 	font-family: verdana, arial, sans-serif;
-	font-size: 13px;
+	font-size: 12px;
 	background-color: #ffebcc;
-	border: 1px solid #b3e6cc;
+	border: 1px solid #ddd;
 	border-radius: 3px;
 	box-sizing: border-box;
 }
 
 .prof-select {
-	height: 34px;
+	height: 28px;
 }
 
 .prof-check {
