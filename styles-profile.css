@@ -1,33 +1,36 @@
 #Profile {
 	display: none;
+	position: relative;
+	z-index: 10;
 }
 
 #ProfileTitle {
-	background-color: #fee9cd;
-	height: 45px;
-	line-height: 45px;
+	background: linear-gradient(to bottom, #fdd39b, #fee9cd);
+	height: 60px;
+	line-height: 60px;
 	text-align: center;
 	font-family: verdana, arial, sans-serif;
-	font-size: 16px;
+	font-size: 18px;
 	font-weight: bold;
-	color: #333;
-	border-bottom: 1px solid #fdd39b;
+	color: #7a3e00;
+	letter-spacing: 1px;
+	border-bottom: 2px solid #e67300;
 }
 
 #ProfileForm {
 	max-width: 460px;
 	margin: 0 auto;
-	padding: 10px 24px 32px;
+	padding: 16px 28px 40px;
 	font-family: verdana, arial, sans-serif;
 	font-size: 13px;
-	background-color: rgba(255,255,255,0.7);
-	border-radius: 0 0 6px 6px;
+	background-color: rgba(255,255,255,0.75);
+	border-radius: 0 0 8px 8px;
 }
 
 .prof-section-header {
 	border-left: 3px solid #e67300;
 	padding: 3px 8px;
-	margin: 18px 0 10px;
+	margin: 24px 0 12px;
 	font-weight: bold;
 	font-size: 10px;
 	color: #e67300;
@@ -38,22 +41,22 @@
 .prof-row {
 	display: flex;
 	align-items: center;
-	margin-bottom: 7px;
+	margin-bottom: 9px;
 	gap: 12px;
 }
 
 .prof-label {
-	width: 200px;
-	min-width: 200px;
+	width: 190px;
+	min-width: 190px;
 	text-align: right;
-	color: #444;
-	font-size: 13px;
+	color: #555;
+	font-size: 12px;
 	font-family: verdana, arial, sans-serif;
 }
 
 .prof-hint {
 	color: #bbb;
-	font-size: 11px;
+	font-size: 10px;
 }
 
 .prof-input {
@@ -62,10 +65,16 @@
 	padding: 0 8px;
 	font-family: verdana, arial, sans-serif;
 	font-size: 12px;
-	background-color: #ffebcc;
+	background-color: #fff8f0;
 	border: 1px solid #ddd;
 	border-radius: 3px;
 	box-sizing: border-box;
+}
+
+.prof-input:focus {
+	outline: none;
+	border-color: #e67300;
+	background-color: #fff;
 }
 
 .prof-select {
@@ -73,29 +82,29 @@
 }
 
 .prof-check {
-	width: 20px;
-	height: 20px;
+	width: 18px;
+	height: 18px;
 	accent-color: #e67300;
 	cursor: pointer;
 	flex-shrink: 0;
 }
 
 .prof-photo-wrap {
-	margin: 10px 0 10px 212px;
+	margin: 10px 0 10px 202px;
 }
 
 .prof-buttons {
 	display: flex;
 	justify-content: center;
 	gap: 16px;
-	margin-top: 28px;
+	margin-top: 32px;
 }
 
 #ButtonSave {
-	width: 200px;
-	height: 42px;
+	width: 180px;
+	height: 40px;
 	font-family: verdana, arial, sans-serif;
-	font-size: 15px;
+	font-size: 14px;
 	font-weight: bold;
 	color: white;
 	background-color: #e67300;
@@ -109,20 +118,20 @@
 }
 
 #ButtonCancel {
-	width: 140px;
-	height: 42px;
+	width: 120px;
+	height: 40px;
 	font-family: verdana, arial, sans-serif;
-	font-size: 15px;
+	font-size: 14px;
 	font-weight: bold;
-	color: #666;
-	background-color: #eee;
+	color: #888;
+	background-color: #f0f0f0;
 	border: 1px solid #ccc;
 	border-radius: 20px;
 	cursor: pointer;
 }
 
 #ButtonCancel:hover {
-	background-color: #ddd;
+	background-color: #e0e0e0;
 }
 
 #ProfileWarning {
