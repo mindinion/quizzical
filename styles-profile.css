@@ -175,7 +175,7 @@
 }
 
 .field-error::before {
-	content: "⚠ ";
+	content: "\26A0\A0\A0";
 }
 
 .prof-input.input-error {
@@ -197,7 +197,7 @@
 }
 
 #ProfileSuccess::before {
-	content: "✓  ";
+	content: "\2713\A0\A0";
 }
 
 @keyframes fieldErrorIn {
