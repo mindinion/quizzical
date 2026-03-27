@@ -884,9 +884,9 @@ document.cookie="feedItems=50";
 				data: formData,
 				processData: false,
 				contentType: false,
-				success: function(response) {
+				dataType: "json",
+				success: function(result) {
 					$("#SaveProfileLoading").remove();
-					var result = JSON.parse(response);
 					doSaveDetails(result.filename || "");
 				},
 				error: function() {
@@ -929,6 +929,7 @@ document.cookie="feedItems=50";
 			},
 			error: function() {
 				$("#SaveProfileLoading").remove();
+				alert("Sorry, your changes could not be saved. Please try again.");
 			}
 		});
 	}
