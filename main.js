@@ -944,13 +944,11 @@ document.cookie="feedItems=50";
 				},
 				200: function() {
 					$("#SaveProfileLoading").remove();
-					getSettings();
 					$("#ProfileSuccess").show();
 					setTimeout(function() {
 						$("#ProfileSuccess").hide();
 						hideProfile();
-						downloadResults();
-						downloadRankings(7);
+						getSettings();
 					}, 2000);
 				}
 			}
