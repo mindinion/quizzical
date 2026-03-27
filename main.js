@@ -477,12 +477,12 @@ document.cookie="feedItems=50";
 			// Make room for the bubble if it is a result post
 			if (resultId == null) {
 				$('*[data-quizfeed="' + quizfeedId + '"]').html("<div id=QuizFeedInfo data-quizfeedinfo=" + quizfeedId + " class=NoBubble>");
-				$('*[data-quizfeedinfo="' + quizfeedId + '"]').html("<div id=QuizFeedInfoPhoto><img src='" + picFilename + "?t=" + Date.now() + "'height=50 width=50></img>");
+				$('*[data-quizfeedinfo="' + quizfeedId + '"]').html("<div id=QuizFeedInfoPhoto><img src='" + picFilename + "?t=" + Date.now() + "' height=50 width=50 loading='lazy'></img>");
 				$('*[data-quizfeedinfo="' + quizfeedId + '"]').append("<div id=QuizFeedInfoText class=nobubble data-quizfeedtext=" + quizfeedId + ">");
 
 			} else {
 				$('*[data-quizfeed="' + quizfeedId + '"]').html("<div id=QuizFeedInfo data-quizfeedinfo=" + quizfeedId + " >");
-				$('*[data-quizfeedinfo="' + quizfeedId + '"]').html("<div id=QuizFeedInfoPhoto><img src='" + picFilename + "?t=" + Date.now() + "'height=50 width=50></img>");
+				$('*[data-quizfeedinfo="' + quizfeedId + '"]').html("<div id=QuizFeedInfoPhoto><img src='" + picFilename + "?t=" + Date.now() + "' height=50 width=50 loading='lazy'></img>");
 				$('*[data-quizfeedinfo="' + quizfeedId + '"]').append("<div id=QuizFeedInfoText data-quizfeedtext=" + quizfeedId + ">");
 			}
 		
@@ -734,7 +734,7 @@ document.cookie="feedItems=50";
 			}
     		$("#UserRankings").append("<span id=UserRanking data-ranking=" + userid + ">");
 			$('*[data-ranking="' + userid + '"]').append("<div id='RankingPhoto' data-rankingphoto=" + userid + ">");
-			$('*[data-rankingphoto="' + userid + '"]').append("<img src='" + pic_filename + "?t=" + Date.now() + "' class='UserLogo'></img>");
+			$('*[data-rankingphoto="' + userid + '"]').append("<img src='" + pic_filename + "?t=" + Date.now() + "' class='UserLogo' loading='lazy'></img>");
 			$('*[data-rankingphoto="' + userid + '"]').append("<div id='RankingPlace'>" + placing + "<br><div id=PlacingScore>" + average + "%</div></div id='RankingPlace'>");
 			$('*[data-ranking="' + userid + '"]').append("</div id='RankingPhoto'>");
     		$("#UserRankings").append("	</span id='UserRanking'>");
@@ -1030,7 +1030,7 @@ document.cookie="feedItems=50";
 
 	function confirmCrop() {
 		if (!cropper) return;
-		cropper.getCroppedCanvas({ width: 400, height: 400 }).toBlob(function(blob) {
+		cropper.getCroppedCanvas({ width: 150, height: 150 }).toBlob(function(blob) {
 			croppedBlob = blob;
 			var url = URL.createObjectURL(blob);
 			$("#photo-preview").attr("src", url).show();

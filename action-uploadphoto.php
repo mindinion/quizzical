@@ -3,8 +3,8 @@
  * action-uploadphoto.php
  *
  * Handles profile photo uploads. Validates the uploaded file is a genuine image
- * using MIME type detection (not just extension), saves it as user{userid}.{ext}
- * in the web root, updates the Users table, and returns JSON with the filename.
+ * using MIME type detection, resizes it to 150x150 using GD, saves as a JPEG,
+ * updates the Users table, and returns JSON with the filename.
  */
 
 require_once 'dblogin.php';
@@ -24,29 +24,43 @@ if (!$userid) {
 }
 
 // Validate it is actually an image using MIME type, not just the file extension
-$finfo = finfo_open(FILEINFO_MIME_TYPE);
+$finfo    = finfo_open(FILEINFO_MIME_TYPE);
 $mimeType = finfo_file($finfo, $_FILES['file']['tmp_name']);
 finfo_close($finfo);
 
-$allowedTypes = [
-	'image/jpeg' => 'jpg',
-	'image/png'  => 'png',
-	'image/gif'  => 'gif',
-];
-
-if (!array_key_exists($mimeType, $allowedTypes)) {
+$allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+if (!in_array($mimeType, $allowedTypes)) {
 	echo json_encode(['error' => 'File must be a JPEG, PNG or GIF image']);
 	exit;
 }
 
-$extension  = $allowedTypes[$mimeType];
-$filename   = 'user' . $userid . '.' . $extension;
+// Load into GD
+switch ($mimeType) {
+	case 'image/jpeg': $src = imagecreatefromjpeg($_FILES['file']['tmp_name']); break;
+	case 'image/png':  $src = imagecreatefrompng($_FILES['file']['tmp_name']);  break;
+	case 'image/gif':  $src = imagecreatefromgif($_FILES['file']['tmp_name']);  break;
+}
+
+if (!$src) {
+	echo json_encode(['error' => 'Could not process image']);
+	exit;
+}
+
+// Resize to 150x150
+$out = imagecreatetruecolor(150, 150);
+imagecopyresampled($out, $src, 0, 0, 0, 0, 150, 150, imagesx($src), imagesy($src));
+imagedestroy($src);
+
+// Always save as JPEG
+$filename   = 'user' . $userid . '.jpg';
 $uploadPath = __DIR__ . '/' . $filename;
 
-if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadPath)) {
+if (imagejpeg($out, $uploadPath, 85)) {
+	imagedestroy($out);
 	$conn->query("UPDATE Users SET pic_filename = '$filename' WHERE id = $userid");
 	echo json_encode(['filename' => $filename]);
 } else {
+	imagedestroy($out);
 	echo json_encode(['error' => 'Could not save file — check server write permissions']);
 }
 ?>
