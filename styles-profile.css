@@ -5,16 +5,37 @@
 }
 
 #ProfileTitle {
-	background: linear-gradient(to bottom, #fdd39b, #fee9cd);
-	height: 60px;
-	line-height: 60px;
-	text-align: center;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 24px 20px 0;
+	max-width: 460px;
+	margin: 0 auto;
+}
+
+#ProfileTitleName {
 	font-family: verdana, arial, sans-serif;
-	font-size: 18px;
+	font-size: 20px;
 	font-weight: bold;
-	color: #7a3e00;
-	letter-spacing: 1px;
-	border-bottom: 2px solid #e67300;
+	color: #333;
+	letter-spacing: 0.3px;
+}
+
+#ProfileClose {
+	background: none;
+	border: none;
+	font-size: 20px;
+	color: #aaa;
+	cursor: pointer;
+	line-height: 1;
+	padding: 4px 8px;
+	border-radius: 50%;
+	transition: color 0.15s, background 0.15s;
+}
+
+#ProfileClose:hover {
+	color: #555;
+	background: #f0f0f0;
 }
 
 #ProfileForm {

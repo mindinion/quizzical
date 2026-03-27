@@ -824,6 +824,7 @@ document.cookie="feedItems=50";
 		$("#Profile").show();
 		
 		// Populate the fields
+		$("#ProfileTitleName").text(getSetting("first_name") + " " + getSetting("last_name"));
 		$("#email").val(getSetting("email"));
 		$("#namefirst").val(getSetting("first_name"));
 		$("#namelast").val(getSetting("last_name"));
