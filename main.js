@@ -872,19 +872,19 @@ document.cookie="feedItems=50";
 	
 	function saveProfile() {
 
-		$("#ProfileWarning").remove();
+		$("#ProfileWarning").hide();
 
 		if ($("#oldpass").val() == "") {
-			$('#Profile').append("<br><div id=ProfileWarning>Please enter your current password<br></div>");
-			$("#oldpass").focus(function() { $("#ProfileWarning").remove(); });
+			$("#ProfileWarning").html("⚠&nbsp; Please enter your current password").show();
+			$("#oldpass").one("focus", function() { $("#ProfileWarning").hide(); });
 			$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);
 			return;
 		}
 
 		if ($("#PassA").val() != $("#PassB").val()) {
-			$('#Profile').append("<div id=ProfileWarning><br>Your new password doesn't match<br></div>");
-			$("#PassA").focus(function() { $("#ProfileWarning").remove(); });
-			$("#PassB").focus(function() { $("#ProfileWarning").remove(); });
+			$("#ProfileWarning").html("⚠&nbsp; New passwords don't match").show();
+			$("#PassA").one("focus", function() { $("#ProfileWarning").hide(); });
+			$("#PassB").one("focus", function() { $("#ProfileWarning").hide(); });
 			$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);
 			return;
 		}
@@ -943,17 +943,17 @@ document.cookie="feedItems=50";
 			statusCode: {
 				400: function() {
 					$("#SaveProfileLoading").remove();
-					$('#Profile').append("<div id=ProfileWarning><br>Your current password is incorrect<br></div>");
-					$("#oldpass").focus(function() { $("#ProfileWarning").remove(); });
+					$("#ProfileWarning").html("⚠&nbsp; Your current password is incorrect").show();
+					$("#oldpass").one("focus", function() { $("#ProfileWarning").hide(); });
 					$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);
 				},
 				200: function() {
 					$("#SaveProfileLoading").remove();
 					getSettings();
-					$('#Profile').append("<div id=ProfileSuccess><br>Your changes have been saved<br></div>");
+					$("#ProfileSuccess").html("✓&nbsp; Your changes have been saved").show();
 					$("#MainContent").scrollTop($("#MainContent")[0].scrollHeight);
 					setTimeout(function() {
-						$("#ProfileSuccess").remove();
+						$("#ProfileSuccess").hide();
 						hideProfile();
 						downloadResults();
 						downloadRankings(7);
