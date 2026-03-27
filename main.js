@@ -872,16 +872,17 @@ document.cookie="feedItems=50";
 	
 	function saveProfile() {
 
+		var currentError = $(".field-error:visible").attr("id") || "";
 		$(".field-error").hide();
 		$(".prof-input").removeClass("input-error");
 
 		if ($("#oldpass").val() == "") {
-			showFieldError("oldpass-error", "oldpass", "Please enter your current password");
+			showFieldError("oldpass-error", "oldpass", "Please enter your current password", currentError === "oldpass-error");
 			return;
 		}
 
 		if ($("#PassA").val() != $("#PassB").val()) {
-			showFieldError("passmatch-error", "PassA PassB", "Passwords don't match");
+			showFieldError("passmatch-error", "PassA PassB", "Passwords don't match", currentError === "passmatch-error");
 			return;
 		}
 
@@ -939,7 +940,7 @@ document.cookie="feedItems=50";
 			statusCode: {
 				400: function() {
 					$("#SaveProfileLoading").remove();
-					showFieldError("oldpass-error", "oldpass", "Incorrect password");
+					showFieldError("oldpass-error", "oldpass", "Incorrect password", false);
 				},
 				200: function() {
 					$("#SaveProfileLoading").remove();
@@ -956,8 +957,14 @@ document.cookie="feedItems=50";
 		});
 	}
 	
-	function showFieldError(errorId, fieldIds, message) {
-		$("#" + errorId).html(message).show();
+	function showFieldError(errorId, fieldIds, message, isRepeat) {
+		var el = $("#" + errorId).html(message).show()[0];
+		if (isRepeat) {
+			// Re-trigger the animation so the user sees the form ran again
+			el.style.animation = "none";
+			void el.offsetWidth;
+			el.style.animation = "";
+		}
 		$.each(fieldIds.split(" "), function(_, id) {
 			$("#" + id).addClass("input-error").one("focus", function() {
 				$("#" + errorId).hide();
