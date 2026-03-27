@@ -1,159 +1,148 @@
 #Profile {
-	display:none;	
+	display: none;
 }
 
-fieldset.settings {
-	font-family: verdana;
-	font-size: 13px;
-	border-style:none;
-	}
-
-.titlelong {
-	vertical-align: bottom;
-	float: left;
-	width: 200px;
-	text-align: right;
-	position:absolute;
-	right:52%;
-	padding-top:6px;
+#ProfileTitle {
+	background-color: #fee9cd;
+	height: 55px;
+	line-height: 55px;
+	text-align: center;
+	font-family: verdana, arial, sans-serif;
+	font-size: 18px;
+	font-weight: bold;
+	color: #333;
+	border-bottom: 1px solid #fdd39b;
 }
 
-.titlelongcheck {
-	vertical-align: bottom;
-	float: left;
-	width: 200px;
-	text-align: right;
-	position:absolute;
-	right:52%;
-	padding-top:9px;
-}
-
-.titlelongdropdown {
-	vertical-align: bottom;
-	float: left;
-	width: 200px;
-	text-align: right;
-	position:absolute;
-	right:52%;
-	padding-top:0px;
-}
-
-.fieldlong {
-	width: 200px;
-	height: 30px;
-	text-align: left;
-	position:absolute;
-	left:52%;
-	padding-left:5px;
-	font-family: verdana;
-	font-size: 13px;
-	}
-
-.listlong {
-	width: 200px;
-	height: 50px;
-	text-align: left;
-	position:absolute;
-	left:52%;
-	font-family: verdana;
+#ProfileForm {
+	max-width: 500px;
+	margin: 0 auto;
+	padding: 10px 20px 40px;
+	font-family: verdana, arial, sans-serif;
 	font-size: 13px;
 }
 
-#Title {
-	background-color:orange;
-	height:35px;
-	padding-top:20px;
-	text-align:center;
+.prof-section-header {
+	background-color: #fee9cd;
+	border-left: 4px solid #e67300;
+	padding: 6px 10px;
+	margin: 20px 0 12px;
+	font-weight: bold;
+	font-size: 11px;
+	color: #555;
+	letter-spacing: 0.5px;
+	text-transform: uppercase;
 }
 
-#ButtonSave { 
-	width:300px;
-	font-family: verdana,arial,sans-serif;	
-	font-size:18px;
-	color:white;
-	font-weight:bold;
-    border-radius:20px;
-    background-color:e67300;
-	height:40px;
-	text-align:center;
-	border:none !important;
-	cursor:pointer;
-	padding-top:4px;
-	margin:auto;
-	position:absolute;
-	left:55%;
-	margin-bottom:30px;
+.prof-row {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+	gap: 12px;
 }
 
-#ButtonCancel { 
-	width:300px;
-	font-family: verdana,arial,sans-serif;	
-	font-size:18px;
-	color:white;
-	font-weight:bold;
-    border-radius:20px;
-    background-color:e67300;
-	height:40px;
-	text-align:center;
-	border:none !important;
-	cursor:pointer;
-	padding-top:4px;
-	margin:auto;
-	position:absolute;
-	right:55%;	
-	margin-bottom:30px;
-}
-
-#profilepic {
-	text-align:center;
-	width:160px;
-	padding-top:10px;
-}
-
-#Upload {
+.prof-label {
 	width: 200px;
-	height: 30px;
-	text-align: left;
-	position:absolute;
-	left:52%;
-	padding-top:6px;
-
+	min-width: 200px;
+	text-align: right;
+	color: #444;
+	font-size: 13px;
+	font-family: verdana, arial, sans-serif;
 }
 
-#LoadingGroups {
-	color:grey;
+.prof-hint {
+	color: #bbb;
+	font-size: 11px;
+}
+
+.prof-input {
+	flex: 1;
+	height: 32px;
+	padding: 0 8px;
+	font-family: verdana, arial, sans-serif;
+	font-size: 13px;
+	background-color: #ffebcc;
+	border: 1px solid #b3e6cc;
+	border-radius: 3px;
+	box-sizing: border-box;
+}
+
+.prof-select {
+	height: 34px;
+}
+
+.prof-check {
+	width: 20px;
+	height: 20px;
+	accent-color: #e67300;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.prof-photo-wrap {
+	margin: 10px 0 10px 212px;
+}
+
+.prof-buttons {
+	display: flex;
+	justify-content: center;
+	gap: 16px;
+	margin-top: 28px;
+}
+
+#ButtonSave {
+	width: 200px;
+	height: 42px;
+	font-family: verdana, arial, sans-serif;
+	font-size: 15px;
+	font-weight: bold;
+	color: white;
+	background-color: #e67300;
+	border: none;
+	border-radius: 20px;
+	cursor: pointer;
+}
+
+#ButtonSave:hover {
+	background-color: #cc6600;
+}
+
+#ButtonCancel {
+	width: 140px;
+	height: 42px;
+	font-family: verdana, arial, sans-serif;
+	font-size: 15px;
+	font-weight: bold;
+	color: #666;
+	background-color: #eee;
+	border: 1px solid #ccc;
+	border-radius: 20px;
+	cursor: pointer;
+}
+
+#ButtonCancel:hover {
+	background-color: #ddd;
 }
 
 #ProfileWarning {
-	text-align:center;
-	color:red;
-	font-weight:bold;
-	padding-bottom:20px;
+	text-align: center;
+	color: #cc0000;
+	font-weight: bold;
+	padding: 10px 0;
+	font-family: verdana, arial, sans-serif;
+	font-size: 13px;
 }
 
 #ProfileSuccess {
-	text-align:center;
-	color:green;
-	font-weight:bold;
-	padding-bottom:20px;
+	text-align: center;
+	color: #006600;
+	font-weight: bold;
+	padding: 10px 0;
+	font-family: verdana, arial, sans-serif;
+	font-size: 13px;
 }
 
 #SaveProfileLoading {
-	text-align:center;
-}
-
-#FileForm {
-	float:left;
-	text-align:center;
-	width:100%;
-}
-
-#FileForm {
-	border-style:dashed;
-	border-width:thin;
-	max-width:200px;
-	height:170px;
-	padding-top:14px;
-	left:52%;
-	position:absolute;
+	text-align: center;
+	padding: 10px 0;
 }

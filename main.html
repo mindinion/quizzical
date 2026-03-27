@@ -93,53 +93,67 @@
 
 		<div id="QuizFeed"></div id="QuizFeed">
 		<div id="Profile">
-			<div id="Title">Your Profile</div>
-			<fieldset class="settings">
-				<br>
-				<label for="newemail" class="titlelong">Email Address</label>
-				<input type="text" class = "fieldlong" name="newemail" id="email" > <br> 
-				<br><br>
-				<label for="newfirstname" class="titlelong">First Name</label>
-				<input type="text" class = "fieldlong" name="newfirstname" id="namefirst" > <br>
-				<br>
-				<label for="newlastname" class="titlelong">Last Name</label>
-				<input type="text" class = "fieldlong" name="newlastname" id="namelast" > <br>
-				<br><br>
-				<label for="oldpass" class="titlelong">Current Password</label>
-				<input type="password" class = "fieldlong" name="oldpass" id="oldpass"><br>
-				<br>
-				<label for="passwordA" class="titlelong">New Password</label>
-				<input type="password" class = "fieldlong" name="passwordA" id="PassA"><br>
-				<br>
-				<label for="passwordB" class="titlelong">Confirm New Password</label>
-				<input type="password" class = "fieldlong" name="passwordB" id="PassB">
-				<br><br><br>
-				<label for="notifyresults" class="titlelongcheck">Email Results Notifications</label>
-				<input type="checkbox" class = "fieldlong" id="notifyresult" name="notifyresults" value="1"> <br>
-				<br>
-				<label for="notifymessages" class="titlelongcheck">Email Message Notifications</label>
-				<input type="checkbox" class = "fieldlong" id="notifymessage" name="notifymessages" value="1"><br>
-				<br><br>
-				<label for="timezone" class="titlelongdropdown">Timezone</label>
-				<select name="timezone" class ="fieldlong" id="timezone" onchange=""></select>
-				<br><br><br>
-				<label for="defaultgroup" class="titlelong">Group</label>
-				<select size="2"; name = "defaultgroup" class = "listlong" id="defaultgroup" ></select>
-				<br><br><br><br><br>
-				
-				<label for="profilepic" class="titlelong">New Profile Photo</label>
-				<form action="action-uploadphoto.php" class="dropzone" id="fileform">
-					<input type="hidden" id="userid" name="userid"></input>
-				</form>
-				<br><br><br><br><br><br><br><br><br><br><br><br><br>
-				
-				
-			</fieldset>
-			<div style="text-align:center">
-				<input class="submit" type="button" value="Save Changes" id="ButtonSave" onclick="script:saveProfile();">
-				<input class="submit" type="button" value="Cancel" id="ButtonCancel" onclick="script:hideProfile();">
+			<div id="ProfileTitle">Your Profile</div>
+			<div id="ProfileForm">
+
+				<div class="prof-section-header">Account Details</div>
+				<div class="prof-row">
+					<label for="email" class="prof-label">Email Address</label>
+					<input type="text" class="prof-input" name="newemail" id="email">
+				</div>
+				<div class="prof-row">
+					<label for="namefirst" class="prof-label">First Name</label>
+					<input type="text" class="prof-input" name="newfirstname" id="namefirst">
+				</div>
+				<div class="prof-row">
+					<label for="namelast" class="prof-label">Last Name</label>
+					<input type="text" class="prof-input" name="newlastname" id="namelast">
+				</div>
+
+				<div class="prof-section-header">Change Password</div>
+				<div class="prof-row">
+					<label for="oldpass" class="prof-label">Current Password</label>
+					<input type="password" class="prof-input" name="oldpass" id="oldpass">
+				</div>
+				<div class="prof-row">
+					<label for="PassA" class="prof-label">New Password <span class="prof-hint">(optional)</span></label>
+					<input type="password" class="prof-input" name="passwordA" id="PassA">
+				</div>
+				<div class="prof-row">
+					<label for="PassB" class="prof-label">Confirm New Password</label>
+					<input type="password" class="prof-input" name="passwordB" id="PassB">
+				</div>
+
+				<div class="prof-section-header">Preferences</div>
+				<div class="prof-row">
+					<label for="timezone" class="prof-label">Timezone</label>
+					<select name="timezone" class="prof-input prof-select" id="timezone"></select>
+				</div>
+				<div class="prof-row">
+					<label for="defaultgroup" class="prof-label">Group</label>
+					<select name="defaultgroup" class="prof-input prof-select" id="defaultgroup"></select>
+				</div>
+				<div class="prof-row">
+					<label for="notifyresult" class="prof-label">Email Results Notifications</label>
+					<input type="checkbox" class="prof-check" id="notifyresult" name="notifyresults" value="1">
+				</div>
+				<div class="prof-row">
+					<label for="notifymessage" class="prof-label">Email Message Notifications</label>
+					<input type="checkbox" class="prof-check" id="notifymessage" name="notifymessages" value="1">
+				</div>
+
+				<div class="prof-section-header">Profile Photo</div>
+				<div class="prof-photo-wrap">
+					<form action="action-uploadphoto.php" class="dropzone" id="fileform">
+						<input type="hidden" id="userid" name="userid">
+					</form>
+				</div>
+
+				<div class="prof-buttons">
+					<input type="button" value="Cancel" id="ButtonCancel" onclick="hideProfile();">
+					<input type="button" value="Save Changes" id="ButtonSave" onclick="saveProfile();">
+				</div>
 			</div>
-			<br><br>
 		</div>
 	</div id="MainContent">
 
