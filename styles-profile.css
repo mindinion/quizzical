@@ -167,7 +167,6 @@
 }
 
 #ProfileWarning {
-	display: none;
 	background-color: #fff3f0;
 	border-left: 4px solid #cc3300;
 	color: #aa2200;
@@ -181,7 +180,6 @@
 }
 
 #ProfileSuccess {
-	display: none;
 	background-color: #f0fff4;
 	border-left: 4px solid #2e7d32;
 	color: #1b5e20;
