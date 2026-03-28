@@ -852,17 +852,12 @@ document.cookie="feedItems=50";
 		$detail.html('<div class="detail-loading"><img src="ajax-loader.gif" class="Loader"></div>');
 		$row.after($detail);
 		$row.addClass('row-expanded');
-		if (expandtype === 'pb') {
-			var userPbs = currentPbs.filter(function(p) { return p.userid === userid; });
-			$detail.html(renderPbDetail(userPbs));
-		} else {
-			$.get('action-getuserresults.php',
-				{ groupid: getSetting('group_id'), userid: userid, period: period },
-				function(data) {
-					$detail.html(renderResultsDetail(JSON.parse(data)));
-				}
-			);
-		}
+		$.get('action-getuserresults.php',
+			{ groupid: getSetting('group_id'), userid: userid, period: period },
+			function(data) {
+				$detail.html(renderResultsDetail(JSON.parse(data)));
+			}
+		);
 	}
 
 	function renderResultsDetail(results) {
