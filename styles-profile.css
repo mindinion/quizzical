@@ -375,3 +375,42 @@
 #CropConfirm:hover {
 	background: #cc6600;
 }
+
+/* ── Mobile overrides ── */
+
+@media (max-width: 767px) {
+
+	#ProfileForm {
+		padding: 16px 14px 28px;
+	}
+
+	.prof-row {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 4px;
+		margin-bottom: 12px;
+	}
+
+	.prof-label {
+		width: auto;
+		min-width: 0;
+		text-align: left;
+	}
+
+	.prof-input {
+		width: 100%;
+	}
+
+	.prof-photo-wrap {
+		margin-left: 0;
+	}
+
+	.field-error {
+		margin-left: 0;
+	}
+
+	.prof-pass-buttons {
+		margin-left: 0;
+	}
+
+}

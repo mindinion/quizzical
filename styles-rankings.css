@@ -462,7 +462,7 @@
 
 @media (max-width: 767px) {
 
-	/* Feed: remove fixed-width centering, fill the screen */
+	/* Feed and Rankings: remove fixed-width centering, fill the screen */
 	#MainContent {
 		min-width: 0;
 	}
@@ -475,17 +475,36 @@
 		box-sizing: border-box;
 	}
 
-	/* Rankings panel: same — fill the screen */
 	#RankingsPanel {
 		left: 0;
 		margin-left: 0;
 		width: 100%;
 	}
 
-	/* Tab bar: taller, bigger text, safe-area gap at bottom */
+	/* Feed bubbles: make compact and float right alongside info,
+	   rather than overlapping it with absolute positioning */
+	#QuizFeedInfo {
+		min-width: 0;
+		max-width: calc(100% - 75px);
+	}
+
+	#QuizFeedBubble {
+		position: static;
+		float: right;
+		min-width: 0;
+		width: 65px;
+		height: auto;
+		padding: 10px 4px 6px;
+		right: auto;
+		font-size: 11px;
+	}
+
+	/* Tab bar: taller, bigger text.
+	   max() ensures at least 8px bottom padding on devices where
+	   env(safe-area-inset-bottom) returns 0 (most Android). */
 	#TabBar {
-		height: calc(60px + env(safe-area-inset-bottom, 0px));
-		padding-bottom: env(safe-area-inset-bottom, 0px);
+		height: calc(60px + max(env(safe-area-inset-bottom, 0px), 8px));
+		padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
 	}
 
 	.tab {
@@ -494,7 +513,7 @@
 
 	/* Push content up to clear the taller tab bar */
 	#MainContent {
-		bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+		bottom: calc(60px + max(env(safe-area-inset-bottom, 0px), 8px));
 	}
 
 }
