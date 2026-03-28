@@ -6,27 +6,26 @@
 /* ── Info icon & tooltip ─────────────────────────────────────────────────── */
 
 .info-icon {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 14px;
-	height: 14px;
+	display: inline-block;
+	width: 15px;
+	height: 15px;
+	line-height: 15px;
 	border-radius: 50%;
-	background: #ccc;
-	color: white;
-	font-size: 9px;
+	background: #bbb;
+	color: #fff;
+	font-size: 10px;
 	font-style: italic;
 	font-weight: bold;
-	font-family: serif;
+	font-family: Georgia, serif;
+	text-align: center;
 	cursor: pointer;
 	vertical-align: middle;
 	margin-left: 3px;
 	user-select: none;
-	flex-shrink: 0;
 }
 
 .info-icon:hover {
-	background: #999;
+	background: #888;
 }
 
 #InfoTooltip {
