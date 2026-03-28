@@ -1,6 +1,15 @@
 
 // Initialise the number of results in the quiz feed
-document.cookie="feedItems=50";
+document.cookie="feedItems
+		// Drill-down: click any rankings/MI/PB row to expand results
+		$(document).on('click', '.rankings-row[data-userid], .mi-row[data-userid], .pb-row[data-userid]', function(e) {
+			if ($(e.target).hasClass('info-icon')) return;
+			var $row = $(this);
+			var userid = parseInt($row.data('userid'));
+			var expandtype = $row.data('expandtype');
+			toggleDetail($row, userid, expandtype, rankingsCurrentPeriod);
+		});
+=50";
 
 
 // Retrieve a cookie	
@@ -688,6 +697,7 @@ document.cookie="feedItems=50";
 	
 	var rankingsCurrentPeriod = 'weekly';
 	var rankingsLoaded = false;
+	var currentPbs = [];
 
 	function switchTab(tab) {
 		if (tab === 'feed') {
@@ -734,6 +744,7 @@ document.cookie="feedItems=50";
 	}
 
 	function renderRankings(rankings, streaks, pbs, period, myUserid) {
+		currentPbs = pbs;
 		var streakMap = {};
 		streaks.forEach(function(s) { streakMap[s.userid] = s.streak; });
 
@@ -771,7 +782,7 @@ document.cookie="feedItems=50";
 				? '<span class="participation">' + r.days_active + '/' + r.period_days + '</span>'
 				: '';
 
-			html += '<div class="' + rowClass + '">' ;
+			html += '<div class="' + rowClass + '" data-userid="' + r.userid + '" data-expandtype="rankings" data-firstname="' + r.first_name + '">' ;
 			html += '<span class="r-place">' + placeLabel + '</span>';
 			html += '<span class="r-photo-name">';
 			html += '<img src="' + r.pic_filename + '?t=' + Date.now() + '" class="r-photo" loading="lazy">';
@@ -798,7 +809,7 @@ document.cookie="feedItems=50";
 				var miHtml = '<div class="rankings-section-title">Most Improved <span class="info-icon" data-tip="Players whose average % improved the most vs the prior period">i</span></div>';
 				miHtml += '<div class="most-improved-list">';
 				improved.forEach(function(item) {
-					miHtml += '<div class="mi-row">';
+					miHtml += '<div class="mi-row" data-userid="' + item.r.userid + '" data-expandtype="mi" data-firstname="' + item.r.first_name + '">';
 					miHtml += '<img src="' + item.r.pic_filename + '?t=' + Date.now() + '" class="r-photo" loading="lazy">';
 					miHtml += '<span class="mi-name">' + item.r.first_name + ' ' + item.r.last_name + '</span>';
 					miHtml += '<span class="mi-arrow trend-up">&#x25B2; +' + item.diff + '%</span>';
@@ -826,7 +837,7 @@ document.cookie="feedItems=50";
 			var pbHtml = '<div class="rankings-section-title">Personal Bests <span class="info-icon" data-tip="The highest single score ever recorded by each player in this group">i</span></div>';
 			pbHtml += '<div class="pb-list">';
 			bestsList.forEach(function(p) {
-				pbHtml += '<div class="pb-row">';
+				pbHtml += '<div class="pb-row" data-userid="' + p.userid + '" data-expandtype="pb" data-firstname="' + p.first_name + '">';
 				pbHtml += '<span class="pb-name">' + p.first_name + ' ' + p.last_name + '</span>';
 				pbHtml += '<span class="pb-type">' + p.type + '</span>';
 				pbHtml += '<span class="pb-score">' + p.best_pct + '%</span>';
@@ -835,6 +846,69 @@ document.cookie="feedItems=50";
 			pbHtml += '</div>';
 			$('#RankingsPersonalBests').html(pbHtml);
 		}
+	}
+
+	function toggleDetail($row, userid, expandtype, period) {
+		var detailId = 'detail-' + expandtype + '-' + userid;
+		var $existing = $('#' + detailId);
+		if ($existing.length) {
+			$existing.slideToggle(150);
+			$row.toggleClass('row-expanded');
+			return;
+		}
+		var $detail = $('<div class="detail-panel" id="' + detailId + '"></div>');
+		$detail.html('<div class="detail-loading"><img src="ajax-loader.gif" class="Loader"></div>');
+		$row.after($detail);
+		$row.addClass('row-expanded');
+		if (expandtype === 'pb') {
+			var userPbs = currentPbs.filter(function(p) { return p.userid === userid; });
+			$detail.html(renderPbDetail(userPbs));
+		} else {
+			$.get('action-getuserresults.php',
+				{ groupid: getSetting('group_id'), userid: userid, period: period },
+				function(data) {
+					$detail.html(renderResultsDetail(JSON.parse(data)));
+				}
+			);
+		}
+	}
+
+	function renderResultsDetail(results) {
+		if (!results || results.length === 0) return '<div class="detail-empty">No results for this period</div>';
+		var html = '<table class="detail-table">';
+		html += '<tr><th>Date</th><th>Type</th><th>Score</th><th>%</th></tr>';
+		results.forEach(function(r) {
+			var parts = r.date.split('-');
+			var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+			var dateStr = parseInt(parts[2]) + ' ' + months[parseInt(parts[1]) - 1];
+			html += '<tr>';
+			html += '<td>' + dateStr + '</td>';
+			html += '<td>' + r.type + '</td>';
+			html += '<td>' + r.score + '/' + r.max + '</td>';
+			html += '<td class="detail-pct">' + r.pct + '%</td>';
+			html += '</tr>';
+		});
+		html += '</table>';
+		return html;
+	}
+
+	function renderPbDetail(userPbs) {
+		if (!userPbs || userPbs.length === 0) return '<div class="detail-empty">No results found</div>';
+		var html = '<table class="detail-table">';
+		html += '<tr><th>Type</th><th>Date</th><th>Score</th><th>%</th></tr>';
+		userPbs.forEach(function(p) {
+			var parts = p.date.split('-');
+			var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+			var dateStr = parseInt(parts[2]) + ' ' + months[parseInt(parts[1]) - 1];
+			html += '<tr>';
+			html += '<td>' + p.type + '</td>';
+			html += '<td>' + dateStr + '</td>';
+			html += '<td>' + p.score + '/' + p.max + '</td>';
+			html += '<td class="detail-pct">' + p.best_pct + '%</td>';
+			html += '</tr>';
+		});
+		html += '</table>';
+		return html;
 	}
 
 	function refreshNewPost() {
@@ -866,6 +940,15 @@ document.cookie="feedItems=50";
 		});
 		$(document).on('click', function() {
 			$('#InfoTooltip').fadeOut(100);
+		});
+
+		// Drill-down: click any rankings/MI/PB row to expand results
+		$(document).on('click', '.rankings-row[data-userid], .mi-row[data-userid], .pb-row[data-userid]', function(e) {
+			if ($(e.target).hasClass('info-icon')) return;
+			var $row = $(this);
+			var userid = parseInt($row.data('userid'));
+			var expandtype = $row.data('expandtype');
+			toggleDetail($row, userid, expandtype, rankingsCurrentPeriod);
 		});
 
 		// If entering a score, reveal the rest of the score fields

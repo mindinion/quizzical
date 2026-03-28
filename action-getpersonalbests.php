@@ -2,8 +2,9 @@
 /**
  * action-getpersonalbests.php
  *
- * Returns each user's best score (as %) per quiz type, for all users in a group.
- * Used to power the Personal Bests section in the rankings panel.
+ * Returns each user's best score per quiz type, including the date and raw score
+ * for the actual result that achieved it. Used to power the Personal Bests section
+ * and its drill-down detail panel.
  */
 
 	require_once 'dblogin.php';
@@ -11,17 +12,31 @@
 
 	if (isset($_GET['groupid'])) $groupid = sanitizeString($_GET['groupid']);
 
+	// Subquery finds the max % per user+type, then we join back to get the
+	// actual result row (date, score, max). GROUP BY handles ties by picking one.
 	$q = "SELECT
 		Users.id AS userid,
 		Users.first_name,
 		Users.last_name,
-		Results.type,
-		MAX(ROUND(score / max * 100, 0)) AS best_pct
-	FROM Users
+		r.type,
+		r.score,
+		r.max,
+		DATE_FORMAT(r.date, '%Y-%m-%d') AS date,
+		ROUND(r.score / r.max * 100, 0) AS best_pct
+	FROM Results r
+		INNER JOIN Users ON Users.id = r.user
 		INNER JOIN Memberships ON Memberships.user_id = Users.id
-		INNER JOIN Results ON Results.user = Users.id AND Results.status = 'active'
-	WHERE Memberships.group_id = $groupid
-	GROUP BY Users.id, Results.type
+		INNER JOIN (
+			SELECT user, type, MAX(ROUND(score / max * 100, 0)) AS max_pct
+			FROM Results
+			WHERE status = 'active'
+			GROUP BY user, type
+		) AS bests ON bests.user = r.user
+			AND bests.type = r.type
+			AND ROUND(r.score / r.max * 100, 0) = bests.max_pct
+	WHERE r.status = 'active'
+		AND Memberships.group_id = $groupid
+	GROUP BY r.user, r.type
 	ORDER BY Users.id, best_pct DESC";
 
 	$result = $conn->query($q);
@@ -34,6 +49,9 @@
 				'first_name' => $row['first_name'],
 				'last_name'  => $row['last_name'],
 				'type'       => $row['type'],
+				'score'      => (int)$row['score'],
+				'max'        => (int)$row['max'],
+				'date'       => $row['date'],
 				'best_pct'   => (int)$row['best_pct'],
 			];
 		}

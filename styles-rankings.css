@@ -289,6 +289,77 @@
 	font-weight: bold;
 }
 
+/* ── Drill-down detail panels ────────────────────────────────────────────── */
+
+.rankings-row[data-userid],
+.mi-row[data-userid],
+.pb-row[data-userid] {
+	cursor: pointer;
+}
+
+.rankings-row[data-userid]:hover,
+.mi-row[data-userid]:hover,
+.pb-row[data-userid]:hover {
+	background: #fdf5ec;
+}
+
+.row-expanded {
+	background: #fdf5ec;
+}
+
+.detail-panel {
+	border-top: 1px dashed #e8d8c0;
+	border-bottom: 1px solid #f0e8d8;
+	background: #fffaf4;
+	padding: 10px 14px 12px;
+}
+
+.detail-loading {
+	text-align: center;
+	padding: 8px;
+}
+
+.detail-empty {
+	text-align: center;
+	color: #bbb;
+	font-family: verdana, arial;
+	font-size: 12px;
+	padding: 8px;
+}
+
+.detail-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-family: verdana, arial;
+	font-size: 12px;
+}
+
+.detail-table th {
+	text-align: left;
+	color: #aaa;
+	font-weight: bold;
+	text-transform: uppercase;
+	font-size: 10px;
+	letter-spacing: 0.04em;
+	padding: 4px 6px 6px;
+	border-bottom: 1px solid #ecdec8;
+}
+
+.detail-table td {
+	padding: 5px 6px;
+	color: #555;
+	border-bottom: 1px solid #f5ede0;
+}
+
+.detail-table tr:last-child td {
+	border-bottom: none;
+}
+
+.detail-pct {
+	font-weight: bold;
+	color: #cc5500;
+}
+
 /* ── Personal Bests ──────────────────────────────────────────────────────── */
 
 .pb-list {
