@@ -524,6 +524,42 @@ A {}
 	padding-right:20px;
 }
 
+#QuizFeedInfoPhoto img {
+	border-radius: 50%;
+	display: block;
+}
+
+/* ── Feed rank rings & badge ──────────────────────────────────────────────── */
+
+.feed-rank-wrap {
+	position: relative;
+	display: inline-block;
+	border-radius: 50%;
+}
+
+.rank-gold   { box-shadow: 0 0 0 3px #FFD700; }
+.rank-silver { box-shadow: 0 0 0 3px #C0C0C0; }
+.rank-bronze { box-shadow: 0 0 0 3px #CD7F32; }
+
+.feed-rank-badge {
+	position: absolute;
+	bottom: -2px;
+	right: -4px;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: #555;
+	color: #fff;
+	font-size: 9px;
+	font-weight: bold;
+	font-family: verdana, arial;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
 #QuizFeedInfoUser {
 	padding-top:3px;
 	line-height:150%;

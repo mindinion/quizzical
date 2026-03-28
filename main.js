@@ -489,14 +489,21 @@ document.cookie="feedItems=50";
     		$("#QuizFeed").append("<div id=QuizFeedItem data-quizfeed=" + quizfeedId + ">");
     				
 			// Make room for the bubble if it is a result post
+			var rank = feedTopRankers[userId];
+			var rankClass = rank === 1 ? 'rank-gold' : rank === 2 ? 'rank-silver' : rank === 3 ? 'rank-bronze' : '';
+			var rankBadge = rank ? '<span class="feed-rank-badge">' + rank + '</span>' : '';
+			var photoImg = "<img src='" + picFilename + "?t=" + Date.now() + "' height=50 width=50 loading='lazy'>";
+			var photoHtml = "<div id=QuizFeedInfoPhoto>" + (rankClass
+				? "<div class='feed-rank-wrap " + rankClass + "'>" + photoImg + rankBadge + "</div>"
+				: photoImg);
 			if (resultId == null) {
 				$('*[data-quizfeed="' + quizfeedId + '"]').html("<div id=QuizFeedInfo data-quizfeedinfo=" + quizfeedId + " class=NoBubble>");
-				$('*[data-quizfeedinfo="' + quizfeedId + '"]').html("<div id=QuizFeedInfoPhoto><img src='" + picFilename + "?t=" + Date.now() + "' height=50 width=50 loading='lazy'></img>");
+				$('*[data-quizfeedinfo="' + quizfeedId + '"]').html(photoHtml);
 				$('*[data-quizfeedinfo="' + quizfeedId + '"]').append("<div id=QuizFeedInfoText class=nobubble data-quizfeedtext=" + quizfeedId + ">");
 
 			} else {
 				$('*[data-quizfeed="' + quizfeedId + '"]').html("<div id=QuizFeedInfo data-quizfeedinfo=" + quizfeedId + " >");
-				$('*[data-quizfeedinfo="' + quizfeedId + '"]').html("<div id=QuizFeedInfoPhoto><img src='" + picFilename + "?t=" + Date.now() + "' height=50 width=50 loading='lazy'></img>");
+				$('*[data-quizfeedinfo="' + quizfeedId + '"]').html(photoHtml);
 				$('*[data-quizfeedinfo="' + quizfeedId + '"]').append("<div id=QuizFeedInfoText data-quizfeedtext=" + quizfeedId + ">");
 			}
 		
@@ -670,6 +677,14 @@ document.cookie="feedItems=50";
 	}
 	
 	
+	function fetchFeedRankers() {
+		var groupid = getSetting('group_id');
+		$.get('action-getrankings.php', { groupid: groupid, period: 'weekly', typefilter: 'main' }, function(data) {
+			feedTopRankers = {};
+			JSON.parse(data).slice(0, 3).forEach(function(r, i) { feedTopRankers[r.userid] = i + 1; });
+		});
+	}
+
 	function getSettings() {
 	$.get("action-getsettings.php", 
 		{ 
@@ -678,6 +693,7 @@ document.cookie="feedItems=50";
 		
 		function(data, status) { 
 			sessionStorage.usersettings = data;
+			fetchFeedRankers();
 			downloadResults();
 			refreshNewPost();
 		});
@@ -691,6 +707,7 @@ document.cookie="feedItems=50";
 	var rankingsCurrentPeriod = 'weekly';
 	var rankingsLoaded = false;
 	var currentPbs = [];
+	var feedTopRankers = {};
 	var rankingsTypeFilter = 'main';
 
 	function switchTab(tab) {
