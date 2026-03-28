@@ -489,13 +489,9 @@ document.cookie="feedItems=50";
     		$("#QuizFeed").append("<div id=QuizFeedItem data-quizfeed=" + quizfeedId + ">");
     				
 			// Make room for the bubble if it is a result post
-			var rank = feedTopRankers[userId];
-			var rankClass = rank === 1 ? 'rank-gold' : rank === 2 ? 'rank-silver' : rank === 3 ? 'rank-bronze' : '';
-			var rankBadge = rank ? '<span class="feed-rank-badge">' + rank + '</span>' : '';
-			var photoImg = "<img src='" + picFilename + "?t=" + Date.now() + "' height=50 width=50 loading='lazy'>";
-			var photoHtml = "<div id=QuizFeedInfoPhoto>" + (rankClass
-				? "<div class='feed-rank-wrap " + rankClass + "'>" + photoImg + rankBadge + "</div>"
-				: photoImg);
+			var picSrc = (picFilename && picFilename !== 'null') ? picFilename + '?t=' + Date.now() : 'profileicon.png';
+			var photoImg = "<img src='" + picSrc + "' height=50 width=50 loading='lazy' onerror=\"this.onerror=null;this.src='profileicon.png'\">";
+			var photoHtml = "<div id=QuizFeedInfoPhoto data-userid=" + userId + ">" + photoImg;
 			if (resultId == null) {
 				$('*[data-quizfeed="' + quizfeedId + '"]').html("<div id=QuizFeedInfo data-quizfeedinfo=" + quizfeedId + " class=NoBubble>");
 				$('*[data-quizfeedinfo="' + quizfeedId + '"]').html(photoHtml);
@@ -841,7 +837,7 @@ document.cookie="feedItems=50";
 			var s = '<div class="' + rowClass + '" data-userid="' + r.userid + '" data-expandtype="rankings" data-firstname="' + r.first_name + '">';
 			s += '<span class="r-place">' + placeLabel + '</span>';
 			s += '<span class="r-photo-name">';
-			s += '<img src="' + r.pic_filename + '?t=' + Date.now() + '" class="r-photo" loading="lazy">';
+			s += '<img src="' + (r.pic_filename || 'profileicon.png') + '?t=' + Date.now() + '" class="r-photo" loading="lazy" onerror="this.onerror=null;this.src=\'profileicon.png\'">';
 			s += '<span class="r-name">' + r.first_name + ' ' + r.last_name + streakBadge + '</span>';
 			s += '</span>';
 			s += '<span class="r-avg">' + r.avg_pct + '%</span>';
@@ -877,7 +873,7 @@ document.cookie="feedItems=50";
 				miHtml += '<div class="most-improved-list">';
 				improved.forEach(function(item) {
 					miHtml += '<div class="mi-row" data-userid="' + item.r.userid + '" data-expandtype="mi" data-firstname="' + item.r.first_name + '">';
-					miHtml += '<img src="' + item.r.pic_filename + '?t=' + Date.now() + '" class="r-photo" loading="lazy">';
+					miHtml += '<img src="' + (item.r.pic_filename || 'profileicon.png') + '?t=' + Date.now() + '" class="r-photo" loading="lazy" onerror="this.onerror=null;this.src=\'profileicon.png\'">';
 					miHtml += '<span class="mi-name">' + item.r.first_name + ' ' + item.r.last_name + '</span>';
 					miHtml += '<span class="mi-arrow trend-up">&#x25B2; +' + item.diff + '%</span>';
 					miHtml += '</div>';
