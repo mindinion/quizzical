@@ -457,3 +457,44 @@
 #GhostsSection {
 	margin-top: 6px;
 }
+
+/* ── Mobile overrides (applied only on small screens) ───────────────────────── */
+
+@media (max-width: 767px) {
+
+	/* Feed: remove fixed-width centering, fill the screen */
+	#MainContent {
+		min-width: 0;
+	}
+
+	#QuizFeed {
+		left: 0;
+		margin-left: 0;
+		width: 100%;
+		max-width: none;
+		box-sizing: border-box;
+	}
+
+	/* Rankings panel: same — fill the screen */
+	#RankingsPanel {
+		left: 0;
+		margin-left: 0;
+		width: 100%;
+	}
+
+	/* Tab bar: taller, bigger text, safe-area gap at bottom */
+	#TabBar {
+		height: calc(60px + env(safe-area-inset-bottom, 0px));
+		padding-bottom: env(safe-area-inset-bottom, 0px);
+	}
+
+	.tab {
+		font-size: 16px;
+	}
+
+	/* Push content up to clear the taller tab bar */
+	#MainContent {
+		bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+	}
+
+}
