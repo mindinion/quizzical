@@ -719,9 +719,17 @@ document.cookie="feedItems=50";
 	function switchTypeFilter(filter) {
 		rankingsTypeFilter = filter;
 		rankingsLoaded = false;
-		$('.type-tab').removeClass('type-active');
-		$('#TypeFilter-' + filter).addClass('type-active');
+		var $chip = $('#TypeFilterChip');
+		if (filter === 'main') {
+			$chip.text('Morning & Afternoon').removeClass('chip-all');
+		} else {
+			$chip.text('All types').addClass('chip-all');
+		}
 		loadRankings(rankingsCurrentPeriod);
+	}
+
+	function toggleTypeFilter() {
+		switchTypeFilter(rankingsTypeFilter === 'main' ? 'all' : 'main');
 	}
 
 	function loadRankings(period) {

@@ -6,7 +6,7 @@
 
 <script src="jquery.js"></script>
 <script src="cropper.min.js"></script>
-<script src="main.js?id=19"></script>
+<script src="main.js?id=20"></script>
 
 
 
@@ -30,7 +30,7 @@
 		<meta charset="utf-8">
 		<link href="styles-main.css?id=1235" type="text/css" rel="stylesheet" />
 		<link href="styles-profile.css?id=14" type="text/css" rel="stylesheet" />
-		<link href="styles-rankings.css?id=5" type="text/css" rel="stylesheet" />
+		<link href="styles-rankings.css?id=6" type="text/css" rel="stylesheet" />
 		<link href="cropper.min.css" type="text/css" rel="stylesheet" />
 		<link rel="icon" type="image/png" href="quizzical_logo.png">
 	</head>
@@ -103,14 +103,13 @@
 		<div id="QuizFeed"></div id="QuizFeed">
 
 		<div id="RankingsPanel" style="display:none">
-			<div id="RankingsTypeFilter">
-			<div class="type-tab" id="TypeFilter-all" onclick="switchTypeFilter('all')">All types</div>
-			<div class="type-tab type-active" id="TypeFilter-main" onclick="switchTypeFilter('main')">Morning &amp; Afternoon</div>
-		</div>
-		<div id="RankingsPeriodTabs">
-				<div class="period-tab period-active" id="Period-weekly" onclick="switchPeriod('weekly')">Weekly</div>
-				<div class="period-tab" id="Period-monthly" onclick="switchPeriod('monthly')">Monthly</div>
-				<div class="period-tab" id="Period-alltime" onclick="switchPeriod('alltime')">All Time</div>
+			<div id="RankingsControlRow">
+				<div id="RankingsPeriodTabs">
+					<div class="period-tab period-active" id="Period-weekly" onclick="switchPeriod('weekly')">Weekly</div>
+					<div class="period-tab" id="Period-monthly" onclick="switchPeriod('monthly')">Monthly</div>
+					<div class="period-tab" id="Period-alltime" onclick="switchPeriod('alltime')">All Time</div>
+				</div>
+				<div id="TypeFilterChip" onclick="toggleTypeFilter()">Morning &amp; Afternoon</div>
 			</div>
 			<div id="RankingsMain"></div>
 			<div id="RankingsMostImproved"></div>
