@@ -21,7 +21,7 @@
 	require_once 'security.php';
 
 	if (isset($_GET['groupid'])) $groupid = sanitizeString($_GET['groupid']);
-	if (isset($_GET['num'])) $num = sanitizeString($_GET['num']);
+	$offset = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;
 
 	$q = "SELECT
 		QuizFeed.id AS post_id,
@@ -62,7 +62,7 @@
 		LEFT JOIN Digs AS PostDigs ON (QuizFeed.id = PostDigs.postid) AND (PostDigs.status IS NULL or PostDigs.status = 'active')
 		LEFT JOIN Users AS CommentDigger ON (CommentDigs.userid = CommentDigger.id)
 		LEFT JOIN Users AS PostDigger ON (PostDigs.userid = PostDigger.id)
-		INNER JOIN (SELECT DISTINCT id FROM QuizFeed WHERE QuizFeed.status = 'active' ORDER BY QuizFeed.timestamp DESC LIMIT 50) AS Last50Feeds ON (QuizFeed.id = Last50Feeds.id)
+		INNER JOIN (SELECT DISTINCT id FROM QuizFeed WHERE QuizFeed.status = 'active' ORDER BY QuizFeed.timestamp DESC LIMIT $offset, 50) AS Last50Feeds ON (QuizFeed.id = Last50Feeds.id)
 
 	WHERE
 		Memberships.group_id = $groupid

@@ -68,16 +68,36 @@ document.cookie="feedItems=50";
 	
 	
 
+	var feedOffset = 0;
+	var feedLoading = false;
+	var feedExhausted = false;
+
 	function expandFeed() {
-		var elem = document.getElementById("QuizFeed");
-		if (elem.scrollTop == elem.scrollHeight - elem.offsetHeight) {
-			// We have scrolled to the bottom of the QuizFeed, so increment the cookie that counts how many items to show			
-			//alert(window.feedItems);
-			var feeditems = Number(getCookie("feedItems"));
-			feeditems = feeditems + 10;
-			document.cookie="feedItems=" + feeditems;
-			getResults();		
+		var elem = document.getElementById("MainContent");
+		if (!feedLoading && !feedExhausted && elem.scrollTop + elem.offsetHeight >= elem.scrollHeight - 200) {
+			loadMoreResults();
 		}
+	}
+
+	function loadMoreResults() {
+		if (feedLoading || feedExhausted) return;
+		feedLoading = true;
+		var groupid = getSetting("group_id");
+		$("#QuizFeed").append("<img src='ajax-loader.gif' data-loader=quizfeedmore class=Loader></img>");
+		$.get("action-getresults.php",
+			{ groupid: groupid, offset: feedOffset },
+			function(data) {
+				$('*[data-loader=quizfeedmore]').remove();
+				var newResults = JSON.parse(data);
+				feedLoading = false;
+				if (newResults.length === 0) {
+					feedExhausted = true;
+					return;
+				}
+				feedOffset += newResults.length;
+				displayResults(data, 0, true);
+			}
+		);
 	}
 	
 	var mouse = {x: 0, y: 0};
@@ -401,14 +421,17 @@ document.cookie="feedItems=50";
 	
 	
 	
-	function downloadResults(dontPreload) {		
+	function downloadResults(dontPreload) {
+		feedOffset = 0;
+		feedExhausted = false;
+		feedLoading = false;
+
 		var groupid = getSetting("group_id");
-		var limit = 50;
 		var results = sessionStorage.getItem("results");
-		
+
 		// Show the preloader
 		$("#QuizFeed").append("<img src = 'ajax-loader.gif' data-loader=quizfeed class=Loader></img>");
-		
+
 		// First display the cached results, if we have them
 		if (results != null && dontPreload == null) {
 			displayResults(results,1);
@@ -416,14 +439,10 @@ document.cookie="feedItems=50";
 			var firstTime = 1;
 		}
 
-		
 		// Now download and display the most recent results
-		$.get("action-getresults.php", 
-			{ 
-				groupid:groupid,
-				limit:limit
-			},	
-			function(data, status) { 
+		$.get("action-getresults.php",
+			{ groupid: groupid, offset: 0 },
+			function(data) {
 				if (sessionStorage.getItem("results") != data || firstTime == 1 ) {
 					displayResults(data,0);
 				} else {
@@ -433,16 +452,17 @@ document.cookie="feedItems=50";
 				}
 				$('*[data-loader=quizfeed]').remove();
 				sessionStorage.results = data;
+				feedOffset = JSON.parse(data).length;
 			}
 		);
 	}
 	
 	
 	
-	function displayResults(resultsJson,preLoad) {
-	
-		// First clear the current quizfeed
-		$("#QuizFeed").html("");
+	function displayResults(resultsJson, preLoad, append) {
+
+		// Clear the feed unless we're appending more items
+		if (!append) $("#QuizFeed").html("");
 			
 		resultsObj = JSON.parse(resultsJson);
 		results =  $.map(resultsObj, function(el) { return el });
@@ -758,6 +778,9 @@ document.cookie="feedItems=50";
 	}
 	
 	function activateListeners() {
+		// Infinite scroll — load more results when user reaches the bottom
+		document.getElementById("MainContent").addEventListener("scroll", expandFeed, false);
+
 		// If entering a score, reveal the rest of the score fields
 		document.getElementById("NewResultScore").addEventListener("keyup", function(){ 
 			if (document.activeElement.value != "") {
