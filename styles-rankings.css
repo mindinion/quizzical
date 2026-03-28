@@ -110,32 +110,36 @@
 	padding: 4px;
 }
 
-#TypeFilterChip {
+#TypeFilterTabs {
 	align-self: flex-end;
-	flex-shrink: 0;
+	display: flex;
+	gap: 4px;
+	background: #f5f0e8;
+	border-radius: 6px;
+	padding: 3px;
+}
+
+.type-tab {
+	padding: 5px 10px;
+	cursor: pointer;
+	border-radius: 4px;
 	font-family: verdana, arial;
 	font-size: 10px;
 	font-weight: bold;
-	padding: 6px 10px;
-	border-radius: 20px;
-	background: #f5f0e8;
 	color: #a07040;
-	cursor: pointer;
-	border: 1px solid #ddd0b8;
 	white-space: nowrap;
 	user-select: none;
-	transition: background 0.15s, color 0.15s, border-color 0.15s;
+	transition: background 0.15s, color 0.15s;
 }
 
-#TypeFilterChip:hover {
-	background: #ece4d4;
+.type-tab:hover {
 	color: #7a4a10;
 }
 
-#TypeFilterChip.chip-all {
-	background: #fff3e8;
-	border-color: #e08040;
+.type-active {
+	background: #fff;
 	color: #cc5500;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.10);
 }
 
 .period-tab {

@@ -6,7 +6,7 @@
 
 <script src="jquery.js"></script>
 <script src="cropper.min.js"></script>
-<script src="main.js?id=26"></script>
+<script src="main.js?id=27"></script>
 
 
 
@@ -31,7 +31,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 		<link href="styles-main.css?id=1236" type="text/css" rel="stylesheet" />
 		<link href="styles-profile.css?id=21" type="text/css" rel="stylesheet" />
-		<link href="styles-rankings.css?id=10" type="text/css" rel="stylesheet" />
+		<link href="styles-rankings.css?id=11" type="text/css" rel="stylesheet" />
 		<link href="cropper.min.css" type="text/css" rel="stylesheet" />
 		<link rel="icon" type="image/png" href="quizzical_logo.png">
 	</head>
@@ -111,7 +111,10 @@
 					<div class="period-tab" id="Period-yearly" onclick="switchPeriod('yearly')">Yearly</div>
 					<div class="period-tab" id="Period-alltime" onclick="switchPeriod('alltime')">All Time</div>
 				</div>
-				<div id="TypeFilterChip" onclick="toggleTypeFilter()">Morning &amp; Afternoon</div>
+				<div id="TypeFilterTabs">
+					<div class="type-tab type-active" id="TypeTab-main" onclick="switchTypeFilter('main')">Morning &amp; Afternoon</div>
+					<div class="type-tab" id="TypeTab-all" onclick="switchTypeFilter('all')">All Types</div>
+				</div>
 			</div>
 			<div id="RankingsMain"></div>
 			<div id="RankingsMostImproved"></div>

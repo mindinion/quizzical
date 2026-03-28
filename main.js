@@ -749,12 +749,8 @@ document.cookie="feedItems=50";
 	function switchTypeFilter(filter) {
 		rankingsTypeFilter = filter;
 		rankingsLoaded = false;
-		var $chip = $('#TypeFilterChip');
-		if (filter === 'main') {
-			$chip.text('Morning & Afternoon').removeClass('chip-all');
-		} else {
-			$chip.text('All types').addClass('chip-all');
-		}
+		$('.type-tab').removeClass('type-active');
+		$('#TypeTab-' + filter).addClass('type-active');
 		loadRankings(rankingsCurrentPeriod);
 	}
 
