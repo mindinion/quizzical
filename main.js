@@ -1,15 +1,6 @@
 
 // Initialise the number of results in the quiz feed
-document.cookie="feedItems
-		// Drill-down: click any rankings/MI/PB row to expand results
-		$(document).on('click', '.rankings-row[data-userid], .mi-row[data-userid], .pb-row[data-userid]', function(e) {
-			if ($(e.target).hasClass('info-icon')) return;
-			var $row = $(this);
-			var userid = parseInt($row.data('userid'));
-			var expandtype = $row.data('expandtype');
-			toggleDetail($row, userid, expandtype, rankingsCurrentPeriod);
-		});
-=50";
+document.cookie="feedItems=50";
 
 
 // Retrieve a cookie	
@@ -848,6 +839,7 @@ document.cookie="feedItems
 		}
 	}
 
+
 	function toggleDetail($row, userid, expandtype, period) {
 		var detailId = 'detail-' + expandtype + '-' + userid;
 		var $existing = $('#' + detailId);
@@ -875,11 +867,11 @@ document.cookie="feedItems
 
 	function renderResultsDetail(results) {
 		if (!results || results.length === 0) return '<div class="detail-empty">No results for this period</div>';
+		var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 		var html = '<table class="detail-table">';
 		html += '<tr><th>Date</th><th>Type</th><th>Score</th><th>%</th></tr>';
 		results.forEach(function(r) {
 			var parts = r.date.split('-');
-			var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 			var dateStr = parseInt(parts[2]) + ' ' + months[parseInt(parts[1]) - 1];
 			html += '<tr>';
 			html += '<td>' + dateStr + '</td>';
@@ -894,11 +886,11 @@ document.cookie="feedItems
 
 	function renderPbDetail(userPbs) {
 		if (!userPbs || userPbs.length === 0) return '<div class="detail-empty">No results found</div>';
+		var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 		var html = '<table class="detail-table">';
 		html += '<tr><th>Type</th><th>Date</th><th>Score</th><th>%</th></tr>';
 		userPbs.forEach(function(p) {
 			var parts = p.date.split('-');
-			var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 			var dateStr = parseInt(parts[2]) + ' ' + months[parseInt(parts[1]) - 1];
 			html += '<tr>';
 			html += '<td>' + p.type + '</td>';
@@ -942,7 +934,7 @@ document.cookie="feedItems
 			$('#InfoTooltip').fadeOut(100);
 		});
 
-		// Drill-down: click any rankings/MI/PB row to expand results
+		// Drill-down: tap any rankings/MI/PB row to expand results
 		$(document).on('click', '.rankings-row[data-userid], .mi-row[data-userid], .pb-row[data-userid]', function(e) {
 			if ($(e.target).hasClass('info-icon')) return;
 			var $row = $(this);
