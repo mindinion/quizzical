@@ -3,6 +3,47 @@
 	bottom: 50px;
 }
 
+/* ── Info icon & tooltip ─────────────────────────────────────────────────── */
+
+.info-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	background: #ccc;
+	color: white;
+	font-size: 9px;
+	font-style: italic;
+	font-weight: bold;
+	font-family: serif;
+	cursor: pointer;
+	vertical-align: middle;
+	margin-left: 3px;
+	user-select: none;
+	flex-shrink: 0;
+}
+
+.info-icon:hover {
+	background: #999;
+}
+
+#InfoTooltip {
+	display: none;
+	position: fixed;
+	background: #333;
+	color: #fff;
+	padding: 8px 12px;
+	border-radius: 8px;
+	font-family: verdana, arial;
+	font-size: 12px;
+	line-height: 1.5;
+	max-width: 210px;
+	z-index: 9000;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
 /* ── Tab Bar ─────────────────────────────────────────────────────────────── */
 
 #TabBar {

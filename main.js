@@ -743,8 +743,8 @@ document.cookie="feedItems=50";
 		html += '<span class="rh-place">#</span>';
 		html += '<span class="rh-name">Name</span>';
 		html += '<span class="rh-avg">Avg</span>';
-		if (period !== 'alltime') html += '<span class="rh-trend">Trend</span>';
-		if (period !== 'alltime') html += '<span class="rh-part">Days</span>';
+		if (period !== 'alltime') html += '<span class="rh-trend">Trend <span class="info-icon" data-tip="Change in average % vs the previous ' + (period === 'weekly' ? 'week' : 'month') + '">i</span></span>';
+		if (period !== 'alltime') html += '<span class="rh-part">Days <span class="info-icon" data-tip="Days you posted a result in this period">i</span></span>';
 		html += '</div>';
 
 		rankings.forEach(function(r, idx) {
@@ -759,8 +759,8 @@ document.cookie="feedItems=50";
 			if (period !== 'alltime') {
 				if (r.prev_avg_pct !== null) {
 					var diff = r.avg_pct - r.prev_avg_pct;
-					if (diff > 0)       trendHtml = '<span class="trend-up">&#x25B2; ' + diff + '</span>';
-					else if (diff < 0)  trendHtml = '<span class="trend-down">&#x25BC; ' + Math.abs(diff) + '</span>';
+					if (diff > 0)       trendHtml = '<span class="trend-up">&#x25B2; +' + diff + '%</span>';
+					else if (diff < 0)  trendHtml = '<span class="trend-down">&#x25BC; -' + Math.abs(diff) + '%</span>';
 					else                trendHtml = '<span class="trend-neutral">&#x2013;</span>';
 				} else {
 					trendHtml = '<span class="trend-new">new</span>';
@@ -795,13 +795,13 @@ document.cookie="feedItems=50";
 				.slice(0, 3);
 
 			if (improved.length > 0) {
-				var miHtml = '<div class="rankings-section-title">Most Improved</div>';
+				var miHtml = '<div class="rankings-section-title">Most Improved <span class="info-icon" data-tip="Players whose average % improved the most vs the prior period">i</span></div>';
 				miHtml += '<div class="most-improved-list">';
 				improved.forEach(function(item) {
 					miHtml += '<div class="mi-row">';
 					miHtml += '<img src="' + item.r.pic_filename + '?t=' + Date.now() + '" class="r-photo" loading="lazy">';
 					miHtml += '<span class="mi-name">' + item.r.first_name + ' ' + item.r.last_name + '</span>';
-					miHtml += '<span class="mi-arrow trend-up">&#x25B2; ' + item.diff + 'pp</span>';
+					miHtml += '<span class="mi-arrow trend-up">&#x25B2; +' + item.diff + '%</span>';
 					miHtml += '</div>';
 				});
 				miHtml += '</div>';
@@ -823,7 +823,7 @@ document.cookie="feedItems=50";
 			.slice(0, 5);
 
 		if (bestsList.length > 0) {
-			var pbHtml = '<div class="rankings-section-title">Personal Bests</div>';
+			var pbHtml = '<div class="rankings-section-title">Personal Bests <span class="info-icon" data-tip="The highest single score ever recorded by each player in this group">i</span></div>';
 			pbHtml += '<div class="pb-list">';
 			bestsList.forEach(function(p) {
 				pbHtml += '<div class="pb-row">';
@@ -853,6 +853,20 @@ document.cookie="feedItems=50";
 	function activateListeners() {
 		// Infinite scroll — load more results when user reaches the bottom
 		document.getElementById("MainContent").addEventListener("scroll", expandFeed, false);
+
+		// Info icon tooltips — tap/click to show, tap anywhere else to dismiss
+		$(document).on('click', '.info-icon', function(e) {
+			e.stopPropagation();
+			var tip = $(this).data('tip');
+			var offset = $(this).offset();
+			var left = Math.min(offset.left - 50, $(window).width() - 220);
+			$('#InfoTooltip').text(tip)
+				.css({ top: offset.top + 20, left: Math.max(10, left) })
+				.fadeIn(150);
+		});
+		$(document).on('click', function() {
+			$('#InfoTooltip').fadeOut(100);
+		});
 
 		// If entering a score, reveal the rest of the score fields
 		document.getElementById("NewResultScore").addEventListener("keyup", function(){ 
