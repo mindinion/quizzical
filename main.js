@@ -747,7 +747,7 @@ document.cookie="feedItems=50";
 		if (period !== 'alltime') html += '<span class="rh-part">Days</span>';
 		html += '</div>';
 
-	ankings.forEach(function(r, idx) {
+		rankings.forEach(function(r, idx) {
 			var place = idx + 1;
 			var placeSuffix = place === 1 ? 'st' : place === 2 ? 'nd' : place === 3 ? 'rd' : 'th';
 			var placeLabel  = place + placeSuffix;
