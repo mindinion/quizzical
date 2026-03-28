@@ -380,8 +380,25 @@
 
 @media (max-width: 767px) {
 
+	/* Full-screen opaque overlay so nothing bleeds through */
+	#Profile {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: #fff;
+		overflow-y: auto;
+		z-index: 500;
+		padding: 16px 12px;
+		box-sizing: border-box;
+	}
+
 	#ProfileForm {
 		padding: 16px 14px 28px;
+		background-color: #fff;
+		box-shadow: none;
+		max-width: 100%;
 	}
 
 	.prof-row {
@@ -399,6 +416,8 @@
 
 	.prof-input {
 		width: 100%;
+		height: 40px;
+		font-size: 16px; /* prevents iOS auto-zoom on focus */
 	}
 
 	.prof-photo-wrap {
