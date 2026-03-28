@@ -816,7 +816,7 @@ document.cookie="feedItems=50";
 		if (ghostRows.length > 0) {
 			html += '<div class="ghosts-toggle" data-target="GhostsSection" data-count="' + ghostRows.length + '">&#x25BC; Ghosts (' + ghostRows.length + ')</div>';
 			html += '<div id="GhostsSection" style="display:none"><div class="rankings-table">';
-			ghostRows.forEach(function(r, idx) { html += buildRankingRow(r, renderRows.length + idx); });
+			ghostRows.forEach(function(r, idx) { html += buildRankingRow(r, idx); });
 			html += '</div></div>';
 		}
 
@@ -864,7 +864,7 @@ document.cookie="feedItems=50";
 		var ghostBestsList  = allBestsList.filter(function(p) { return  ghostUserIds[p.userid]; }).slice(0, 5);
 
 		function buildPbRow(p) {
-			var s = '<div class="pb-row" data-userid="' + p.userid + '" data-expandtype="pb" data-firstname="' + p.first_name + '">';
+			var s = '<div class="pb-row" data-userid="' + p.userid + '" data-expandtype="pb" data-firstname="' + p.first_name + '" data-pb-type="' + p.type + '" data-pb-date="' + p.date + '" data-pb-score="' + p.score + '" data-pb-max="' + p.max + '" data-pb-pct="' + p.best_pct + '">';
 			s += '<span class="pb-name">' + p.first_name + ' ' + p.last_name + '</span>';
 			s += '<span class="pb-type">' + p.type + '</span>';
 			s += '<span class="pb-date">' + formatResultDate(p.date, period) + '</span>';
@@ -961,9 +961,18 @@ document.cookie="feedItems=50";
 			$row.toggleClass('row-expanded');
 			return;
 		}
-		var userPbs = currentPbs.filter(function(p) { return p.userid === userid; });
+		var type    = $row.data('pb-type');
+		var date    = $row.data('pb-date');
+		var score   = $row.data('pb-score');
+		var max     = $row.data('pb-max');
+		var pct     = $row.data('pb-pct');
+		var dateStr = formatResultDate(date, rankingsCurrentPeriod);
+		var html = '<table class="detail-table">';
+		html += '<tr><th>Type</th><th>Date</th><th>Score</th><th>%</th></tr>';
+		html += '<tr><td>' + type + '</td><td>' + dateStr + '</td><td>' + score + '/' + max + '</td><td class="detail-pct">' + pct + '%</td></tr>';
+		html += '</table>';
 		var $detail = $('<div class="detail-panel" id="' + detailId + '"></div>');
-		$detail.html(renderPbDetail(userPbs, rankingsCurrentPeriod));
+		$detail.html(html);
 		$row.after($detail);
 		$row.addClass('row-expanded');
 	}
