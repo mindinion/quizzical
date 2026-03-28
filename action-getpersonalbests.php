@@ -11,7 +11,15 @@
 	require_once 'security.php';
 
 	if (isset($_GET['groupid'])) $groupid = sanitizeString($_GET['groupid']);
-	$period = isset($_GET['period']) ? sanitizeString($_GET['period']) : 'alltime';
+	$period     = isset($_GET['period'])     ? sanitizeString($_GET['period'])     : 'alltime';
+	$typefilter = isset($_GET['typefilter']) ? sanitizeString($_GET['typefilter']) : 'all';
+
+	$typeSQL    = ($typefilter === 'main')
+		? "AND (UPPER(r.type) = 'MORNING' OR UPPER(r.type) = 'AFTERNOON')"
+		: "";
+	$subTypeSQL = ($typefilter === 'main')
+		? "AND (UPPER(type) = 'MORNING' OR UPPER(type) = 'AFTERNOON')"
+		: "";
 
 	if ($period === 'weekly') {
 		$dateFilter = "AND r.date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
@@ -41,14 +49,14 @@
 		INNER JOIN (
 			SELECT user, type, MAX(ROUND(score / max * 100, 0)) AS max_pct
 			FROM Results
-			WHERE status = 'active' $subDateFilter
+			WHERE status = 'active' $subDateFilter $subTypeSQL
 			GROUP BY user, type
 		) AS bests ON bests.user = r.user
 			AND bests.type = r.type
 			AND ROUND(r.score / r.max * 100, 0) = bests.max_pct
 	WHERE r.status = 'active'
 		AND Memberships.group_id = $groupid
-		$dateFilter
+		$dateFilter $typeSQL
 	GROUP BY r.user, r.type
 	ORDER BY Users.id, best_pct DESC";
 

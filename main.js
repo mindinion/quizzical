@@ -689,6 +689,7 @@ document.cookie="feedItems=50";
 	var rankingsCurrentPeriod = 'weekly';
 	var rankingsLoaded = false;
 	var currentPbs = [];
+	var rankingsTypeFilter = 'all';
 
 	function switchTab(tab) {
 		if (tab === 'feed') {
@@ -715,6 +716,14 @@ document.cookie="feedItems=50";
 		loadRankings(period);
 	}
 
+	function switchTypeFilter(filter) {
+		rankingsTypeFilter = filter;
+		rankingsLoaded = false;
+		$('.type-tab').removeClass('type-active');
+		$('#TypeFilter-' + filter).addClass('type-active');
+		loadRankings(rankingsCurrentPeriod);
+	}
+
 	function loadRankings(period) {
 		var groupid = getSetting("group_id");
 		var myUserid = parseInt(getCookie("userid"));
@@ -722,9 +731,9 @@ document.cookie="feedItems=50";
 		$('#RankingsMostImproved').html('');
 		$('#RankingsPersonalBests').html('');
 		$.when(
-			$.get("action-getrankings.php", { groupid: groupid, period: period }),
+			$.get("action-getrankings.php", { groupid: groupid, period: period, typefilter: rankingsTypeFilter }),
 			$.get("action-getstreaks.php", { groupid: groupid }),
-			$.get("action-getpersonalbests.php", { groupid: groupid, period: period })
+			$.get("action-getpersonalbests.php", { groupid: groupid, period: period, typefilter: rankingsTypeFilter })
 		).done(function(rankingsResp, streaksResp, pbResp) {
 			var rankings = JSON.parse(rankingsResp[0]);
 			var streaks  = JSON.parse(streaksResp[0]);
@@ -749,7 +758,21 @@ document.cookie="feedItems=50";
 		if (period !== 'alltime') html += '<span class="rh-part">Days <span class="info-icon" data-tip="Days you posted a result in this period">i</span></span>';
 		html += '</div>';
 
-		rankings.forEach(function(r, idx) {
+		// For alltime: split into active (last result within 1 year) and ghosts
+		var renderRows = rankings;
+		var ghostRows = [];
+		if (period === 'alltime') {
+			var oneYearAgo = new Date();
+			oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+			renderRows = rankings.filter(function(r) {
+				return r.last_result_date && new Date(r.last_result_date) >= oneYearAgo;
+			});
+			ghostRows = rankings.filter(function(r) {
+				return !r.last_result_date || new Date(r.last_result_date) < oneYearAgo;
+			});
+		}
+
+		function buildRankingRow(r, idx) {
 			var place = idx + 1;
 			var placeSuffix = place === 1 ? 'st' : place === 2 ? 'nd' : place === 3 ? 'rd' : 'th';
 			var placeLabel  = place + placeSuffix;
@@ -773,19 +796,30 @@ document.cookie="feedItems=50";
 				? '<span class="participation">' + r.days_active + '/' + r.period_days + '</span>'
 				: '';
 
-			html += '<div class="' + rowClass + '" data-userid="' + r.userid + '" data-expandtype="rankings" data-firstname="' + r.first_name + '">' ;
-			html += '<span class="r-place">' + placeLabel + '</span>';
-			html += '<span class="r-photo-name">';
-			html += '<img src="' + r.pic_filename + '?t=' + Date.now() + '" class="r-photo" loading="lazy">';
-			html += '<span class="r-name">' + r.first_name + ' ' + r.last_name + streakBadge + '</span>';
-			html += '</span>';
-			html += '<span class="r-avg">' + r.avg_pct + '%</span>';
-			if (period !== 'alltime') html += '<span class="r-trend">' + trendHtml + '</span>';
-			if (period !== 'alltime') html += '<span class="r-part">' + partHtml + '</span>';
-			html += '</div>';
-		});
+			var s = '<div class="' + rowClass + '" data-userid="' + r.userid + '" data-expandtype="rankings" data-firstname="' + r.first_name + '">';
+			s += '<span class="r-place">' + placeLabel + '</span>';
+			s += '<span class="r-photo-name">';
+			s += '<img src="' + r.pic_filename + '?t=' + Date.now() + '" class="r-photo" loading="lazy">';
+			s += '<span class="r-name">' + r.first_name + ' ' + r.last_name + streakBadge + '</span>';
+			s += '</span>';
+			s += '<span class="r-avg">' + r.avg_pct + '%</span>';
+			if (period !== 'alltime') s += '<span class="r-trend">' + trendHtml + '</span>';
+			if (period !== 'alltime') s += '<span class="r-part">' + partHtml + '</span>';
+			s += '</div>';
+			return s;
+		}
+
+		renderRows.forEach(function(r, idx) { html += buildRankingRow(r, idx); });
 
 		html += '</div>';
+
+		if (ghostRows.length > 0) {
+			html += '<div class="ghosts-toggle" id="GhostsToggle" data-count="' + ghostRows.length + '">&#x25BC; Ghosts (' + ghostRows.length + ')</div>';
+			html += '<div id="GhostsSection" style="display:none"><div class="rankings-table">';
+			ghostRows.forEach(function(r, idx) { html += buildRankingRow(r, renderRows.length + idx); });
+			html += '</div></div>';
+		}
+
 		$('#RankingsMain').html(html);
 
 		// Most Improved (weekly / monthly only)
@@ -831,6 +865,7 @@ document.cookie="feedItems=50";
 				pbHtml += '<div class="pb-row" data-userid="' + p.userid + '" data-expandtype="pb" data-firstname="' + p.first_name + '">';
 				pbHtml += '<span class="pb-name">' + p.first_name + ' ' + p.last_name + '</span>';
 				pbHtml += '<span class="pb-type">' + p.type + '</span>';
+				pbHtml += '<span class="pb-date">' + formatResultDate(p.date, period) + '</span>';
 				pbHtml += '<span class="pb-score">' + p.best_pct + '%</span>';
 				pbHtml += '</div>';
 			});
@@ -853,21 +888,27 @@ document.cookie="feedItems=50";
 		$row.after($detail);
 		$row.addClass('row-expanded');
 		$.get('action-getuserresults.php',
-			{ groupid: getSetting('group_id'), userid: userid, period: period },
+			{ groupid: getSetting('group_id'), userid: userid, period: period, typefilter: rankingsTypeFilter },
 			function(data) {
-				$detail.html(renderResultsDetail(JSON.parse(data)));
+				$detail.html(renderResultsDetail(JSON.parse(data), period));
 			}
 		);
 	}
 
-	function renderResultsDetail(results) {
-		if (!results || results.length === 0) return '<div class="detail-empty">No results for this period</div>';
+	function formatResultDate(dateStr, period) {
 		var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+		var parts = dateStr.split('-');
+		var s = parseInt(parts[2]) + ' ' + months[parseInt(parts[1]) - 1];
+		if (period === 'alltime') s += ' ' + parts[0];
+		return s;
+	}
+
+	function renderResultsDetail(results, period) {
+		if (!results || results.length === 0) return '<div class="detail-empty">No results for this period</div>';
 		var html = '<table class="detail-table">';
 		html += '<tr><th>Date</th><th>Type</th><th>Score</th><th>%</th></tr>';
 		results.forEach(function(r) {
-			var parts = r.date.split('-');
-			var dateStr = parseInt(parts[2]) + ' ' + months[parseInt(parts[1]) - 1];
+			var dateStr = formatResultDate(r.date, period);
 			html += '<tr>';
 			html += '<td>' + dateStr + '</td>';
 			html += '<td>' + r.type + '</td>';
@@ -927,6 +968,15 @@ document.cookie="feedItems=50";
 		});
 		$(document).on('click', function() {
 			$('#InfoTooltip').fadeOut(100);
+		});
+
+		// Ghosts section toggle
+		$(document).on('click', '#GhostsToggle', function() {
+			var $section = $('#GhostsSection');
+			var isOpen = $section.is(':visible');
+			var count = $(this).data('count');
+			$(this).html((isOpen ? '&#x25BC;' : '&#x25B2;') + ' Ghosts (' + count + ')');
+			$section.slideToggle(200);
 		});
 
 		// Drill-down: tap any rankings/MI/PB row to expand results

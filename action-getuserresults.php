@@ -11,9 +11,14 @@
 	require_once 'dblogin.php';
 	require_once 'security.php';
 
-	$groupid = isset($_GET['groupid']) ? sanitizeString($_GET['groupid']) : null;
-	$userid  = isset($_GET['userid'])  ? (int)$_GET['userid']             : 0;
-	$period  = isset($_GET['period'])  ? sanitizeString($_GET['period'])  : 'weekly';
+	$groupid    = isset($_GET['groupid'])    ? sanitizeString($_GET['groupid'])    : null;
+	$userid     = isset($_GET['userid'])     ? (int)$_GET['userid']                : 0;
+	$period     = isset($_GET['period'])     ? sanitizeString($_GET['period'])     : 'weekly';
+	$typefilter = isset($_GET['typefilter']) ? sanitizeString($_GET['typefilter']) : 'all';
+
+	$typeSQL = ($typefilter === 'main')
+		? "AND (UPPER(Results.type) = 'MORNING' OR UPPER(Results.type) = 'AFTERNOON')"
+		: "";
 
 	if (!$groupid || !$userid) { echo '[]'; exit; }
 
@@ -36,7 +41,7 @@
 	WHERE Results.user = $userid
 		AND Memberships.group_id = $groupid
 		AND Results.status = 'active'
-		$dateFilter
+		$dateFilter $typeSQL
 	ORDER BY Results.date DESC, Results.type";
 
 	$result = $conn->query($q);

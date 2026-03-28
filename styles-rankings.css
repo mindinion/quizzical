@@ -209,13 +209,13 @@
 }
 
 .rh-trend, .r-trend {
-	width: 54px;
+	width: 68px;
 	text-align: right;
 	flex-shrink: 0;
 }
 
 .rh-part, .r-part {
-	width: 46px;
+	width: 54px;
 	text-align: right;
 	flex-shrink: 0;
 	font-size: 11px;
@@ -389,7 +389,70 @@
 	margin-right: 10px;
 }
 
+.pb-date {
+	color: #aaa;
+	font-size: 11px;
+	margin-right: 10px;
+}
+
 .pb-score {
 	font-weight: bold;
 	color: #cc5500;
+}
+
+/* ── Type filter toggle ──────────────────────────────────────────────────────── */
+
+#RankingsTypeFilter {
+	display: flex;
+	gap: 6px;
+	margin-bottom: 10px;
+	background: #f5f0e8;
+	border-radius: 8px;
+	padding: 4px;
+}
+
+.type-tab {
+	flex: 1;
+	text-align: center;
+	padding: 6px 0;
+	cursor: pointer;
+	border-radius: 6px;
+	font-family: verdana, arial;
+	font-size: 11px;
+	font-weight: bold;
+	color: #a07040;
+	transition: background 0.15s, color 0.15s;
+}
+
+.type-tab:hover {
+	color: #7a4a10;
+}
+
+.type-active {
+	background: #fff;
+	color: #cc5500;
+	box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+
+/* ── Ghosts section ──────────────────────────────────────────────────────────── */
+
+.ghosts-toggle {
+	margin-top: 16px;
+	padding: 8px 12px;
+	background: #f5f0e8;
+	border-radius: 8px;
+	font-family: verdana, arial;
+	font-size: 12px;
+	font-weight: bold;
+	color: #a07040;
+	cursor: pointer;
+	user-select: none;
+}
+
+.ghosts-toggle:hover {
+	color: #7a4a10;
+}
+
+#GhostsSection {
+	margin-top: 6px;
 }
