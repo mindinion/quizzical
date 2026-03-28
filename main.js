@@ -634,6 +634,7 @@ document.cookie="feedItems=50";
 
 		});
 		
+		applyFeedRankBadges();
 		if (preLoad != 1) loadBubbles(results);
 
 	}
@@ -677,11 +678,25 @@ document.cookie="feedItems=50";
 	}
 	
 	
+	function applyFeedRankBadges() {
+		if (!Object.keys(feedTopRankers).length) return;
+		$('#QuizFeed [data-userid]').each(function() {
+			var uid = parseInt($(this).data('userid'));
+			var rank = feedTopRankers[uid];
+			if (!rank || $(this).find('.feed-rank-wrap').length) return;
+			var rankClass = rank === 1 ? 'rank-gold' : rank === 2 ? 'rank-silver' : 'rank-bronze';
+			var $img = $(this).find('img');
+			$img.wrap('<div class="feed-rank-wrap ' + rankClass + '">');
+			$img.after('<span class="feed-rank-badge">' + rank + '</span>');
+		});
+	}
+
 	function fetchFeedRankers() {
 		var groupid = getSetting('group_id');
 		$.get('action-getrankings.php', { groupid: groupid, period: 'weekly', typefilter: 'main' }, function(data) {
 			feedTopRankers = {};
 			JSON.parse(data).slice(0, 3).forEach(function(r, i) { feedTopRankers[r.userid] = i + 1; });
+			applyFeedRankBadges();
 		});
 	}
 
