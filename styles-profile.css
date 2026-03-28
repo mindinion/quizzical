@@ -391,6 +391,7 @@
 		overflow-y: auto;
 		z-index: 500;
 		padding: 16px 12px;
+		padding-bottom: calc(60px + max(env(safe-area-inset-bottom, 0px), 8px) + 16px);
 		box-sizing: border-box;
 	}
 
