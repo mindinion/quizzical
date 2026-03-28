@@ -209,13 +209,13 @@
 }
 
 .rh-trend, .r-trend {
-	width: 68px;
+	width: 84px;
 	text-align: right;
 	flex-shrink: 0;
 }
 
 .rh-part, .r-part {
-	width: 54px;
+	width: 64px;
 	text-align: right;
 	flex-shrink: 0;
 	font-size: 11px;

@@ -689,7 +689,7 @@ document.cookie="feedItems=50";
 	var rankingsCurrentPeriod = 'weekly';
 	var rankingsLoaded = false;
 	var currentPbs = [];
-	var rankingsTypeFilter = 'all';
+	var rankingsTypeFilter = 'main';
 
 	function switchTab(tab) {
 		if (tab === 'feed') {
@@ -814,7 +814,7 @@ document.cookie="feedItems=50";
 		html += '</div>';
 
 		if (ghostRows.length > 0) {
-			html += '<div class="ghosts-toggle" id="GhostsToggle" data-count="' + ghostRows.length + '">&#x25BC; Ghosts (' + ghostRows.length + ')</div>';
+			html += '<div class="ghosts-toggle" data-target="GhostsSection" data-count="' + ghostRows.length + '">&#x25BC; Ghosts (' + ghostRows.length + ')</div>';
 			html += '<div id="GhostsSection" style="display:none"><div class="rankings-table">';
 			ghostRows.forEach(function(r, idx) { html += buildRankingRow(r, renderRows.length + idx); });
 			html += '</div></div>';
@@ -853,23 +853,39 @@ document.cookie="feedItems=50";
 			}
 		});
 
-		var bestsList = Object.keys(userBests)
-			.map(function(uid) { return userBests[uid]; })
-			.sort(function(a, b) { return b.best_pct - a.best_pct; })
-			.slice(0, 5);
+		var ghostUserIds = {};
+		ghostRows.forEach(function(r) { ghostUserIds[r.userid] = true; });
 
-		if (bestsList.length > 0) {
+		var allBestsList = Object.keys(userBests)
+			.map(function(uid) { return userBests[uid]; })
+			.sort(function(a, b) { return b.best_pct - a.best_pct; });
+
+		var activeBestsList = allBestsList.filter(function(p) { return !ghostUserIds[p.userid]; }).slice(0, 5);
+		var ghostBestsList  = allBestsList.filter(function(p) { return  ghostUserIds[p.userid]; }).slice(0, 5);
+
+		function buildPbRow(p) {
+			var s = '<div class="pb-row" data-userid="' + p.userid + '" data-expandtype="pb" data-firstname="' + p.first_name + '">';
+			s += '<span class="pb-name">' + p.first_name + ' ' + p.last_name + '</span>';
+			s += '<span class="pb-type">' + p.type + '</span>';
+			s += '<span class="pb-date">' + formatResultDate(p.date, period) + '</span>';
+			s += '<span class="pb-score">' + p.best_pct + '%</span>';
+			s += '</div>';
+			return s;
+		}
+
+		if (activeBestsList.length > 0 || ghostBestsList.length > 0) {
 			var pbHtml = '<div class="rankings-section-title">Personal Bests <span class="info-icon" data-tip="The highest single score ever recorded by each player in this group">i</span></div>';
 			pbHtml += '<div class="pb-list">';
-			bestsList.forEach(function(p) {
-				pbHtml += '<div class="pb-row" data-userid="' + p.userid + '" data-expandtype="pb" data-firstname="' + p.first_name + '">';
-				pbHtml += '<span class="pb-name">' + p.first_name + ' ' + p.last_name + '</span>';
-				pbHtml += '<span class="pb-type">' + p.type + '</span>';
-				pbHtml += '<span class="pb-date">' + formatResultDate(p.date, period) + '</span>';
-				pbHtml += '<span class="pb-score">' + p.best_pct + '%</span>';
-				pbHtml += '</div>';
-			});
+			activeBestsList.forEach(function(p) { pbHtml += buildPbRow(p); });
 			pbHtml += '</div>';
+
+			if (ghostBestsList.length > 0) {
+				pbHtml += '<div class="ghosts-toggle" data-target="GhostsSectionPB" data-count="' + ghostBestsList.length + '">&#x25BC; Ghosts (' + ghostBestsList.length + ')</div>';
+				pbHtml += '<div id="GhostsSectionPB" style="display:none"><div class="pb-list">';
+				ghostBestsList.forEach(function(p) { pbHtml += buildPbRow(p); });
+				pbHtml += '</div></div>';
+			}
+
 			$('#RankingsPersonalBests').html(pbHtml);
 		}
 	}
@@ -920,14 +936,12 @@ document.cookie="feedItems=50";
 		return html;
 	}
 
-	function renderPbDetail(userPbs) {
+	function renderPbDetail(userPbs, period) {
 		if (!userPbs || userPbs.length === 0) return '<div class="detail-empty">No results found</div>';
-		var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 		var html = '<table class="detail-table">';
 		html += '<tr><th>Type</th><th>Date</th><th>Score</th><th>%</th></tr>';
 		userPbs.forEach(function(p) {
-			var parts = p.date.split('-');
-			var dateStr = parseInt(parts[2]) + ' ' + months[parseInt(parts[1]) - 1];
+			var dateStr = formatResultDate(p.date, period);
 			html += '<tr>';
 			html += '<td>' + p.type + '</td>';
 			html += '<td>' + dateStr + '</td>';
@@ -937,6 +951,21 @@ document.cookie="feedItems=50";
 		});
 		html += '</table>';
 		return html;
+	}
+
+	function togglePbDetail($row, userid) {
+		var detailId = 'detail-pb-' + userid;
+		var $existing = $('#' + detailId);
+		if ($existing.length) {
+			$existing.slideToggle(150);
+			$row.toggleClass('row-expanded');
+			return;
+		}
+		var userPbs = currentPbs.filter(function(p) { return p.userid === userid; });
+		var $detail = $('<div class="detail-panel" id="' + detailId + '"></div>');
+		$detail.html(renderPbDetail(userPbs, rankingsCurrentPeriod));
+		$row.after($detail);
+		$row.addClass('row-expanded');
 	}
 
 	function refreshNewPost() {
@@ -970,9 +999,9 @@ document.cookie="feedItems=50";
 			$('#InfoTooltip').fadeOut(100);
 		});
 
-		// Ghosts section toggle
-		$(document).on('click', '#GhostsToggle', function() {
-			var $section = $('#GhostsSection');
+		// Ghosts section toggle (works for both rankings and PB ghost sections)
+		$(document).on('click', '.ghosts-toggle', function() {
+			var $section = $('#' + $(this).data('target'));
 			var isOpen = $section.is(':visible');
 			var count = $(this).data('count');
 			$(this).html((isOpen ? '&#x25BC;' : '&#x25B2;') + ' Ghosts (' + count + ')');
@@ -985,7 +1014,11 @@ document.cookie="feedItems=50";
 			var $row = $(this);
 			var userid = parseInt($row.data('userid'));
 			var expandtype = $row.data('expandtype');
-			toggleDetail($row, userid, expandtype, rankingsCurrentPeriod);
+			if (expandtype === 'pb') {
+				togglePbDetail($row, userid);
+			} else {
+				toggleDetail($row, userid, expandtype, rankingsCurrentPeriod);
+			}
 		});
 
 		// If entering a score, reveal the rest of the score fields
