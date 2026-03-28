@@ -324,6 +324,8 @@ document.cookie="feedItems=50";
 		function(data){
 			if (data > 0) {
 				downloadResults(1);
+				rankingsLoaded = false;
+				if ($('#RankingsPanel').is(':visible')) loadRankings(rankingsCurrentPeriod);
 				refreshNewPost();			
 				document.getElementById("NewScoreType").value = 'Daily';
 				document.getElementById("NewResultScore").value = '';
