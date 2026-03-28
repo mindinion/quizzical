@@ -1132,6 +1132,7 @@ document.cookie="feedItems=50";
 		$("#NewPost").hide();
 		$("#MainContent").css("top","80px");
 		$("#Profile").show();
+		$("#TabBar").hide();
 		
 		// Populate the fields
 		$("#ProfileTitleName").text(getSetting("first_name") + " " + getSetting("last_name"));
@@ -1180,6 +1181,7 @@ document.cookie="feedItems=50";
 		$("#NewPost").show();
 		$("#MainContent").css("top","145px");
 		$("#Profile").hide();
+		$("#TabBar").show();
 		downloadResults();
 	}
 	
