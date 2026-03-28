@@ -752,16 +752,16 @@ document.cookie="feedItems=50";
 			var placeSuffix = place === 1 ? 'st' : place === 2 ? 'nd' : place === 3 ? 'rd' : 'th';
 			var placeLabel  = place + placeSuffix;
 			var streak      = streakMap[r.userid] || 0;
-			var streakBadge = streak >= 3 ? '<span class="streak-badge">🔥 ' + streak + '</span>' : '';
+			var streakBadge = streak >= 3 ? '<span class="streak-badge">&#x1F525; ' + streak + '</span>' : '';
 			var rowClass    = 'rankings-row' + (r.userid === myUserid ? ' rankings-row-me' : '');
 
 			var trendHtml = '';
 			if (period !== 'alltime') {
 				if (r.prev_avg_pct !== null) {
 					var diff = r.avg_pct - r.prev_avg_pct;
-					if (diff > 0)       trendHtml = '<span class="trend-up">▲ ' + diff + '</span>';
-					else if (diff < 0)  trendHtml = '<span class="trend-down">▼ ' + Math.abs(diff) + '</span>';
-					else                trendHtml = '<span class="trend-neutral">–</span>';
+					if (diff > 0)       trendHtml = '<span class="trend-up">&#x25B2; ' + diff + '</span>';
+					else if (diff < 0)  trendHtml = '<span class="trend-down">&#x25BC; ' + Math.abs(diff) + '</span>';
+					else                trendHtml = '<span class="trend-neutral">&#x2013;</span>';
 				} else {
 					trendHtml = '<span class="trend-new">new</span>';
 				}
@@ -801,7 +801,7 @@ document.cookie="feedItems=50";
 					miHtml += '<div class="mi-row">';
 					miHtml += '<img src="' + item.r.pic_filename + '?t=' + Date.now() + '" class="r-photo" loading="lazy">';
 					miHtml += '<span class="mi-name">' + item.r.first_name + ' ' + item.r.last_name + '</span>';
-					miHtml += '<span class="mi-arrow trend-up">▲ ' + item.diff + 'pp</span>';
+					miHtml += '<span class="mi-arrow trend-up">&#x25B2; ' + item.diff + 'pp</span>';
 					miHtml += '</div>';
 				});
 				miHtml += '</div>';
