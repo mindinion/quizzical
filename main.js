@@ -792,8 +792,8 @@ document.cookie="feedItems=50";
 		html += '<span class="rh-place">#</span>';
 		html += '<span class="rh-name">Name</span>';
 		html += '<span class="rh-avg">Avg</span>';
-		if (period !== 'alltime') html += '<span class="rh-trend">Trend <span class="info-icon" data-tip="Change in average % vs the previous ' + (period === 'weekly' ? 'week' : 'month') + '">i</span></span>';
-		if (period !== 'alltime') html += '<span class="rh-part">Days <span class="info-icon" data-tip="Days you posted a result in this period">i</span></span>';
+		if (period !== 'alltime' && period !== 'yearly') html += '<span class="rh-trend">Trend <span class="info-icon" data-tip="Change in average % vs the previous ' + (period === 'weekly' ? 'week' : 'month') + '">i</span></span>';
+		if (period !== 'alltime' && period !== 'yearly') html += '<span class="rh-part">Days <span class="info-icon" data-tip="Days you posted a result in this period">i</span></span>';
 		html += '</div>';
 
 		// For alltime: split into active (last result within 1 year) and ghosts
@@ -819,7 +819,7 @@ document.cookie="feedItems=50";
 			var rowClass    = 'rankings-row' + (r.userid === myUserid ? ' rankings-row-me' : '');
 
 			var trendHtml = '';
-			if (period !== 'alltime') {
+			if (period !== 'alltime' && period !== 'yearly') {
 				if (r.prev_avg_pct !== null) {
 					var diff = r.avg_pct - r.prev_avg_pct;
 					if (diff > 0)       trendHtml = '<span class="trend-up">&#x25B2; +' + diff + '%</span>';
@@ -830,7 +830,7 @@ document.cookie="feedItems=50";
 				}
 			}
 
-			var partHtml = period !== 'alltime'
+			var partHtml = (period !== 'alltime' && period !== 'yearly')
 				? '<span class="participation">' + r.days_active + '/' + r.period_days + '</span>'
 				: '';
 
@@ -841,8 +841,8 @@ document.cookie="feedItems=50";
 			s += '<span class="r-name">' + r.first_name + ' ' + r.last_name + streakBadge + '</span>';
 			s += '</span>';
 			s += '<span class="r-avg">' + r.avg_pct + '%</span>';
-			if (period !== 'alltime') s += '<span class="r-trend">' + trendHtml + '</span>';
-			if (period !== 'alltime') s += '<span class="r-part">' + partHtml + '</span>';
+			if (period !== 'alltime' && period !== 'yearly') s += '<span class="r-trend">' + trendHtml + '</span>';
+			if (period !== 'alltime' && period !== 'yearly') s += '<span class="r-part">' + partHtml + '</span>';
 			s += '</div>';
 			return s;
 		}
@@ -861,7 +861,7 @@ document.cookie="feedItems=50";
 		$('#RankingsMain').html(html);
 
 		// Most Improved (weekly / monthly only)
-		if (period !== 'alltime') {
+		if (period !== 'alltime' && period !== 'yearly') {
 			var improved = rankings
 				.filter(function(r) { return r.prev_avg_pct !== null && r.avg_pct > r.prev_avg_pct; })
 				.map(function(r)    { return { r: r, diff: r.avg_pct - r.prev_avg_pct }; })
@@ -953,7 +953,7 @@ document.cookie="feedItems=50";
 		var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 		var parts = dateStr.split('-');
 		var s = parseInt(parts[2]) + ' ' + months[parseInt(parts[1]) - 1];
-		if (period === 'alltime') s += ' ' + parts[0];
+		if (period === 'alltime' || period === 'yearly') s += ' ' + parts[0];
 		return s;
 	}
 

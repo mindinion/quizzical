@@ -97,13 +97,12 @@
 
 #RankingsControlRow {
 	display: flex;
-	align-items: center;
-	gap: 10px;
+	flex-direction: column;
+	gap: 8px;
 	margin-bottom: 18px;
 }
 
 #RankingsPeriodTabs {
-	flex: 1;
 	display: flex;
 	gap: 6px;
 	background: #f5f0e8;
@@ -112,6 +111,7 @@
 }
 
 #TypeFilterChip {
+	align-self: flex-end;
 	flex-shrink: 0;
 	font-family: verdana, arial;
 	font-size: 10px;

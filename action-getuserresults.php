@@ -24,6 +24,8 @@
 
 	if ($period === 'monthly') {
 		$dateFilter = 'AND Results.date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
+	} elseif ($period === 'yearly') {
+		$dateFilter = 'AND Results.date >= DATE_SUB(CURDATE(), INTERVAL 365 DAY)';
 	} elseif ($period === 'alltime') {
 		$dateFilter = '';
 	} else {
