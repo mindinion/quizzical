@@ -811,7 +811,7 @@ document.cookie="feedItems=50";
 			var placeSuffix = place === 1 ? 'st' : place === 2 ? 'nd' : place === 3 ? 'rd' : 'th';
 			var placeLabel  = place + placeSuffix;
 			var streak      = streakMap[r.userid] || 0;
-			var streakBadge = streak >= 3 ? '<span class="streak-badge">&#x1F525; ' + streak + '</span>' : '';
+			var streakBadge = streak >= 3 ? '<span class="streak-badge" data-tip="' + streak + '-day streak — results posted on ' + streak + ' consecutive days">&#x1F525; ' + streak + '</span>' : '';
 			var rowClass    = 'rankings-row' + (r.userid === myUserid ? ' rankings-row-me' : '');
 
 			var trendHtml = '';
@@ -1029,7 +1029,7 @@ document.cookie="feedItems=50";
 		document.getElementById("MainContent").addEventListener("scroll", expandFeed, false);
 
 		// Info icon tooltips — tap/click to show, tap anywhere else to dismiss
-		$(document).on('click', '.info-icon', function(e) {
+		$(document).on('click', '.info-icon, .streak-badge[data-tip]', function(e) {
 			e.stopPropagation();
 			var tip = $(this).data('tip');
 			var offset = $(this).offset();
@@ -1053,7 +1053,7 @@ document.cookie="feedItems=50";
 
 		// Drill-down: tap any rankings/MI/PB row to expand results
 		$(document).on('click', '.rankings-row[data-userid], .mi-row[data-userid], .pb-row[data-userid]', function(e) {
-			if ($(e.target).hasClass('info-icon')) return;
+			if ($(e.target).hasClass('info-icon') || $(e.target).hasClass('streak-badge')) return;
 			var $row = $(this);
 			var userid = parseInt($row.data('userid'));
 			var expandtype = $row.data('expandtype');
