@@ -11,8 +11,20 @@
 	require_once 'security.php';
 
 	if (isset($_GET['groupid'])) $groupid = sanitizeString($_GET['groupid']);
+	$period = isset($_GET['period']) ? sanitizeString($_GET['period']) : 'alltime';
 
-	// Subquery finds the max % per user+type, then we join back to get the
+	if ($period === 'weekly') {
+		$dateFilter = "AND r.date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+		$subDateFilter = "AND date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+	} elseif ($period === 'monthly') {
+		$dateFilter = "AND r.date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
+		$subDateFilter = "AND date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
+	} else {
+		$dateFilter = "";
+		$subDateFilter = "";
+	}
+
+	// Subquery finds the max % per user+type in the period, then we join back to get the
 	// actual result row (date, score, max). GROUP BY handles ties by picking one.
 	$q = "SELECT
 		Users.id AS userid,
@@ -29,13 +41,14 @@
 		INNER JOIN (
 			SELECT user, type, MAX(ROUND(score / max * 100, 0)) AS max_pct
 			FROM Results
-			WHERE status = 'active'
+			WHERE status = 'active' $subDateFilter
 			GROUP BY user, type
 		) AS bests ON bests.user = r.user
 			AND bests.type = r.type
 			AND ROUND(r.score / r.max * 100, 0) = bests.max_pct
 	WHERE r.status = 'active'
 		AND Memberships.group_id = $groupid
+		$dateFilter
 	GROUP BY r.user, r.type
 	ORDER BY Users.id, best_pct DESC";
 

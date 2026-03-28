@@ -724,7 +724,7 @@ document.cookie="feedItems=50";
 		$.when(
 			$.get("action-getrankings.php", { groupid: groupid, period: period }),
 			$.get("action-getstreaks.php", { groupid: groupid }),
-			$.get("action-getpersonalbests.php", { groupid: groupid })
+			$.get("action-getpersonalbests.php", { groupid: groupid, period: period })
 		).done(function(rankingsResp, streaksResp, pbResp) {
 			var rankings = JSON.parse(rankingsResp[0]);
 			var streaks  = JSON.parse(streaksResp[0]);
