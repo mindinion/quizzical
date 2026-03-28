@@ -30,9 +30,11 @@
 		$days = 30;
 		$prev_start = 60;
 		$prev_end = 31;
-	} elseif ($period === 'alltime') {
-		$days = null;
 	} elseif ($period === 'yearly') {
+		$days = 365;
+		$prev_start = 730;
+		$prev_end = 366;
+	} elseif ($period === 'alltime') {
 		$days = null;
 	} else {
 		$days = 7;
@@ -40,25 +42,7 @@
 		$prev_end = 8;
 	}
 
-	if ($period === 'yearly') {
-		$q = "SELECT
-			Users.id AS userid,
-			Users.first_name,
-			Users.last_name,
-			Users.pic_filename,
-			ROUND(AVG(score / max) * 100, 0) AS avg_pct,
-			NULL AS prev_avg_pct,
-			COUNT(DISTINCT Results.date) AS days_active,
-			DATEDIFF(CURDATE(), MIN(Results.date)) + 1 AS period_days,
-			NULL AS last_result_date
-		FROM Users
-			INNER JOIN Memberships ON Memberships.user_id = Users.id
-			INNER JOIN Results ON Results.user = Users.id AND Results.status = 'active'
-				AND Results.date >= DATE_SUB(CURDATE(), INTERVAL 365 DAY) $typeJoin
-		WHERE Memberships.group_id = $groupid
-		GROUP BY Users.id
-		ORDER BY avg_pct DESC";
-	} elseif ($period === 'alltime') {
+	if ($period === 'alltime') {
 		$q = "SELECT
 			Users.id AS userid,
 			Users.first_name,
