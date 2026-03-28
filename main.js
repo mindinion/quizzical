@@ -57,8 +57,7 @@ document.cookie="feedItems=50";
 		function(data,status){
 			if (status == "success") {
 				downloadResults(1);
-				downloadRankings(7);
-				refreshNewPost();	
+				refreshNewPost();
 			} else {
 				alert("Result Not Deleted");
 
@@ -161,7 +160,6 @@ document.cookie="feedItems=50";
 				//$('*[data-quizfeedtext="' + quizFeedId + '"]').remove();
 				if (status == "success") {
 					downloadResults(1);
-					downloadRankings(7);
 					refreshNewPost();	
 					
 					// Email notifications 
@@ -189,7 +187,6 @@ document.cookie="feedItems=50";
 			},
 			function(data, status) { 
 				downloadResults(1);
-				downloadRankings(7);
 				refreshNewPost();
 							 		
 				$.get("action-emaildig.php", 
@@ -211,7 +208,6 @@ document.cookie="feedItems=50";
 			},
 			function(response) { 
 				downloadResults(1);
-				downloadRankings(7);
 				refreshNewPost();
 			}
 		);
@@ -242,8 +238,7 @@ document.cookie="feedItems=50";
 			},
 			function(response) { 
 				downloadResults(1);
-				downloadRankings(7);
-				refreshNewPost();						
+				refreshNewPost();					
 			}
 		);
 	}
@@ -259,8 +254,7 @@ document.cookie="feedItems=50";
 			function(data, status) { 
 				console.log(data);
 				downloadResults(1);
-				downloadRankings(7);
-				refreshNewPost();			 				
+				refreshNewPost();		 				
 				$.get("action-emaildigcomment.php", 
 				{ 
 					id:data,
@@ -286,7 +280,6 @@ document.cookie="feedItems=50";
 				if (status == "success") {
 					console.log(data);
 					downloadResults(1);
-					downloadRankings(7);
 					refreshNewPost();				
 					
 					//Email notifications
@@ -331,8 +324,7 @@ document.cookie="feedItems=50";
 		function(data){
 			if (data > 0) {
 				downloadResults(1);
-				downloadRankings(7);
-				refreshNewPost();				
+				refreshNewPost();			
 				document.getElementById("NewScoreType").value = 'Daily';
 				document.getElementById("NewResultScore").value = '';
 				document.getElementById("NewResultTotal").value = '15';
@@ -683,9 +675,8 @@ document.cookie="feedItems=50";
 		},	
 		
 		function(data, status) { 
-			sessionStorage.usersettings = data;		
-			downloadResults();	
-			downloadRankings(7);
+			sessionStorage.usersettings = data;
+			downloadResults();
 			refreshNewPost();
 		});
 	}
@@ -695,75 +686,157 @@ document.cookie="feedItems=50";
 		return eval ( "obj." + type ) ;
 	}
 	
-	function downloadRankings(period) {
-		var groupid = getSetting("group_id");
-		var rankings = sessionStorage.getItem("rankings");
-		
-		// Show the preloader
-		$("#UserRankings").append("<img src = 'ajax-loader.gif' data-loader=rankings class=Loader></img>");
-		
-		//First display the cached results, if we have them
-		if (rankings != null) {
-			displayRankings(rankings);
-		} 
+	var rankingsCurrentPeriod = 'weekly';
+	var rankingsLoaded = false;
 
-		
-		// Now download and display the most recent rankings
-		$.get("action-getrankings.php", 
-			{ 
-				groupid:groupid,
-				period:period
-			},	
-			function(data, status) { 
-				if (sessionStorage.getItem("rankings") != data) {
-					displayRankings(data);
-				} else {
-					rankingsObj = JSON.parse(data);
-					rankings =  $.map(rankingsObj, function(el) { return el });
-				}
-				$('*[data-loader=rankings]').remove();
-				sessionStorage.rankings = data;
+	function switchTab(tab) {
+		if (tab === 'feed') {
+			$('#QuizFeed').show();
+			$('#RankingsPanel').hide();
+			$('#TabFeed').addClass('tab-active');
+			$('#TabRankings').removeClass('tab-active');
+		} else {
+			$('#QuizFeed').hide();
+			$('#RankingsPanel').show();
+			$('#TabFeed').removeClass('tab-active');
+			$('#TabRankings').addClass('tab-active');
+			if (!rankingsLoaded) {
+				loadRankings(rankingsCurrentPeriod);
 			}
-		);
+		}
 	}
-	
-	function displayRankings(rankingsJson) {
-		$("#UserRankings").html("");
-		if (rankingsJson == null) return;
-			
-		rankingsObj = JSON.parse(rankingsJson);
-		rankings =  $.map(rankingsObj, function(el) { return el });
-		placingnum = 0;
-		
-		$("#UserRankings").html("");
-		
-		rankings.forEach(function(ranking) {
-			placingnum++;
-			var name = ranking.first_name + " " + ranking.last_name;
-			var average = ranking.average;
-			var pic_filename = ranking.pic_filename;
-			var userid = ranking.userid;
-			if (placingnum.toString().slice(-1) == 1) {
-				placing = placingnum + "st";
-			} else if (placingnum.toString().slice(-1) == 2) {
-				placing = placingnum + "nd";
-			} else if (placingnum.toString().slice(-1) == 3) {
-				placing = placingnum + "rd";
-			} else {
-				placing = placingnum + "th";
-			}
-    		$("#UserRankings").append("<span id=UserRanking data-ranking=" + userid + ">");
-			$('*[data-ranking="' + userid + '"]').append("<div id='RankingPhoto' data-rankingphoto=" + userid + ">");
-			$('*[data-rankingphoto="' + userid + '"]').append("<img src='" + pic_filename + "?t=" + Date.now() + "' class='UserLogo' loading='lazy'></img>");
-			$('*[data-rankingphoto="' + userid + '"]').append("<div id='RankingPlace'>" + placing + "<br><div id=PlacingScore>" + average + "%</div></div id='RankingPlace'>");
-			$('*[data-ranking="' + userid + '"]').append("</div id='RankingPhoto'>");
-    		$("#UserRankings").append("	</span id='UserRanking'>");
-		
 
-			
+	function switchPeriod(period) {
+		rankingsCurrentPeriod = period;
+		rankingsLoaded = false;
+		$('.period-tab').removeClass('period-active');
+		$('#Period-' + period).addClass('period-active');
+		loadRankings(period);
+	}
+
+	function loadRankings(period) {
+		var groupid = getSetting("group_id");
+		var myUserid = parseInt(getCookie("userid"));
+		$('#RankingsMain').html("<img src='ajax-loader.gif' class='Loader'>");
+		$('#RankingsMostImproved').html('');
+		$('#RankingsPersonalBests').html('');
+		$.when(
+			$.get("action-getrankings.php", { groupid: groupid, period: period }),
+			$.get("action-getstreaks.php", { groupid: groupid }),
+			$.get("action-getpersonalbests.php", { groupid: groupid })
+		).done(function(rankingsResp, streaksResp, pbResp) {
+			var rankings = JSON.parse(rankingsResp[0]);
+			var streaks  = JSON.parse(streaksResp[0]);
+			var pbs      = JSON.parse(pbResp[0]);
+			rankingsLoaded = true;
+			renderRankings(rankings, streaks, pbs, period, myUserid);
 		});
 	}
-	
+
+	function renderRankings(rankings, streaks, pbs, period, myUserid) {
+		var streakMap = {};
+		streaks.forEach(function(s) { streakMap[s.userid] = s.streak; });
+
+		// Main Rankings Table
+		var html = '<div class="rankings-table">';
+		html += '<div class="rankings-header-row">';
+		html += '<span class="rh-place">#</span>';
+		html += '<span class="rh-name">Name</span>';
+		html += '<span class="rh-avg">Avg</span>';
+		if (period !== 'alltime') html += '<span class="rh-trend">Trend</span>';
+		if (period !== 'alltime') html += '<span class="rh-part">Days</span>';
+		html += '</div>';
+
+	ankings.forEach(function(r, idx) {
+			var place = idx + 1;
+			var placeSuffix = place === 1 ? 'st' : place === 2 ? 'nd' : place === 3 ? 'rd' : 'th';
+			var placeLabel  = place + placeSuffix;
+			var streak      = streakMap[r.userid] || 0;
+			var streakBadge = streak >= 3 ? '<span class="streak-badge">🔥 ' + streak + '</span>' : '';
+			var rowClass    = 'rankings-row' + (r.userid === myUserid ? ' rankings-row-me' : '');
+
+			var trendHtml = '';
+			if (period !== 'alltime') {
+				if (r.prev_avg_pct !== null) {
+					var diff = r.avg_pct - r.prev_avg_pct;
+					if (diff > 0)       trendHtml = '<span class="trend-up">▲ ' + diff + '</span>';
+					else if (diff < 0)  trendHtml = '<span class="trend-down">▼ ' + Math.abs(diff) + '</span>';
+					else                trendHtml = '<span class="trend-neutral">–</span>';
+				} else {
+					trendHtml = '<span class="trend-new">new</span>';
+				}
+			}
+
+			var partHtml = period !== 'alltime'
+				? '<span class="participation">' + r.days_active + '/' + r.period_days + '</span>'
+				: '';
+
+			html += '<div class="' + rowClass + '">' ;
+			html += '<span class="r-place">' + placeLabel + '</span>';
+			html += '<span class="r-photo-name">';
+			html += '<img src="' + r.pic_filename + '?t=' + Date.now() + '" class="r-photo" loading="lazy">';
+			html += '<span class="r-name">' + r.first_name + ' ' + r.last_name + streakBadge + '</span>';
+			html += '</span>';
+			html += '<span class="r-avg">' + r.avg_pct + '%</span>';
+			if (period !== 'alltime') html += '<span class="r-trend">' + trendHtml + '</span>';
+			if (period !== 'alltime') html += '<span class="r-part">' + partHtml + '</span>';
+			html += '</div>';
+		});
+
+		html += '</div>';
+		$('#RankingsMain').html(html);
+
+		// Most Improved (weekly / monthly only)
+		if (period !== 'alltime') {
+			var improved = rankings
+				.filter(function(r) { return r.prev_avg_pct !== null && r.avg_pct > r.prev_avg_pct; })
+				.map(function(r)    { return { r: r, diff: r.avg_pct - r.prev_avg_pct }; })
+				.sort(function(a, b){ return b.diff - a.diff; })
+				.slice(0, 3);
+
+			if (improved.length > 0) {
+				var miHtml = '<div class="rankings-section-title">Most Improved</div>';
+				miHtml += '<div class="most-improved-list">';
+				improved.forEach(function(item) {
+					miHtml += '<div class="mi-row">';
+					miHtml += '<img src="' + item.r.pic_filename + '?t=' + Date.now() + '" class="r-photo" loading="lazy">';
+					miHtml += '<span class="mi-name">' + item.r.first_name + ' ' + item.r.last_name + '</span>';
+					miHtml += '<span class="mi-arrow trend-up">▲ ' + item.diff + 'pp</span>';
+					miHtml += '</div>';
+				});
+				miHtml += '</div>';
+				$('#RankingsMostImproved').html(miHtml);
+			}
+		}
+
+		// Personal Bests: each user's highest single score, top 5 group-wide
+		var userBests = {};
+		pbs.forEach(function(p) {
+			if (!userBests[p.userid] || p.best_pct > userBests[p.userid].best_pct) {
+				userBests[p.userid] = p;
+			}
+		});
+
+		var bestsList = Object.keys(userBests)
+			.map(function(uid) { return userBests[uid]; })
+			.sort(function(a, b) { return b.best_pct - a.best_pct; })
+			.slice(0, 5);
+
+		if (bestsList.length > 0) {
+			var pbHtml = '<div class="rankings-section-title">Personal Bests</div>';
+			pbHtml += '<div class="pb-list">';
+			bestsList.forEach(function(p) {
+				pbHtml += '<div class="pb-row">';
+				pbHtml += '<span class="pb-name">' + p.first_name + ' ' + p.last_name + '</span>';
+				pbHtml += '<span class="pb-type">' + p.type + '</span>';
+				pbHtml += '<span class="pb-score">' + p.best_pct + '%</span>';
+				pbHtml += '</div>';
+			});
+			pbHtml += '</div>';
+			$('#RankingsPersonalBests').html(pbHtml);
+		}
+	}
+
 	function refreshNewPost() {
 		$.get("action-getresult.php", {
 				userid:getSetting("user_id")

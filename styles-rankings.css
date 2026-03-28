@@ -1,0 +1,284 @@
+/* Shrink the bottom gap now that the footer rankings strip is gone */
+#MainContent {
+	bottom: 50px;
+}
+
+/* ── Tab Bar ─────────────────────────────────────────────────────────────── */
+
+#TabBar {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 50px;
+	display: flex;
+	background-color: #fee9cd;
+	border-top: 1px solid #e0c8a8;
+	z-index: 1000;
+}
+
+.tab {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: verdana, arial;
+	font-size: 14px;
+	font-weight: bold;
+	color: #b37a40;
+	cursor: pointer;
+	border-top: 3px solid transparent;
+	transition: color 0.15s, border-color 0.15s;
+}
+
+.tab:hover {
+	color: #7a4a10;
+}
+
+.tab-active {
+	color: #cc5500;
+	border-top-color: #cc5500;
+}
+
+/* ── Rankings Panel wrapper ───────────────────────────────────────────────── */
+
+#RankingsPanel {
+	position: absolute;
+	left: 50%;
+	margin-left: -405px;
+	width: 600px;
+	padding: 12px 13px 24px;
+	background-color: white;
+	min-height: 100%;
+	box-sizing: border-box;
+}
+
+/* ── Period sub-tabs ─────────────────────────────────────────────────────── */
+
+#RankingsPeriodTabs {
+	display: flex;
+	gap: 6px;
+	margin-bottom: 18px;
+	background: #f5f0e8;
+	border-radius: 8px;
+	padding: 4px;
+}
+
+.period-tab {
+	flex: 1;
+	text-align: center;
+	padding: 8px 0;
+	cursor: pointer;
+	border-radius: 6px;
+	font-family: verdana, arial;
+	font-size: 12px;
+	font-weight: bold;
+	color: #a07040;
+	transition: background 0.15s, color 0.15s;
+}
+
+.period-tab:hover {
+	color: #7a4a10;
+}
+
+.period-active {
+	background: #fff;
+	color: #cc5500;
+	box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+
+/* ── Section headers ─────────────────────────────────────────────────────── */
+
+.rankings-section-title {
+	font-family: verdana, arial;
+	font-size: 13px;
+	font-weight: bold;
+	color: #888;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	margin: 22px 0 10px;
+}
+
+/* ── Main rankings table ─────────────────────────────────────────────────── */
+
+.rankings-table {
+	background: #fff;
+	border: 1px solid #ecdec8;
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.rankings-header-row {
+	display: flex;
+	align-items: center;
+	padding: 8px 12px;
+	background: #faf4ec;
+	border-bottom: 1px solid #ecdec8;
+	font-family: verdana, arial;
+	font-size: 11px;
+	font-weight: bold;
+	color: #999;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.rankings-row {
+	display: flex;
+	align-items: center;
+	padding: 10px 12px;
+	border-bottom: 1px solid #f5ede0;
+	font-family: verdana, arial;
+	font-size: 13px;
+}
+
+.rankings-row:last-child {
+	border-bottom: none;
+}
+
+.rankings-row-me {
+	background: #fffbf4;
+}
+
+/* Column widths */
+.rh-place, .r-place {
+	width: 38px;
+	flex-shrink: 0;
+	font-size: 12px;
+	color: #bbb;
+}
+
+.r-place {
+	color: #999;
+	font-weight: bold;
+}
+
+.rh-name, .r-photo-name {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+}
+
+.rh-avg, .r-avg {
+	width: 52px;
+	text-align: right;
+	font-weight: bold;
+	color: #cc5500;
+	flex-shrink: 0;
+}
+
+.rh-trend, .r-trend {
+	width: 54px;
+	text-align: right;
+	flex-shrink: 0;
+}
+
+.rh-part, .r-part {
+	width: 46px;
+	text-align: right;
+	flex-shrink: 0;
+	font-size: 11px;
+	color: #aaa;
+}
+
+.r-photo {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	object-fit: cover;
+	flex-shrink: 0;
+}
+
+.r-name {
+	font-size: 13px;
+	color: #333;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+/* Trend indicators */
+.trend-up   { color: #2a9d4a; font-size: 12px; }
+.trend-down { color: #d9363e; font-size: 12px; }
+.trend-neutral { color: #bbb; font-size: 12px; }
+.trend-new  { color: #999; font-size: 10px; font-style: italic; }
+
+/* Participation fraction */
+.participation {
+	font-size: 11px;
+	color: #aaa;
+}
+
+/* Streak fire badge */
+.streak-badge {
+	font-size: 11px;
+	color: #e07020;
+	white-space: nowrap;
+}
+
+/* ── Most Improved ────────────────────────────────────────────────────────── */
+
+.most-improved-list {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.mi-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 12px;
+	background: #faf4ec;
+	border-radius: 8px;
+	font-family: verdana, arial;
+	font-size: 13px;
+}
+
+.mi-name {
+	flex: 1;
+	color: #333;
+}
+
+.mi-arrow {
+	font-size: 13px;
+	font-weight: bold;
+}
+
+/* ── Personal Bests ──────────────────────────────────────────────────────── */
+
+.pb-list {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.pb-row {
+	display: flex;
+	align-items: center;
+	padding: 8px 12px;
+	background: #faf4ec;
+	border-radius: 8px;
+	font-family: verdana, arial;
+	font-size: 13px;
+}
+
+.pb-name {
+	flex: 1;
+	color: #333;
+}
+
+.pb-type {
+	color: #999;
+	font-size: 11px;
+	margin-right: 10px;
+}
+
+.pb-score {
+	font-weight: bold;
+	color: #cc5500;
+}
