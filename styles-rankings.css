@@ -462,9 +462,16 @@
 
 @media (max-width: 767px) {
 
-	/* Feed and Rankings: remove fixed-width centering, fill the screen */
+	/* Match body background to tab bar so any sub-pixel gap is invisible */
+	html, body {
+		background-color: #fee9cd;
+	}
+
+	/* Feed and Rankings: remove fixed-width centering, fill the screen.
+	   Lock horizontal scroll — only vertical scrolling should be possible. */
 	#MainContent {
 		min-width: 0;
+		overflow-x: hidden;
 	}
 
 	#QuizFeed {
@@ -485,16 +492,16 @@
 	   rather than overlapping it with absolute positioning */
 	#QuizFeedInfo {
 		min-width: 0;
-		max-width: calc(100% - 75px);
+		max-width: calc(100% - 80px);
 	}
 
 	#QuizFeedBubble {
 		position: static;
 		float: right;
 		min-width: 0;
-		width: 65px;
+		width: 70px;
 		height: auto;
-		padding: 10px 4px 6px;
+		padding: 10px 10px 8px;
 		right: auto;
 		font-size: 11px;
 	}
