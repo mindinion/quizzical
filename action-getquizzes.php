@@ -17,9 +17,14 @@
 	$userid     = isset($_GET['userid'])     ? (int)sanitizeString($_GET['userid'])     : 0;
 	$typefilter = isset($_GET['typefilter']) ? sanitizeString($_GET['typefilter'])       : 'main';
 
-	// Fetch RSS with a short timeout
-	$ctx = stream_context_create(['http' => ['timeout' => 5]]);
-	$rss = @file_get_contents('https://www.stuff.co.nz/rss?section=/quizzes', false, $ctx);
+	// Fetch RSS via curl (file_get_contents on external URLs is disabled on this host)
+	$ch = curl_init('https://www.stuff.co.nz/rss?section=/quizzes');
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 8);
+	curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+	$rss = curl_exec($ch);
+	curl_close($ch);
 	if (!$rss) { echo json_encode([]); exit; }
 
 	$xml = @simplexml_load_string($rss);
