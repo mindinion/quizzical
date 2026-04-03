@@ -135,7 +135,7 @@ TextArea {}
 
 /* Comment composer — injected as first item in #QuizFeed */
 #CommentComposer {
-	margin: 14px 0 10px;
+	margin: 18px 0 10px;
 	background: #fff;
 	border: 1px solid #e8e0d0;
 	border-radius: 10px;
@@ -674,14 +674,14 @@ A {}
 
 #Header {
 	background-color:fee9cd           ;
-	height:80px;
+	height:120px;
 	width:100%;
 	position:fixed;
 	z-index:1000;
 	left:0px;
 	top:0px;
 	right:0px;
-	
+
 }
 
 #MainContent {
@@ -693,7 +693,7 @@ A {}
 	position:absolute;
 	min-width:500px;
 	overflow:scroll;
-	top:145px;
+	top:120px;
 	bottom:85px;
 	right:0px;
 
