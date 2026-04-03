@@ -628,6 +628,11 @@ document.cookie="feedItems=50";
 
 		});
 		
+		// Inject the comment composer at the top of the feed
+		if (!append) {
+			var composerHtml = '<div id="CommentComposer"><textarea id="NewCommentTextArea" placeholder="Post a comment to the group..."></textarea><button id="NewCommentSubmit" onclick="postComment()" style="display:none">Post</button></div>';
+			$('#QuizFeed').prepend(composerHtml);
+		}
 		applyFeedRankBadges();
 		if (preLoad != 1) loadBubbles(results);
 
@@ -1039,18 +1044,19 @@ document.cookie="feedItems=50";
 	function renderQuizDropdown() {
 		var $sel = $('#QuizDropdown');
 		$sel.empty();
-		$('<option>').val('').text('Select a quiz to play...').prop('disabled', true).prop('selected', true).appendTo($sel);
 		if (!quizList.length) {
 			$('<option>').val('').text('No quizzes found').prop('disabled', true).appendTo($sel);
 			return;
 		}
+		var firstUndone = -1;
 		quizList.forEach(function(q, i) {
 			var label = q.type + ' \u2013 ' + formatQuizDate(q.date);
 			if (q.done) label += ' \u2713 ' + q.score + '/' + q.max;
 			var $opt = $('<option>').val(i).text(label);
-			if (q.done) $opt.prop('disabled', true);
+			if (q.done) { $opt.prop('disabled', true); } else if (firstUndone < 0) { firstUndone = i; }
 			$sel.append($opt);
 		});
+		if (firstUndone >= 0) $sel.val(firstUndone);
 	}
 
 	function formatQuizDate(dateStr) {
@@ -1084,7 +1090,6 @@ document.cookie="feedItems=50";
 		$('#QuizTotal').val('15');
 		$('#QuizCard').show();
 		$('#TabBar').hide();
-		$('#QuizDropdown').val('');
 	}
 
 	function openQuizNative() {
@@ -1176,8 +1181,8 @@ document.cookie="feedItems=50";
 
 		// Open quiz card when a quiz is selected from the dropdown
 		$('#QuizDropdown').on('change', openQuizCard);
-		// If a comment is provided, show the submit button
-		$('#NewCommentTextArea').on('input', function() {
+		// If a comment is provided, show the submit button (delegated — element is injected dynamically)
+		$(document).on('input', '#NewCommentTextArea', function() {
 			$('#NewCommentSubmit').toggle($(this).val().trim().length > 0);
 		});
 			

@@ -133,9 +133,9 @@ TextArea {}
 	color: #cc5500;
 }
 
-/* Comment composer — sits at top of feed content */
+/* Comment composer — injected as first item in #QuizFeed */
 #CommentComposer {
-	margin: 10px 10px 6px;
+	margin: 8px 0 10px;
 	background: #fff;
 	border: 1px solid #e8e0d0;
 	border-radius: 10px;
@@ -143,9 +143,10 @@ TextArea {}
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
+	max-width: 560px;
 }
 
-#CommentComposer #NewCommentTextArea {
+#NewCommentTextArea {
 	width: 100%;
 	min-height: 38px;
 	max-height: 120px;
@@ -159,7 +160,7 @@ TextArea {}
 	box-sizing: border-box;
 }
 
-#CommentComposer #NewCommentSubmit {
+#NewCommentSubmit {
 	align-self: flex-end;
 	padding: 7px 18px;
 	background: #cc5500;
