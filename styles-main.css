@@ -1099,17 +1099,19 @@ A {}
 }
 
 #ComposerAttachBtn {
-	color: grey;
-	font-size: 12px;
-	font-family: verdana;
-	cursor: pointer;
-	background: transparent;
+	padding: 7px 14px;
+	background: #555;
+	color: #fff;
+	font-family: verdana, arial;
+	font-weight: bold;
+	font-size: 13px;
 	border: none;
-	padding: 0;
+	border-radius: 6px;
+	cursor: pointer;
 }
 
 #ComposerAttachBtn:hover {
-	text-decoration: underline;
+	background: #666;
 }
 
 #ComposerAttachPreview {
@@ -1121,18 +1123,21 @@ A {}
 }
 
 .reply-attach-btn {
-	color: grey;
+	padding: 5px 12px;
+	background: #555;
+	color: #fff;
+	font-family: verdana, arial;
+	font-weight: bold;
 	font-size: 12px;
-	font-family: verdana;
-	cursor: pointer;
-	background: transparent;
 	border: none;
-	padding: 0;
-	vertical-align: middle;
+	border-radius: 6px;
+	cursor: pointer;
+	display: inline-block;
+	margin-top: 4px;
 }
 
 .reply-attach-btn:hover {
-	text-decoration: underline;
+	background: #666;
 }
 
 .attach-preview-thumb {
