@@ -1082,7 +1082,7 @@ document.cookie="feedItems=50";
 		$('#QuizCardTitle').text(label);
 		$('#QuizIframe').attr('src', selectedQuiz.url);
 		$('#QuizScore').val('');
-		$('#QuizTotal').val('10');
+		$('#QuizTotal').val('15');
 		$('#QuizCard').show();
 		$('#TabBar').hide();
 		$('#QuizDropdown').val('');
