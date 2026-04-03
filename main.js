@@ -572,7 +572,7 @@ document.cookie="feedItems=50";
 			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("- <span id=QuizFeedInfoDelete data-deleteid=" + quizfeedId + " onclick='deletePost(" + quizfeedId + ");'>Delete </span>");    				
 			
 			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<textarea rows=3 class=QuizFeedInfoReplyInput onkeydown='sendComment(event," + quizfeedId + ")' data-replyboxid=" + quizfeedId + " style=display:none;></textarea>");    				
-			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<label class='reply-attach-btn' title='Attach file'>&#x1F4CE;<input type='file' class='reply-file-input' data-replyfileid=" + quizfeedId + " accept='image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt' style='display:none'></label>");
+			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<label class='reply-attach-btn'>Attach<input type='file' class='reply-file-input' data-replyfileid=" + quizfeedId + " accept='image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt' style='display:none'></label>");
 			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id='ReplyAttachPreview_" + quizfeedId + "' style='display:none'></div>");
 
 			// Grab the comments data for the post and display them
@@ -675,7 +675,7 @@ document.cookie="feedItems=50";
 		
 		// Inject the comment composer at the top of the feed
 		if (!append) {
-			var composerHtml = '<div id="CommentComposer"><textarea id="NewCommentTextArea" placeholder="Post a comment to the group..."></textarea><div id="ComposerActions"><label id="ComposerAttachBtn" title="Attach file">&#x1F4CE;<input type="file" id="ComposerFileInput" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" style="display:none"></label><button id="NewCommentSubmit" onclick="postComment()" style="display:none">Post</button></div><div id="ComposerAttachPreview" style="display:none"></div></div>';
+			var composerHtml = '<div id="CommentComposer"><textarea id="NewCommentTextArea" placeholder="Post a comment to the group..."></textarea><div id="ComposerActions"><label id="ComposerAttachBtn">Attach<input type="file" id="ComposerFileInput" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" style="display:none"></label><button id="NewCommentSubmit" onclick="postComment()" style="display:none">Post</button></div><div id="ComposerAttachPreview" style="display:none"></div></div>';
 			$('#QuizFeed').prepend(composerHtml);
 		}
 		applyFeedRankBadges();
@@ -722,7 +722,7 @@ document.cookie="feedItems=50";
 		$text.append(document.createTextNode('- '));
 		$text.append($('<span>').attr({ id: 'QuizFeedInfoDelete', 'data-deleteid': postId }).on('click', function() { deletePost(postId); }).text('Delete '));
 		$text.append($('<textarea>').attr({ rows: 3, 'class': 'QuizFeedInfoReplyInput', 'data-replyboxid': postId, style: 'display:none;' }).on('keydown', function(e) { sendComment(e, postId); }));
-		var $replyAttachLabel = $('<label>').addClass('reply-attach-btn').attr('title', 'Attach file').html('&#x1F4CE;');
+		var $replyAttachLabel = $('<label>').addClass('reply-attach-btn').html('Attach');
 		var $replyFileInput = $('<input>').attr({ type: 'file', 'class': 'reply-file-input', 'data-replyfileid': postId, accept: 'image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt', style: 'display:none' });
 		$replyAttachLabel.append($replyFileInput);
 		$text.append($replyAttachLabel);

@@ -1099,21 +1099,17 @@ A {}
 }
 
 #ComposerAttachBtn {
-	display: inline-flex;
-	align-items: center;
+	color: grey;
+	font-size: 12px;
+	font-family: verdana;
 	cursor: pointer;
-	font-size: 18px;
-	padding: 2px 5px;
-	border: 1px solid #444;
-	border-radius: 4px;
 	background: transparent;
-	color: #aaa;
-	flex-shrink: 0;
+	border: none;
+	padding: 0;
 }
 
 #ComposerAttachBtn:hover {
-	border-color: #888;
-	color: #ccc;
+	text-decoration: underline;
 }
 
 #ComposerAttachPreview {
@@ -1125,22 +1121,18 @@ A {}
 }
 
 .reply-attach-btn {
-	display: inline-flex;
-	align-items: center;
+	color: grey;
+	font-size: 12px;
+	font-family: verdana;
 	cursor: pointer;
-	font-size: 16px;
-	padding: 1px 4px;
-	border: 1px solid #444;
-	border-radius: 4px;
 	background: transparent;
-	color: #aaa;
-	margin-top: 4px;
+	border: none;
+	padding: 0;
 	vertical-align: middle;
 }
 
 .reply-attach-btn:hover {
-	border-color: #888;
-	color: #ccc;
+	text-decoration: underline;
 }
 
 .attach-preview-thumb {
