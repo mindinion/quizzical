@@ -50,7 +50,7 @@
 			Users.pic_filename,
 			ROUND(AVG(score / max) * 100, 0) AS avg_pct,
 			NULL AS prev_avg_pct,
-			COUNT(DISTINCT Results.date) AS days_active,
+			COUNT(DISTINCT DATE(Results.date)) AS days_active,
 			DATEDIFF(CURDATE(), MIN(Results.date)) + 1 AS period_days,
 			DATE_FORMAT(MAX(Results.date), '%Y-%m-%d') AS last_result_date
 		FROM Users
@@ -67,7 +67,7 @@
 			Users.pic_filename,
 			ROUND(AVG(CASE WHEN Results.date >= DATE_SUB(CURDATE(), INTERVAL $days DAY) $typeSub THEN score / max END) * 100, 0) AS avg_pct,
 			ROUND(AVG(CASE WHEN Results.date BETWEEN DATE_SUB(CURDATE(), INTERVAL $prev_start DAY) AND DATE_SUB(CURDATE(), INTERVAL $prev_end DAY) $typeSub THEN score / max END) * 100, 0) AS prev_avg_pct,
-			COUNT(DISTINCT CASE WHEN Results.date >= DATE_SUB(CURDATE(), INTERVAL $days DAY) $typeSub THEN Results.date END) AS days_active,
+			COUNT(DISTINCT CASE WHEN Results.date >= DATE_SUB(CURDATE(), INTERVAL $days DAY) $typeSub THEN DATE(Results.date) END) AS days_active,
 			$days AS period_days,
 			NULL AS last_result_date
 		FROM Users
