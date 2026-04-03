@@ -17,17 +17,18 @@
 
 	if (isset($_GET['userid'])) $userid = sanitizeString($_GET['userid']);
 	$q = "
-		SELECT 
+		SELECT
 			Users.id as user_id,
-			Users.default_group AS group_id, 
-			`Groups`.name as group_name, 
+			Users.default_group AS group_id,
+			`Groups`.name as group_name,
 			Users.timezone as timezone,
 			first_name,
 			last_name,
 			email,
 			notify_results,
 			notify_message,
-			superuser
+			superuser,
+			pic_filename
 		FROM Users 
 		INNER JOIN `Groups` ON (Users.default_group = `Groups`.id) 
 		WHERE Users.id = $userid;";
@@ -44,10 +45,11 @@
 		public $old_timezone = "";
 		public $first_name = "";
 		public $last_name = "";
-		public $email = "";	
+		public $email = "";
 		public $notify_results = "";
 		public $notify_messages = "";
 		public $superuser = "";
+		public $pic_filename = "";
 	}
 
 	while($row = mysqli_fetch_assoc($user)) {
@@ -63,6 +65,7 @@
 		$newUser->notify_results = $row['notify_results'];
 		$newUser->notify_message = $row['notify_message'];
 		$newUser->superuser = $row['superuser'];
+		$newUser->pic_filename = $row['pic_filename'];
 	}
 	
 	echo JSON_ENCODE($newUser);

@@ -267,30 +267,26 @@ document.cookie="feedItems=50";
 	}
 	
 	function postComment () {
-	
-		// SHow the loading image
-		$("#QuizFeed").prepend("<div id=QuizfeedLoadingPost><img src='ajax-loader.gif'></img></div>");
-		
+		var commentText = $('#NewCommentTextArea').val();
+
 		$.get("action-newcommentpost.php", {
-				comment:document.getElementById("NewCommentTextArea").value,
+				comment: commentText,
 				userid:getSetting("user_id"),
 				timezone:getSetting("timezone")
 			},
 			function(data,status){
 				if (status == "success") {
-					console.log(data);
-					downloadResults(1);
+					prependFeedItem(parseInt(data), { isResult: false, comment: commentText });
 
 					//Email notifications
-					$.get("action-emailpost.php", 
+					$.get("action-emailpost.php",
 						{ postId:data },
 						function(data) { console.log(data);  }
 					);
-							
-					document.getElementById("NewCommentTextArea").value = '';
-					document.getElementById('NewCommentSubmit').hide();
+
 					$('#NewCommentTextArea').val('');
-		
+					$('#NewCommentSubmit').hide();
+
 				} else {
 					alert("Comment Not Added");
 				}
@@ -639,6 +635,54 @@ document.cookie="feedItems=50";
 	}
 	
 	
+	function prependFeedItem(postId, opts) {
+		var myId = getSetting('user_id');
+		var picFilename = getSetting('pic_filename');
+		var picSrc = (picFilename && picFilename !== 'null') ? picFilename + '?t=' + Date.now() : 'profileicon.png';
+
+		var $item = $('<div>').attr({ id: 'QuizFeedItem', 'data-quizfeed': postId });
+		var $info = $('<div>').attr({ id: 'QuizFeedInfo', 'data-quizfeedinfo': postId });
+		if (!opts.isResult) $info.addClass('NoBubble');
+
+		var $photo = $('<div>').attr({ id: 'QuizFeedInfoPhoto', 'data-userid': myId });
+		$photo.append($('<img>').attr({ src: picSrc, height: 50, width: 50 }).on('error', function() { this.src = 'profileicon.png'; }));
+		$info.append($photo);
+
+		var $text = $('<div>').attr({ id: 'QuizFeedInfoText', 'data-quizfeedtext': postId });
+		if (!opts.isResult) $text.addClass('nobubble');
+
+		var $name = $('<div>').attr({ id: 'QuizFeedInfoName', 'data-quizfeedname': postId });
+		$name.append(document.createTextNode(getSetting('first_name') + ' ' + getSetting('last_name')));
+		$name.append($('<div>').attr({ id: 'QuizFeedInfoTimestamp', 'data-quizfeedts': postId }).text('just now'));
+		$name.append($('<a>').attr('href', 'javascript:deletePost(' + postId + ')').addClass('Underline').text(' Delete '));
+		$text.append($name);
+
+		if (opts.isResult) {
+			var dateStr = Date.parse(opts.quizDate).toString('MMM dd');
+			$text.append($('<div>').attr('id', 'QuizFeedInfoStatus').text('Scored ' + opts.score + '/' + opts.total + ' in the ' + dateStr + ' ' + opts.quizType + ' quiz'));
+		}
+
+		$text.append($('<div>').attr({ id: 'QuizFeedInfoComment', 'class': 'Primary' }).text(opts.comment || ''));
+		$text.append($('<span>').attr('id', 'QuizFeedInfoReplyLink').on('click', function() { showReplyBox(postId); }).html('&nbsp;Comment&nbsp;'));
+		$text.append(document.createTextNode('- '));
+		$text.append($('<span>').attr({ id: 'QuizFeedInfoDigLink', 'data-dig': postId }).on('click', function() { digPost(postId); }).text('Dig '));
+		$text.append(document.createTextNode('- '));
+		$text.append($('<span>').attr({ id: 'QuizFeedInfoDelete', 'data-deleteid': postId }).on('click', function() { deletePost(postId); }).text('Delete '));
+		$text.append($('<textarea>').attr({ rows: 3, 'class': 'QuizFeedInfoReplyInput', 'data-replyboxid': postId, style: 'display:none;' }).on('keydown', function(e) { sendComment(e, postId); }));
+
+		$info.append($text);
+		$item.append($info);
+
+		var $composer = $('#CommentComposer');
+		if ($composer.length) {
+			$composer.after($item);
+		} else {
+			$('#QuizFeed').prepend($item);
+		}
+
+		applyFeedRankBadges();
+	}
+
 	function loadBubbles(results) {
 		window.res = results;
 		
@@ -1126,8 +1170,10 @@ document.cookie="feedItems=50";
 			timezone: getSetting('timezone')
 		}, function(data) {
 			if (parseInt(data) > 0) {
+				var quizType = selectedQuiz.type;
+				var quizDate = selectedQuiz.date;
 				closeQuizCard();
-				downloadResults(1);
+				prependFeedItem(parseInt(data), { isResult: true, score: score, total: total, quizType: quizType, quizDate: quizDate });
 				rankingsLoaded = false;
 				if ($('#RankingsPanel').is(':visible')) loadRankings(rankingsCurrentPeriod);
 				loadQuizList();
