@@ -84,6 +84,8 @@ TextArea {}
 	padding: 8px 10px 4px;
 	background: #fff;
 	border-bottom: 1px solid #e8e0d0;
+	min-height: 100%;
+	box-sizing: border-box;
 }
 
 /* Quiz selector row */
