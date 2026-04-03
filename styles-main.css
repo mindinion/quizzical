@@ -788,6 +788,10 @@ A {}
 	box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
+.rank-gold   .feed-rank-badge { background: #FFD700; color: #333; }
+.rank-silver .feed-rank-badge { background: #C0C0C0; color: #333; }
+.rank-bronze .feed-rank-badge { background: #CD7F32; color: #fff; }
+
 #QuizFeedInfoUser {
 	padding-top:3px;
 	line-height:150%;
