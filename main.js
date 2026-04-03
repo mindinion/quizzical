@@ -1088,6 +1088,11 @@ document.cookie="feedItems=50";
 		$('#QuizDropdown').val('');
 	}
 
+	function openQuizNative() {
+		if (!selectedQuiz) return;
+		window.open(selectedQuiz.url, '_blank');
+	}
+
 	function closeQuizCard() {
 		$('#QuizCard').hide();
 		$('#QuizIframe').attr('src', '');

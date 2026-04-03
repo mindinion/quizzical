@@ -252,9 +252,22 @@ TextArea {}
 	border: 1px solid #ddd;
 	border-radius: 8px;
 	font-family: verdana, arial;
-	font-size: 13px;
+	font-size: 12px;
 	font-weight: bold;
 	color: #666;
+	cursor: pointer;
+}
+
+#QuizCardOpen {
+	flex: 1;
+	height: 44px;
+	background: #f5f5f5;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	font-family: verdana, arial;
+	font-size: 12px;
+	font-weight: bold;
+	color: #444;
 	cursor: pointer;
 }
 
