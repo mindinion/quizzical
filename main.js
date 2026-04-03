@@ -706,7 +706,7 @@ document.cookie="feedItems=50";
 			sessionStorage.usersettings = data;
 			fetchFeedRankers();
 			downloadResults();
-			refreshNewPost();
+			loadQuizList();
 		});
 	}
 	
@@ -720,6 +720,9 @@ document.cookie="feedItems=50";
 	var currentPbs = [];
 	var feedTopRankers = {};
 	var rankingsTypeFilter = 'main';
+	var quizList = [];
+	var quizTypeFilter = 'main';
+	var selectedQuiz = null;
 
 	function switchTab(tab) {
 		if (tab === 'feed') {
@@ -1024,7 +1027,102 @@ document.cookie="feedItems=50";
 		);
 	}
 	
-	function activateListeners() {
+
+	function loadQuizList() {
+		$.get('action-getquizzes.php', {
+			userid: getSetting('user_id'),
+			typefilter: quizTypeFilter
+		}, function(data) {
+			quizList = JSON.parse(data);
+			renderQuizDropdown();
+		});
+	}
+
+	function renderQuizDropdown() {
+		var $sel = $('#QuizDropdown');
+		$sel.empty().append('<option value="">Select a quiz to play...</option>');
+		if (!quizList.length) {
+			$sel.append('<option value="" disabled>No quizzes found</option>');
+			return;
+		}
+		quizList.forEach(function(q, i) {
+			var label = q.type + ' \u2013 ' + formatQuizDate(q.date);
+			if (q.done) label += ' \u2713';
+			var $opt = $('<option>').val(i).text(label);
+			if (q.done) $opt.prop('disabled', true);
+			$sel.append($opt);
+		});
+	}
+
+	function formatQuizDate(dateStr) {
+		var parts = dateStr.split('-');
+		var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+		var today = new Date(); today.setHours(0, 0, 0, 0);
+		var yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
+		if (d.getTime() === today.getTime()) return 'Today';
+		if (d.getTime() === yesterday.getTime()) return 'Yesterday';
+		var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+		var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+		return days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()];
+	}
+
+	function setQuizTypeFilter(filter) {
+		quizTypeFilter = filter;
+		$('.quiz-type-btn').removeClass('quiz-type-active');
+		$('#QuizType' + (filter === 'main' ? 'Main' : 'All')).addClass('quiz-type-active');
+		loadQuizList();
+	}
+
+	function openQuizCard() {
+		var idx = $('#QuizDropdown').val();
+		if (idx === '' || idx === null) return;
+		selectedQuiz = quizList[parseInt(idx)];
+		if (!selectedQuiz || selectedQuiz.done) return;
+		var label = selectedQuiz.type + ' \u2013 ' + formatQuizDate(selectedQuiz.date);
+		$('#QuizCardTitle').text(label);
+		$('#QuizIframe').attr('src', selectedQuiz.url);
+		$('#QuizScore').val('');
+		$('#QuizTotal').val('10');
+		$('#QuizCard').show();
+		$('#TabBar').hide();
+		$('#QuizDropdown').val('');
+	}
+
+	function closeQuizCard() {
+		$('#QuizCard').hide();
+		$('#QuizIframe').attr('src', '');
+		$('#TabBar').show();
+		selectedQuiz = null;
+	}
+
+	function submitQuizResult() {
+		var score = $('#QuizScore').val();
+		var total = $('#QuizTotal').val();
+		if (!score || score === '') { alert('Please enter your score'); return; }
+		if (!selectedQuiz) return;
+		$.get('action-newresult.php', {
+			type: selectedQuiz.type,
+			score: score,
+			questions: total,
+			date: selectedQuiz.date,
+			dateOption: 'other',
+			userid: getSetting('user_id'),
+			timezone: getSetting('timezone')
+		}, function(data) {
+			if (parseInt(data) > 0) {
+				closeQuizCard();
+				downloadResults(1);
+				rankingsLoaded = false;
+				if ($('#RankingsPanel').is(':visible')) loadRankings(rankingsCurrentPeriod);
+				loadQuizList();
+				$.get('action-emailresult.php', { resultId: data }, function(r) { console.log(r); });
+			} else {
+				alert('You have already logged a result for that quiz!');
+			}
+		});
+	}
+
+		function activateListeners() {
 		// Infinite scroll — load more results when user reaches the bottom
 		document.getElementById("MainContent").addEventListener("scroll", expandFeed, false);
 
@@ -1064,44 +1162,8 @@ document.cookie="feedItems=50";
 			}
 		});
 
-		// If entering a score, reveal the rest of the score fields
-		document.getElementById("NewResultScore").addEventListener("keyup", function(){ 
-			if (document.activeElement.value != "") {
-				document.getElementById('NewScoreLabelType').style.display = 'block';
-				document.getElementById('NewScoreType').style.display = 'block';
-				document.getElementById('NewScoreLabelWhen').style.display = 'block';
-				document.getElementById('NewScoreDate').style.display = 'block';
-				document.getElementById('NewResultSubmit').style.display = 'block';
-				document.getElementById('NewCommentTextArea').style.display = 'none';
-				document.getElementById('NewCommentSubmit').style.display = 'none';
-				document.getElementById('QuizFeed').style.top = '70px';
-				refreshNewPost();
-			} else {
-				document.getElementById('NewScoreLabelType').style.display = 'none';
-				document.getElementById('NewScoreType').style.display = 'none';
-				document.getElementById('NewScoreLabelWhen').style.display = 'none';
-				document.getElementById('NewScoreDate').style.display = 'none';
-				document.getElementById('NewResultSubmit').style.display = 'none';
-				document.getElementById('NewCommentTextArea').style.display = 'block';
-			}
-		}, false);
-
-
-		// If the result is changed (via the spinner), show the extra result elements ('undefined' caveat stops it from triggering off an empty field)
-		document.getElementById("NewResultScore").addEventListener("change", function() {
-		if (document.activeElement.value != undefined) {
-				document.getElementById('NewScoreLabelType').style.display = 'block';
-				document.getElementById('NewScoreType').style.display = 'block';
-				document.getElementById('NewScoreLabelWhen').style.display = 'block';
-				document.getElementById('NewScoreDate').style.display = 'block';
-				document.getElementById('NewResultSubmit').style.display = 'block';
-				document.getElementById('NewCommentTextArea').style.display = 'none';
-				document.getElementById('NewCommentSubmit').style.display = 'none';
-				document.getElementById('QuizFeed').style.top = '70px';
-				refreshNewPost();
-			}
-		}, false);
-	
+		// Open quiz card when a quiz is selected from the dropdown
+		$('#QuizDropdown').on('change', openQuizCard);
 		// If a comment is provided, show the submit button
 		document.getElementById("NewCommentTextArea").addEventListener("keyup", function(){ 
 			if (document.activeElement.value != "") {

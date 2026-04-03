@@ -6,7 +6,7 @@
 
 <script src="jquery.js"></script>
 <script src="cropper.min.js"></script>
-<script src="main.js?id=29"></script>
+<script src="main.js?id=30"></script>
 
 
 
@@ -29,7 +29,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-		<link href="styles-main.css?id=1236" type="text/css" rel="stylesheet" />
+		<link href="styles-main.css?id=1237" type="text/css" rel="stylesheet" />
 		<link href="styles-profile.css?id=21" type="text/css" rel="stylesheet" />
 		<link href="styles-rankings.css?id=12" type="text/css" rel="stylesheet" />
 		<link href="cropper.min.css" type="text/css" rel="stylesheet" />
@@ -59,37 +59,21 @@
 				</div id="MenuButton">
 			</a>
 		</div>	
-		<div id="NewPost">		
-			<span>
-				<input type="number" name="score" id="NewResultScore" min="0">
-				<div id="NewScoreLabelScore">
-					<div id = "MiddleText" >Out Of</div>
-				</div>
-				<input type="number" name="questions" id ="NewResultTotal" value=15 min="0">
-				<div id="NewScoreLabelType">Type</div>
-				<select name="type" id="NewScoreType">
-					<option value="Morning">Morning</option>
-					<option value="Afternoon">Afternoon</option>
-					<option value="Daily">Daily</option>
-					<option value="Biz">Biz</option>
-					<option value="Sports">Sports</option>
-					<option value="Kids">Kids</option>
-					<option value="Other">Other</option>
+		<div id="NewPost">
+			<div id="QuizSelectorRow">
+				<select id="QuizDropdown">
+					<option value="">Loading quizzes...</option>
 				</select>
-				<div id="NewScoreLabelWhen">When</div>
-				<select name="date" id="NewScoreDate">
-					<option value="Today">Today</option>
-					<option value="Yesterday">Yesterday</option>		
-				</select>
-				<div id="NewResultSubmit" onclick="addResult();">Post</div>
-				<div id="NewCommentBox">
-					<textarea class ="NewComment" placeholder="Or, post a new comment here..." id="NewCommentTextArea"></textarea>
+				<div id="QuizTypeFilter">
+					<span class="quiz-type-btn quiz-type-active" id="QuizTypeMain" onclick="setQuizTypeFilter('main')">Morning &amp; Afternoon</span>
+					<span class="quiz-type-btn" id="QuizTypeAll" onclick="setQuizTypeFilter('all')">All Types</span>
 				</div>
-				<br><br><br><br>
-				<div id="NewCommentSubmit" onclick="postComment();">Add Comment</div>
-				<br>
-			</span>		
-		</div id="NewPost">		
+			</div>
+			<div id="NewCommentBox">
+				<textarea class="NewComment" placeholder="Or, post a comment..." id="NewCommentTextArea"></textarea>
+			</div>
+			<div id="NewCommentSubmit" onclick="postComment();" style="display:none">Add Comment</div>
+		</div id="NewPost">
 	</div id="Header">
 
 
@@ -201,6 +185,26 @@
 
 
 	<div id="InfoTooltip"></div>
+
+	<div id="QuizCard" style="display:none">
+		<div id="QuizCardHeader">
+			<span id="QuizCardTitle"></span>
+			<button id="QuizCardClose" onclick="closeQuizCard()">&#x2715;</button>
+		</div>
+		<iframe id="QuizIframe" src="" frameborder="0"></iframe>
+		<div id="QuizCardFooter">
+			<div id="QuizScoreRow">
+				<span class="quiz-score-label">Your score</span>
+				<input type="number" id="QuizScore" placeholder="0" min="0">
+				<span class="quiz-score-label">out of</span>
+				<input type="number" id="QuizTotal" value="10" min="1">
+			</div>
+			<div id="QuizCardButtons">
+				<button id="QuizCardCancel" onclick="closeQuizCard()">Cancel</button>
+				<button id="QuizCardSubmit" onclick="submitQuizResult()">Submit Score</button>
+			</div>
+		</div>
+	</div>
 
 	<div id="CropModal">
 		<div id="CropHeader">
