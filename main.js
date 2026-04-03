@@ -149,6 +149,7 @@ document.cookie="feedItems=50";
 		$('*[data-replyboxid="' + quizFeedId + '"]').blur();
 		console.log(quizFeedId);
 		console.log(comment);
+		var replyAttach = window['replyAttachment_' + quizFeedId] || null;
 		$('*[data-quizfeedtext="' + quizFeedId + '"]').append("<div id=CommentLoadingPost><img src='ajax-loader.gif'></img></div>");
 		$.get("action-newcomment.php", {
 				quizFeedId:quizFeedId,
@@ -157,8 +158,12 @@ document.cookie="feedItems=50";
 			},
 			function(data,status){
 				console.log(data);
-				//$('*[data-quizfeedtext="' + quizFeedId + '"]').remove();
 				if (status == "success") {
+					if (replyAttach) {
+						$.post("action-linkattachment.php", { attachment_id: replyAttach.id, comment_id: data });
+						window['replyAttachment_' + quizFeedId] = null;
+						clearReplyAttachment(quizFeedId);
+					}
 					downloadResults(1);
 					refreshNewPost();	
 					
@@ -268,6 +273,7 @@ document.cookie="feedItems=50";
 	
 	function postComment () {
 		var commentText = $('#NewCommentTextArea').val();
+		var pendingAttach = window.composerAttachment || null;
 
 		$.get("action-newcommentpost.php", {
 				comment: commentText,
@@ -276,7 +282,18 @@ document.cookie="feedItems=50";
 			},
 			function(data,status){
 				if (status == "success") {
-					prependFeedItem(parseInt(data), { isResult: false, comment: commentText });
+					var postId = parseInt(data);
+					var feedOpts = { isResult: false, comment: commentText };
+					if (pendingAttach) {
+						feedOpts.attachmentId = pendingAttach.id;
+						feedOpts.attachFilename = pendingAttach.filename;
+						feedOpts.attachType = pendingAttach.file_type;
+						feedOpts.attachOriginal = pendingAttach.original_name;
+						$.post("action-linkattachment.php", { attachment_id: pendingAttach.id, post_id: postId });
+					}
+					prependFeedItem(postId, feedOpts);
+					window.composerAttachment = null;
+					clearComposerAttachment();
 
 					//Email notifications
 					$.get("action-emailpost.php",
@@ -447,6 +464,34 @@ document.cookie="feedItems=50";
 	
 	
 	
+	function autoLinkUrls(text) {
+		var escaped = $("<div>").text(text).html();
+		return escaped.replace(/(https?:\/\/[^\s<>"]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+	}
+
+	function renderAttachments(attachments) {
+		if (!attachments || !attachments.length) return '';
+		var html = '';
+		attachments.forEach(function(a) {
+			if (a.file_type === 'image') {
+				html += '<div class="attachment-wrap"><img src="uploads/attachments/' + a.filename + '" class="attachment-thumb" onclick="openAttachModal(\'uploads/attachments/' + a.filename + '\')"></div>';
+			} else {
+				html += '<div class="attachment-wrap"><a href="uploads/attachments/' + a.filename + '" download="' + a.original_name + '" class="attachment-link">&#x1F4CE; ' + a.original_name + '</a></div>';
+			}
+		});
+		return html;
+	}
+
+	function openAttachModal(src) {
+		$('#AttachModalImg').attr('src', src);
+		$('#AttachModal').fadeIn(150);
+	}
+
+	function closeAttachModal() {
+		$('#AttachModal').fadeOut(150);
+		$('#AttachModalImg').attr('src', '');
+	}
+
 	function displayResults(resultsJson, preLoad, append) {
 
 		// Clear the feed unless we're appending more items
@@ -518,7 +563,8 @@ document.cookie="feedItems=50";
 			$('*[data-quizfeedname="' + quizfeedId + '"]').append("<div id=QuizFeedInfoTimestamp data-quizfeedts=" + quizfeedId + ">" + ago );
 			if (resultId != null)  $('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=QuizFeedInfoStatus>Scored " + score + "/" + max + " in the " + Date.parse(date).toString("MMM dd") + " " + type + " quiz </div id=QuizFeedInfoStatus>");
 			$('*[data-quizfeedname="' + quizfeedId + '"]').append("<a href='javascript:deletePost(" + quizfeedId + ") class=Underline> Delete </a>" );
-			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=QuizFeedInfoComment class=Primary>" + comment + "</div id=QuizFeedInfoComment>");    				
+			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=QuizFeedInfoComment class=Primary>" + autoLinkUrls(comment || '') + "</div id=QuizFeedInfoComment>");    				
+			$('*[data-quizfeedtext="' + quizfeedId + '"]').append(renderAttachments(result.attachments));
 			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<span id=QuizFeedInfoReplyLink onclick='showReplyBox(" + quizfeedId + ");'> Comment </span>");    				
 			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("- <span id=QuizFeedInfoDigLink data-dig=" + quizfeedId + " onclick='digPost(" + quizfeedId + ");'>Dig </span>");    				
 			
@@ -526,6 +572,8 @@ document.cookie="feedItems=50";
 			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("- <span id=QuizFeedInfoDelete data-deleteid=" + quizfeedId + " onclick='deletePost(" + quizfeedId + ");'>Delete </span>");    				
 			
 			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<textarea rows=3 class=QuizFeedInfoReplyInput onkeydown='sendComment(event," + quizfeedId + ")' data-replyboxid=" + quizfeedId + " style=display:none;></textarea>");    				
+			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<label class='reply-attach-btn' title='Attach file'>&#x1F4CE;<input type='file' class='reply-file-input' data-replyfileid=" + quizfeedId + " accept='image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt' style='display:none'></label>");
+			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id='ReplyAttachPreview_" + quizfeedId + "' style='display:none'></div>");
 
 			// Grab the comments data for the post and display them
 			if (result.comments != null && result.comments.length > 0) {
@@ -535,7 +583,8 @@ document.cookie="feedItems=50";
 					var text = comment.comment_comment;
 					var name = comment.comment_first_name + " " + comment.comment_last_name;
 					var timestamp = comment.comment_timestamp;
-					$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=Comments><div id=CommentRow><div id=QuizFeedInfoReplyName>" + name + "</div><div id=QuizFeedInfoComment class=OtherUser data-comment=" + commentid + "><div id=CommentText>" + text + "</div><div id=DigsComment data-commentid=" + commentid +"><span id='DigCommentLink' data-linkcommentid=" + commentid + " > </span></div></div></div>");
+					var commentAttachHtml = renderAttachments(comment.attachments);
+					$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=Comments><div id=CommentRow><div id=QuizFeedInfoReplyName>" + name + "</div><div id=QuizFeedInfoComment class=OtherUser data-comment=" + commentid + "><div id=CommentText>" + autoLinkUrls(text || '') + "</div>" + commentAttachHtml + "<div id=DigsComment data-commentid=" + commentid +"><span id='DigCommentLink' data-linkcommentid=" + commentid + " > </span></div></div></div>");
 				
 					// Grab the digs data for each comment and display them
 					window.res = comment.digs;
@@ -626,7 +675,7 @@ document.cookie="feedItems=50";
 		
 		// Inject the comment composer at the top of the feed
 		if (!append) {
-			var composerHtml = '<div id="CommentComposer"><textarea id="NewCommentTextArea" placeholder="Post a comment to the group..."></textarea><button id="NewCommentSubmit" onclick="postComment()" style="display:none">Post</button></div>';
+			var composerHtml = '<div id="CommentComposer"><textarea id="NewCommentTextArea" placeholder="Post a comment to the group..."></textarea><div id="ComposerActions"><label id="ComposerAttachBtn" title="Attach file">&#x1F4CE;<input type="file" id="ComposerFileInput" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" style="display:none"></label><button id="NewCommentSubmit" onclick="postComment()" style="display:none">Post</button></div><div id="ComposerAttachPreview" style="display:none"></div></div>';
 			$('#QuizFeed').prepend(composerHtml);
 		}
 		applyFeedRankBadges();
@@ -662,13 +711,22 @@ document.cookie="feedItems=50";
 			$text.append($('<div>').attr('id', 'QuizFeedInfoStatus').text('Scored ' + opts.score + '/' + opts.total + ' in the ' + dateStr + ' ' + opts.quizType + ' quiz'));
 		}
 
-		$text.append($('<div>').attr({ id: 'QuizFeedInfoComment', 'class': 'Primary' }).text(opts.comment || ''));
+		var $commentDiv = $('<div>').attr({ id: 'QuizFeedInfoComment', 'class': 'Primary' }).html(autoLinkUrls(opts.comment || ''));
+		$text.append($commentDiv);
+		if (opts.attachmentId && opts.attachFilename && opts.attachType) {
+			$text.append($(renderAttachments([{ file_type: opts.attachType, filename: opts.attachFilename, original_name: opts.attachOriginal || '' }])));
+		}
 		$text.append($('<span>').attr('id', 'QuizFeedInfoReplyLink').on('click', function() { showReplyBox(postId); }).html('&nbsp;Comment&nbsp;'));
 		$text.append(document.createTextNode('- '));
 		$text.append($('<span>').attr({ id: 'QuizFeedInfoDigLink', 'data-dig': postId }).on('click', function() { digPost(postId); }).text('Dig '));
 		$text.append(document.createTextNode('- '));
 		$text.append($('<span>').attr({ id: 'QuizFeedInfoDelete', 'data-deleteid': postId }).on('click', function() { deletePost(postId); }).text('Delete '));
 		$text.append($('<textarea>').attr({ rows: 3, 'class': 'QuizFeedInfoReplyInput', 'data-replyboxid': postId, style: 'display:none;' }).on('keydown', function(e) { sendComment(e, postId); }));
+		var $replyAttachLabel = $('<label>').addClass('reply-attach-btn').attr('title', 'Attach file').html('&#x1F4CE;');
+		var $replyFileInput = $('<input>').attr({ type: 'file', 'class': 'reply-file-input', 'data-replyfileid': postId, accept: 'image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt', style: 'display:none' });
+		$replyAttachLabel.append($replyFileInput);
+		$text.append($replyAttachLabel);
+		$text.append($('<div>').attr({ id: 'ReplyAttachPreview_' + postId, style: 'display:none' }));
 
 		$info.append($text);
 		$item.append($info);
@@ -1186,6 +1244,35 @@ document.cookie="feedItems=50";
 		});
 	}
 
+	function clearComposerAttachment() {
+		$('#ComposerAttachPreview').empty().hide();
+		$('#ComposerFileInput').val('');
+	}
+
+	function clearReplyAttachment(quizFeedId) {
+		$('#ReplyAttachPreview_' + quizFeedId).empty().hide();
+		$('#ReplyFileInput_' + quizFeedId).val('');
+	}
+
+	function uploadAttachment(file, onSuccess) {
+		var fd = new FormData();
+		fd.append('file', file);
+		fd.append('userid', getSetting('user_id'));
+		$.ajax({
+			url: 'action-uploadattachment.php',
+			type: 'POST',
+			data: fd,
+			processData: false,
+			contentType: false,
+			success: function(resp) {
+				var a = typeof resp === 'string' ? JSON.parse(resp) : resp;
+				if (a.error) { alert('Upload failed: ' + a.error); return; }
+				onSuccess(a);
+			},
+			error: function() { alert('Upload failed \u2014 please try again'); }
+		});
+	}
+
 		function activateListeners() {
 		// Infinite scroll — load more results when user reaches the bottom
 		document.getElementById("MainContent").addEventListener("scroll", expandFeed, false);
@@ -1228,6 +1315,45 @@ document.cookie="feedItems=50";
 
 		// Open quiz card when a quiz is selected from the dropdown
 		$('#QuizDropdown').on('change', openQuizCard);
+
+		// Composer: file selected — upload immediately and show preview
+		$(document).on('change', '#ComposerFileInput', function() {
+			var file = this.files[0];
+			if (!file) return;
+			uploadAttachment(file, function(a) {
+				window.composerAttachment = a;
+				var $preview = $('#ComposerAttachPreview').empty().show();
+				if (a.file_type === 'image') {
+					$preview.append($('<img>').attr({ src: 'uploads/attachments/' + a.filename, 'class': 'attach-preview-thumb' }));
+				} else {
+					$preview.append($('<span>').addClass('attach-chip').html('&#x1F4CE; ' + $('<div>').text(a.original_name).html()));
+				}
+				$preview.append($('<span>').addClass('attach-remove').html('&times;').on('click', function() {
+					window.composerAttachment = null;
+					clearComposerAttachment();
+				}));
+			});
+		});
+
+		// Reply boxes: file selected — upload immediately and show preview
+		$(document).on('change', '.reply-file-input', function() {
+			var file = this.files[0];
+			var quizFeedId = $(this).data('replyfileid');
+			if (!file) return;
+			uploadAttachment(file, function(a) {
+				window['replyAttachment_' + quizFeedId] = a;
+				var $preview = $('#ReplyAttachPreview_' + quizFeedId).empty().show();
+				if (a.file_type === 'image') {
+					$preview.append($('<img>').attr({ src: 'uploads/attachments/' + a.filename, 'class': 'attach-preview-thumb' }));
+				} else {
+					$preview.append($('<span>').addClass('attach-chip').html('&#x1F4CE; ' + $('<div>').text(a.original_name).html()));
+				}
+				$preview.append($('<span>').addClass('attach-remove').html('&times;').on('click', function() {
+					window['replyAttachment_' + quizFeedId] = null;
+					clearReplyAttachment(quizFeedId);
+				}));
+			});
+		});
 		// If a comment is provided, show the submit button (delegated — element is injected dynamically)
 		$(document).on('input', '#NewCommentTextArea', function() {
 			$('#NewCommentSubmit').toggle($(this).val().trim().length > 0);

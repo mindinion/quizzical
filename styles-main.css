@@ -1058,3 +1058,181 @@ A {}
 	position:fixed;
 	pointer-events: none;
 }
+
+/* ── Attachments ── */
+
+.attachment-wrap {
+	margin-top: 6px;
+}
+
+.attachment-thumb {
+	max-width: 180px;
+	max-height: 180px;
+	border-radius: 6px;
+	cursor: pointer;
+	display: block;
+}
+
+.attachment-link {
+	display: inline-block;
+	padding: 6px 10px;
+	background: #2a2a2a;
+	border-radius: 6px;
+	color: #ddd;
+	font-family: verdana, arial, sans-serif;
+	font-size: 13px;
+	text-decoration: none;
+	word-break: break-all;
+}
+
+.attachment-link:hover {
+	background: #3a3a3a;
+}
+
+/* ── Composer attach button ── */
+
+#ComposerActions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 6px;
+}
+
+#ComposerAttachBtn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	background: #2a2a2a;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 18px;
+	color: #aaa;
+	flex-shrink: 0;
+}
+
+#ComposerAttachBtn:hover {
+	background: #3a3a3a;
+}
+
+#ComposerAttachPreview {
+	margin-top: 6px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.reply-attach-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	background: #2a2a2a;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 16px;
+	color: #aaa;
+	margin-top: 4px;
+	vertical-align: middle;
+}
+
+.reply-attach-btn:hover {
+	background: #3a3a3a;
+}
+
+.attach-preview-thumb {
+	max-width: 80px;
+	max-height: 80px;
+	border-radius: 4px;
+	display: block;
+}
+
+.attach-chip {
+	display: inline-block;
+	padding: 4px 8px;
+	background: #2a2a2a;
+	border-radius: 4px;
+	color: #ddd;
+	font-family: verdana, arial, sans-serif;
+	font-size: 12px;
+	max-width: 200px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.attach-remove {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	background: #555;
+	border-radius: 50%;
+	cursor: pointer;
+	color: #fff;
+	font-size: 13px;
+	line-height: 1;
+	flex-shrink: 0;
+}
+
+.attach-remove:hover {
+	background: #c0392b;
+}
+
+/* ── Lightbox modal ── */
+
+#AttachModal {
+	position: fixed;
+	top: 0; left: 0; right: 0; bottom: 0;
+	background: rgba(0,0,0,0.85);
+	z-index: 300;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#AttachModalInner {
+	position: relative;
+	max-width: 92vw;
+	max-height: 88vh;
+}
+
+#AttachModalImg {
+	display: block;
+	max-width: 100%;
+	max-height: 88vh;
+	border-radius: 6px;
+}
+
+#AttachModalClose {
+	position: absolute;
+	top: -14px;
+	right: -14px;
+	width: 32px;
+	height: 32px;
+	background: #333;
+	border: none;
+	border-radius: 50%;
+	color: #fff;
+	font-size: 16px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#AttachModalClose:hover {
+	background: #c0392b;
+}
+
+/* ── URL links in feed text ── */
+
+#QuizFeedInfoComment a,
+#CommentText a {
+	color: #e8a020;
+	word-break: break-all;
+}

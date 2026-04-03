@@ -50,7 +50,15 @@
 		PostDigger.first_name AS post_dig_first_name,
 		PostDigs.userid AS post_dig_user_id,
 		PostDigs.status as post_dig_status,
-		CommentDigs.status as comment_dig_status
+		CommentDigs.status as comment_dig_status,
+		PostAttach.id AS post_attach_id,
+		PostAttach.filename AS post_attach_filename,
+		PostAttach.original_name AS post_attach_original,
+		PostAttach.file_type AS post_attach_type,
+		CommentAttach.id AS comment_attach_id,
+		CommentAttach.filename AS comment_attach_filename,
+		CommentAttach.original_name AS comment_attach_original,
+		CommentAttach.file_type AS comment_attach_type
 	FROM
 		QuizFeed
 		INNER JOIN Users AS Poster ON (QuizFeed.user_id = Poster.id)
@@ -62,6 +70,8 @@
 		LEFT JOIN Digs AS PostDigs ON (QuizFeed.id = PostDigs.postid) AND (PostDigs.status IS NULL or PostDigs.status = 'active')
 		LEFT JOIN Users AS CommentDigger ON (CommentDigs.userid = CommentDigger.id)
 		LEFT JOIN Users AS PostDigger ON (PostDigs.userid = PostDigger.id)
+		LEFT JOIN Attachments AS PostAttach ON (PostAttach.post_id = QuizFeed.id)
+		LEFT JOIN Attachments AS CommentAttach ON (CommentAttach.comment_id = Comment.id)
 		INNER JOIN (SELECT DISTINCT id FROM QuizFeed WHERE QuizFeed.status = 'active' ORDER BY QuizFeed.timestamp DESC LIMIT $offset, 50) AS Last50Feeds ON (QuizFeed.id = Last50Feeds.id)
 
 	WHERE
@@ -70,7 +80,7 @@
 		AND (Results.status IS NULL or Results.status = 'active')
 		AND (Comment.status IS NULL or Comment.status = 'active')
 
-	ORDER BY QuizFeed.id DESC, Results.id DESC, Comment.id ASC, CommentDigs.id DESC, PostDigs.id DESC;";
+	ORDER BY QuizFeed.id DESC, Results.id DESC, Comment.id ASC, CommentDigs.id DESC, PostDigs.id DESC, PostAttach.id ASC, CommentAttach.id ASC;";
 
 
 	$result = $conn->query($q);
@@ -86,6 +96,7 @@
 		public $result = null;
 		public $comments = [];
 		public $digs = [];
+		public $attachments = [];
 	}
 
 	class Result  {
@@ -104,6 +115,14 @@
 		public $comment_timestamp = "";
 		public $comment_user_id = "";
 		public $digs = [];
+		public $attachments = [];
+	}
+
+	class Attachment {
+		public $attachid = "";
+		public $filename = "";
+		public $original_name = "";
+		public $file_type = "";
 	}
 
 	class Dig {
@@ -116,6 +135,8 @@
  	$count_comments = 0;
  	$count_postdigs = 0;
  	$count_commentdigs = 0;
+ 	$count_postattach = 0;
+ 	$count_commentattach = 0;
 
 	if (mysqli_num_rows($result) > 0) {
 		while($row = mysqli_fetch_assoc($result)) {
@@ -124,6 +145,8 @@
 			$commentid = $row['comment_id'];
 			$digpostid = $row['post_dig_id'];
 			$digcommentid = $row['comment_dig_id'];
+			$postattachid = $row['post_attach_id'];
+			$commentattachid = $row['comment_attach_id'];
 
 			// Each SQL row always belongs to a post; detect a new post when the id changes
 			if ($postid != null) {
@@ -141,6 +164,7 @@
 					$lastPost = $count_posts;
 					$count_postdigs = 0;
 					$count_comments = 0;
+					$count_postattach = 0;
 				}
 
 				// Attach the result sub-object once per unique result id
@@ -176,6 +200,7 @@
 						$lastComment = $count_comments;
 						$count_comments++;
 						$count_commentdigs = 0;
+						$count_commentattach = 0;
 					}
 				}
 
@@ -211,6 +236,38 @@
 						$lastdigcommentidcomment = $commentid;
 						$lastdigcommentidpost = $postid;
 						$count_commentdigs++;
+					}
+				}
+
+				// Attach file/image attachments to the post (one row per attachment due to JOIN)
+				if ($postattachid != null) {
+					if ($lastpostattachid != $postattachid) {
+						$lastpostattachid = $postattachid;
+						if ($lastpostattachpost != $postid) $newPostAttach = [];
+						$newPostAttach[$count_postattach] = new Attachment();
+						$newPostAttach[$count_postattach]->attachid = $postattachid;
+						$newPostAttach[$count_postattach]->filename = $row['post_attach_filename'];
+						$newPostAttach[$count_postattach]->original_name = $row['post_attach_original'];
+						$newPostAttach[$count_postattach]->file_type = $row['post_attach_type'];
+						$results[$lastPost]->attachments = $newPostAttach;
+						$lastpostattachpost = $postid;
+						$count_postattach++;
+					}
+				}
+
+				// Attach file/image attachments to the current comment
+				if ($commentattachid != null) {
+					if ($lastcommentattachid != $commentattachid) {
+						$lastcommentattachid = $commentattachid;
+						if ($lastcommentattachcomment != $commentid) $newCommentAttach = [];
+						$newCommentAttach[$count_commentattach] = new Attachment();
+						$newCommentAttach[$count_commentattach]->attachid = $commentattachid;
+						$newCommentAttach[$count_commentattach]->filename = $row['comment_attach_filename'];
+						$newCommentAttach[$count_commentattach]->original_name = $row['comment_attach_original'];
+						$newCommentAttach[$count_commentattach]->file_type = $row['comment_attach_type'];
+						$results[$lastPost]->comments[$lastComment]->attachments = $newCommentAttach;
+						$lastcommentattachcomment = $commentid;
+						$count_commentattach++;
 					}
 				}
 
