@@ -1099,21 +1099,21 @@ A {}
 }
 
 #ComposerAttachBtn {
-	display: flex;
+	display: inline-flex;
 	align-items: center;
-	justify-content: center;
-	width: 36px;
-	height: 36px;
-	background: #2a2a2a;
-	border-radius: 6px;
 	cursor: pointer;
 	font-size: 18px;
+	padding: 2px 5px;
+	border: 1px solid #444;
+	border-radius: 4px;
+	background: transparent;
 	color: #aaa;
 	flex-shrink: 0;
 }
 
 #ComposerAttachBtn:hover {
-	background: #3a3a3a;
+	border-color: #888;
+	color: #ccc;
 }
 
 #ComposerAttachPreview {
@@ -1127,20 +1127,20 @@ A {}
 .reply-attach-btn {
 	display: inline-flex;
 	align-items: center;
-	justify-content: center;
-	width: 30px;
-	height: 30px;
-	background: #2a2a2a;
-	border-radius: 6px;
 	cursor: pointer;
 	font-size: 16px;
+	padding: 1px 4px;
+	border: 1px solid #444;
+	border-radius: 4px;
+	background: transparent;
 	color: #aaa;
 	margin-top: 4px;
 	vertical-align: middle;
 }
 
 .reply-attach-btn:hover {
-	background: #3a3a3a;
+	border-color: #888;
+	color: #ccc;
 }
 
 .attach-preview-thumb {
@@ -1150,18 +1150,22 @@ A {}
 	display: block;
 }
 
-.attach-chip {
-	display: inline-block;
-	padding: 4px 8px;
-	background: #2a2a2a;
-	border-radius: 4px;
-	color: #ddd;
+.attach-filename {
+	color: #aaa;
 	font-family: verdana, arial, sans-serif;
 	font-size: 12px;
-	max-width: 200px;
+	max-width: 220px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.attach-spinner {
+	width: 20px;
+	height: 20px;
+	vertical-align: middle;
 }
 
 .attach-remove {

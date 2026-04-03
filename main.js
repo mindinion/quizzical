@@ -1316,17 +1316,19 @@ document.cookie="feedItems=50";
 		// Open quiz card when a quiz is selected from the dropdown
 		$('#QuizDropdown').on('change', openQuizCard);
 
-		// Composer: file selected — upload immediately and show preview
+		// Composer: file selected — show spinner, upload, then show preview
 		$(document).on('change', '#ComposerFileInput', function() {
 			var file = this.files[0];
 			if (!file) return;
+			var $preview = $('#ComposerAttachPreview').empty().show();
+			$preview.append($('<img>').attr({ src: 'ajax-loader.gif', 'class': 'attach-spinner' }));
 			uploadAttachment(file, function(a) {
 				window.composerAttachment = a;
-				var $preview = $('#ComposerAttachPreview').empty().show();
+				$preview.empty();
 				if (a.file_type === 'image') {
 					$preview.append($('<img>').attr({ src: 'uploads/attachments/' + a.filename, 'class': 'attach-preview-thumb' }));
 				} else {
-					$preview.append($('<span>').addClass('attach-chip').html('&#x1F4CE; ' + $('<div>').text(a.original_name).html()));
+					$preview.append($('<span>').addClass('attach-filename').text(a.original_name));
 				}
 				$preview.append($('<span>').addClass('attach-remove').html('&times;').on('click', function() {
 					window.composerAttachment = null;
@@ -1335,18 +1337,20 @@ document.cookie="feedItems=50";
 			});
 		});
 
-		// Reply boxes: file selected — upload immediately and show preview
+		// Reply boxes: file selected — show spinner, upload, then show preview
 		$(document).on('change', '.reply-file-input', function() {
 			var file = this.files[0];
 			var quizFeedId = $(this).data('replyfileid');
 			if (!file) return;
+			var $preview = $('#ReplyAttachPreview_' + quizFeedId).empty().show();
+			$preview.append($('<img>').attr({ src: 'ajax-loader.gif', 'class': 'attach-spinner' }));
 			uploadAttachment(file, function(a) {
 				window['replyAttachment_' + quizFeedId] = a;
-				var $preview = $('#ReplyAttachPreview_' + quizFeedId).empty().show();
+				$preview.empty();
 				if (a.file_type === 'image') {
 					$preview.append($('<img>').attr({ src: 'uploads/attachments/' + a.filename, 'class': 'attach-preview-thumb' }));
 				} else {
-					$preview.append($('<span>').addClass('attach-chip').html('&#x1F4CE; ' + $('<div>').text(a.original_name).html()));
+					$preview.append($('<span>').addClass('attach-filename').text(a.original_name));
 				}
 				$preview.append($('<span>').addClass('attach-remove').html('&times;').on('click', function() {
 					window['replyAttachment_' + quizFeedId] = null;
