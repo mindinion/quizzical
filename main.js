@@ -1044,19 +1044,18 @@ document.cookie="feedItems=50";
 	function renderQuizDropdown() {
 		var $sel = $('#QuizDropdown');
 		$sel.empty();
+		$('<option>').val('').text('Select a quiz...').prop('disabled', true).prop('selected', true).attr('hidden', true).appendTo($sel);
 		if (!quizList.length) {
 			$('<option>').val('').text('No quizzes found').prop('disabled', true).appendTo($sel);
 			return;
 		}
-		var firstUndone = -1;
 		quizList.forEach(function(q, i) {
 			var label = q.type + ' \u2013 ' + formatQuizDate(q.date);
 			if (q.done) label += ' \u2713 ' + q.score + '/' + q.max;
 			var $opt = $('<option>').val(i).text(label);
-			if (q.done) { $opt.prop('disabled', true); } else if (firstUndone < 0) { firstUndone = i; }
+			if (q.done) $opt.prop('disabled', true);
 			$sel.append($opt);
 		});
-		if (firstUndone >= 0) $sel.val(firstUndone);
 	}
 
 	function formatQuizDate(dateStr) {
