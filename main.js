@@ -1169,15 +1169,17 @@ document.cookie="feedItems=50";
 			userid: getSetting('user_id'),
 			timezone: getSetting('timezone')
 		}, function(data) {
-			if (parseInt(data) > 0) {
+			var resp = null;
+			try { resp = JSON.parse(data); } catch(e) {}
+			if (resp && resp.post_id > 0) {
 				var quizType = selectedQuiz.type;
 				var quizDate = selectedQuiz.date;
 				closeQuizCard();
-				prependFeedItem(parseInt(data), { isResult: true, score: score, total: total, quizType: quizType, quizDate: quizDate });
+				prependFeedItem(resp.post_id, { isResult: true, score: score, total: total, quizType: quizType, quizDate: quizDate });
 				rankingsLoaded = false;
 				if ($('#RankingsPanel').is(':visible')) loadRankings(rankingsCurrentPeriod);
 				loadQuizList();
-				$.get('action-emailresult.php', { resultId: data }, function(r) { console.log(r); });
+				$.get('action-emailresult.php', { resultId: resp.result_id }, function(r) { console.log(r); });
 			} else {
 				alert('You have already logged a result for that quiz!');
 			}

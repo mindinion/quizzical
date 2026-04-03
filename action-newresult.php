@@ -60,7 +60,8 @@
 	$date = date("Y-m-d H:i:s");
 	$q = "INSERT INTO QuizFeed (result_id, user_id, comment, timestamp) VALUES" . "('$result_id', '$userid', '$comment', '$dt');";
 	$result = $conn->query($q);
-	echo $result_id;
+	$post_id = mysqli_insert_id($conn);
+	echo json_encode(['result_id' => $result_id, 'post_id' => $post_id]);
 
 
 ?>
