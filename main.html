@@ -6,7 +6,7 @@
 
 <script src="jquery.js"></script>
 <script src="cropper.min.js"></script>
-<script src="main.js?id=32"></script>
+<script src="main.js?id=33"></script>
 
 
 
@@ -29,7 +29,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-		<link href="styles-main.css?id=1238" type="text/css" rel="stylesheet" />
+		<link href="styles-main.css?id=1239" type="text/css" rel="stylesheet" />
 		<link href="styles-profile.css?id=21" type="text/css" rel="stylesheet" />
 		<link href="styles-rankings.css?id=12" type="text/css" rel="stylesheet" />
 		<link href="cropper.min.css" type="text/css" rel="stylesheet" />
@@ -69,10 +69,6 @@
 					<span class="quiz-type-btn" id="QuizTypeAll" onclick="setQuizTypeFilter('all')">All Types</span>
 				</div>
 			</div>
-			<div id="NewCommentBox">
-				<textarea class="NewComment" placeholder="Or, post a comment..." id="NewCommentTextArea"></textarea>
-			</div>
-			<div id="NewCommentSubmit" onclick="postComment();" style="display:none">Add Comment</div>
 		</div id="NewPost">
 	</div id="Header">
 
@@ -85,6 +81,10 @@
 
 	<div id="MainContent"><div id="BlurredImage"></div id="BlurredImage">
 
+		<div id="CommentComposer">
+				<textarea id="NewCommentTextArea" placeholder="Post a comment to the group..."></textarea>
+				<button id="NewCommentSubmit" onclick="postComment()" style="display:none">Post</button>
+			</div>
 		<div id="QuizFeed"></div id="QuizFeed">
 
 		<div id="RankingsPanel" style="display:none">
@@ -192,6 +192,11 @@
 			<button id="QuizCardClose" onclick="closeQuizCard()">&#x2715;</button>
 		</div>
 		<iframe id="QuizIframe" src="" frameborder="0"></iframe>
+		<div id="QuizPlaceholder" style="display:none">
+			<p>Quiz opened in Stuff &#x2197;</p>
+			<p>Come back here and enter your score when you&#x2019;re done.</p>
+			<button id="QuizShowIframe" onclick="showQuizIframe()">Show quiz in app instead</button>
+		</div>
 		<div id="QuizCardFooter">
 			<div id="QuizScoreRow">
 				<span class="quiz-score-label">Your score</span>

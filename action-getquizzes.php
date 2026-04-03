@@ -69,9 +69,9 @@
 		];
 	}
 
-	// Mark quizzes the user has already logged
+	// Mark quizzes the user has already logged, including their score
 	if ($userid > 0 && count($quizzes)) {
-		$q = "SELECT type, DATE_FORMAT(date, '%Y-%m-%d') AS date
+		$q = "SELECT type, DATE_FORMAT(date, '%Y-%m-%d') AS date, score, max
 		      FROM Results
 		      WHERE user = $userid AND status = 'active'
 		      AND date >= DATE_SUB(CURDATE(), INTERVAL 8 DAY)";
@@ -79,11 +79,19 @@
 		$done = [];
 		if ($result) {
 			while ($row = mysqli_fetch_assoc($result)) {
-				$done[$row['type'] . '|' . $row['date']] = true;
+				$done[$row['type'] . '|' . $row['date']] = [
+					'score' => (int)$row['score'],
+					'max'   => (int)$row['max'],
+				];
 			}
 		}
 		foreach ($quizzes as &$quiz) {
-			$quiz['done'] = isset($done[$quiz['type'] . '|' . $quiz['date']]);
+			$key = $quiz['type'] . '|' . $quiz['date'];
+			if (isset($done[$key])) {
+				$quiz['done']  = true;
+				$quiz['score'] = $done[$key]['score'];
+				$quiz['max']   = $done[$key]['max'];
+			}
 		}
 	}
 

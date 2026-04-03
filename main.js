@@ -280,8 +280,7 @@ document.cookie="feedItems=50";
 				if (status == "success") {
 					console.log(data);
 					downloadResults(1);
-					refreshNewPost();				
-					
+
 					//Email notifications
 					$.get("action-emailpost.php", 
 						{ postId:data },
@@ -289,9 +288,8 @@ document.cookie="feedItems=50";
 					);
 							
 					document.getElementById("NewCommentTextArea").value = '';
-					document.getElementById('NewCommentSubmit').style.display = 'none';
-					document.getElementById('NewCommentSubmit').style.display = 'none';
-					document.getElementById('QuizFeed').style.top = '70px';
+					document.getElementById('NewCommentSubmit').hide();
+					$('#NewCommentTextArea').val('');
 		
 				} else {
 					alert("Comment Not Added");
@@ -1040,14 +1038,15 @@ document.cookie="feedItems=50";
 
 	function renderQuizDropdown() {
 		var $sel = $('#QuizDropdown');
-		$sel.empty().append('<option value="">Select a quiz to play...</option>');
+		$sel.empty();
+		$('<option>').val('').text('Select a quiz to play...').prop('disabled', true).prop('selected', true).appendTo($sel);
 		if (!quizList.length) {
-			$sel.append('<option value="" disabled>No quizzes found</option>');
+			$('<option>').val('').text('No quizzes found').prop('disabled', true).appendTo($sel);
 			return;
 		}
 		quizList.forEach(function(q, i) {
 			var label = q.type + ' \u2013 ' + formatQuizDate(q.date);
-			if (q.done) label += ' \u2713';
+			if (q.done) label += ' \u2713 ' + q.score + '/' + q.max;
 			var $opt = $('<option>').val(i).text(label);
 			if (q.done) $opt.prop('disabled', true);
 			$sel.append($opt);
@@ -1091,11 +1090,19 @@ document.cookie="feedItems=50";
 	function openQuizNative() {
 		if (!selectedQuiz) return;
 		window.open(selectedQuiz.url, '_blank');
+		$('#QuizIframe').hide();
+		$('#QuizPlaceholder').show();
+	}
+
+	function showQuizIframe() {
+		$('#QuizPlaceholder').hide();
+		$('#QuizIframe').show();
 	}
 
 	function closeQuizCard() {
 		$('#QuizCard').hide();
-		$('#QuizIframe').attr('src', '');
+		$('#QuizIframe').attr('src', '').show();
+		$('#QuizPlaceholder').hide();
 		$('#TabBar').show();
 		selectedQuiz = null;
 	}
@@ -1170,14 +1177,8 @@ document.cookie="feedItems=50";
 		// Open quiz card when a quiz is selected from the dropdown
 		$('#QuizDropdown').on('change', openQuizCard);
 		// If a comment is provided, show the submit button
-		document.getElementById("NewCommentTextArea").addEventListener("keyup", function(){ 
-			if (document.activeElement.value != "") {
-				document.getElementById('NewCommentSubmit').style.display = 'block';
-				document.getElementById('QuizFeed').style.top = '100px';
-			} else {
-				document.getElementById('NewCommentSubmit').style.display = 'none';
-				document.getElementById('QuizFeed').style.top = '70px';
-		}
+		$('#NewCommentTextArea').on('input', function() {
+			$('#NewCommentSubmit').toggle($(this).val().trim().length > 0);
 		});
 			
 	}
