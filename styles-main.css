@@ -674,7 +674,7 @@ A {}
 
 #Header {
 	background-color:fee9cd           ;
-	height:100px;
+	height:88px;
 	width:100%;
 	position:fixed;
 	z-index:1000;
@@ -693,7 +693,7 @@ A {}
 	position:absolute;
 	min-width:500px;
 	overflow:scroll;
-	top:100px;
+	top:88px;
 	bottom:85px;
 	right:0px;
 
