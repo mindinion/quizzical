@@ -20,7 +20,7 @@
 		INNER JOIN Memberships ON Memberships.user_id = Users.id
 		INNER JOIN Results ON Results.user = Users.id AND Results.status = 'active'
 	WHERE Memberships.group_id = $groupid
-	GROUP BY Users.id, Results.date
+	GROUP BY Users.id, DATE(Results.date)
 	ORDER BY Users.id, Results.date DESC";
 
 	$result = $conn->query($q);
