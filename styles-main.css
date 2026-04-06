@@ -716,6 +716,11 @@ A {}
 	position:relative;
 	z-index:1;
 }
+#QuizFeed::after {
+	content:'';
+	display:block;
+	clear:both;
+}
 
 #QuizFeedItem {
 	float:left;
@@ -1285,5 +1290,9 @@ A {}
 	}
 	#MainContent {
 		top: 140px;
+		background: white;
+	}
+	#CommentComposer {
+		margin-top: 0;
 	}
 }
