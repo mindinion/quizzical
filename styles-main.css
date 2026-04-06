@@ -700,7 +700,6 @@ A {}
 	top:88px;
 	bottom:85px;
 	right:0px;
-	background-color: white;
 
 
 }
@@ -710,6 +709,7 @@ A {}
 	padding-right:13px;
 	max-width:600px;
 	width:100%;
+	min-height:100%;
 	box-sizing:border-box;
 	margin:0 auto;
 	background-color:white;
@@ -1254,4 +1254,31 @@ A {}
 #CommentText a {
 	color: #e8a020;
 	word-break: break-all;
+}
+
+/* ── Mobile header: two-row layout ── */
+@media (max-width: 600px) {
+	#Header {
+		height: auto;
+		flex-wrap: wrap;
+		align-content: flex-start;
+		padding-bottom: 6px;
+	}
+	.QuizzicalLogo {
+		order: 1;
+		flex: 0 0 auto;
+	}
+	#RightButtons {
+		order: 2;
+		margin-left: auto;
+	}
+	#NewPost {
+		order: 3;
+		flex: 0 0 100%;
+		align-self: auto;
+		padding: 4px 10px 6px;
+	}
+	#MainContent {
+		top: 140px;
+	}
 }
