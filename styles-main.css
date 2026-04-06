@@ -44,8 +44,8 @@ Img {}
 .QuizzicalLogo {
 	height:70%;
 	padding-left:10px;
-	padding-top:12px;
-	float:left;
+	flex-shrink:0;
+	order:1;
 }
 .StuffLogo {
 	width:120px;
@@ -80,12 +80,18 @@ TextArea {}
 }
 
 #NewPost {
-	position: relative;
-	padding: 8px 185px 4px 10px;
+	flex: 1;
+	min-width: 0;
+	order: 2;
+	padding: 8px 10px 4px;
 	background: #fff;
 	border-bottom: 1px solid #e8e0d0;
-	min-height: 100%;
 	box-sizing: border-box;
+	overflow: hidden;
+	align-self: stretch;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
 }
 
 /* Quiz selector row */
@@ -644,23 +650,17 @@ A {}
 
 
 #MenuButton {
-	float:left;
-	padding-top:12px;
+	padding: 0 6px;
 }
 .right {
-    right:0px;
-    top:0px;
-    padding-left:30px;
-
+	/* no-op — buttons are laid out by #RightButtons flexbox */
 }
 
 #MenuButtonGraphic {
-	padding-left:10px;
-	float:left;
+	padding-left: 4px;
 }
 
 #MenuButtonLogout {
-	float:left;
 }
 
 #MenuButtonText {
@@ -675,15 +675,16 @@ A {}
 }
 
 #Header {
-	background-color:fee9cd           ;
+	background-color:fee9cd;
 	height:88px;
 	width:100%;
 	position:fixed;
 	z-index:1000;
-	left:0px;
-	top:0px;
-	right:0px;
-
+	left:0;
+	top:0;
+	right:0;
+	display:flex;
+	align-items:center;
 }
 
 #MainContent {
@@ -1034,10 +1035,11 @@ A {}
 }
 
 #RightButtons {
-	position:absolute;
-	right:0px;
-	padding-right:20px;
-	width:170px;
+	display:flex;
+	align-items:center;
+	flex-shrink:0;
+	order:3;
+	padding-right:10px;
 }
 
 #CommentText {
