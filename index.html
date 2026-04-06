@@ -7,24 +7,16 @@
 <script>
 
 	function login() {
-
-		// Show the loading graphic, and check we have required data
-		$("#Notify").html("<img src = 'ajax-loader.gif'></img>");
+		$("#Notify").html("<img src='ajax-loader.gif'>");
 		var email = $("input[name=email]").val();
 		var password = $("input[name=userpass]").val();
-		
+
 		if (email == "" || password == "") {
 			$("#Notify").html("Please enter a username and password");
 			return;
 		}
-		
-		//  Go to server and log  in, creating new session
-		$.get("action-login.php", 
-		{ 
-			email:email,
-			password:password
-		},	
-		function(data, status) { 
+
+		$.get("action-login.php", { email: email, password: password }, function(data, status) {
 			window.res3 = data;
 			if (data.indexOf("Failed") == -1) {
 				window.location.href = 'main.html';
@@ -32,55 +24,29 @@
 				$("#Notify").html("Incorrect login details");
 			}
 		});
-		
-		
 	}
 
-	// If we have a current session, go to the main page
 	if (getCookie("session") != null) window.location.href = 'main.html';
-
 
 </script>
 
-
-	
 <html>
 	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 		<title>Quizzical</title>
-		<link href="styles-login.css" type="text/css" rel="stylesheet" />
+		<link href="styles-login.css?id=2" type="text/css" rel="stylesheet" />
 		<link rel="icon" type="image/png" href="quizzical_logo.png">
 	</head>
-	
-	<div id="loginblock">
-		<br>
-		<div id="center">
-			<span id="TitleText"z>
-				<img src="quizzical_logo.png" id="logo"></img>
-				u i z z i c a l
-			</span>
-			<br><br>
-			<a href="createaccount.html">Create Account?</a>
-			<br><br>
-			Login Details
+	<body>
+		<div id="LoginWrap">
+			<img src="logo-secondary.png" id="LoginLogo">
+			<div id="Notify"></div>
+			<input type="email" name="email" placeholder="Email address" class="login-field">
+			<input type="password" name="userpass" placeholder="Password" class="login-field">
+			<button id="LoginButton" onclick="login()">Log in</button>
+			<a href="forgotpassword.html" id="ForgotLink">Forgot password?</a>
+			<a href="createaccount.html" id="CreateLink">Create an account</a>
 		</div>
-		<fieldset class="largeform">
-			<br>
-			<label for="email" class="title">Email</label>
-			<input type="text"; class = "field" name="email"> <br>
-			<br>
-			<label for="password" class="title">Password</label>
-			<input type="password"; class = "field" name="userpass" value="">
-		</fieldset>	
-		
-		<div id="center">
-			<div id="loginbutton" onclick="login();">Login</div>
-			<br><br>
-			<div id=Notify></div>
-			<br><br> 
-			<a href="forgotpassword.html">Forgot Password?</a>
-			<br>
-		</div>
-	<div id="title">
-			Site Designed by <a href="mailto:widdakay@gmail.com">Kris Weyling</a> 2013<br>
-		</div>
-		</div id="loginblock">
+	</body>
+</html>
