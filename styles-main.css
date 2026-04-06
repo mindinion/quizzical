@@ -81,9 +81,7 @@ TextArea {}
 
 #NewPost {
 	position: relative;
-	padding: 8px 10px 4px;
-	margin-right: 175px;
-	overflow: hidden;
+	padding: 8px 185px 4px 10px;
 	background: #fff;
 	border-bottom: 1px solid #e8e0d0;
 	min-height: 100%;
@@ -706,14 +704,11 @@ A {}
 }
 
 #QuizFeed {
-	float:none;
 	padding-left:13px;
 	padding-right:13px;
 	max-width:600px;
 	width:100%;
 	box-sizing:border-box;
-	position:relative;
-	left:auto;
 	margin:0 auto;
 	background-color:white;
 }
