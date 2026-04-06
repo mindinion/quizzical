@@ -1406,13 +1406,13 @@ document.cookie="feedItems=50";
 		document.getElementById("profilepic").value = "";
 		$("#photo-preview").hide().attr("src", "");
 		$("#photo-label-text").text("Choose a photo...");
-		if ($("#NewPost").css("display") == "none") {
+		if ($("#Profile").is(":visible")) {
 			hideProfile();
 			return;
 		}
-		$("#QuizFeed").html("");
-		$("#NewPost").hide();
-		$("#MainContent").css("top","80px");
+		$("#QuizFeed").hide();
+		$("#RankingsPanel").hide();
+		$("#MainContent").css("top", "");
 		$("#Profile").show();
 		$("#TabBar").hide();
 		
@@ -1460,8 +1460,9 @@ document.cookie="feedItems=50";
 	}
 	
 	function hideProfile() {
-		$("#NewPost").show();
-		$("#MainContent").css("top","145px");
+		$("#QuizFeed").show();
+		$("#RankingsPanel").show();
+		$("#MainContent").css("top", "");
 		$("#Profile").hide();
 		$("#TabBar").show();
 		downloadResults();

@@ -383,7 +383,7 @@
 	/* Full-screen opaque overlay so nothing bleeds through */
 	#Profile {
 		position: fixed;
-		top: 0;
+		top: 88px;
 		left: 0;
 		right: 0;
 		bottom: 0;
@@ -439,4 +439,10 @@
 		margin-left: 0;
 	}
 
+}
+
+@media (max-width: 600px) {
+	#Profile {
+		top: 136px;
+	}
 }
