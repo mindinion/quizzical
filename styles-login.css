@@ -66,10 +66,47 @@ body {
 }
 
 #Notify {
-	color: #cc3300;
-	font-size: 13px;
-	text-align: center;
+	width: 100%;
+	font-family: verdana, arial, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
 	min-height: 20px;
+	border-radius: 6px;
+}
+
+#Notify.notify-error {
+	background: rgba(255, 235, 230, 0.85);
+	border-left: 4px solid #cc3300;
+	color: #8b1a00;
+	padding: 10px 14px;
+	text-align: left;
+	animation: notifyIn 0.2s ease;
+}
+
+#Notify.notify-error::before {
+	content: "\26A0\A0\A0";
+}
+
+#Notify.notify-success {
+	background: rgba(235, 255, 240, 0.85);
+	border-left: 4px solid #2e7d32;
+	color: #1b5e20;
+	padding: 10px 14px;
+	text-align: left;
+	animation: notifyIn 0.2s ease;
+}
+
+#Notify.notify-success::before {
+	content: "\2713\A0\A0";
+}
+
+#Notify.notify-success a {
+	color: #1b5e20;
+}
+
+@keyframes notifyIn {
+	from { opacity: 0; transform: translateY(-4px); }
+	to   { opacity: 1; transform: translateY(0); }
 }
 
 #ForgotLink {

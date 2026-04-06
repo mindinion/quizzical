@@ -6,13 +6,20 @@
 
 <script>
 
+	function notifyError(msg) {
+		$("#Notify").removeClass("notify-success").addClass("notify-error").html(msg);
+	}
+	function notifyLoading() {
+		$("#Notify").removeClass("notify-error notify-success").html("<img src='ajax-loader.gif'>");
+	}
+
 	function login() {
-		$("#Notify").html("<img src='ajax-loader.gif'>");
+		notifyLoading();
 		var email = $("input[name=email]").val();
 		var password = $("input[name=userpass]").val();
 
 		if (email == "" || password == "") {
-			$("#Notify").html("Please enter a username and password");
+			notifyError("Please enter a username and password");
 			return;
 		}
 
@@ -21,7 +28,7 @@
 			if (data.indexOf("Failed") == -1) {
 				window.location.href = 'main.html';
 			} else {
-				$("#Notify").html("Incorrect login details");
+				notifyError("Incorrect login details");
 			}
 		});
 	}
@@ -35,7 +42,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 		<title>Quizzical</title>
-		<link href="styles-login.css?id=2" type="text/css" rel="stylesheet" />
+		<link href="styles-login.css?id=3" type="text/css" rel="stylesheet" />
 		<link rel="icon" type="image/png" href="quizzical_logo.png">
 	</head>
 	<body>
