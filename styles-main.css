@@ -705,8 +705,7 @@ A {}
 }
 
 #QuizFeed {
-	padding-left:13px;
-	padding-right:13px;
+	padding: 12px 13px 0;
 	max-width:600px;
 	width:100%;
 	min-height:100%;
@@ -1299,8 +1298,5 @@ A {}
 	#MainContent {
 		top: 136px;
 		background: white;
-	}
-	#CommentComposer {
-		margin-top: 0;
 	}
 }
