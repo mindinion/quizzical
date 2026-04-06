@@ -1289,7 +1289,6 @@ A {}
 		display: block;
 		padding: 6px 10px 6px;
 		justify-content: flex-start;
-		border-bottom: 1px solid #e0c8a8;
 	}
 	#QuizSelectorRow {
 		gap: 4px;
