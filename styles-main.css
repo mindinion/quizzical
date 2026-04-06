@@ -713,6 +713,8 @@ A {}
 	box-sizing:border-box;
 	margin:0 auto;
 	background-color:white;
+	position:relative;
+	z-index:1;
 }
 
 #QuizFeedItem {
@@ -1261,12 +1263,14 @@ A {}
 	#Header {
 		height: auto;
 		flex-wrap: wrap;
-		align-content: flex-start;
-		padding-bottom: 6px;
+		align-items: center;
+		padding-bottom: 4px;
 	}
 	.QuizzicalLogo {
 		order: 1;
 		flex: 0 0 auto;
+		height: 46px;
+		padding-top: 6px;
 	}
 	#RightButtons {
 		order: 2;
@@ -1276,6 +1280,7 @@ A {}
 		order: 3;
 		flex: 0 0 100%;
 		align-self: auto;
+		display: block;
 		padding: 4px 10px 6px;
 	}
 	#MainContent {
