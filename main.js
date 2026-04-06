@@ -177,7 +177,7 @@ document.cookie="feedItems=50";
 					// Email notifications 
 					$.get("action-emailcomment.php", 
 						{ 
-							postId:data,
+							postId:quizFeedId,
 							userid:getSetting("user_id")
 						},
 						function(response) {  }

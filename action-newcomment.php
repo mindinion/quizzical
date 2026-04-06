@@ -26,7 +26,7 @@
 	$q = "INSERT INTO Comment (user_id, quizfeed_id, comment) VALUES" . "('$userid','$quizFeedId','$comment' );";
 	$conn->query($q);
 
-	// Return the post id so the caller knows which post now has a new comment
-	echo $quizFeedId;
+	// Return the new comment's id so the caller can link attachments to it
+	echo $conn->insert_id;
 
 ?>

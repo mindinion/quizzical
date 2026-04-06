@@ -1142,7 +1142,7 @@ A {}
 
 .reply-post-btn {
 	padding: 5px 12px;
-	background: #555;
+	background: #e87722;
 	color: #fff;
 	font-family: verdana, arial;
 	font-weight: bold;
@@ -1151,10 +1151,11 @@ A {}
 	border-radius: 4px;
 	cursor: pointer;
 	margin-top: 4px;
+	margin-left: 8px;
 }
 
 .reply-post-btn:hover {
-	background: #666;
+	background: #d06010;
 }
 
 .attach-preview-thumb {
