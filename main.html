@@ -30,7 +30,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 		<link href="styles-main.css?id=1263" type="text/css" rel="stylesheet" />
-		<link href="styles-profile.css?id=22" type="text/css" rel="stylesheet" />
+		<link href="styles-profile.css?id=23" type="text/css" rel="stylesheet" />
 		<link href="styles-rankings.css?id=13" type="text/css" rel="stylesheet" />
 		<link href="cropper.min.css" type="text/css" rel="stylesheet" />
 		<link rel="icon" type="image/png" href="quizzical_logo.png">
@@ -51,13 +51,6 @@
 					</div id="MenuButtonGraphic">	
 				</div id="MenuButton">
 			</a>	
-			<a href="action-logout.php">
-				<div id="MenuButton" class=right>
-					<div id="MenuButtonLogout">
-						<img src = "logouticon.png" class="menu">
-					</div id="MenuButtonLogout">	
-				</div id="MenuButton">
-			</a>
 		</div>	
 		<div id="NewPost">
 			<div id="QuizSelectorRow">
@@ -173,6 +166,10 @@
 				<div class="prof-buttons">
 					<input type="button" value="Cancel" id="ButtonCancel" onclick="hideProfile();">
 					<input type="button" value="Save Changes" id="ButtonSave" onclick="saveDetails();">
+				</div>
+
+				<div class="prof-logout-row">
+					<a href="action-logout.php" id="LogoutLink">Log out</a>
 				</div>
 			</div>
 		</div>
