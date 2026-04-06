@@ -152,7 +152,7 @@ document.cookie="feedItems=50";
 		$('*[data-replyboxid="' + quizFeedId + '"]').blur();
 		console.log(quizFeedId);
 		console.log(comment);
-		var replyAttach = window['replyAttachment_' + quizFeedId] || null;
+		var replyAttachs = window['replyAttachments_' + quizFeedId] || [];
 		$('*[data-quizfeedtext="' + quizFeedId + '"]').append("<div id=CommentLoadingPost><img src='ajax-loader.gif'></img></div>");
 		$.get("action-newcomment.php", {
 				quizFeedId:quizFeedId,
@@ -162,11 +162,11 @@ document.cookie="feedItems=50";
 			function(data,status){
 				console.log(data);
 				if (status == "success") {
-					if (replyAttach) {
-						$.post("action-linkattachment.php", { attachment_id: replyAttach.id, comment_id: data });
-						window['replyAttachment_' + quizFeedId] = null;
-						clearReplyAttachment(quizFeedId);
-					}
+					replyAttachs.forEach(function(ra) {
+						$.post("action-linkattachment.php", { attachment_id: ra.id, comment_id: data });
+					});
+					window['replyAttachments_' + quizFeedId] = [];
+					clearReplyAttachment(quizFeedId);
 					downloadResults(1);
 					refreshNewPost();	
 					
@@ -276,7 +276,7 @@ document.cookie="feedItems=50";
 	
 	function postComment () {
 		var commentText = $('#NewCommentTextArea').val();
-		var pendingAttach = window.composerAttachment || null;
+		var pendingAttachs = window.composerAttachments || [];
 
 		$.get("action-newcommentpost.php", {
 				comment: commentText,
@@ -287,15 +287,12 @@ document.cookie="feedItems=50";
 				if (status == "success") {
 					var postId = parseInt(data);
 					var feedOpts = { isResult: false, comment: commentText };
-					if (pendingAttach) {
-						feedOpts.attachmentId = pendingAttach.id;
-						feedOpts.attachFilename = pendingAttach.filename;
-						feedOpts.attachType = pendingAttach.file_type;
-						feedOpts.attachOriginal = pendingAttach.original_name;
-						$.post("action-linkattachment.php", { attachment_id: pendingAttach.id, post_id: postId });
-					}
+					feedOpts.attachments = pendingAttachs.map(function(a) { return { file_type: a.file_type, filename: a.filename, original_name: a.original_name, attachid: a.id }; });
+					pendingAttachs.forEach(function(a) {
+						$.post("action-linkattachment.php", { attachment_id: a.id, post_id: postId });
+					});
 					prependFeedItem(postId, feedOpts);
-					window.composerAttachment = null;
+					window.composerAttachments = [];
 					clearComposerAttachment();
 
 					//Email notifications
@@ -716,8 +713,8 @@ document.cookie="feedItems=50";
 
 		var $commentDiv = $('<div>').attr({ id: 'QuizFeedInfoComment', 'class': 'Primary' }).html(autoLinkUrls(opts.comment || ''));
 		$text.append($commentDiv);
-		if (opts.attachmentId && opts.attachFilename && opts.attachType) {
-			$text.append($(renderAttachments([{ file_type: opts.attachType, filename: opts.attachFilename, original_name: opts.attachOriginal || '', attachid: opts.attachmentId }])));
+		if (opts.attachments && opts.attachments.length) {
+			$text.append($(renderAttachments(opts.attachments)));
 		}
 		$text.append($('<span>').attr('id', 'QuizFeedInfoReplyLink').on('click', function() { showReplyBox(postId); }).html('&nbsp;Comment&nbsp;'));
 		$text.append(document.createTextNode('- '));
@@ -1248,14 +1245,16 @@ document.cookie="feedItems=50";
 	}
 
 	function clearComposerAttachment() {
+		window.composerAttachments = [];
 		$('#ComposerAttachPreview').empty().hide();
 		$('#ComposerFileInput').val('');
 		$('#ComposerAttachBtn').show();
 	}
 
 	function clearReplyAttachment(quizFeedId) {
+		window['replyAttachments_' + quizFeedId] = [];
 		$('#ReplyAttachPreview_' + quizFeedId).empty().hide();
-		$('#ReplyFileInput_' + quizFeedId).val('');
+		$('[data-replyattachid="' + quizFeedId + '"]').show();
 	}
 
 	function uploadAttachment(file, onSuccess) {
@@ -1324,22 +1323,30 @@ document.cookie="feedItems=50";
 		$(document).on('change', '#ComposerFileInput', function() {
 			var file = this.files[0];
 			if (!file) return;
-			var $preview = $('#ComposerAttachPreview').empty().show();
-			$preview.append($('<img>').attr({ src: 'ajax-loader.gif', 'class': 'attach-spinner' }));
+			$(this).val('');
+			if (!window.composerAttachments) window.composerAttachments = [];
+			if (window.composerAttachments.length >= 10) return;
+			var $preview = $('#ComposerAttachPreview').show();
+			var $spinner = $('<img>').attr({ src: 'ajax-loader.gif', 'class': 'attach-spinner' });
+			$preview.append($spinner);
 			uploadAttachment(file, function(a) {
-				window.composerAttachment = a;
-				$('#ComposerAttachBtn').hide();
-				$preview.empty();
+				window.composerAttachments.push(a);
+				$spinner.remove();
+				var $item = $('<span>').addClass('attach-preview-item');
 				if (a.file_type === 'image') {
-					$preview.append($('<img>').attr({ src: 'action-getattachment.php?id=' + a.id, 'class': 'attach-preview-thumb' }));
+					$item.append($('<img>').attr({ src: 'action-getattachment.php?id=' + a.id, 'class': 'attach-preview-thumb' }));
 				} else {
-					$preview.append($('<span>').addClass('attach-filename').text(a.original_name));
+					$item.append($('<span>').addClass('attach-filename').text(a.original_name));
 				}
-				$preview.append($('<span>').addClass('attach-remove').html('&times;').on('click', function() {
-					window.composerAttachment = null;
+				$item.append($('<span>').addClass('attach-remove').html('&times;').on('click', function() {
+					var idx = window.composerAttachments.indexOf(a);
+					if (idx > -1) window.composerAttachments.splice(idx, 1);
+					$item.remove();
+					if (!window.composerAttachments.length) $('#ComposerAttachPreview').hide();
 					$('#ComposerAttachBtn').show();
-					clearComposerAttachment();
 				}));
+				$preview.append($item);
+				if (window.composerAttachments.length >= 10) $('#ComposerAttachBtn').hide();
 			});
 		});
 
@@ -1348,22 +1355,31 @@ document.cookie="feedItems=50";
 			var file = this.files[0];
 			var quizFeedId = $(this).data('replyfileid');
 			if (!file) return;
-			var $preview = $('#ReplyAttachPreview_' + quizFeedId).empty().show();
-			$preview.append($('<img>').attr({ src: 'ajax-loader.gif', 'class': 'attach-spinner' }));
+			$(this).val('');
+			if (!window['replyAttachments_' + quizFeedId]) window['replyAttachments_' + quizFeedId] = [];
+			if (window['replyAttachments_' + quizFeedId].length >= 10) return;
+			var $preview = $('#ReplyAttachPreview_' + quizFeedId).show();
+			var $spinner = $('<img>').attr({ src: 'ajax-loader.gif', 'class': 'attach-spinner' });
+			$preview.append($spinner);
 			uploadAttachment(file, function(a) {
-				window['replyAttachment_' + quizFeedId] = a;
-				$('[data-replyattachid="' + quizFeedId + '"]').hide();
-				$preview.empty();
+				window['replyAttachments_' + quizFeedId].push(a);
+				$spinner.remove();
+				var $item = $('<span>').addClass('attach-preview-item');
 				if (a.file_type === 'image') {
-					$preview.append($('<img>').attr({ src: 'action-getattachment.php?id=' + a.id, 'class': 'attach-preview-thumb' }));
+					$item.append($('<img>').attr({ src: 'action-getattachment.php?id=' + a.id, 'class': 'attach-preview-thumb' }));
 				} else {
-					$preview.append($('<span>').addClass('attach-filename').text(a.original_name));
+					$item.append($('<span>').addClass('attach-filename').text(a.original_name));
 				}
-				$preview.append($('<span>').addClass('attach-remove').html('&times;').on('click', function() {
-					window['replyAttachment_' + quizFeedId] = null;
+				$item.append($('<span>').addClass('attach-remove').html('&times;').on('click', function() {
+					var arr = window['replyAttachments_' + quizFeedId];
+					var idx = arr.indexOf(a);
+					if (idx > -1) arr.splice(idx, 1);
+					$item.remove();
+					if (!arr.length) $('#ReplyAttachPreview_' + quizFeedId).hide();
 					$('[data-replyattachid="' + quizFeedId + '"]').show();
-					clearReplyAttachment(quizFeedId);
 				}));
+				$preview.append($item);
+				if (window['replyAttachments_' + quizFeedId].length >= 10) $('[data-replyattachid="' + quizFeedId + '"]').hide();
 			});
 		});
 		// If a comment is provided, show the submit button (delegated — element is injected dynamically)
