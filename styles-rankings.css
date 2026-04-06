@@ -83,10 +83,12 @@
 /* ── Rankings Panel wrapper ───────────────────────────────────────────────── */
 
 #RankingsPanel {
-	position: absolute;
-	left: 50%;
-	margin-left: -405px;
-	width: 600px;
+	position: relative;
+	z-index: 1;
+	left: auto;
+	margin: 0 auto;
+	max-width: 600px;
+	width: 100%;
 	padding: 12px 13px 24px;
 	background-color: white;
 	min-height: 100%;
@@ -488,9 +490,7 @@
 	}
 
 	#RankingsPanel {
-		left: 0;
-		margin-left: 0;
-		width: 100%;
+		max-width: none;
 	}
 
 	/* Feed bubbles: make compact and float right alongside info,
