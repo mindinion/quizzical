@@ -1140,6 +1140,23 @@ A {}
 	background: #666;
 }
 
+.reply-post-btn {
+	padding: 5px 12px;
+	background: #555;
+	color: #fff;
+	font-family: verdana, arial;
+	font-weight: bold;
+	font-size: 12px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	margin-top: 4px;
+}
+
+.reply-post-btn:hover {
+	background: #666;
+}
+
 .attach-preview-thumb {
 	max-width: 80px;
 	max-height: 80px;

@@ -136,12 +136,15 @@ document.cookie="feedItems=50";
 	function showReplyBox (id ) {
 		var $textarea = $('*[data-replyboxid="' + id + '"]');
 		var $attachBtn = $('*[data-replyattachid="' + id + '"]');
+		var $postBtn = $('*[data-replypostbtnid="' + id + '"]');
 		if ($textarea.css("display") == "none") {
 			$textarea.css("display","block").focus();
 			$attachBtn.show();
+			$postBtn.show();
 		} else {
 			$textarea.css("display","none");
 			$attachBtn.hide();
+			$postBtn.hide();
 		}
 	}
 	
@@ -162,13 +165,14 @@ document.cookie="feedItems=50";
 			function(data,status){
 				console.log(data);
 				if (status == "success") {
-					replyAttachs.forEach(function(ra) {
-						$.post("action-linkattachment.php", { attachment_id: ra.id, comment_id: data });
+					var linkCalls = replyAttachs.map(function(ra) {
+						return $.post("action-linkattachment.php", { attachment_id: ra.id, comment_id: data });
 					});
 					window['replyAttachments_' + quizFeedId] = [];
 					clearReplyAttachment(quizFeedId);
-					downloadResults(1);
-					refreshNewPost();	
+					$.when.apply($, linkCalls).always(function() { downloadResults(1);
+						refreshNewPost();
+					});	
 					
 					// Email notifications 
 					$.get("action-emailcomment.php", 
@@ -572,7 +576,8 @@ document.cookie="feedItems=50";
 			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("- <span id=QuizFeedInfoDelete data-deleteid=" + quizfeedId + " onclick='deletePost(" + quizfeedId + ");'>Delete </span>");    				
 			
 			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<textarea rows=3 class=QuizFeedInfoReplyInput onkeydown='sendComment(event," + quizfeedId + ")' data-replyboxid=" + quizfeedId + " style=display:none;></textarea>");    				
-			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<label class='reply-attach-btn' data-replyattachid=" + quizfeedId + " style='display:none'>Attach<input type='file' class='reply-file-input' data-replyfileid=" + quizfeedId + " accept='image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt' style='display:none'></label>");
+			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<label class='reply-attach-btn' data-replyattachid=" + quizfeedId + " style='display:none'>Attach<input type='file' multiple class='reply-file-input' data-replyfileid=" + quizfeedId + " accept='image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt' style='display:none'></label>");
+			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<button class='reply-post-btn' data-replypostbtnid=" + quizfeedId + " onclick='sendComment({keyCode:13}," + quizfeedId + ")' style='display:none'>Post</button>");
 			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id='ReplyAttachPreview_" + quizfeedId + "' style='display:none'></div>");
 
 			// Grab the comments data for the post and display them
@@ -675,7 +680,7 @@ document.cookie="feedItems=50";
 		
 		// Inject the comment composer at the top of the feed
 		if (!append) {
-			var composerHtml = '<div id="CommentComposer"><textarea id="NewCommentTextArea" placeholder="Post a comment to the group..."></textarea><div id="ComposerActions"><label id="ComposerAttachBtn">Attach<input type="file" id="ComposerFileInput" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" style="display:none"></label><button id="NewCommentSubmit" onclick="postComment()" style="display:none">Post</button></div><div id="ComposerAttachPreview" style="display:none"></div></div>';
+			var composerHtml = '<div id="CommentComposer"><textarea id="NewCommentTextArea" placeholder="Post a comment to the group..."></textarea><div id="ComposerActions"><label id="ComposerAttachBtn">Attach<input type="file" multiple id="ComposerFileInput" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" style="display:none"></label><button id="NewCommentSubmit" onclick="postComment()" style="display:none">Post</button></div><div id="ComposerAttachPreview" style="display:none"></div></div>';
 			$('#QuizFeed').prepend(composerHtml);
 		}
 		applyFeedRankBadges();
@@ -723,9 +728,10 @@ document.cookie="feedItems=50";
 		$text.append($('<span>').attr({ id: 'QuizFeedInfoDelete', 'data-deleteid': postId }).on('click', function() { deletePost(postId); }).text('Delete '));
 		$text.append($('<textarea>').attr({ rows: 3, 'class': 'QuizFeedInfoReplyInput', 'data-replyboxid': postId, style: 'display:none;' }).on('keydown', function(e) { sendComment(e, postId); }));
 		var $replyAttachLabel = $('<label>').addClass('reply-attach-btn').attr({ 'data-replyattachid': postId, style: 'display:none' }).html('Attach');
-		var $replyFileInput = $('<input>').attr({ type: 'file', 'class': 'reply-file-input', 'data-replyfileid': postId, accept: 'image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt', style: 'display:none' });
+		var $replyFileInput = $('<input>').attr({ type: 'file', multiple: true, 'class': 'reply-file-input', 'data-replyfileid': postId, accept: 'image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt', style: 'display:none' });
 		$replyAttachLabel.append($replyFileInput);
 		$text.append($replyAttachLabel);
+		$text.append($('<button>').addClass('reply-post-btn').attr({ 'data-replypostbtnid': postId, style: 'display:none' }).text('Post').on('click', function() { sendComment({ keyCode: 13 }, postId); }));
 		$text.append($('<div>').attr({ id: 'ReplyAttachPreview_' + postId, style: 'display:none' }));
 
 		$info.append($text);
@@ -1321,65 +1327,71 @@ document.cookie="feedItems=50";
 
 		// Composer: file selected — show spinner, upload, then show preview
 		$(document).on('change', '#ComposerFileInput', function() {
-			var file = this.files[0];
-			if (!file) return;
+			var files = Array.prototype.slice.call(this.files);
+			if (!files.length) return;
 			$(this).val('');
 			if (!window.composerAttachments) window.composerAttachments = [];
-			if (window.composerAttachments.length >= 10) return;
+			var remaining = 10 - window.composerAttachments.length;
+			if (remaining <= 0) return;
 			var $preview = $('#ComposerAttachPreview').show();
-			var $spinner = $('<img>').attr({ src: 'ajax-loader.gif', 'class': 'attach-spinner' });
-			$preview.append($spinner);
-			uploadAttachment(file, function(a) {
-				window.composerAttachments.push(a);
-				$spinner.remove();
-				var $item = $('<span>').addClass('attach-preview-item');
-				if (a.file_type === 'image') {
-					$item.append($('<img>').attr({ src: 'action-getattachment.php?id=' + a.id, 'class': 'attach-preview-thumb' }));
-				} else {
-					$item.append($('<span>').addClass('attach-filename').text(a.original_name));
-				}
-				$item.append($('<span>').addClass('attach-remove').html('&times;').on('click', function() {
-					var idx = window.composerAttachments.indexOf(a);
-					if (idx > -1) window.composerAttachments.splice(idx, 1);
-					$item.remove();
-					if (!window.composerAttachments.length) $('#ComposerAttachPreview').hide();
-					$('#ComposerAttachBtn').show();
-				}));
-				$preview.append($item);
-				if (window.composerAttachments.length >= 10) $('#ComposerAttachBtn').hide();
+			files.slice(0, remaining).forEach(function(file) {
+				var $spinner = $('<img>').attr({ src: 'ajax-loader.gif', 'class': 'attach-spinner' });
+				$preview.append($spinner);
+				uploadAttachment(file, function(a) {
+					window.composerAttachments.push(a);
+					$spinner.remove();
+					var $item = $('<span>').addClass('attach-preview-item');
+					if (a.file_type === 'image') {
+						$item.append($('<img>').attr({ src: 'action-getattachment.php?id=' + a.id, 'class': 'attach-preview-thumb' }));
+					} else {
+						$item.append($('<span>').addClass('attach-filename').text(a.original_name));
+					}
+					$item.append($('<span>').addClass('attach-remove').html('&times;').on('click', function() {
+						var idx = window.composerAttachments.indexOf(a);
+						if (idx > -1) window.composerAttachments.splice(idx, 1);
+						$item.remove();
+						if (!window.composerAttachments.length) $('#ComposerAttachPreview').hide();
+						$('#ComposerAttachBtn').show();
+					}));
+					$preview.append($item);
+					if (window.composerAttachments.length >= 10) $('#ComposerAttachBtn').hide();
+				});
 			});
 		});
 
 		// Reply boxes: file selected — show spinner, upload, then show preview
 		$(document).on('change', '.reply-file-input', function() {
-			var file = this.files[0];
+			var files = Array.prototype.slice.call(this.files);
 			var quizFeedId = $(this).data('replyfileid');
-			if (!file) return;
+			if (!files.length) return;
 			$(this).val('');
 			if (!window['replyAttachments_' + quizFeedId]) window['replyAttachments_' + quizFeedId] = [];
-			if (window['replyAttachments_' + quizFeedId].length >= 10) return;
+			var remaining = 10 - window['replyAttachments_' + quizFeedId].length;
+			if (remaining <= 0) return;
 			var $preview = $('#ReplyAttachPreview_' + quizFeedId).show();
-			var $spinner = $('<img>').attr({ src: 'ajax-loader.gif', 'class': 'attach-spinner' });
-			$preview.append($spinner);
-			uploadAttachment(file, function(a) {
-				window['replyAttachments_' + quizFeedId].push(a);
-				$spinner.remove();
-				var $item = $('<span>').addClass('attach-preview-item');
-				if (a.file_type === 'image') {
-					$item.append($('<img>').attr({ src: 'action-getattachment.php?id=' + a.id, 'class': 'attach-preview-thumb' }));
-				} else {
-					$item.append($('<span>').addClass('attach-filename').text(a.original_name));
-				}
-				$item.append($('<span>').addClass('attach-remove').html('&times;').on('click', function() {
-					var arr = window['replyAttachments_' + quizFeedId];
-					var idx = arr.indexOf(a);
-					if (idx > -1) arr.splice(idx, 1);
-					$item.remove();
-					if (!arr.length) $('#ReplyAttachPreview_' + quizFeedId).hide();
-					$('[data-replyattachid="' + quizFeedId + '"]').show();
-				}));
-				$preview.append($item);
-				if (window['replyAttachments_' + quizFeedId].length >= 10) $('[data-replyattachid="' + quizFeedId + '"]').hide();
+			files.slice(0, remaining).forEach(function(file) {
+				var $spinner = $('<img>').attr({ src: 'ajax-loader.gif', 'class': 'attach-spinner' });
+				$preview.append($spinner);
+				uploadAttachment(file, function(a) {
+					window['replyAttachments_' + quizFeedId].push(a);
+					$spinner.remove();
+					var $item = $('<span>').addClass('attach-preview-item');
+					if (a.file_type === 'image') {
+						$item.append($('<img>').attr({ src: 'action-getattachment.php?id=' + a.id, 'class': 'attach-preview-thumb' }));
+					} else {
+						$item.append($('<span>').addClass('attach-filename').text(a.original_name));
+					}
+					$item.append($('<span>').addClass('attach-remove').html('&times;').on('click', function() {
+						var arr = window['replyAttachments_' + quizFeedId];
+						var idx = arr.indexOf(a);
+						if (idx > -1) arr.splice(idx, 1);
+						$item.remove();
+						if (!arr.length) $('#ReplyAttachPreview_' + quizFeedId).hide();
+						$('[data-replyattachid="' + quizFeedId + '"]').show();
+					}));
+					$preview.append($item);
+					if (window['replyAttachments_' + quizFeedId].length >= 10) $('[data-replyattachid="' + quizFeedId + '"]').hide();
+				});
 			});
 		});
 		// If a comment is provided, show the submit button (delegated — element is injected dynamically)
