@@ -84,8 +84,7 @@ TextArea {}
 	min-width: 0;
 	order: 2;
 	padding: 8px 10px 4px;
-	background: #fff;
-	border-bottom: 1px solid #e8e0d0;
+	background: transparent;
 	box-sizing: border-box;
 	overflow: hidden;
 	align-self: stretch;
@@ -107,10 +106,10 @@ TextArea {}
 	height: 40px;
 	font-size: 14px;
 	font-family: verdana, arial;
-	border: 1px solid #ddd0b8;
+	border: 1px solid rgba(180, 120, 50, 0.35);
 	border-radius: 8px;
 	padding: 0 10px;
-	background: #fffaf4;
+	background: rgba(255, 255, 255, 0.45);
 	color: #333;
 	-webkit-appearance: auto;
 }
@@ -1290,6 +1289,7 @@ A {}
 		display: block;
 		padding: 6px 10px 6px;
 		justify-content: flex-start;
+		border-bottom: 1px solid #e0c8a8;
 	}
 	#QuizSelectorRow {
 		gap: 4px;
