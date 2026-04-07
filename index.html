@@ -24,6 +24,7 @@
 		}
 
 		$.get("action-login.php", { email: email, password: password }, function(data, status) {
+			console.log("login response: [" + data + "]");
 			window.res3 = data;
 			if (data.trim() === "OK") {
 				window.location.href = 'main.html';
