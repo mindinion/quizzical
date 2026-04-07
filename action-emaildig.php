@@ -32,22 +32,17 @@
     	}
 	}
 
-	$emailSubject = $diggerNameFirst . " " . $diggerNameLast . " Digs Your Shit";
-	// Tailor the email body depending on whether the dig is on a result or a plain post
-	if ($quizfeedresultid != "" ) {
-		$emailContent = $diggerNameFirst . " " . $diggerNameLast . " digs your following result:
-
-" . $score . " out of " . $max . " in the " . $type . " quiz on " . DATE("l",$timestamp) . ", " . DATE("d",$timestamp) . " " . DATE("F",$timestamp) . " " . DATE("Y",$timestamp)
-		;
+	$diggerName = htmlspecialchars($diggerNameFirst . ' ' . $diggerNameLast);
+	if ($quizfeedresultid != "") {
+		$detail = htmlspecialchars($score . ' out of ' . $max . ' in the ' . $type . ' quiz on ' . date("l", $timestamp) . ', ' . date("d", $timestamp) . ' ' . date("F", $timestamp) . ' ' . date("Y", $timestamp));
+		$blurb = '<p style="margin:0 0 8px;font-size:15px;color:#333;"><strong>' . $diggerName . '</strong> digs your result:</p>
+			<p style="margin:0 0 24px;font-size:14px;color:#666;background:#fff8f0;border-left:4px solid #e67300;padding:12px 16px;border-radius:4px;">' . $detail . '</p>';
+	} else {
+		$blurb = '<p style="margin:0 0 8px;font-size:15px;color:#333;"><strong>' . $diggerName . '</strong> digs your post:</p>
+			<p style="margin:0 0 24px;font-size:14px;color:#666;background:#fff8f0;border-left:4px solid #e67300;padding:12px 16px;border-radius:4px;">' . htmlspecialchars($comment) . '</p>';
 	}
-	else {
-		$emailContent = $diggerNameFirst . " " . $diggerNameLast . " digs your following post:
-
-" . $comment
-		;
-	}
-
-	sendMail($conn, $email, $emailSubject, $emailContent);
+	$emailHtml = mailHtml($blurb . '<a href="http://quizzical.co.nz" style="display:inline-block;background:#e67300;color:#fff;font-family:verdana,arial,sans-serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:20px;">View on Quizzical</a>');
+	sendMail($conn, $email, $diggerName . " digs your post", $emailHtml, false, true);
 
 	echo $timestamp ?? '';
 

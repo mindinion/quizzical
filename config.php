@@ -25,6 +25,41 @@ require_once __DIR__ . '/PHPMailer/PHPMailer.php';
 require_once __DIR__ . '/PHPMailer/SMTP.php';
 
 /**
+ * Wraps content in the standard Quizzical HTML email template.
+ * $content should be HTML snippets — headings, paragraphs, buttons etc.
+ */
+function mailHtml($content) {
+    return '<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f5e6d0;font-family:verdana,arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5e6d0;padding:40px 0;">
+    <tr><td align="center">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;">
+
+        <!-- Header -->
+        <tr><td style="background:#fee9cd;padding:28px 32px 20px;border-radius:12px 12px 0 0;text-align:center;">
+          <span style="font-family:verdana,arial,sans-serif;font-size:28px;font-weight:bold;color:#cc5500;letter-spacing:-0.5px;">Qu</span><span style="font-family:verdana,arial,sans-serif;font-size:28px;font-weight:bold;color:#e67300;">izzical</span>
+        </td></tr>
+
+        <!-- Body -->
+        <tr><td style="background:#ffffff;padding:32px 32px 28px;border-radius:0 0 12px 12px;">
+          ' . $content . '
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td style="padding:20px 0;text-align:center;">
+          <span style="font-family:verdana,arial,sans-serif;font-size:11px;color:#b08060;">You\'re receiving this because you\'re a Quizzical member.</span>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>';
+}
+
+/**
  * Send an email via SMTP. In DEV_MODE, only sends if the recipient is a superuser.
  * Pass $system = true for account/password emails to always send regardless of DEV_MODE.
  * Pass $html to send an HTML email body (plain text falls back to strip_tags version).

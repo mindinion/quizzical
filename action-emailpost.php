@@ -39,7 +39,11 @@
 			$email = $row['email'];
 			$id = $row['id'];
 			if ($id != $userid) {
-				sendMail($conn, $email, "New Quizzical Post", "There has been a new message posted on Quizzical, by " . $firstName . " " . $lastName . ".");
+				$html = mailHtml('
+				<p style="margin:0 0 16px;font-size:15px;color:#333;"><strong>' . htmlspecialchars($firstName . ' ' . $lastName) . '</strong> posted something new on Quizzical.</p>
+				<a href="http://quizzical.co.nz" style="display:inline-block;background:#e67300;color:#fff;font-family:verdana,arial,sans-serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:20px;">View on Quizzical</a>
+			');
+			sendMail($conn, $email, "New post on Quizzical", $html, false, true);
 				$response++;
 			}
 		}

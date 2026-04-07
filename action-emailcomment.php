@@ -42,7 +42,11 @@
 
 	// Notify the original poster, but skip if they are the one who just commented
 	if ($posterId != $userid) {
-		sendMail($conn, $poster, "New Comment", "There is a new comment on your post.");
+		$html = mailHtml('
+			<p style="margin:0 0 16px;font-size:15px;color:#333;">Someone commented on your post.</p>
+			<a href="http://quizzical.co.nz" style="display:inline-block;background:#e67300;color:#fff;font-family:verdana,arial,sans-serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:20px;">View on Quizzical</a>
+		');
+		sendMail($conn, $poster, "New comment on your post", $html, false, true);
 	}
 
 	// Notify any other users who have previously commented on this post.
@@ -55,7 +59,11 @@
 			$id = $row['user_id'];
 			// Skip the commenter themselves and the original poster (already emailed above)
 			if ($id != $userid && $id != $posterId) {
-				sendMail($conn, $email, "New Comment", "There is a new comment on " . $firstName . " " . $lastName . "'s post, by " . $name . ".");
+				$html = mailHtml('
+					<p style="margin:0 0 16px;font-size:15px;color:#333;">' . htmlspecialchars($name) . ' commented on ' . htmlspecialchars($firstName . ' ' . $lastName) . '\'s post.</p>
+					<a href="http://quizzical.co.nz" style="display:inline-block;background:#e67300;color:#fff;font-family:verdana,arial,sans-serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:20px;">View on Quizzical</a>
+				');
+				sendMail($conn, $email, "New comment on Quizzical", $html, false, true);
 				$response = $i;
 			}
 		}

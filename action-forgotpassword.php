@@ -33,8 +33,12 @@
 		$conn->query("INSERT INTO PasswordResets (token, email, expires) VALUES ('$token', '$email', '$expires')");
 
 		$resetUrl = "http://quizzical.co.nz/resetpassword.html?token=" . $token;
-		$body = "Hi,\n\nClick the link below to reset your Quizzical password. This link expires in 1 hour.\n\n" . $resetUrl . "\n\nIf you didn't request this, you can ignore this email.";
-		sendMail($conn, $email, "Reset your Quizzical password", $body, true);
+		$html = mailHtml('
+			<p style="margin:0 0 8px;font-size:15px;color:#333;">We received a request to reset your Quizzical password.</p>
+			<p style="margin:0 0 24px;font-size:13px;color:#888;">This link expires in 1 hour. If you didn\'t request this, you can ignore this email.</p>
+			<a href="' . $resetUrl . '" style="display:inline-block;background:#e67300;color:#fff;font-family:verdana,arial,sans-serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:20px;">Reset my password</a>
+		');
+		sendMail($conn, $email, "Reset your Quizzical password", $html, true, true);
 		echo "Success";
 	}
 
