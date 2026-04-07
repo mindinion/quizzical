@@ -50,7 +50,7 @@
 			<img src="logo-secondary.png" id="LoginLogo">
 			<div id="Notify"></div>
 			<input type="email" name="email" placeholder="Email address" class="login-field">
-			<input type="password" name="userpass" placeholder="Password" class="login-field">
+			<input type="password" name="userpass" placeholder="Password" class="login-field" onkeydown="if(event.keyCode===13)login()">
 			<button id="LoginButton" onclick="login()">Log in</button>
 			<a href="forgotpassword.html" id="ForgotLink">Forgot password?</a>
 			<a href="createaccount.html" id="CreateLink">Create an account</a>
