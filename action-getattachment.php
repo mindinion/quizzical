@@ -43,8 +43,9 @@ header('Content-Length: ' . filesize($filepath));
 header('Cache-Control: private, max-age=86400');
 
 if ($fileType !== 'image') {
-    $safeName = rawurlencode($origName);
-    header('Content-Disposition: attachment; filename="' . $origName . '"; filename*=UTF-8\'\'' . $safeName);
+    $cleanName = str_replace(["\r", "\n"], '', $origName);
+    $safeName  = rawurlencode($cleanName);
+    header('Content-Disposition: attachment; filename="' . $cleanName . '"; filename*=UTF-8\'\'' . $safeName);
 }
 
 readfile($filepath);

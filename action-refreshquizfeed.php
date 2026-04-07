@@ -14,9 +14,6 @@
  * which means deleted comments still trigger a refresh.
  */
 
-	error_reporting(E_ALL);
-	ini_set('display_errors', '1');
-
 	require_once 'dblogin.php';
 	require_once 'security.php';
 	require_once 'getsettings.php';

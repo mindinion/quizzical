@@ -13,9 +13,6 @@
  * optional fields rather than branching on two full query strings.
  */
 
-	error_reporting(-1);
-	ini_set('display_errors', 'On');
-
 	require_once 'security.php';
 	require_once 'dblogin.php';
 

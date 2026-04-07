@@ -38,9 +38,9 @@
 		$q = "INSERT INTO _SESSION (userid, token, location, client) VALUES ('$userid', '$token', '$location', '$client')";
 		$query = $conn->query($q);
 
-		// Create persistent cookies — 10-year expiry keeps the user logged in long-term
-		SetCookie ("session", $token, time() + (10 * 365 * 24 * 60 * 60));
-		SetCookie ("userid" , $userid, time() + (10 * 365 * 24 * 60 * 60));
+		$expiry = time() + (365 * 24 * 60 * 60);
+		setcookie("session", $token,  $expiry, "/", "", false, true);
+		setcookie("userid",  $userid, $expiry, "/", "", false, true);
 	}
 
 ?>
