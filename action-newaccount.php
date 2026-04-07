@@ -19,8 +19,8 @@
 	if (isset($_GET['firstname'])) $firstname = $conn->real_escape_string($_GET['firstname']);
 	if (isset($_GET['lastname'])) $lastname = $conn->real_escape_string($_GET['lastname']);
 	if (isset($_GET['email'])) $email = $conn->real_escape_string($_GET['email']);
-	if (isset($_GET['password'])) $password = sanitizeString($_GET['password']);
-	$passwordhash = md5($password);
+	if (isset($_GET['password'])) $password = $_GET['password'];
+	$passwordhash = password_hash($password, PASSWORD_BCRYPT);
 
 	// Route @teamdf.com users to their private group; everyone else goes to the public group
 	if (strpos($email, '@teamdf.com') !== false) {

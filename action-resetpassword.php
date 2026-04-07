@@ -39,7 +39,7 @@
 	}
 
 	// Update the password
-	$hash = md5($password);
+	$hash = password_hash($password, PASSWORD_BCRYPT);
 	$safeEmail = $conn->real_escape_string($email);
 	$conn->query("UPDATE Users SET password_hash = '$hash' WHERE email = '$safeEmail'");
 

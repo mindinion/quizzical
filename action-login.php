@@ -2,45 +2,52 @@
 /**
  * action-login.php
  *
- * AJAX login endpoint used by the single-page front end. Validates credentials by
- * comparing the MD5 hash of the submitted password against the stored hash, then
- * creates a session record in the _SESSION table and sets persistent cookies
- * (10-year expiry) for the session token and userid.
- * Echoes "Failed" if credentials are incorrect; sets cookies and returns nothing on success.
- *
- * Note: MD5 password hashing is weak — the legacy login.php uses Blowfish (crypt).
- * This endpoint appears to be a separate, older API login path.
+ * AJAX login endpoint. Verifies credentials and creates a session.
+ * Supports lazy MD5→bcrypt migration: if the stored hash is legacy MD5,
+ * it is verified and then immediately upgraded to bcrypt on successful login.
+ * Echoes "Failed" on bad credentials; sets cookies and echoes nothing on success.
  */
 
 	require_once 'dblogin.php';
 	require_once 'security.php';
 
-	if (isset($_GET['email'])) $email = $conn->real_escape_string($_GET['email']);
-	if (isset($_GET['password'])) $password = sanitizeString($_GET['password']);
-	$passhash = md5($password);
+	$email    = isset($_GET['email'])    ? $conn->real_escape_string($_GET['email']) : '';
+	$password = isset($_GET['password']) ? $_GET['password'] : '';
 
-	// Look up user by email and password hash in one query
-	$q = "SELECT id FROM Users WHERE email = '$email' and password_hash = '$passhash';";
+	// Fetch stored hash by email
+	$result = $conn->query("SELECT id, password_hash FROM Users WHERE email = '$email' LIMIT 1");
+	$row    = $result ? $result->fetch_assoc() : null;
 
-	$user = $conn->query($q);
-
-	while($row = mysqli_fetch_assoc($user)) {
-		$userid = $row['id'];
+	if (!$row) {
+		echo "Failed";
+		exit;
 	}
 
-	if ($userid == "") {
-		echo "Failed" ;
-	} else {
-		// Generate a 256-character cryptographically random session token
-		$token = bin2hex(openssl_random_pseudo_bytes(128));
-		$location = $_SERVER['REMOTE_ADDR'];
-		$client = $_SERVER['HTTP_USER_AGENT'];
-		$q = "INSERT INTO _SESSION (userid, token, location, client) VALUES ('$userid', '$token', '$location', '$client')";
-		$query = $conn->query($q);
+	$userid     = $row['id'];
+	$storedHash = $row['password_hash'];
 
-		$expiry = time() + (365 * 24 * 60 * 60);
-		setcookie("session", $token,  $expiry, "/", "", false, true);
-		setcookie("userid",  $userid, $expiry, "/", "", false, true);
+	// Detect legacy MD5 hash (32 lowercase hex chars) vs bcrypt
+	$isMd5     = (strlen($storedHash) === 32 && ctype_xdigit($storedHash));
+	$verified  = $isMd5 ? (md5($password) === $storedHash) : password_verify($password, $storedHash);
+
+	if (!$verified) {
+		echo "Failed";
+		exit;
 	}
 
+	// Upgrade MD5 to bcrypt on successful login
+	if ($isMd5) {
+		$newHash = password_hash($password, PASSWORD_BCRYPT);
+		$conn->query("UPDATE Users SET password_hash = '" . $conn->real_escape_string($newHash) . "' WHERE id = $userid");
+	}
+
+	// Generate a 256-character cryptographically random session token
+	$token    = bin2hex(openssl_random_pseudo_bytes(128));
+	$location = $conn->real_escape_string($_SERVER['REMOTE_ADDR']);
+	$client   = $conn->real_escape_string($_SERVER['HTTP_USER_AGENT']);
+	$conn->query("INSERT INTO _SESSION (userid, token, location, client) VALUES ('$userid', '$token', '$location', '$client')");
+
+	$expiry = time() + (365 * 24 * 60 * 60);
+	setcookie("session", $token,  $expiry, "/", "", false, true);
+	setcookie("userid",  $userid, $expiry, "/", "", false, true);
 ?>
