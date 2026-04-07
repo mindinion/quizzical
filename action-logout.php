@@ -2,9 +2,10 @@
 /**
  * action-logout.php
  *
- * Logs the user out by expiring the session cookie (setting expiry to -1 makes it
- * expire immediately) and redirecting to the index page.
- * The session record in the _SESSION database table is not explicitly removed here.
+ * Deletes the session record from the database, expires session cookies,
+ * and redirects to the login page.
+ * Clears cookies with both path="/" (new style) and no path (legacy style,
+ * defaulted to the server subdirectory) to handle cookies set either way.
  */
 
 	require_once 'dblogin.php';
@@ -15,8 +16,12 @@
 		$conn->query("DELETE FROM _SESSION WHERE token = '$token'");
 	}
 
-	// Expire both cookies immediately
+	// Expire cookies — clear both "/" path (new) and default path (legacy)
 	setcookie("session", "", time() - 3600, "/", "", false, true);
+	setcookie("session", "", time() - 3600);
 	setcookie("userid",  "", time() - 3600, "/", "", false, true);
+	setcookie("userid",  "", time() - 3600);
+
 	header("Location: index.html");
+	exit;
 ?>
