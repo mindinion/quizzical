@@ -83,6 +83,7 @@ function sendMail($conn, $to, $subject, $body, $system = false, $html = false) {
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port       = SMTP_PORT;
 
+        $mail->CharSet = 'UTF-8';
         $mail->setFrom(MAIL_FROM, MAIL_FROM_NAME);
         $mail->addAddress($to);
         $mail->Subject = $subject;
