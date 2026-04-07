@@ -21,7 +21,7 @@ try {
     $mail->isHTML(true);
 
     $mail->setFrom('noreply@quizzical.co.nz', 'Quizzical');
-    $mail->addAddress('kris@teamdf.com');
+    $mail->addAddress('noreply@quizzical.co.nz');
     $mail->Subject = 'Quizzical verbose test';
     $mail->Body    = '<p>Verbose HTML test</p>';
     $mail->AltBody = 'Verbose HTML test';
