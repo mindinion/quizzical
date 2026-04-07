@@ -13,10 +13,9 @@
 
 	date_default_timezone_set($timezone);
 
-	if (isset($_GET['postId'])) $postId = sanitizeString($_GET['postId']);
-	else $postId = "";
+	$postId = isset($_GET['postId']) ? (int)$_GET['postId'] : 0;
 
-	if ($postId == "") $response = "No input";
+	if (!$postId) $response = "No input";
 
 	// Resolve the poster's identity and their default group from the feed post
 	$q = "SELECT default_group, Users.id as 'userid', first_name, last_name FROM QuizFeed INNER JOIN Users ON QuizFeed.user_id = Users.id WHERE QuizFeed.id = $postId ;";

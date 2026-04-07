@@ -15,10 +15,10 @@
 	require_once 'dblogin.php';
 	require_once 'security.php';
 
-	if (isset($_GET['id'])) $id = $_GET['id'];
-	if (isset($_GET['userid'])) $userid = $_GET['userid'];
-	if (isset($_GET['commentid'])) $commentid = $_GET['commentid'];
-	if (isset($_GET['postid'])) $postid = $_GET['postid'];
+	$id        = isset($_GET['id'])        ? (int)$_GET['id']        : 0;
+	$userid    = isset($_GET['userid'])    ? (int)$_GET['userid']    : 0;
+	$commentid = isset($_GET['commentid']) ? (int)$_GET['commentid'] : 0;
+	$postid    = isset($_GET['postid'])    ? (int)$_GET['postid']    : 0;
 
 	// Select the lookup strategy based on which identifiers were provided
 	if (($commentid ?? null) != null) {

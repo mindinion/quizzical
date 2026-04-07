@@ -16,9 +16,9 @@
 	require_once 'dblogin.php';
 	require_once 'security.php';
 
-	if (isset($_GET['firstname'])) $firstname = sanitizeString($_GET['firstname']);
-	if (isset($_GET['lastname'])) $lastname = sanitizeString($_GET['lastname']);
-	if (isset($_GET['email'])) $email = sanitizeString($_GET['email']);
+	if (isset($_GET['firstname'])) $firstname = $conn->real_escape_string($_GET['firstname']);
+	if (isset($_GET['lastname'])) $lastname = $conn->real_escape_string($_GET['lastname']);
+	if (isset($_GET['email'])) $email = $conn->real_escape_string($_GET['email']);
 	if (isset($_GET['password'])) $password = sanitizeString($_GET['password']);
 	$passwordhash = md5($password);
 

@@ -11,7 +11,7 @@
 	require_once 'dblogin.php';
 	require_once 'security.php';
 
-	if (isset($_GET['id'])) $id = sanitizeString($_GET['id']);
+	$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 	
 	// Single JOIN retrieves digger details, the post, and optionally the linked result
 	$q = "SELECT Digger.first_name as diggerfirstname, Digger.last_name as diggerlastname, Digs.postid as postid, Poster.email as posteremail, QuizFeed.comment as quizfeedcomment, QuizFeed.result_id as quizfeedresult, Results.Score as score, Results.max as max, Results.type as type, QuizFeed.timestamp as quizfeedtimestamp FROM Digs INNER JOIN QuizFeed ON Digs.postid = QuizFeed.id INNER JOIN Users as Poster ON QuizFeed.user_id = Poster.id INNER JOIN Users as Digger ON Digs.userid = Digger.id LEFT JOIN Results ON QuizFeed.result_id = Results.id WHERE Digs.id = $id;";

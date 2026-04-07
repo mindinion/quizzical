@@ -15,8 +15,8 @@
 
 	date_default_timezone_set($timezone);
 	
-	if (isset($_GET['postId'])) $postId = sanitizeString($_GET['postId']);
-	if (isset($_GET['userid'])) $userid = sanitizeString($_GET['userid']);	
+	$postId = isset($_GET['postId']) ? (int)$_GET['postId'] : 0;
+	$userid = isset($_GET['userid']) ? (int)$_GET['userid'] : 0;	
 	
 	// Resolve the original poster's name and id from the QuizFeed post
 	$q = "SELECT Users.id as userid, first_name, last_name FROM QuizFeed INNER JOIN Users ON QuizFeed.user_id = Users.id WHERE QuizFeed.id = $postId;";

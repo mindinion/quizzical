@@ -12,7 +12,7 @@
 	require_once 'dblogin.php';
 	require_once 'security.php';
 
-	if (isset($_GET['email'])) $email = sanitizeString($_GET['email']);
+	if (isset($_GET['email'])) $email = $conn->real_escape_string($_GET['email']);
 
 	$q = "SELECT id FROM Users WHERE email = '$email';";
 

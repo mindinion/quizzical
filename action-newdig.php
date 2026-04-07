@@ -19,9 +19,9 @@
 	$postid = "";
 	$commentid = "";
 
-	if (isset($_GET['postid'])) $postid = $_GET['postid'];
-	if (isset($_GET['commentid'])) $commentid = $_GET['commentid'];
-	if (isset($_GET['userid'])) $userid = $_GET['userid'];
+	$postid    = isset($_GET['postid'])    ? (int)$_GET['postid']    : 0;
+	$commentid = isset($_GET['commentid']) ? (int)$_GET['commentid'] : 0;
+	$userid    = isset($_GET['userid'])    ? (int)$_GET['userid']    : 0;
 
 	// Determine whether this dig is for a comment or a post based on which id was omitted
 	if ($postid == "")    $q = "INSERT INTO Digs (userid, commentid) values ($userid, $commentid);";

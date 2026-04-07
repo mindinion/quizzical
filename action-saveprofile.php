@@ -18,15 +18,15 @@
 	$profile = json_decode($profileJson);
 
 	// Unpack the JSON object fields into local variables for clarity
-	$email 			= $profile->email;
-	$firstname 		= $profile->firstname;
-	$lastname 		= $profile->lastname;
-	$notifyEmail 	= $profile->notifyEmail;
-	$notifyMessage 	= $profile->notifyMessage;
-	$timezone 		= $profile->timezone;
-	$groupid 		= $profile->groupid;
-	$userid 		= $profile->userid;
-	$photo			= $profile->photo;
+	$email 			= $conn->real_escape_string($profile->email);
+	$firstname 		= $conn->real_escape_string($profile->firstname);
+	$lastname 		= $conn->real_escape_string($profile->lastname);
+	$notifyEmail 	= (int)$profile->notifyEmail;
+	$notifyMessage 	= (int)$profile->notifyMessage;
+	$timezone 		= $conn->real_escape_string($profile->timezone);
+	$groupid 		= (int)$profile->groupid;
+	$userid 		= (int)$profile->userid;
+	$photo			= $conn->real_escape_string($profile->photo);
 
 	// Build the UPDATE query
 	$q = 	"UPDATE Users SET first_name='$firstname',

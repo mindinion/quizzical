@@ -12,6 +12,14 @@
 require_once 'dblogin.php';
 require_once 'security.php';
 
+// Validate session before serving any file
+$token = $_COOKIE['session'] ?? '';
+$sessionCheck = $conn->query("SELECT userid FROM _SESSION WHERE token = '" . $conn->real_escape_string($token) . "' LIMIT 1");
+if (!$sessionCheck || $sessionCheck->num_rows === 0) {
+    http_response_code(403);
+    exit;
+}
+
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if (!$id) { http_response_code(400); exit; }
 

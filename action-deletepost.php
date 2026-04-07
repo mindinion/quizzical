@@ -14,11 +14,11 @@
 	require_once 'dblogin.php';
 	require_once 'security.php';
 
-	if (isset($_GET['id'])) $postid = $_GET['id'];
-	if (isset($_GET['userid'])) $userid = $_GET['userid'];
+	$postid = isset($_GET['id'])     ? (int)$_GET['id']     : 0;
+	$userid = isset($_GET['userid']) ? (int)$_GET['userid'] : 0;
 
 	// Fetch the owner and linked result id for authorization check
-	$q = "SELECT result_id, user_id FROM QuizFeed WHERE QuizFeed.id = '$postid' ;";
+	$q = "SELECT result_id, user_id FROM QuizFeed WHERE QuizFeed.id = $postid ;";
 	$result = $conn->query($q);
 
 	if (mysqli_num_rows($result) > 0) {
@@ -29,9 +29,9 @@
 			// Only allow deletion if the requester owns the post
 			if ($postUser == $userid) {
 				// Soft-delete the linked result first, then the feed post
-				$q = "UPDATE Results SET status = 'deleted' WHERE id = '$resultId' ;";
+				$q = "UPDATE Results SET status = 'deleted' WHERE id = $resultId ;";
 				$result = $conn->query($q);
-				$q = "UPDATE QuizFeed SET status = 'deleted' WHERE id = '$postid' ;";
+				$q = "UPDATE QuizFeed SET status = 'deleted' WHERE id = $postid ;";
 				$result = $conn->query($q);
 			}
     	}

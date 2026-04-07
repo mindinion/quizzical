@@ -13,7 +13,7 @@
 
 	date_default_timezone_set($timezone);
 
-	if (isset($_GET['id'])) $id = sanitizeString($_GET['id']);
+	$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 	// Retrieve digger name, comment author email, and the comment text in one query.
 	// Note: the first $conn->query($q) call is redundant; its result is never used.

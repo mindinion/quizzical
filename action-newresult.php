@@ -18,23 +18,14 @@
 	require_once 'getsettings.php';
 
 	// Get inputted details
-	if (isset($_GET['type'])) $type = sanitizeString($_GET['type']);
-	else $type = "";
-	// Adding 0 casts the sanitized score string to a number, preventing injection via string tricks
-	if (isset($_GET['score'])) $score = sanitizeString($_GET['score']) + 0;
-	else $score = "";
-	if (isset($_GET['questions'])) $max = sanitizeString($_GET['questions']);
-	else $max = "";
-	if (isset($_GET['dateOption'])) $dateOption = sanitizeString($_GET['dateOption']);
-	else $dateOption = "";
-	if (isset($_GET['date'])) $date = sanitizeString($_GET['date']);
-	else $date = "";
-	if (isset($_GET['comment'])) $comment = sanitizeMySQL($_GET['comment']);
-	else $comment = "";
-	if (isset($_GET['userid'])) $userid = sanitizeString($_GET['userid']);
-	else $userid = "";
-	if (isset($_GET['timezone'])) $timezone = sanitizeString($_GET['timezone']);
-	else $timezone = "NZ";
+	$type       = isset($_GET['type'])       ? $conn->real_escape_string($_GET['type'])       : '';
+	$score      = isset($_GET['score'])      ? (int)$_GET['score']                           : 0;
+	$max        = isset($_GET['questions'])  ? (int)$_GET['questions']                       : 0;
+	$dateOption = isset($_GET['dateOption']) ? $conn->real_escape_string($_GET['dateOption']) : '';
+	$date       = isset($_GET['date'])       ? $conn->real_escape_string($_GET['date'])       : '';
+	$comment    = isset($_GET['comment'])    ? $conn->real_escape_string($_GET['comment'])    : '';
+	$userid     = isset($_GET['userid'])     ? (int)$_GET['userid']                          : 0;
+	$timezone   = isset($_GET['timezone'])   ? $conn->real_escape_string($_GET['timezone'])   : 'NZ';
 
 	// Resolve the result timestamp based on the user's selected date option
 	date_default_timezone_set($timezone);

@@ -15,13 +15,9 @@
 	date_default_timezone_set($timezone);
 
 	// Get inputted details
-	if (isset($_GET['quizFeedId'])) $quizFeedId = sanitizeString($_GET['quizFeedId']);
-	else $quizFeedId = "";
-	// addslashes escapes single quotes inside the comment for safe SQL insertion
-	if (isset($_GET['comment'])) $comment = addslashes($_GET['comment']);
-	else $comment = "";
-	if (isset($_GET['userid'])) $userid = sanitizeString($_GET['userid']);
-	else $userid = "";
+	$quizFeedId = isset($_GET['quizFeedId']) ? (int)$_GET['quizFeedId'] : 0;
+	$userid     = isset($_GET['userid'])     ? (int)$_GET['userid']     : 0;
+	$comment    = isset($_GET['comment'])    ? $conn->real_escape_string($_GET['comment']) : '';
 
 	$q = "INSERT INTO Comment (user_id, quizfeed_id, comment) VALUES" . "('$userid','$quizFeedId','$comment' );";
 	$conn->query($q);

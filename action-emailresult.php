@@ -13,10 +13,9 @@
 
 	date_default_timezone_set($timezone);
 
-	if (isset($_GET['resultId'])) $resultId = sanitizeString($_GET['resultId']);
-	else $resultId = "";
+	$resultId = isset($_GET['resultId']) ? (int)$_GET['resultId'] : 0;
 
-	if ($resultId == "") $response = "No input";
+	if (!$resultId) $response = "No input";
 
 	// Fetch the submitter's details and their group from the Results table
 	$q = "SELECT default_group, Users.id as 'userid', first_name, last_name, type FROM Results INNER JOIN Users ON Results.user = Users.id WHERE Results.id = $resultId;";

@@ -15,13 +15,9 @@
 	require_once 'security.php';
 
 	// Get inputted details
-	// addslashes escapes quotes in the comment text for safe SQL string insertion
-	if (isset($_GET['comment'])) $comment = addslashes($_GET['comment']);
-	else $comment = "";
-	if (isset($_GET['userid'])) $userid = sanitizeString($_GET['userid']);
-	else $userid = "";
-	if (isset($_GET['timezone'])) $timezone = sanitizeString($_GET['timezone']);
-	else $timezone = "NZ";
+	$userid   = isset($_GET['userid'])   ? (int)$_GET['userid'] : 0;
+	$comment  = isset($_GET['comment'])  ? $conn->real_escape_string($_GET['comment']) : '';
+	$timezone = isset($_GET['timezone']) ? $conn->real_escape_string($_GET['timezone']) : 'NZ';
 
 	// Fetch the poster's name (currently unused — likely intended for a future notification)
 	$q = "SELECT first_name, last_name FROM Users WHERE id = '$userid';";
