@@ -33,6 +33,9 @@
 			} else {
 				notifyError("Unexpected response: " + data);
 			}
+		}).fail(function(jqXHR) {
+			console.log("login error: HTTP " + jqXHR.status + " — " + jqXHR.responseText);
+			notifyError("Login request failed (" + jqXHR.status + ")");
 		});
 	}
 
