@@ -27,8 +27,9 @@
 	$storedHash = $row['password_hash'];
 
 	// Detect legacy MD5 hash (32 lowercase hex chars) vs bcrypt
-	$isMd5     = (strlen($storedHash) === 32 && ctype_xdigit($storedHash));
-	$verified  = $isMd5 ? (md5($password) === $storedHash) : password_verify($password, $storedHash);
+	$isMd5    = (strlen($storedHash) === 32 && ctype_xdigit($storedHash));
+	// Legacy MD5 hashes were stored as md5(sanitizeString($password)) — match that exactly
+	$verified = $isMd5 ? (md5(sanitizeString($password)) === $storedHash) : password_verify($password, $storedHash);
 
 	if (!$verified) {
 		echo "Failed";
