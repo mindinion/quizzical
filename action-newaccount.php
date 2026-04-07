@@ -41,12 +41,19 @@
 	$last_id = mysqli_insert_id($conn);
 
 	if ($last_id != null) {
+		$userid = $last_id;
 		// Create the group membership record for the new user
-		$q = "INSERT INTO Memberships (group_id, user_id) VALUES ($groupid, $last_id)";
+		$q = "INSERT INTO Memberships (group_id, user_id) VALUES ($groupid, $userid)";
 		$conn->query($q);
-		$last_id = mysqli_insert_id($conn);
-		if ($last_id != null) {
-			echo $last_id;
+		if (mysqli_insert_id($conn) != null) {
+			// Create a session so the user is logged in immediately
+			$token = bin2hex(openssl_random_pseudo_bytes(128));
+			$location = $conn->real_escape_string($_SERVER['REMOTE_ADDR']);
+			$client = $conn->real_escape_string($_SERVER['HTTP_USER_AGENT']);
+			$conn->query("INSERT INTO _SESSION (userid, token, location, client) VALUES ('$userid', '$token', '$location', '$client')");
+			SetCookie("session", $token,  time() + (10 * 365 * 24 * 60 * 60));
+			SetCookie("userid",  $userid, time() + (10 * 365 * 24 * 60 * 60));
+			echo "OK";
 		} else {
 			echo "Failed";
 		}

@@ -3,12 +3,9 @@
  * action-forgotpassword.php
  *
  * Handles password reset requests. Looks up the provided email address and, if found,
- * generates a random 8-character alphanumeric password, stores its MD5 hash in the database,
- * and emails the plain-text password to the user.
+ * generates a secure random token, stores it in PasswordResets with a 1-hour expiry,
+ * and emails the user a link to reset their password.
  * Echoes "Success" on completion, or "Failed" if the email is not registered.
- *
- * Note: MD5 is used here for hashing — a stronger algorithm (e.g., bcrypt) is recommended
- * for production use.
  */
 
 	require_once 'dblogin.php';
@@ -16,7 +13,7 @@
 
 	if (isset($_GET['email'])) $email = $conn->real_escape_string($_GET['email']);
 
-	$q = "SELECT id FROM Users WHERE email = '" . $email . "';";
+	$q = "SELECT id FROM Users WHERE email = '$email';";
 	$user = $conn->query($q);
 
 	while($row = mysqli_fetch_assoc($user)) {
@@ -26,12 +23,17 @@
 	if (($userid ?? "") == "") {
 		echo "Failed";
 	} else {
-		// Generate a random 8-char password by shuffling the character pool and taking the first 8
-		$newpassword = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') , 0 , 8 );
-		$newpasswordhash = md5($newpassword);
-		$q = "UPDATE Users SET Users.password_hash = '$newpasswordhash' WHERE Users.email = '$email';";
-		$query = $conn->query($q);
-		mail($email,"Forgotten Password", "Here is your new password: " . $newpassword, "From: Quizzical");
+		// Generate a secure random token and store it with a 1-hour expiry
+		$token = bin2hex(openssl_random_pseudo_bytes(32));
+		$expires = date("Y-m-d H:i:s", time() + 3600);
+
+		// Remove any existing reset tokens for this email before inserting a new one
+		$conn->query("DELETE FROM PasswordResets WHERE email = '$email'");
+		$conn->query("INSERT INTO PasswordResets (token, email, expires) VALUES ('$token', '$email', '$expires')");
+
+		$resetUrl = "http://quizzical.co.nz/resetpassword.html?token=" . $token;
+		$body = "Hi,\n\nClick the link below to reset your Quizzical password. This link expires in 1 hour.\n\n" . $resetUrl . "\n\nIf you didn't request this, you can ignore this email.";
+		mail($email, "Reset your Quizzical password", $body, "From: Quizzical");
 		echo "Success";
 	}
 

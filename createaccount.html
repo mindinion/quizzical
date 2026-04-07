@@ -27,9 +27,8 @@
 		$.get("action-checkemail.php", { email: email }, function(data, status) {
 			if (data.indexOf("Exists") == -1) {
 				$.get("action-newaccount.php", { firstname: firstName, lastname: lastName, email: email, password: password }, function(data, status) {
-					console.log(data);
-					if (data.indexOf("Failed") == -1) {
-						notifySuccess("Your account has been created");
+					if (data.trim() === "OK") {
+						window.location.href = 'main.html';
 					} else {
 						notifyError("There was a problem creating your account, please contact the webmaster");
 					}
