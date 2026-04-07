@@ -51,4 +51,5 @@
 	$expiry = time() + (365 * 24 * 60 * 60);
 	setcookie("session", $token,  $expiry, "/", "", false, true);
 	setcookie("userid",  $userid, $expiry, "/", "", false, true);
+	echo "OK";
 ?>

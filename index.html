@@ -25,10 +25,12 @@
 
 		$.get("action-login.php", { email: email, password: password }, function(data, status) {
 			window.res3 = data;
-			if (data.indexOf("Failed") == -1) {
+			if (data.trim() === "OK") {
 				window.location.href = 'main.html';
-			} else {
+			} else if (data.indexOf("Failed") !== -1) {
 				notifyError("Incorrect login details");
+			} else {
+				notifyError("Unexpected response: " + data);
 			}
 		});
 	}
