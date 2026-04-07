@@ -33,7 +33,7 @@ function mailHtml($content) {
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#f5e6d0;font-family:verdana,arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5e6d0;padding:40px 0;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#fee9cd;padding:40px 0;">
     <tr><td align="center">
       <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;">
 
