@@ -71,7 +71,7 @@
 			<input type="text" name="firstname" placeholder="First name" class="login-field" onblur="checkEmail();">
 			<input type="text" name="lastname" placeholder="Last name" class="login-field" onblur="checkEmail();">
 			<input type="email" name="email" placeholder="Email address" class="login-field" onblur="checkEmail();" onfocus="clearNotify();">
-			<input type="password" name="password" placeholder="Password" class="login-field">
+			<input type="password" name="password" placeholder="Password" class="login-field" onkeydown="if(event.keyCode===13)addAccount()">
 			<button id="LoginButton" onclick="addAccount()">Create account</button>
 			<a href="index.html" id="CreateLink">Back to login</a>
 		</div>
