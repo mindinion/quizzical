@@ -1,12 +1,34 @@
 <?php
 require_once 'dblogin.php';
-require_once 'config.php';
+require_once 'PHPMailer/Exception.php';
+require_once 'PHPMailer/PHPMailer.php';
+require_once 'PHPMailer/SMTP.php';
 
-$html = mailHtml('
-    <p style="margin:0 0 16px;font-size:15px;color:#333;">This is a test email from Quizzical. If you\'re reading this, HTML email is working!</p>
-    <a href="http://quizzical.co.nz" style="display:inline-block;background:#e67300;color:#fff;font-family:verdana,arial,sans-serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:20px;">View Quizzical</a>
-');
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-sendMail($conn, 'widdakay@gmail.com', 'Quizzical test email', $html, true, true);
-echo "Done";
+$mail = new PHPMailer(true);
+try {
+    $mail->SMTPDebug  = 2;
+    $mail->Debugoutput = 'echo';
+    $mail->isSMTP();
+    $mail->Host       = 's04ne.syd7.hostingplatform.net.au';
+    $mail->SMTPAuth   = true;
+    $mail->Username   = 'noreply@quizzical.co.nz';
+    $mail->Password   = 'EAN_s.}covB4XW9x';
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+    $mail->Port       = 465;
+    $mail->isHTML(true);
+
+    $mail->setFrom('noreply@quizzical.co.nz', 'Quizzical');
+    $mail->addAddress('widdakay@gmail.com');
+    $mail->Subject = 'Quizzical verbose test';
+    $mail->Body    = '<p>Verbose HTML test</p>';
+    $mail->AltBody = 'Verbose HTML test';
+
+    $mail->send();
+    echo "\n\nSent OK";
+} catch (Exception $e) {
+    echo "\n\nFailed: " . $mail->ErrorInfo;
+}
 ?>
