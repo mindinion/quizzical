@@ -808,12 +808,13 @@ document.cookie="feedItems=50";
 	}
 
 	function getSettings() {
-	$.get("action-getsettings.php", 
-		{ 
+	sessionStorage.removeItem('usersettings');
+	$.get("action-getsettings.php",
+		{
 			userid:getCookie("userid")
-		},	
-		
-		function(data, status) { 
+		},
+
+		function(data, status) {
 			sessionStorage.usersettings = data;
 			fetchFeedRankers();
 			downloadResults();
@@ -1647,7 +1648,7 @@ document.cookie="feedItems=50";
 		console.log("made it");
 		getSettings();
 		activateListeners();
-		$("#userid").val(getSetting("user_id"));
+		$("#userid").val(getCookie("userid"));
 	});
 	
 	
