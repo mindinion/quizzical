@@ -10,6 +10,7 @@
 
 	require_once 'dblogin.php';
 	require_once 'security.php';
+	require_once 'config.php';
 
 	date_default_timezone_set($timezone);
 
@@ -35,7 +36,7 @@
 
 " . $comment;
 
-	mail($email,$emailSubject,$emailContent, "From: Quizzical");
+	sendMail($conn, $email, $emailSubject, $emailContent);
 
 	 
 

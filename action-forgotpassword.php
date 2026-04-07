@@ -10,6 +10,7 @@
 
 	require_once 'dblogin.php';
 	require_once 'security.php';
+	require_once 'config.php';
 
 	if (isset($_GET['email'])) $email = $conn->real_escape_string($_GET['email']);
 
@@ -33,7 +34,7 @@
 
 		$resetUrl = "http://quizzical.co.nz/resetpassword.html?token=" . $token;
 		$body = "Hi,\n\nClick the link below to reset your Quizzical password. This link expires in 1 hour.\n\n" . $resetUrl . "\n\nIf you didn't request this, you can ignore this email.";
-		mail($email, "Reset your Quizzical password", $body, "From: Quizzical");
+		sendMail($conn, $email, "Reset your Quizzical password", $body, true);
 		echo "Success";
 	}
 

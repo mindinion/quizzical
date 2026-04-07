@@ -10,6 +10,7 @@
 
 	require_once 'dblogin.php';
 	require_once 'security.php';
+	require_once 'config.php';
 
 	$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 	
@@ -46,7 +47,7 @@
 		;
 	}
 
-	mail($email,$emailSubject,$emailContent, "From: Quizzical");
+	sendMail($conn, $email, $emailSubject, $emailContent);
 
 	echo $timestamp ?? '';
 

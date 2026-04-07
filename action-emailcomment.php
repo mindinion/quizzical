@@ -12,6 +12,7 @@
 
 	require_once 'dblogin.php';
 	require_once 'security.php';
+	require_once 'config.php';
 
 	date_default_timezone_set($timezone);
 	
@@ -41,7 +42,7 @@
 
 	// Notify the original poster, but skip if they are the one who just commented
 	if ($posterId != $userid) {
-		mail($poster,"New Comment", "There is a new comment on your post.", "From: Quizzical");
+		sendMail($conn, $poster, "New Comment", "There is a new comment on your post.");
 	}
 
 	// Notify any other users who have previously commented on this post.
@@ -54,7 +55,7 @@
 			$id = $row['user_id'];
 			// Skip the commenter themselves and the original poster (already emailed above)
 			if ($id != $userid && $id != $posterId) {
-				mail($email,"New Comment", "There is a new comment on " . $firstName . " " . $lastName . "'s post, by " . $name . ".", "From: Quizzical");
+				sendMail($conn, $email, "New Comment", "There is a new comment on " . $firstName . " " . $lastName . "'s post, by " . $name . ".");
 				$response = $i;
 			}
 		}

@@ -10,6 +10,7 @@
 
 	require_once 'dblogin.php';
 	require_once 'security.php';
+	require_once 'config.php';
 
 	date_default_timezone_set($timezone);
 
@@ -38,7 +39,7 @@
 			$email = $row['email'];
 			$id = $row['id'];
 			if ($id != $userid) {
-				mail($email,"New Result Posted", "There has been a new " . $type . " quiz result posted on Quizzical, by " . $firstName . " " . $lastName . ".", "From: Quizzical");
+				sendMail($conn, $email, "New Result Posted", "There has been a new " . $type . " quiz result posted on Quizzical, by " . $firstName . " " . $lastName . ".");
 				$response++;
 			}
 		}
