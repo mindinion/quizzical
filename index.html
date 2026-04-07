@@ -14,9 +14,11 @@
 	}
 
 	function login() {
+		console.log("LOGIN v2");
 		notifyLoading();
 		var email = $("input[name=email]").val();
 		var password = $("input[name=userpass]").val();
+		console.log("email:", email, "pass length:", password.length);
 
 		if (email == "" || password == "") {
 			notifyError("Please enter a username and password");
