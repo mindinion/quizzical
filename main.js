@@ -1265,22 +1265,49 @@ document.cookie="feedItems=50";
 	}
 
 	function uploadAttachment(file, onSuccess) {
-		var fd = new FormData();
-		fd.append('file', file);
-		fd.append('userid', getCookie('userid'));
-		$.ajax({
-			url: 'action-uploadattachment.php',
-			type: 'POST',
-			data: fd,
-			processData: false,
-			contentType: false,
-			success: function(resp) {
-				var a = typeof resp === 'string' ? JSON.parse(resp) : resp;
-				if (a.error) { alert('Upload failed: ' + a.error); return; }
-				onSuccess(a);
-			},
-			error: function() { alert('Upload failed \u2014 please try again'); }
-		});
+		function doUpload(blob, filename) {
+			var fd = new FormData();
+			fd.append('file', blob, filename);
+			fd.append('userid', getCookie('userid'));
+			$.ajax({
+				url: 'action-uploadattachment.php',
+				type: 'POST',
+				data: fd,
+				processData: false,
+				contentType: false,
+				success: function(resp) {
+					var a = typeof resp === 'string' ? JSON.parse(resp) : resp;
+					if (a.error) { alert('Upload failed: ' + a.error); return; }
+					onSuccess(a);
+				},
+				error: function() { alert('Upload failed \u2014 please try again'); }
+			});
+		}
+
+		var MAX_PX = 2560;
+		if (file.type.indexOf('image/') !== 0) {
+			doUpload(file, file.name);
+			return;
+		}
+		var img = new Image();
+		var blobUrl = URL.createObjectURL(file);
+		img.onload = function() {
+			URL.revokeObjectURL(blobUrl);
+			var w = img.naturalWidth, h = img.naturalHeight;
+			if (w <= MAX_PX && h <= MAX_PX) {
+				doUpload(file, file.name);
+				return;
+			}
+			var scale = MAX_PX / Math.max(w, h);
+			var canvas = document.createElement('canvas');
+			canvas.width  = Math.round(w * scale);
+			canvas.height = Math.round(h * scale);
+			canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+			canvas.toBlob(function(blob) {
+				doUpload(blob, file.name.replace(/\.[^.]+$/, '.jpg'));
+			}, 'image/jpeg', 0.92);
+		};
+		img.src = blobUrl;
 	}
 
 		function activateListeners() {
