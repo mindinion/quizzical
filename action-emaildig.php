@@ -33,7 +33,7 @@
 	}
 
 	$diggerName = htmlspecialchars($diggerNameFirst . ' ' . $diggerNameLast);
-	if ($quizfeedresultid != "") {
+	if ($quizfeedresultid !== null) {
 		$detail = htmlspecialchars($score . ' out of ' . $max . ' in the ' . $type . ' quiz on ' . date("l", $timestamp) . ', ' . date("d", $timestamp) . ' ' . date("F", $timestamp) . ' ' . date("Y", $timestamp));
 		$blurb = '<p style="margin:0 0 8px;font-size:15px;color:#333;"><strong>' . $diggerName . '</strong> digs your result:</p>
 			<p style="margin:0 0 24px;font-size:14px;color:#666;background:#fff8f0;border-left:4px solid #e67300;padding:12px 16px;border-radius:4px;">' . $detail . '</p>';
