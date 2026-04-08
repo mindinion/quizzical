@@ -847,8 +847,8 @@ A {}
 	background-color:F2F2F2;
 	min-height:12px;
 	padding-left:10px;
-	background-color:c2d6d6 ;
-	width:100px;
+	background-color:c2d6d6;
+	white-space:nowrap;
 }
 
 #QuizFeedInfoReplyLink {
