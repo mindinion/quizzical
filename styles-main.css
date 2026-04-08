@@ -848,7 +848,13 @@ A {}
 	min-height:12px;
 	padding-left:10px;
 	background-color:c2d6d6;
-	white-space:nowrap;
+	width:100px;
+}
+
+.comment-meta {
+	font-weight: normal;
+	margin-top: 2px;
+	white-space: nowrap;
 }
 
 #QuizFeedInfoReplyLink {
@@ -1303,7 +1309,6 @@ A {}
 .comment-timestamp {
 	font-weight: normal;
 	color: #999;
-	margin-left: 6px;
 }
 
 .QuizFeedInfoDelete {
