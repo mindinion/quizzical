@@ -1284,7 +1284,7 @@ document.cookie="feedItems=50";
 			});
 		}
 
-		var MAX_PX = 2560;
+		var MAX_PX = 1920;
 		if (file.type.indexOf('image/') !== 0) {
 			doUpload(file, file.name);
 			return;
@@ -1305,7 +1305,7 @@ document.cookie="feedItems=50";
 			canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
 			canvas.toBlob(function(blob) {
 				doUpload(blob, file.name.replace(/\.[^.]+$/, '.jpg'));
-			}, 'image/jpeg', 0.92);
+			}, 'image/jpeg', 0.85);
 		};
 		img.src = blobUrl;
 	}
