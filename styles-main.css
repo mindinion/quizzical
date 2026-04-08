@@ -826,35 +826,36 @@ A {}
 	line-height:110%;
 	color:black;
 }
-.OtherUser {
-	font-size:10px;
-	padding-top:4px;
-	padding-bottom:5px;
-	color:403F3D;
-	background-color:F2F2F2;
-	max-width:100%;
-	padding-left:130px;
+#CommentRow {
+	display: flex;
+	align-items: stretch;
+	background-color: #F2F2F2;
 }
 
 #QuizFeedInfoReplyName {
-	font-size:10px;
-	color:black;
-	font-weight:bold;
-	padding-top:4px;
-	padding-bottom:5px;
-	float:left;
-	padding-right:8px;
-	background-color:F2F2F2;
-	min-height:12px;
-	padding-left:10px;
-	background-color:c2d6d6;
-	width:100px;
+	font-size: 10px;
+	color: black;
+	font-weight: bold;
+	padding: 4px 8px 5px 10px;
+	background-color: #c2d6d6;
+	flex-shrink: 0;
+	width: 110px;
+	box-sizing: border-box;
 }
 
 .comment-meta {
 	font-weight: normal;
 	margin-top: 2px;
 	white-space: nowrap;
+}
+
+.OtherUser {
+	font-size: 10px;
+	padding: 4px 0 5px 8px;
+	color: #403F3D;
+	background-color: #F2F2F2;
+	flex: 1;
+	min-width: 0;
 }
 
 #QuizFeedInfoReplyLink {
