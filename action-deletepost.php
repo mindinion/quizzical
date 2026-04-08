@@ -8,7 +8,6 @@
  * Records are never physically removed from the database.
  */
 
-	ini_set('display_errors', 1); error_reporting(E_ALL); // TEMP
 	require_once 'dblogin.php';
 	require_once 'security.php';
 
@@ -26,11 +25,11 @@
 
 			// Only allow deletion if the requester owns the post
 			if ($postUser == $userid) {
-				// Soft-delete the linked result first, then the feed post
-				$q = "UPDATE Results SET status = 'deleted' WHERE id = $resultId ;";
-				$result = $conn->query($q);
-				$q = "UPDATE QuizFeed SET status = 'deleted' WHERE id = $postid ;";
-				$result = $conn->query($q);
+				// Soft-delete the linked result first (only if this post has one)
+				if ($resultId) {
+					$conn->query("UPDATE Results SET status = 'deleted' WHERE id = $resultId");
+				}
+				$conn->query("UPDATE QuizFeed SET status = 'deleted' WHERE id = $postid");
 			}
     	}
     }
