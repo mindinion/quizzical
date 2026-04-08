@@ -575,7 +575,7 @@ document.cookie="feedItems=50";
 					var commentAgo = ts ? moment.tz(ts, getSetting("old_timezone")).tz(getSetting("timezone")).fromNow() : '';
 					var deleteLink = (commentUserId == getSetting("user_id")) ? " - <span class='QuizFeedInfoDelete' onclick='deleteComment(" + commentid + ");'>Delete</span>" : "";
 					var commentAttachHtml = renderAttachments(comment.attachments);
-					$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=Comments><div id=CommentRow><div id=QuizFeedInfoReplyName>" + name + "<div class='comment-meta'><span class='comment-timestamp'>" + commentAgo + "</span>" + deleteLink + "</div></div><div id=QuizFeedInfoComment class=OtherUser data-comment=" + commentid + "><div id=CommentText>" + autoLinkUrls(text || '') + "</div>" + commentAttachHtml + "<div id=DigsComment data-commentid=" + commentid +"><span id='DigCommentLink' data-linkcommentid=" + commentid + " > </span></div></div></div>");
+					$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div class=Comments><div class=CommentRow><div class=CommentName>" + name + "<div class='comment-meta'><span class='comment-timestamp'>" + commentAgo + "</span>" + deleteLink + "</div></div><div class='QuizFeedInfoComment OtherUser' data-comment=" + commentid + "><div class=CommentText>" + autoLinkUrls(text || '') + "</div>" + commentAttachHtml + "<div class=DigsComment data-commentid=" + commentid +"><span class='DigCommentLink' data-linkcommentid=" + commentid + " > </span></div></div></div>");
 				
 					// Grab the digs data for each comment and display them
 					window.res = comment.digs;
@@ -614,7 +614,7 @@ document.cookie="feedItems=50";
 						}
 						
 						// Show the digs, as well as the link to dig/undig
-						$('*[data-comment="' + commentid + '"]').append("<div id=DigsComment>" + names + " "  + context + " this</div>");		
+						$('*[data-comment="' + commentid + '"]').append("<div class=DigsComment>" + names + " "  + context + " this</div>");
 								
 						$('*[data-linkcommentid="' + commentid + '"]').html(digLink);
 					} else {

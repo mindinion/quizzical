@@ -826,13 +826,13 @@ A {}
 	line-height:110%;
 	color:black;
 }
-#CommentRow {
+.CommentRow {
 	display: flex;
 	align-items: stretch;
 	background-color: #F2F2F2;
 }
 
-#QuizFeedInfoReplyName {
+.CommentName {
 	font-size: 10px;
 	color: black;
 	font-weight: bold;
@@ -894,7 +894,7 @@ A {}
 	padding-bottom:5px;
 }
 
-#DigsComment{
+.DigsComment{
 	padding-right:10px;
 	color:DB944D;
 	right:0px;
@@ -1017,10 +1017,7 @@ A {}
 	text-align:center;
 }
 
-#CommentRow {
-}
-
-#Comments {
+.Comments {
 	padding-bottom:1px;
 }
 
@@ -1055,7 +1052,7 @@ A {}
 	padding-right:10px;
 }
 
-#CommentText {
+.CommentText {
 
 }
 
@@ -1263,7 +1260,7 @@ A {}
 /* ── URL links in feed text ── */
 
 #QuizFeedInfoComment a,
-#CommentText a {
+.CommentText a {
 	color: #e8a020;
 	word-break: break-all;
 }
