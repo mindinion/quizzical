@@ -1645,7 +1645,7 @@ document.cookie="feedItems=50";
 	}
 
 	$( document ).ready(function() {
-		console.log("made it");
+		if (!document.getElementById("MainContent")) return;
 		getSettings();
 		activateListeners();
 		$("#userid").val(getCookie("userid"));

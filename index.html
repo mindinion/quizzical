@@ -14,11 +14,9 @@
 	}
 
 	function login() {
-		console.log("LOGIN v2");
 		notifyLoading();
 		var email = $("input[name=email]").val();
 		var password = $("input[name=userpass]").val();
-		console.log("email:", email, "pass length:", password.length);
 
 		if (email == "" || password == "") {
 			notifyError("Please enter a username and password");
@@ -26,8 +24,6 @@
 		}
 
 		$.get("action-login.php", { email: email, password: password }, function(data, status) {
-			console.log("login response: [" + data + "]");
-			window.res3 = data;
 			if (data.trim() === "OK") {
 				window.location.href = 'main.html';
 			} else if (data.indexOf("Failed") !== -1) {
@@ -36,7 +32,6 @@
 				notifyError("Unexpected response: " + data);
 			}
 		}).fail(function(jqXHR) {
-			console.log("login error: HTTP " + jqXHR.status + " — " + jqXHR.responseText);
 			notifyError("Login request failed (" + jqXHR.status + ")");
 		});
 	}
