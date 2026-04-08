@@ -21,8 +21,8 @@
 	$userid    = isset($_GET['userid'])    ? (int)$_GET['userid']    : 0;
 
 	// Determine whether this dig is for a comment or a post based on which id was omitted
-	if ($postid == "")    $q = "INSERT INTO Digs (userid, commentid) values ($userid, $commentid);";
-	if ($commentid == "") $q = "INSERT INTO Digs (userid, postid) values ($userid, $postid);";
+	if ($postid == 0)    $q = "INSERT INTO Digs (userid, commentid) VALUES ($userid, $commentid)";
+	else                 $q = "INSERT INTO Digs (userid, postid) VALUES ($userid, $postid)";
 
 	$conn->query($q);
 	$last_id = mysqli_insert_id($conn);
