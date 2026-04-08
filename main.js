@@ -1267,7 +1267,7 @@ document.cookie="feedItems=50";
 	function uploadAttachment(file, onSuccess) {
 		var fd = new FormData();
 		fd.append('file', file);
-		fd.append('userid', getSetting('user_id'));
+		fd.append('userid', getCookie('userid'));
 		$.ajax({
 			url: 'action-uploadattachment.php',
 			type: 'POST',
