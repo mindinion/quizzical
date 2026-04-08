@@ -1299,3 +1299,19 @@ A {}
 		background: white;
 	}
 }
+
+.comment-timestamp {
+	font-weight: normal;
+	color: #999;
+	margin-left: 6px;
+}
+
+.QuizFeedInfoDelete {
+	color: grey;
+	font-size: 10px;
+	margin-left: 6px;
+	cursor: pointer;
+	font-family: verdana;
+	font-weight: normal;
+}
+.QuizFeedInfoDelete:hover { text-decoration: underline; }

@@ -59,7 +59,18 @@ document.cookie="feedItems=50";
 				downloadResults(1);
 			} else {
 				alert("Result Not Deleted");
+			}
+		});
+	}
 
+	function deleteComment(id) {
+		$.get("action-deletecomment.php", {
+			id: id,
+			userid: getSetting("user_id")
+		},
+		function(_data, status) {
+			if (status == "success") {
+				downloadResults(1);
 			}
 		});
 	}
@@ -559,9 +570,12 @@ document.cookie="feedItems=50";
 					var commentid = comment.commentid;
 					var text = comment.comment_comment;
 					var name = comment.comment_first_name + " " + comment.comment_last_name;
-					var timestamp = comment.comment_timestamp;
+					var commentUserId = comment.comment_user_id;
+					var ts = comment.comment_timestamp;
+					var commentAgo = ts ? moment.tz(ts, getSetting("old_timezone")).tz(getSetting("timezone")).fromNow() : '';
+					var deleteLink = (commentUserId == getSetting("user_id")) ? " - <span class='QuizFeedInfoDelete' onclick='deleteComment(" + commentid + ");'>Delete</span>" : "";
 					var commentAttachHtml = renderAttachments(comment.attachments);
-					$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=Comments><div id=CommentRow><div id=QuizFeedInfoReplyName>" + name + "</div><div id=QuizFeedInfoComment class=OtherUser data-comment=" + commentid + "><div id=CommentText>" + autoLinkUrls(text || '') + "</div>" + commentAttachHtml + "<div id=DigsComment data-commentid=" + commentid +"><span id='DigCommentLink' data-linkcommentid=" + commentid + " > </span></div></div></div>");
+					$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=Comments><div id=CommentRow><div id=QuizFeedInfoReplyName>" + name + "<span class='comment-timestamp'>" + commentAgo + "</span>" + deleteLink + "</div><div id=QuizFeedInfoComment class=OtherUser data-comment=" + commentid + "><div id=CommentText>" + autoLinkUrls(text || '') + "</div>" + commentAttachHtml + "<div id=DigsComment data-commentid=" + commentid +"><span id='DigCommentLink' data-linkcommentid=" + commentid + " > </span></div></div></div>");
 				
 					// Grab the digs data for each comment and display them
 					window.res = comment.digs;
