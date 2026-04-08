@@ -64,7 +64,7 @@
 		INNER JOIN Users AS Poster ON (QuizFeed.user_id = Poster.id)
 		INNER JOIN Memberships ON (Memberships.user_id = Poster.id)
 		LEFT JOIN Results ON (QuizFeed.result_id = Results.id)
-		LEFT JOIN Comment ON (QuizFeed.id = Comment.quizfeed_id)
+		LEFT JOIN Comment ON (QuizFeed.id = Comment.quizfeed_id AND (Comment.status IS NULL OR Comment.status = 'active'))
 		LEFT JOIN Users AS Commenter ON (Comment.user_id = Commenter.id)
 		LEFT JOIN Digs As CommentDigs ON (Comment.id = CommentDigs.commentid) AND (CommentDigs.status IS NULL or CommentDigs.status = 'active')
 		LEFT JOIN Digs AS PostDigs ON (QuizFeed.id = PostDigs.postid) AND (PostDigs.status IS NULL or PostDigs.status = 'active')
@@ -78,7 +78,7 @@
 		Memberships.group_id = $groupid
 		AND QuizFeed.status = 'active'
 		AND (Results.status IS NULL or Results.status = 'active')
-		AND (Comment.status IS NULL or Comment.status = 'active')
+
 
 	ORDER BY QuizFeed.id DESC, Results.id DESC, Comment.id ASC, CommentDigs.id DESC, PostDigs.id DESC, PostAttach.id ASC, CommentAttach.id ASC;";
 
