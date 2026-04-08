@@ -57,7 +57,6 @@ document.cookie="feedItems=50";
 		function(data,status){
 			if (status == "success") {
 				downloadResults(1);
-				refreshNewPost();
 			} else {
 				alert("Result Not Deleted");
 
@@ -171,8 +170,7 @@ document.cookie="feedItems=50";
 					window['replyAttachments_' + quizFeedId] = [];
 					clearReplyAttachment(quizFeedId);
 					$.when.apply($, linkCalls).always(function() { downloadResults(1);
-						refreshNewPost();
-					});	
+							});	
 					
 					// Email notifications 
 					$.get("action-emailcomment.php", 
@@ -199,7 +197,6 @@ document.cookie="feedItems=50";
 			},
 			function(data, status) { 
 				downloadResults(1);
-				refreshNewPost();
 							 		
 				$.get("action-emaildig.php", 
 					{ id:data },
@@ -220,7 +217,6 @@ document.cookie="feedItems=50";
 			},
 			function(response) { 
 				downloadResults(1);
-				refreshNewPost();
 			}
 		);
 	}
@@ -250,7 +246,6 @@ document.cookie="feedItems=50";
 			},
 			function(response) { 
 				downloadResults(1);
-				refreshNewPost();					
 			}
 		);
 	}
@@ -266,8 +261,7 @@ document.cookie="feedItems=50";
 			function(data, status) { 
 				console.log(data);
 				downloadResults(1);
-				refreshNewPost();		 				
-				$.get("action-emaildigcomment.php", 
+				$.get("action-emaildigcomment.php",
 				{ 
 					id:data,
 					userid:getSetting("user_id")
@@ -341,7 +335,6 @@ document.cookie="feedItems=50";
 				downloadResults(1);
 				rankingsLoaded = false;
 				if ($('#RankingsPanel').is(':visible')) loadRankings(rankingsCurrentPeriod);
-				refreshNewPost();			
 				document.getElementById("NewScoreType").value = 'Daily';
 				document.getElementById("NewResultScore").value = '';
 				document.getElementById("NewResultTotal").value = '15';
@@ -405,27 +398,6 @@ document.cookie="feedItems=50";
 	
 	
 		
-	// When loading, find out what score they are likely to enter
-	function refreshNewPost(userid) {
-		$.get("action-getresult.php", {
-				userid:userid
-			},
-			function(data,status){
-				if (status == "success") {
-					document.getElementById('NewScoreType').value=data;
-				} 
-			}
-		);
-		
-		// Populate the list of dates for the last two weeks
-		var days = 2;
-		while (days <= 14) {
-			aDate = moment().subtract(days, 'days').format('YYYY-MM-DD');
-			aDateDisplay = moment().subtract(days, 'days').format('dddd, MMM-DD');
-			$("#NewScoreDate").append("<option value='" + aDate + "'>" + aDateDisplay + "</option>");
-			days++;		
-		}	
-	}
 	
 	
 	
@@ -1126,19 +1098,6 @@ document.cookie="feedItems=50";
 		$row.addClass('row-expanded');
 	}
 
-	function refreshNewPost() {
-		$.get("action-getresult.php", {
-				userid:getSetting("user_id")
-			},
-			function(data,status){
-				console.log(data);
-				if (status == "success") {
-					document.getElementById('NewScoreType').value=data;
-				} 
-			}
-		);
-	}
-	
 
 	function loadQuizList() {
 		$.get('action-getquizzes.php', {
