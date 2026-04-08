@@ -1337,19 +1337,21 @@ document.cookie="feedItems=50";
 			var $preview = $('#ComposerAttachPreview').show();
 			files.slice(0, remaining).forEach(function(file) {
 				var $spinner = $('<img>').attr({ src: 'ajax-loader.gif', 'class': 'attach-spinner' });
+				var blobUrl = file.type.indexOf('image/') === 0 ? URL.createObjectURL(file) : null;
 				$preview.append($spinner);
 				uploadAttachment(file, function(a) {
 					window.composerAttachments.push(a);
 					$spinner.remove();
 					var $item = $('<span>').addClass('attach-preview-item');
 					if (a.file_type === 'image') {
-						$item.append($('<img>').attr({ src: 'action-getattachment.php?id=' + a.id, 'class': 'attach-preview-thumb' }));
+						$item.append($('<img>').attr({ src: blobUrl || ('action-getattachment.php?id=' + a.id), 'class': 'attach-preview-thumb' }));
 					} else {
 						$item.append($('<span>').addClass('attach-filename').text(a.original_name));
 					}
 					$item.append($('<span>').addClass('attach-remove').html('&times;').on('click', function() {
 						var idx = window.composerAttachments.indexOf(a);
 						if (idx > -1) window.composerAttachments.splice(idx, 1);
+						if (blobUrl) URL.revokeObjectURL(blobUrl);
 						$item.remove();
 						if (!window.composerAttachments.length) $('#ComposerAttachPreview').hide();
 						$('#ComposerAttachBtn').show();
@@ -1372,13 +1374,14 @@ document.cookie="feedItems=50";
 			var $preview = $('#ReplyAttachPreview_' + quizFeedId).show();
 			files.slice(0, remaining).forEach(function(file) {
 				var $spinner = $('<img>').attr({ src: 'ajax-loader.gif', 'class': 'attach-spinner' });
+				var blobUrl = file.type.indexOf('image/') === 0 ? URL.createObjectURL(file) : null;
 				$preview.append($spinner);
 				uploadAttachment(file, function(a) {
 					window['replyAttachments_' + quizFeedId].push(a);
 					$spinner.remove();
 					var $item = $('<span>').addClass('attach-preview-item');
 					if (a.file_type === 'image') {
-						$item.append($('<img>').attr({ src: 'action-getattachment.php?id=' + a.id, 'class': 'attach-preview-thumb' }));
+						$item.append($('<img>').attr({ src: blobUrl || ('action-getattachment.php?id=' + a.id), 'class': 'attach-preview-thumb' }));
 					} else {
 						$item.append($('<span>').addClass('attach-filename').text(a.original_name));
 					}
@@ -1386,6 +1389,7 @@ document.cookie="feedItems=50";
 						var arr = window['replyAttachments_' + quizFeedId];
 						var idx = arr.indexOf(a);
 						if (idx > -1) arr.splice(idx, 1);
+						if (blobUrl) URL.revokeObjectURL(blobUrl);
 						$item.remove();
 						if (!arr.length) $('#ReplyAttachPreview_' + quizFeedId).hide();
 						$('[data-replyattachid="' + quizFeedId + '"]').show();
