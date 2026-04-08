@@ -8,6 +8,7 @@
  * Records are never physically removed from the database.
  */
 
+	ini_set('display_errors', 1); error_reporting(E_ALL); // TEMP
 	require_once 'dblogin.php';
 	require_once 'security.php';
 
