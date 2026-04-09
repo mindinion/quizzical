@@ -44,12 +44,12 @@
 	$result = $conn->query($q);
 	if (mysqli_num_rows($result) != 0) return;
 
-	// Insert the result, then create a linked QuizFeed post using the same timestamp
+	// Insert the result, then create a linked QuizFeed post timestamped to now (not the quiz date)
 	$q = "INSERT INTO Results (user, type, score, max, date) VALUES" . "('$userid','$type','$score','$max','$dt');";
 	$result = $conn->query($q);
 	$result_id = mysqli_insert_id($conn);
-	$date = date("Y-m-d H:i:s");
-	$q = "INSERT INTO QuizFeed (result_id, user_id, comment, timestamp) VALUES" . "('$result_id', '$userid', '$comment', '$dt');";
+	$now = date("Y-m-d H:i:s");
+	$q = "INSERT INTO QuizFeed (result_id, user_id, comment, timestamp) VALUES" . "('$result_id', '$userid', '$comment', '$now');";
 	$result = $conn->query($q);
 	$post_id = mysqli_insert_id($conn);
 	echo json_encode(['result_id' => $result_id, 'post_id' => $post_id]);
