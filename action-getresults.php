@@ -80,7 +80,7 @@
 		AND (Results.status IS NULL or Results.status = 'active')
 
 
-	ORDER BY QuizFeed.id DESC, Results.id DESC, Comment.id ASC, CommentDigs.id DESC, PostDigs.id DESC, PostAttach.id ASC, CommentAttach.id ASC;";
+	ORDER BY QuizFeed.timestamp DESC, Results.id DESC, Comment.id ASC, CommentDigs.id DESC, PostDigs.id DESC, PostAttach.id ASC, CommentAttach.id ASC;";
 
 
 	$result = $conn->query($q);
