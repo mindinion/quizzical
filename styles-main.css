@@ -1317,4 +1317,96 @@ A {}
 	font-family: verdana;
 	font-weight: normal;
 }
+
+/* --- Welcome overlay --- */
+
+#WelcomeOverlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0,0,0,0.55);
+	z-index: 2000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 16px;
+	box-sizing: border-box;
+}
+
+#WelcomeModal {
+	background: #fff;
+	border-radius: 12px;
+	max-width: 520px;
+	width: 100%;
+	max-height: 88vh;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+}
+
+#WelcomeBody {
+	overflow-y: auto;
+	padding: 28px 28px 8px;
+	flex: 1;
+	font-family: verdana, arial, sans-serif;
+	font-size: 13px;
+	color: #333;
+	line-height: 1.5;
+}
+
+#WelcomeVersion {
+	font-size: 11px;
+	font-weight: bold;
+	color: #e67300;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	margin-bottom: 6px;
+}
+
+#WelcomeHeading {
+	font-size: 20px;
+	font-weight: bold;
+	color: #222;
+	margin: 0 0 6px;
+}
+
+#WelcomeIntro {
+	color: #777;
+	margin: 0 0 20px;
+}
+
+.welcome-section {
+	margin-bottom: 18px;
+}
+
+.welcome-section-title {
+	font-weight: bold;
+	font-size: 13px;
+	color: #333;
+	margin-bottom: 5px;
+}
+
+#WelcomeBody ul {
+	margin: 0;
+	padding-left: 18px;
+}
+
+#WelcomeBody li {
+	margin-bottom: 4px;
+	color: #555;
+}
+
+#WelcomeDismiss {
+	margin: 12px 28px 20px;
+	padding: 12px 28px;
+	background: #e67300;
+	color: #fff;
+	border: none;
+	border-radius: 20px;
+	font-family: verdana, arial, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	cursor: pointer;
+	align-self: flex-start;
+}
 .QuizFeedInfoDelete:hover { text-decoration: underline; }

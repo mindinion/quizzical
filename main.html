@@ -6,7 +6,7 @@
 
 <script src="jquery.js"></script>
 <script src="cropper.min.js"></script>
-<script src="main.js?id=56"></script>
+<script src="main.js?id=57"></script>
 
 
 
@@ -29,7 +29,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-		<link href="styles-main.css?id=1273" type="text/css" rel="stylesheet" />
+		<link href="styles-main.css?id=1274" type="text/css" rel="stylesheet" />
 		<link href="styles-profile.css?id=23" type="text/css" rel="stylesheet" />
 		<link href="styles-rankings.css?id=13" type="text/css" rel="stylesheet" />
 		<link href="cropper.min.css" type="text/css" rel="stylesheet" />
@@ -178,6 +178,13 @@
 
 
 	<div id="InfoTooltip"></div>
+
+	<div id="WelcomeOverlay" style="display:none">
+		<div id="WelcomeModal">
+			<div id="WelcomeBody"></div>
+			<button id="WelcomeDismiss" onclick="dismissWelcome()">Got it &#x2192;</button>
+		</div>
+	</div>
 
 	<div id="QuizCard" style="display:none">
 		<div id="QuizCardHeader">

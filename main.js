@@ -1648,11 +1648,26 @@ document.cookie="feedItems=50";
 		document.getElementById("profilepic").value = "";
 	}
 
+	function showWelcome() {
+		var WELCOME_VERSION = 'v3';
+		if (localStorage.getItem('quizzical_welcome') === WELCOME_VERSION) return;
+		$.get('welcome-v3.html', function(html) {
+			$('#WelcomeBody').html(html);
+			$('#WelcomeOverlay').fadeIn(200);
+		});
+	}
+
+	function dismissWelcome() {
+		localStorage.setItem('quizzical_welcome', 'v3');
+		$('#WelcomeOverlay').fadeOut(200);
+	}
+
 	$( document ).ready(function() {
 		if (!document.getElementById("MainContent")) return;
 		getSettings();
 		activateListeners();
 		$("#userid").val(getCookie("userid"));
+		showWelcome();
 	});
 	
 	
