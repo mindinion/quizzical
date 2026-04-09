@@ -8,8 +8,7 @@
  * period: 'weekly' (last 7 days), 'monthly' (last 30 days), 'alltime'
  */
 
-	require_once 'dblogin.php';
-	require_once 'security.php';
+	require_once 'require_auth.php';
 
 	$groupid    = isset($_GET['groupid'])    ? sanitizeString($_GET['groupid'])    : null;
 	$userid     = isset($_GET['userid'])     ? (int)$_GET['userid']                : 0;
