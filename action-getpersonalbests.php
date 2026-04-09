@@ -7,7 +7,7 @@
  * and its drill-down detail panel.
  */
 
-	require_once 'dblogin.php';
+	require_once 'require_auth.php';
 	require_once 'security.php';
 
 	if (isset($_GET['groupid'])) $groupid = sanitizeString($_GET['groupid']);

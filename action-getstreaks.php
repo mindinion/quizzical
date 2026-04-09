@@ -7,7 +7,7 @@
  * the user posted at least one result of any quiz type.
  */
 
-	require_once 'dblogin.php';
+	require_once 'require_auth.php';
 	require_once 'security.php';
 
 	if (isset($_GET['groupid'])) $groupid = sanitizeString($_GET['groupid']);

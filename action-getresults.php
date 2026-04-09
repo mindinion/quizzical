@@ -17,8 +17,7 @@
 
 	ini_set('error_reporting', E_STRICT);
 
-	require_once 'dblogin.php';
-	require_once 'security.php';
+	require_once 'require_auth.php';
 
 	if (isset($_GET['groupid'])) $groupid = sanitizeString($_GET['groupid']);
 	$offset = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;

@@ -11,7 +11,7 @@
  * Alltime response also includes last_result_date for ghost detection in JS.
  */
 
-	require_once 'dblogin.php';
+	require_once 'require_auth.php';
 	require_once 'security.php';
 
 	if (isset($_GET['groupid'])) $groupid = sanitizeString($_GET['groupid']);
