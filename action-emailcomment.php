@@ -10,12 +10,11 @@
  * Each recipient receives at most one email regardless of which rules apply.
  */
 
-	require_once 'dblogin.php';
-	require_once 'security.php';
+	require_once 'require_auth.php';
 	require_once 'config.php';
+	// $userid set by require_auth.php from validated session
 
 	$postId = isset($_GET['postId']) ? (int)$_GET['postId'] : 0;
-	$userid = isset($_GET['userid']) ? (int)$_GET['userid'] : 0;
 
 	// Fetch post details — original poster, post content, linked result if any
 	$q = "SELECT

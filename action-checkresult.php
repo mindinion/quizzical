@@ -7,12 +7,11 @@
  * Used to prevent duplicate submissions and to display a user's existing score.
  */
 
-	require_once 'dblogin.php';
-	require_once 'security.php';
+	require_once 'require_auth.php';
+	// $userid set by require_auth.php from validated session
 
 	if (isset($_GET['date'])) $date = sanitizeString($_GET['date']);
 	if (isset($_GET['type'])) $type = sanitizeString($_GET['type']);
-	if (isset($_GET['userid'])) $userid = sanitizeString($_GET['userid']);
 	$score = "";
 
 	// Match on the formatted date string to avoid time-component mismatches

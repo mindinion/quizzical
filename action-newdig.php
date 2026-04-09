@@ -10,15 +10,11 @@
  * uses to track the dig for a potential future undig action.
  */
 
-	require_once 'dblogin.php';
-	require_once 'security.php';
-
-	$postid = "";
-	$commentid = "";
+	require_once 'require_auth.php';
 
 	$postid    = isset($_GET['postid'])    ? (int)$_GET['postid']    : 0;
 	$commentid = isset($_GET['commentid']) ? (int)$_GET['commentid'] : 0;
-	$userid    = isset($_GET['userid'])    ? (int)$_GET['userid']    : 0;
+	// $userid set by require_auth.php from validated session
 
 	// Determine whether this dig is for a comment or a post based on which id was omitted
 	if ($postid == 0)    $q = "INSERT INTO Digs (userid, commentid) VALUES ($userid, $commentid)";

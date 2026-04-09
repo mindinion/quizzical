@@ -15,7 +15,7 @@
 	require_once 'security.php';
 	require_once 'getsettings.php';
 
-	if (isset($_GET['userid'])) $userid = sanitizeString($_GET['userid']);
+	// $userid is set by getsettings.php from the validated session
 	$q = "
 		SELECT
 			Users.id as user_id,

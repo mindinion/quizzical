@@ -12,19 +12,13 @@
  * plus PDF, DOC, DOCX, XLS, XLSX, TXT (rendered as download links).
  */
 
-require_once 'dblogin.php';
-require_once 'security.php';
+require_once 'require_auth.php';
+// $userid set by require_auth.php from validated session
 
 header('Content-Type: application/json');
 
 if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
     echo json_encode(['error' => 'No file uploaded or upload error']);
-    exit;
-}
-
-$userid = isset($_POST['userid']) ? (int)$_POST['userid'] : 0;
-if (!$userid) {
-    echo json_encode(['error' => 'Invalid user']);
     exit;
 }
 

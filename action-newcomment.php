@@ -8,15 +8,11 @@
  * Echoes back the quizFeedId so the caller can identify which post was commented on.
  */
 
-	error_reporting(0);
-	require_once 'dblogin.php';
-	require_once 'security.php';
-
-	date_default_timezone_set($timezone);
+	require_once 'require_auth.php';
 
 	// Get inputted details
 	$quizFeedId = isset($_GET['quizFeedId']) ? (int)$_GET['quizFeedId'] : 0;
-	$userid     = isset($_GET['userid'])     ? (int)$_GET['userid']     : 0;
+	// $userid set by require_auth.php from validated session
 	$comment    = isset($_GET['comment'])    ? $conn->real_escape_string($_GET['comment']) : '';
 
 	$q = "INSERT INTO Comment (user_id, quizfeed_id, comment) VALUES" . "('$userid','$quizFeedId','$comment' );";

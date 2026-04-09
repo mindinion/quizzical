@@ -10,8 +10,7 @@
  * filename was provided, to avoid clearing a field that wasn't changed.
  */
 
-	require_once 'security.php';
-	require_once 'dblogin.php';
+	require_once 'require_auth.php';
 
 	// Receive the profile data as a JSON-encoded POST body field
 	if (isset($_POST['json'])) $profileJson = $_POST['json'];
@@ -25,7 +24,7 @@
 	$notifyMessage 	= (int)$profile->notifyMessage;
 	$timezone 		= $conn->real_escape_string($profile->timezone);
 	$groupid 		= (int)$profile->groupid;
-	$userid 		= (int)$profile->userid;
+	// $userid set by require_auth.php from validated session
 	$photo			= $conn->real_escape_string($profile->photo);
 
 	// Build the UPDATE query

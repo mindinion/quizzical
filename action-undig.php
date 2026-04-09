@@ -12,11 +12,10 @@
  * or "Not found" if no matching dig exists.
  */
 
-	require_once 'dblogin.php';
-	require_once 'security.php';
+	require_once 'require_auth.php';
 
 	$id        = isset($_GET['id'])        ? (int)$_GET['id']        : 0;
-	$userid    = isset($_GET['userid'])    ? (int)$_GET['userid']    : 0;
+	// $userid set by require_auth.php from validated session
 	$commentid = isset($_GET['commentid']) ? (int)$_GET['commentid'] : 0;
 	$postid    = isset($_GET['postid'])    ? (int)$_GET['postid']    : 0;
 

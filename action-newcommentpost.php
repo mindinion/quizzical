@@ -10,12 +10,10 @@
  * Note: the poster's name is fetched but not actually used in this file (leftover code).
  */
 
-	error_reporting(0);
-	require_once 'dblogin.php';
-	require_once 'security.php';
+	require_once 'require_auth.php';
 
 	// Get inputted details
-	$userid   = isset($_GET['userid'])   ? (int)$_GET['userid'] : 0;
+	// $userid set by require_auth.php from validated session
 	$comment  = isset($_GET['comment'])  ? $conn->real_escape_string($_GET['comment']) : '';
 	$timezone = isset($_GET['timezone']) ? $conn->real_escape_string($_GET['timezone']) : 'NZ';
 

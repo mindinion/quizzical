@@ -11,11 +11,10 @@
  *   typefilter - 'main' (Morning & Afternoon only) or 'all' (everything)
  */
 
-	require_once 'dblogin.php';
-	require_once 'security.php';
+	require_once 'require_auth.php';
+	// $userid set by require_auth.php from validated session
 
-	$userid     = isset($_GET['userid'])     ? (int)sanitizeString($_GET['userid'])     : 0;
-	$typefilter = isset($_GET['typefilter']) ? sanitizeString($_GET['typefilter'])       : 'main';
+	$typefilter = isset($_GET['typefilter']) ? sanitizeString($_GET['typefilter']) : 'main';
 
 	// Fetch RSS via curl (file_get_contents on external URLs is disabled on this host)
 	$ch = curl_init('https://www.stuff.co.nz/rss?section=/quizzes');

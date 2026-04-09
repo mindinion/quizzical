@@ -11,8 +11,7 @@
  *   comment_id     INT  — set to link to a Comment row    (mutually exclusive)
  */
 
-require_once 'dblogin.php';
-require_once 'security.php';
+require_once 'require_auth.php';
 
 header('Content-Type: application/json');
 

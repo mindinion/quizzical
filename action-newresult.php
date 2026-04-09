@@ -24,8 +24,8 @@
 	$dateOption = isset($_GET['dateOption']) ? $conn->real_escape_string($_GET['dateOption']) : '';
 	$date       = isset($_GET['date'])       ? $conn->real_escape_string($_GET['date'])       : '';
 	$comment    = isset($_GET['comment'])    ? $conn->real_escape_string($_GET['comment'])    : '';
-	$userid     = isset($_GET['userid'])     ? (int)$_GET['userid']                          : 0;
-	$timezone   = isset($_GET['timezone'])   ? $conn->real_escape_string($_GET['timezone'])   : 'NZ';
+	// $userid is set by getsettings.php from the validated session
+	// $timezone is set by getsettings.php from the user's DB profile
 
 	// Resolve the result timestamp based on the user's selected date option
 	date_default_timezone_set($timezone);

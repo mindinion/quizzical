@@ -8,11 +8,10 @@
  * Records are never physically removed from the database.
  */
 
-	require_once 'dblogin.php';
-	require_once 'security.php';
+	require_once 'require_auth.php';
 
-	$commentid = isset($_GET['id'])     ? (int)$_GET['id']     : 0;
-	$userid    = isset($_GET['userid']) ? (int)$_GET['userid'] : 0;
+	$commentid = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+	// $userid set by require_auth.php from validated session
 
 	if (!$commentid || !$userid) exit;
 

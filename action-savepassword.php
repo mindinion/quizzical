@@ -9,15 +9,14 @@
  * old password is wrong, 200 on success.
  */
 
-	require_once 'security.php';
-	require_once 'dblogin.php';
+	require_once 'require_auth.php';
 
 	if (isset($_POST['json'])) $json = $_POST['json'];
 	$data = json_decode($json);
 
 	$passwordOld = $data->passwordOld;
 	$passwordNew = $data->passwordNew;
-	$userid      = (int)$data->userid;
+	// $userid set by require_auth.php from validated session
 
 	// Fetch stored hash
 	$result     = $conn->query("SELECT password_hash FROM Users WHERE id = $userid LIMIT 1");
