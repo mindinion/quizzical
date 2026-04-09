@@ -6,8 +6,11 @@
  * Each entry is marked 'done' if the logged-in user has already submitted a result
  * for that quiz type on that date.
  *
+ * The raw RSS XML is cached to a file for 15 minutes to avoid hitting Stuff's server
+ * on every page load. The cache is written atomically (temp file → rename) to prevent
+ * corrupted reads if two requests write simultaneously.
+ *
  * Params:
- *   userid     - the logged-in user's id
  *   typefilter - 'main' (Morning & Afternoon only) or 'all' (everything)
  */
 
@@ -16,14 +19,37 @@
 
 	$typefilter = isset($_GET['typefilter']) ? sanitizeString($_GET['typefilter']) : 'main';
 
-	// Fetch RSS via curl (file_get_contents on external URLs is disabled on this host)
-	$ch = curl_init('https://www.stuff.co.nz/rss?section=/quizzes');
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 8);
-	curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-	$rss = curl_exec($ch);
-	curl_close($ch);
+	// --- RSS cache ---
+	$cacheFile = __DIR__ . '/uploads/rss_cache.xml';
+	$cacheTtl  = 15 * 60; // 15 minutes in seconds
+
+	$rss = null;
+	if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTtl) {
+		$rss = file_get_contents($cacheFile);
+	}
+
+	if (!$rss) {
+		$ch = curl_init('https://www.stuff.co.nz/rss?section=/quizzes');
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 8);
+		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+		$fetched = curl_exec($ch);
+		curl_close($ch);
+
+		if ($fetched) {
+			$rss = $fetched;
+			// Atomic write: temp file then rename so readers never see a partial write
+			$tmp = $cacheFile . '.tmp';
+			if (file_put_contents($tmp, $rss) !== false) {
+				rename($tmp, $cacheFile);
+			}
+		} elseif (file_exists($cacheFile)) {
+			// Fetch failed — serve stale cache rather than returning nothing
+			$rss = file_get_contents($cacheFile);
+		}
+	}
+
 	if (!$rss) { echo json_encode([]); exit; }
 
 	$xml = @simplexml_load_string($rss);
@@ -69,7 +95,7 @@
 	}
 
 	// Mark quizzes the user has already logged, including their score
-	if ($userid > 0 && count($quizzes)) {
+	if (count($quizzes)) {
 		$q = "SELECT type, DATE_FORMAT(date, '%Y-%m-%d') AS date, score, max
 		      FROM Results
 		      WHERE user = $userid AND status = 'active'
