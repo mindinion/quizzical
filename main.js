@@ -1648,9 +1648,9 @@ document.cookie="feedItems=50";
 		document.getElementById("profilepic").value = "";
 	}
 
-	function showWelcome() {
+	function showWelcome(force) {
 		var WELCOME_VERSION = 'v3';
-		if (localStorage.getItem('quizzical_welcome') === WELCOME_VERSION) return;
+		if (!force && localStorage.getItem('quizzical_welcome') === WELCOME_VERSION) return;
 		$.get('welcome-v3.html', function(html) {
 			$('#WelcomeBody').html(html);
 			$('#WelcomeOverlay').fadeIn(200);

@@ -1285,6 +1285,9 @@ A {}
 		margin-left: auto;
 		padding-top: 8px;
 	}
+	.whats-new-label {
+		display: none;
+	}
 	#NewPost {
 		order: 3;
 		flex: 0 0 100%;
@@ -1316,6 +1319,22 @@ A {}
 	cursor: pointer;
 	font-family: verdana;
 	font-weight: normal;
+}
+
+/* --- What's New button --- */
+
+#WhatsNewButton {
+	background: none;
+	border: 1px solid #e67300;
+	color: #e67300;
+	border-radius: 20px;
+	padding: 5px 11px;
+	font-family: verdana, arial, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	cursor: pointer;
+	margin-right: 8px;
+	white-space: nowrap;
 }
 
 /* --- Welcome overlay --- */
