@@ -49,7 +49,7 @@
 	$conn->query("INSERT INTO _SESSION (userid, token, location, client) VALUES ('$userid', '$token', '$location', '$client')");
 
 	$expiry = time() + (365 * 24 * 60 * 60);
-	setcookie("session", $token,  $expiry, "/", "", false, true);  // HttpOnly — JS must not read session token
-	setcookie("userid",  $userid, $expiry, "/", "", false, false); // NOT HttpOnly — JS reads userid to make requests
+	setcookie("session", $token,  $expiry, "/", "", true, true);  // HttpOnly — JS must not read session token
+	setcookie("userid",  $userid, $expiry, "/", "", true, false); // NOT HttpOnly — JS reads userid to make requests
 	echo "OK";
 ?>

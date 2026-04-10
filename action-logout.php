@@ -17,9 +17,9 @@
 	}
 
 	// Expire cookies — clear both "/" path (new) and default path (legacy)
-	setcookie("session", "", time() - 3600, "/", "", false, true);
+	setcookie("session", "", time() - 3600, "/", "", true, true);
 	setcookie("session", "", time() - 3600);
-	setcookie("userid",  "", time() - 3600, "/", "", false, true);
+	setcookie("userid",  "", time() - 3600, "/", "", true, true);
 	setcookie("userid",  "", time() - 3600);
 
 	header("Location: index.html");

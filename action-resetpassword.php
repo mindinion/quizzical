@@ -56,8 +56,8 @@
 	$client       = $conn->real_escape_string($_SERVER['HTTP_USER_AGENT']);
 	$conn->query("INSERT INTO _SESSION (userid, token, location, client) VALUES ('$userid', '$sessionToken', '$location', '$client')");
 	$expiry = time() + (365 * 24 * 60 * 60);
-	setcookie("session", $sessionToken, $expiry, "/", "", false, true);
-	setcookie("userid",  $userid,       $expiry, "/", "", false, false);
+	setcookie("session", $sessionToken, $expiry, "/", "", true, true);
+	setcookie("userid",  $userid,       $expiry, "/", "", true, false);
 
 	echo "OK";
 

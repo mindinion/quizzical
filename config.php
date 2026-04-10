@@ -7,7 +7,7 @@
  */
 
 // When true, emails are only sent to superuser accounts
-define('DEV_MODE', true);
+define('DEV_MODE', false);
 
 define('MAIL_FROM',      'noreply@quizzical.co.nz');
 define('MAIL_FROM_NAME', 'Quizzical');
