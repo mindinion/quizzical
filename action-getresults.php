@@ -240,32 +240,40 @@
 
 				// Attach file/image attachments to the post (one row per attachment due to JOIN)
 				if ($postattachid != null) {
-					if ($lastpostattachid != $postattachid) {
-						$lastpostattachid = $postattachid;
-						if ($lastpostattachpost != $postid) $newPostAttach = [];
+					if ($lastpostattachpost != $postid) {
+						$newPostAttach = [];
+						$count_postattach = 0;
+						$seenPostAttachIds = [];
+						$lastpostattachpost = $postid;
+					}
+					if (!isset($seenPostAttachIds[$postattachid])) {
+						$seenPostAttachIds[$postattachid] = true;
 						$newPostAttach[$count_postattach] = new Attachment();
 						$newPostAttach[$count_postattach]->attachid = $postattachid;
 						$newPostAttach[$count_postattach]->filename = $row['post_attach_filename'];
 						$newPostAttach[$count_postattach]->original_name = $row['post_attach_original'];
 						$newPostAttach[$count_postattach]->file_type = $row['post_attach_type'];
 						$results[$lastPost]->attachments = $newPostAttach;
-						$lastpostattachpost = $postid;
 						$count_postattach++;
 					}
 				}
 
 				// Attach file/image attachments to the current comment
 				if ($commentattachid != null) {
-					if ($lastcommentattachid != $commentattachid) {
-						$lastcommentattachid = $commentattachid;
-						if ($lastcommentattachcomment != $commentid) $newCommentAttach = [];
+					if ($lastcommentattachcomment != $commentid) {
+						$newCommentAttach = [];
+						$count_commentattach = 0;
+						$seenCommentAttachIds = [];
+						$lastcommentattachcomment = $commentid;
+					}
+					if (!isset($seenCommentAttachIds[$commentattachid])) {
+						$seenCommentAttachIds[$commentattachid] = true;
 						$newCommentAttach[$count_commentattach] = new Attachment();
 						$newCommentAttach[$count_commentattach]->attachid = $commentattachid;
 						$newCommentAttach[$count_commentattach]->filename = $row['comment_attach_filename'];
 						$newCommentAttach[$count_commentattach]->original_name = $row['comment_attach_original'];
 						$newCommentAttach[$count_commentattach]->file_type = $row['comment_attach_type'];
 						$results[$lastPost]->comments[$lastComment]->attachments = $newCommentAttach;
-						$lastcommentattachcomment = $commentid;
 						$count_commentattach++;
 					}
 				}
