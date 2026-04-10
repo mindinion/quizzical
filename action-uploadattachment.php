@@ -72,6 +72,7 @@ $safeFilename = $conn->real_escape_string($filename);
 $safeType     = $conn->real_escape_string($fileType);
 
 $conn->query("INSERT INTO Attachments (filename, original_name, file_type) VALUES ('$safeFilename', '$safeOriginal', '$safeType')");
+$attachmentId = mysqli_insert_id($conn);
 
 // Opportunistic cleanup: delete orphaned attachments (no post/comment) older than 1 hour.
 // The filename encodes the upload time as attach_TIMESTAMP_userid.ext — use that to check age.
@@ -86,7 +87,6 @@ if ($orphans) {
         }
     }
 }
-$attachmentId = mysqli_insert_id($conn);
 
 echo json_encode([
     'id'            => $attachmentId,
