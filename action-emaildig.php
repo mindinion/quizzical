@@ -41,7 +41,7 @@
 		$blurb = '<p style="margin:0 0 8px;font-size:15px;color:#333;"><strong>' . $diggerName . '</strong> digs your post:</p>
 			<p style="margin:0 0 24px;font-size:14px;color:#666;background:#fff8f0;border-left:4px solid #e67300;padding:12px 16px;border-radius:4px;">' . htmlspecialchars($comment) . '</p>';
 	}
-	$emailHtml = mailHtml($blurb . '<a href="http://quizzical.co.nz" style="display:inline-block;background:#e67300;color:#fff;font-family:verdana,arial,sans-serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:20px;">View on Quizzical</a>');
+	$emailHtml = mailHtml($blurb . '<a href="https://quizzical.co.nz" style="display:inline-block;background:#e67300;color:#fff;font-family:verdana,arial,sans-serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:20px;">View on Quizzical</a>');
 	sendMail($conn, $email, $diggerName . " digs your post", $emailHtml, false, true);
 
 	echo $timestamp ?? '';

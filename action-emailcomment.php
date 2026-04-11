@@ -73,7 +73,7 @@
 		' . $attachHtml . '
 		<p style="margin:' . (empty($attachNames) ? '0' : '16px') . ' 0 0;">';
 
-	$ctaBtn = '<a href="http://quizzical.co.nz" style="display:inline-block;background:#e67300;color:#fff;font-family:verdana,arial,sans-serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:20px;">View on Quizzical</a></p>';
+	$ctaBtn = '<a href="https://quizzical.co.nz" style="display:inline-block;background:#e67300;color:#fff;font-family:verdana,arial,sans-serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:20px;">View on Quizzical</a></p>';
 
 	// Track who has been emailed to avoid duplicates
 	$emailed = [];

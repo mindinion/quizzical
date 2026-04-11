@@ -41,7 +41,7 @@
 		$postBlock .= '<p style="margin:0 0 24px;font-size:12px;color:#a07040;">Attachments: ' . implode(', ', $attachNames) . '</p>';
 	}
 
-	$cta = '<a href="http://quizzical.co.nz" style="display:inline-block;background:#e67300;color:#fff;font-family:verdana,arial,sans-serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:20px;">View on Quizzical</a>';
+	$cta = '<a href="https://quizzical.co.nz" style="display:inline-block;background:#e67300;color:#fff;font-family:verdana,arial,sans-serif;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:20px;">View on Quizzical</a>';
 
 	$q = "SELECT id, email FROM Users WHERE notify_message = 1 AND default_group = $groupid";
 	$result = $conn->query($q);
