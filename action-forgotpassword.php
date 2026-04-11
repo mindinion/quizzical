@@ -32,7 +32,7 @@
 		$conn->query("DELETE FROM PasswordResets WHERE email = '$email'");
 		$conn->query("INSERT INTO PasswordResets (token, email, expires) VALUES ('$token', '$email', '$expires')");
 
-		$resetUrl = "http://quizzical.co.nz/resetpassword.html?token=" . $token;
+		$resetUrl = "https://quizzical.co.nz/resetpassword.html?token=" . $token;
 		$html = mailHtml('
 			<p style="margin:0 0 8px;font-size:15px;color:#333;">We received a request to reset your Quizzical password.</p>
 			<p style="margin:0 0 24px;font-size:13px;color:#888;">This link expires in 1 hour. If you didn\'t request this, you can ignore this email.</p>
