@@ -129,7 +129,7 @@
 		// Collect AI quiz IDs the user has already completed (Results rows with AI types)
 		$aiDone = [];
 		$doneQ = $conn->query(
-			"SELECT REPLACE(type, 'AI ', '') AS base_type, DATE_FORMAT(date, '%Y-%m-%d') AS date, score, max
+			"SELECT REPLACE(type, 'Quizzical ', '') AS base_type, DATE_FORMAT(date, '%Y-%m-%d') AS date, score, max
 			 FROM Results
 			 WHERE user = $userid AND status = 'active' AND type IN ('Quizzical Morning', 'Quizzical Afternoon')
 			 AND date >= DATE_SUB(CURDATE(), INTERVAL 8 DAY)"
