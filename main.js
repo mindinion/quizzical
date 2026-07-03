@@ -1295,7 +1295,8 @@ document.cookie="feedItems=50";
 			question_id:      questionId,
 			chosen_option_id: chosenOptionId
 		}, function(raw) {
-			var resp = JSON.parse(raw);
+			var resp = (typeof raw === 'object') ? raw : JSON.parse(raw);
+			console.log('submitAIAnswer resp:', resp);
 			if (resp.correct) aiScore++;
 			revealAnswer(chosenOptionId, resp.correct_option_id, resp.correct, false);
 
@@ -1368,10 +1369,11 @@ document.cookie="feedItems=50";
 			try { resp = JSON.parse(raw); } catch(e) {}
 			if (resp && resp.post_id > 0) {
 				var quizDate = aiQuizData.date;
+				var finalScore = aiScore;
 				closeAIQuiz();
 				prependFeedItem(resp.post_id, {
 					isResult:  true,
-					score:     aiScore,
+					score:     finalScore,
 					total:     15,
 					quizType:  quizType,
 					quizDate:  quizDate,
