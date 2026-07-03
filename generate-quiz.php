@@ -54,6 +54,7 @@ try {
     $questions = generateQuizQuestions($type, $today, $recentQuestions);
 } catch (RuntimeException $e) {
     logQuizGenError($e->getMessage());
+    notifySuperusersOfFailure($conn, "$quizType quiz for $today failed to generate", $e->getMessage());
     exit(1);
 }
 
@@ -96,8 +97,28 @@ try {
 } catch (Exception $e) {
     $conn->rollback();
     logQuizGenError("DB insert failed: " . $e->getMessage());
+    notifySuperusersOfFailure($conn, "$quizType quiz for $today failed to save", $e->getMessage());
     exit(1);
 }
 
 $conn->close();
 exit(0);
+
+// ---------------------------------------------------------------------------
+
+/**
+ * A missing quiz slot is otherwise silent — nobody notices until someone opens
+ * the app looking for it. Email every superuser so a full generation failure
+ * gets seen within minutes instead of discovered later.
+ */
+function notifySuperusersOfFailure(mysqli $conn, string $summary, string $detail): void {
+    $result = $conn->query("SELECT email FROM Users WHERE superuser = 1");
+    if (!$result) return;
+
+    $subject = "Quizzical: $summary";
+    $body = "$summary\n\n$detail\n\nCheck logs/generate-quiz.log on the server for the full attempt history.";
+
+    while ($row = $result->fetch_assoc()) {
+        sendMail($conn, $row['email'], $subject, $body, true);
+    }
+}

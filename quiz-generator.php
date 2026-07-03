@@ -23,7 +23,7 @@ const CATEGORY_TARGETS = [
     'General Knowledge'      => 3,
 ];
 
-const MAX_ATTEMPTS = 4;
+const MAX_ATTEMPTS = 7;
 
 /**
  * Generates and validates a 15-question quiz. Returns the array of question objects.
