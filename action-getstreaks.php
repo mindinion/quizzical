@@ -19,6 +19,7 @@
 	FROM Users
 		INNER JOIN Memberships ON Memberships.user_id = Users.id
 		INNER JOIN Results ON Results.user = Users.id AND Results.status = 'active'
+			AND Results.type NOT IN ('Quizzical Morning', 'Quizzical Afternoon')
 	WHERE Memberships.group_id = $groupid
 	GROUP BY Users.id, DATE(Results.date)
 	ORDER BY Users.id, Results.date DESC";

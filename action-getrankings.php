@@ -26,6 +26,10 @@
 		? "AND (UPPER(type) = 'MORNING' OR UPPER(type) = 'AFTERNOON')"
 		: "";
 
+	// AI quiz results never count towards stats
+	$typeJoin .= " AND Results.type NOT IN ('Quizzical Morning', 'Quizzical Afternoon')";
+	$typeSub  .= " AND type NOT IN ('Quizzical Morning', 'Quizzical Afternoon')";
+
 	if ($period === 'monthly') {
 		$days = 30;
 		$prev_start = 60;

@@ -164,5 +164,12 @@
 		}
 	}
 
+	// Sort all quizzes together by date desc, then Morning before Afternoon within same day
+	usort($quizzes, function($a, $b) {
+		if ($a['date'] !== $b['date']) return strcmp($b['date'], $a['date']);
+		$order = ['Morning' => 0, 'Afternoon' => 1, 'Hard Word' => 2, 'Other' => 3];
+		return ($order[$a['type']] ?? 3) - ($order[$b['type']] ?? 3);
+	});
+
 	echo json_encode($quizzes);
 ?>

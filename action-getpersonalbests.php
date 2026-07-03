@@ -21,6 +21,10 @@
 		? "AND (UPPER(type) = 'MORNING' OR UPPER(type) = 'AFTERNOON')"
 		: "";
 
+	// AI quiz results never count towards stats
+	$typeSQL    .= " AND r.type NOT IN ('Quizzical Morning', 'Quizzical Afternoon')";
+	$subTypeSQL .= " AND type NOT IN ('Quizzical Morning', 'Quizzical Afternoon')";
+
 	if ($period === 'weekly') {
 		$dateFilter = "AND r.date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
 		$subDateFilter = "AND date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
