@@ -204,8 +204,10 @@ const AU_KEYWORDS = [
  * cliché gets spotted — cheaper than trying to word-tune the prompt further.
  */
 const BANNED_QUESTION_PATTERNS = [
-    '/\bcapital( city)? of\b/i'   => 'capital-of-a-country cliché',
-    '/\bopera house\b/i'          => 'Sydney Opera House cliché',
+    '/\bcapital( city)? of\b/i'       => 'capital-of-a-country cliché',
+    '/\bopera house\b/i'              => 'Sydney Opera House cliché',
+    '/\bnational (symbol|animal|bird)\b/i' => 'national symbol/animal/bird cliché',
+    '/\blongest river in the world\b/i'    => 'disputed fact (Nile vs Amazon) treated as settled',
 ];
 
 /**
