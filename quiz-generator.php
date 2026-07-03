@@ -22,7 +22,7 @@ const CATEGORY_TARGETS = [
     'General Knowledge'      => 3,
 ];
 
-const MAX_ATTEMPTS = 3;
+const MAX_ATTEMPTS = 4;
 
 /**
  * Generates and validates a 15-question quiz. Returns the array of question objects.
@@ -50,16 +50,20 @@ NZ Trivia, Australia Trivia, Sports, NZ Current Events, Aussie Current Events, G
 Required category distribution (exact, not approximate — the quiz will be rejected and regenerated if these counts are wrong):
 $distributionLines
 
-Only "NZ Current Events" and "Aussie Current Events" questions may be based on the provided headlines — "NZ Current Events" must be based on the NZ headlines block, and "Aussie Current Events" must be based on the Australian headlines block. NZ Trivia, Australia Trivia, Sports, Geography, History, and General Knowledge questions MUST be based on established, verifiable facts that would be true regardless of today's news — do NOT let recent headlines leak into these categories, even indirectly (e.g. do not turn a news story about a school into an "NZ Trivia" question, or a news story about weather into a "General Knowledge" question).
+Only "NZ Current Events" and "Aussie Current Events" questions may be based on the provided headlines — "NZ Current Events" must be based ONLY on the NZ headlines block, and "Aussie Current Events" must be based ONLY on the Australian headlines block. Double-check before finalising each Current Events question: if it's filed under "Aussie Current Events" it must not be about a New Zealand story (NZ places, NZ organisations, NZ people), and if it's filed under "NZ Current Events" it must not be about an Australian story. Do not reuse the same underlying story for both.
+
+NZ Trivia, Australia Trivia, Sports, Geography, History, and General Knowledge questions MUST be based on established, verifiable facts that would be true regardless of today's news — do NOT let recent headlines leak into these categories, even indirectly (e.g. do not turn a news story about a school into an "NZ Trivia" question, or a news story about weather into a "General Knowledge" question).
+
+Geography, History, and General Knowledge questions MUST be about the rest of the world, NOT New Zealand or Australia — NZ and Australia already have their own dedicated trivia and current-events categories, so Geography/History/General Knowledge exist to cover everything else (other countries, world history, science, arts, etc.). Do NOT ask about NZ/Australian mountains, lakes, treaties, wars, languages, or national symbols in these three categories — pick a different country or a global topic instead. Sports questions MAY reference NZ/Australian teams or leagues, since that's expected content for this audience.
 
 Format rules:
 - 13 questions must be multiple choice (format: "mc") with exactly 4 options, exactly 1 correct.
-- 2 questions must be true/false (format: "tf") with exactly 2 options ("True" and "False"), exactly 1 correct.
+- 2 questions must be true/false (format: "tf") with exactly 2 options ("True" and "False"), exactly 1 correct. Every "tf" question MUST be phrased as a single declarative statement that is either true or false (ideally starting with "True or False:") — NEVER phrase a "tf" question as a "which/what/who/when/where" question, since that cannot be sensibly answered with just True or False.
 - For 3–4 of the MC questions, include one answer option that sounds almost plausible but is subtly absurd — the kind that makes you wonder for a moment before realising it's wrong. Do NOT make it obviously silly or comedic. It should sound like a real answer.
 
 Difficulty: The quiz should be genuinely challenging. A knowledgeable player should score around 10–11 out of 15. An average player should score 7–9. Getting 15/15 should be rare.
 
-Do NOT ask questions that are too easy (e.g., "What is the capital of Australia?") unless you make the wrong answers very plausible.
+Do NOT ask questions whose answer is the single most famous fact about a topic — e.g. capital cities, a country's national animal/bird, the primary/official language of a country, "the" founding treaty of a nation, or the site of a famous natural landmark. These are trivially guessable. Instead ask about specific details, second-order facts, dates, numbers, or lesser-known angles on a topic that require genuine knowledge, not just cultural familiarity.
 
 For "NZ Current Events" and "Aussie Current Events" questions, you MUST draw from the matching headlines block below. Phrase the question naturally — do not say "according to recent news" or "as reported today".
 
@@ -159,10 +163,11 @@ PROMPT;
         }
 
         $candidate = json_decode($decoded['choices'][0]['message']['content'], true);
-        $validationError = validateQuiz($candidate);
-        if ($validationError !== null) {
-            logQuizGenError("Attempt $attempt: $validationError");
-            $attemptUserPrompt = $userPrompt . "\n\nNOTE: Your previous attempt was rejected because: $validationError. Follow the category distribution exactly this time.";
+        $validationErrors = validateQuiz($candidate);
+        if ($validationErrors) {
+            $errorList = implode("\n", array_map(fn($e) => '- ' . $e, $validationErrors));
+            logQuizGenError("Attempt $attempt: " . count($validationErrors) . " violation(s):\n$errorList");
+            $attemptUserPrompt = $userPrompt . "\n\nNOTE: Your previous attempt was rejected for the following reasons — fix ALL of them this time:\n$errorList";
             continue;
         }
 
@@ -178,39 +183,104 @@ PROMPT;
     return $quizJson['questions'];
 }
 
+const NZ_KEYWORDS = [
+    'new zealand', 'nz', 'zealand', 'auckland', 'wellington', 'christchurch', 'dunedin',
+    'hamilton', 'rotorua', 'tauranga', 'queenstown', 'napier', 'nelson', 'invercargill',
+    'maori', 'māori', 'waitangi', 'kiwi', 'aotearoa', 'taupo', 'south island', 'north island',
+    'wakari',
+];
+
+const AU_KEYWORDS = [
+    'australia', 'aussie', 'sydney', 'melbourne', 'brisbane', 'perth', 'canberra', 'adelaide',
+    'queensland', 'victoria', 'new south wales', 'nsw', 'tasmania', 'northern territory',
+    'outback', 'great barrier reef', 'aboriginal',
+];
+
 /**
- * Validates overall quiz structure, per-question answer/option counts, and
- * exact category distribution. Returns null if valid, or an error string.
+ * Case-insensitive whole-word/phrase search across a list of keywords.
  */
-function validateQuiz(?array $quizJson): ?string {
+function textContainsKeyword(string $text, array $keywords): ?string {
+    foreach ($keywords as $kw) {
+        if (preg_match('/\b' . preg_quote($kw, '/') . '\b/i', $text)) {
+            return $kw;
+        }
+    }
+    return null;
+}
+
+/**
+ * Validates overall quiz structure, per-question answer/option counts, exact
+ * category distribution, and content-level rules the model tends to ignore
+ * (NZ/AU content leaking into global categories, current-events cross-country
+ * mislabeling, true/false questions phrased as WH-questions).
+ *
+ * Collects ALL violations in one pass (rather than stopping at the first) so a
+ * single retry can be told everything wrong at once — real quizzes have shown
+ * up to 8 simultaneous violations, which would exhaust a small retry budget if
+ * each attempt only learned about one problem at a time.
+ *
+ * @return string[] Empty array if valid, otherwise a list of violation descriptions.
+ */
+function validateQuiz(?array $quizJson): array {
     if (!isset($quizJson['questions']) || count($quizJson['questions']) !== 15) {
-        return "expected 15 questions, got: " . json_encode($quizJson);
+        return ["expected 15 questions, got: " . json_encode($quizJson)];
     }
 
+    $errors = [];
     $categoryCounts = [];
     foreach ($quizJson['questions'] as $i => $q) {
+        $qNum = $i + 1;
         $correctCount = 0;
+        $correctText = '';
         foreach ($q['options'] as $opt) {
-            if ($opt['correct']) $correctCount++;
+            if ($opt['correct']) {
+                $correctCount++;
+                $correctText = $opt['text'];
+            }
         }
         if ($correctCount !== 1) {
-            return "question " . ($i+1) . " has $correctCount correct answers (expected 1)";
+            $errors[] = "question $qNum has $correctCount correct answers (expected 1)";
         }
         $expectedOptions = ($q['format'] === 'tf') ? 2 : 4;
         if (count($q['options']) !== $expectedOptions) {
-            return "question " . ($i+1) . " ({$q['format']}) has " . count($q['options']) . " options (expected $expectedOptions)";
+            $errors[] = "question $qNum ({$q['format']}) has " . count($q['options']) . " options (expected $expectedOptions)";
         }
-        $categoryCounts[$q['category']] = ($categoryCounts[$q['category']] ?? 0) + 1;
+
+        if ($q['format'] === 'tf' && preg_match('/^\s*(which|who|what|when|where|why|how)\b/i', $q['question'])) {
+            $errors[] = "question $qNum is format 'tf' but phrased as a WH-question (\"{$q['question']}\") — tf questions must be true/false statements";
+        }
+
+        $combined = $q['question'] . ' ' . $correctText;
+        $category = $q['category'];
+
+        if (in_array($category, ['Geography', 'History', 'General Knowledge'], true)) {
+            $hit = textContainsKeyword($combined, NZ_KEYWORDS) ?? textContainsKeyword($combined, AU_KEYWORDS);
+            if ($hit !== null) {
+                $errors[] = "question $qNum (category '$category') is NZ/AU-specific (matched \"$hit\") — this category must be global content";
+            }
+        } elseif ($category === 'Aussie Current Events') {
+            $hit = textContainsKeyword($combined, NZ_KEYWORDS);
+            if ($hit !== null) {
+                $errors[] = "question $qNum is labeled 'Aussie Current Events' but matched NZ term \"$hit\" — likely mislabeled, must be about Australia only";
+            }
+        } elseif ($category === 'NZ Current Events') {
+            $hit = textContainsKeyword($combined, AU_KEYWORDS);
+            if ($hit !== null) {
+                $errors[] = "question $qNum is labeled 'NZ Current Events' but matched Australian term \"$hit\" — likely mislabeled, must be about New Zealand only";
+            }
+        }
+
+        $categoryCounts[$category] = ($categoryCounts[$category] ?? 0) + 1;
     }
 
     foreach (CATEGORY_TARGETS as $cat => $expected) {
         $actual = $categoryCounts[$cat] ?? 0;
         if ($actual !== $expected) {
-            return "category '$cat' has $actual questions (expected exactly $expected) — full distribution: " . json_encode($categoryCounts);
+            $errors[] = "category '$cat' has $actual questions (expected exactly $expected) — full distribution: " . json_encode($categoryCounts);
         }
     }
 
-    return null;
+    return $errors;
 }
 
 /**
