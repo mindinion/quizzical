@@ -46,11 +46,12 @@ if ($stmt->num_rows > 0) {
 }
 $stmt->close();
 
-// Same-day sibling quiz (other slot) so we don't repeat its topics
-$siblingQuestions = fetchSiblingQuestions($conn, $today, $quizType);
+// Last 3 days of quizzes (both slots) so we don't repeat a topic that's still
+// fresh even after it's rotated out of the headline window
+$recentQuestions = fetchRecentQuestions($conn, $today, 3);
 
 try {
-    $questions = generateQuizQuestions($type, $today, $siblingQuestions);
+    $questions = generateQuizQuestions($type, $today, $recentQuestions);
 } catch (RuntimeException $e) {
     logQuizGenError($e->getMessage());
     exit(1);
@@ -100,20 +101,3 @@ try {
 
 $conn->close();
 exit(0);
-
-// ---------------------------------------------------------------------------
-
-function fetchSiblingQuestions(mysqli $conn, string $today, string $quizType): array {
-    $otherType = ($quizType === 'Morning') ? 'Afternoon' : 'Morning';
-    $stmt = $conn->prepare(
-        "SELECT q.question_text FROM AIQuestion q
-         JOIN AIQuiz qz ON qz.id = q.quiz_id
-         WHERE qz.date = ? AND qz.type = ?"
-    );
-    $stmt->bind_param('ss', $today, $otherType);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $questions = array_map(fn($row) => $row['question_text'], $result->fetch_all(MYSQLI_ASSOC));
-    $stmt->close();
-    return $questions;
-}

@@ -27,8 +27,12 @@ if ($type !== 'morning' && $type !== 'afternoon') {
 $nztz  = new DateTimeZone('Pacific/Auckland');
 $today = (new DateTime('now', $nztz))->format('Y-m-d');
 
+// Read-only — reuses the real quiz history so the preview reflects the same
+// duplicate-avoidance behaviour the cron job gets, without writing anything.
+$recentQuestions = fetchRecentQuestions($conn, $today, 3);
+
 try {
-    $questions = generateQuizQuestions($type, $today);
+    $questions = generateQuizQuestions($type, $today, $recentQuestions);
     echo json_encode(['questions' => $questions]);
 } catch (RuntimeException $e) {
     http_response_code(500);

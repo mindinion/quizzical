@@ -5,7 +5,8 @@
  * Shared quiz-generation logic used by both generate-quiz.php (CLI cron, writes to DB)
  * and action-test-generate-quiz.php (ad hoc admin preview, does not write to DB).
  * Fetches headlines, builds the prompt, calls OpenAI, and validates the result.
- * Has no DB dependency of its own.
+ * The core generation logic has no DB dependency; fetchRecentQuestions() below is
+ * a read-only helper both callers can use for cross-day duplicate avoidance.
  */
 
 require_once __DIR__ . '/dblogin.php'; // defines OPENAI_API_KEY
@@ -223,7 +224,8 @@ function textContainsKeyword(string $text, array $keywords): ?string {
  * Validates overall quiz structure, per-question answer/option counts, exact
  * category distribution, and content-level rules the model tends to ignore
  * (NZ/AU content leaking into global categories, current-events cross-country
- * mislabeling, true/false questions phrased as WH-questions).
+ * mislabeling, true/false questions phrased as WH-questions, current-events
+ * content dressed up as evergreen trivia).
  *
  * Collects ALL violations in one pass (rather than stopping at the first) so a
  * single retry can be told everything wrong at once — real quizzes have shown
@@ -271,6 +273,25 @@ function validateQuiz(?array $quizJson): array {
         $combined = $q['question'] . ' ' . $correctText;
         $category = $q['category'];
 
+        // Current events must stay out of the 6 "evergreen" categories — the model
+        // keeps reaching for real news dressed as timeless trivia (e.g. a school
+        // competition result phrased as "NZ Trivia"). Catches explicit recency
+        // language and mentions of the current/previous year; a paraphrased story
+        // with no such marker (e.g. "ratings have fallen sharply") can still slip
+        // through — same class of residual risk as the fabrication issue.
+        if (!in_array($category, ['NZ Current Events', 'Aussie Current Events'], true)) {
+            if (preg_match('/\b(recent(ly)?|this year|last year|newly|latest|just (been|announced|appointed|released|launched))\b/i', $combined)) {
+                $errors[] = "question $qNum (category '$category') uses recency language — this category must be evergreen, not current events";
+            }
+            $currentYear = (int) date('Y');
+            foreach ([$currentYear, $currentYear - 1] as $yr) {
+                if (preg_match('/\b' . $yr . '\b/', $combined)) {
+                    $errors[] = "question $qNum (category '$category') mentions $yr — looks like current-events content leaking into a non-news category";
+                    break;
+                }
+            }
+        }
+
         if (in_array($category, ['Geography', 'History', 'General Knowledge'], true)) {
             $hit = textContainsKeyword($combined, NZ_KEYWORDS) ?? textContainsKeyword($combined, AU_KEYWORDS);
             if ($hit !== null) {
@@ -299,6 +320,27 @@ function validateQuiz(?array $quizJson): array {
     }
 
     return $errors;
+}
+
+/**
+ * Returns question texts from the last $lookbackDays of quizzes (inclusive of
+ * $today), across both Morning and Afternoon, so generation can avoid repeating
+ * a topic that's still fresh even after it's rotated out of the headline window
+ * (e.g. a school competition result that keeps getting reused as "trivia" days
+ * after the fact). Read-only — safe to call from the no-DB-write test endpoint too.
+ */
+function fetchRecentQuestions(mysqli $conn, string $today, int $lookbackDays = 3): array {
+    $stmt = $conn->prepare(
+        "SELECT q.question_text FROM AIQuestion q
+         JOIN AIQuiz qz ON qz.id = q.quiz_id
+         WHERE qz.date BETWEEN DATE_SUB(?, INTERVAL ? DAY) AND ?"
+    );
+    $stmt->bind_param('sis', $today, $lookbackDays, $today);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $questions = array_map(fn($row) => $row['question_text'], $result->fetch_all(MYSQLI_ASSOC));
+    $stmt->close();
+    return $questions;
 }
 
 /**
