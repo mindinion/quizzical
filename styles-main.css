@@ -1288,6 +1288,9 @@ A {}
 	.whats-new-label {
 		display: none;
 	}
+	#TestQuizButton {
+		display: none !important;
+	}
 	#NewPost {
 		order: 3;
 		flex: 0 0 100%;
