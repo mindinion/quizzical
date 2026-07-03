@@ -94,57 +94,6 @@
 		];
 	}
 
-	// Resolve Riddle embed URLs (bypasses Stuff login wall)
-	// Cache maps articleId -> Riddle embed URL (permanent — IDs never change)
-	$riddleCacheFile = __DIR__ . '/uploads/riddle_cache.json';
-	$riddleCache = [];
-	if (file_exists($riddleCacheFile)) {
-		$riddleCache = json_decode(file_get_contents($riddleCacheFile), true) ?: [];
-	}
-	$cacheUpdated = false;
-
-	foreach ($quizzes as &$quiz) {
-		if (!preg_match('/\/quizzes\/(\d+)\//', $quiz['url'], $m)) continue;
-		$articleId = $m[1];
-
-		if (array_key_exists($articleId, $riddleCache)) {
-			if ($riddleCache[$articleId]) $quiz['url'] = $riddleCache[$articleId];
-			continue;
-		}
-
-		// Fetch from Stuff's internal content API (no auth required)
-		$ch = curl_init("https://www.stuff.co.nz/api/v1.0/stuff/story/$articleId");
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
-		curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: application/json']);
-		$resp = curl_exec($ch);
-		curl_close($ch);
-
-		$riddleUrl = null;
-		if ($resp) {
-			$data = json_decode($resp, true);
-			foreach (($data['content']['contentBody']['assets'] ?? []) as $asset) {
-				if (($asset['type'] ?? '') === 'WIDGET') {
-					if (preg_match('/data-rid-id="([^"]+)"/', $asset['item']['content'] ?? '', $rm)) {
-						$riddleUrl = "https://www.riddle.com/embed/a/{$rm[1]}";
-						break;
-					}
-				}
-			}
-		}
-
-		$riddleCache[$articleId] = $riddleUrl;
-		$cacheUpdated = true;
-		if ($riddleUrl) $quiz['url'] = $riddleUrl;
-	}
-	unset($quiz);
-
-	if ($cacheUpdated) {
-		$tmp = $riddleCacheFile . '.tmp';
-		if (file_put_contents($tmp, json_encode($riddleCache)) !== false) rename($tmp, $riddleCacheFile);
-	}
-
 	// Mark quizzes the user has already logged, including their score
 	if (count($quizzes)) {
 		$q = "SELECT type, DATE_FORMAT(date, '%Y-%m-%d') AS date, score, max
