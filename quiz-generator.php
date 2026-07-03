@@ -197,6 +197,17 @@ const AU_KEYWORDS = [
 ];
 
 /**
+ * Regex => human-readable reason, for cliché questions the model reaches for
+ * repeatedly despite the prompt's "avoid the single most famous fact" instruction.
+ * Applies across all categories. Add a line here whenever a new recurring
+ * cliché gets spotted — cheaper than trying to word-tune the prompt further.
+ */
+const BANNED_QUESTION_PATTERNS = [
+    '/\bcapital( city)? of\b/i'   => 'capital-of-a-country cliché',
+    '/\bopera house\b/i'          => 'Sydney Opera House cliché',
+];
+
+/**
  * Case-insensitive whole-word/phrase search across a list of keywords.
  */
 function textContainsKeyword(string $text, array $keywords): ?string {
@@ -248,6 +259,13 @@ function validateQuiz(?array $quizJson): array {
 
         if ($q['format'] === 'tf' && preg_match('/^\s*(which|who|what|when|where|why|how)\b/i', $q['question'])) {
             $errors[] = "question $qNum is format 'tf' but phrased as a WH-question (\"{$q['question']}\") — tf questions must be true/false statements";
+        }
+
+        foreach (BANNED_QUESTION_PATTERNS as $pattern => $reason) {
+            if (preg_match($pattern, $q['question'])) {
+                $errors[] = "question $qNum (\"{$q['question']}\") matches banned pattern: $reason — pick a different, less obvious question";
+                break;
+            }
         }
 
         $combined = $q['question'] . ' ' . $correctText;
