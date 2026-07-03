@@ -131,7 +131,7 @@
 		$doneQ = $conn->query(
 			"SELECT REPLACE(type, 'AI ', '') AS base_type, DATE_FORMAT(date, '%Y-%m-%d') AS date, score, max
 			 FROM Results
-			 WHERE user = $userid AND status = 'active' AND type IN ('AI Morning', 'AI Afternoon')
+			 WHERE user = $userid AND status = 'active' AND type IN ('Quizzical Morning', 'Quizzical Afternoon')
 			 AND date >= DATE_SUB(CURDATE(), INTERVAL 8 DAY)"
 		);
 		if ($doneQ) {
@@ -149,7 +149,7 @@
 			$key   = $row['type'] . '|' . $quizDate;
 			$entry = [
 				'url'     => null,
-				'title'   => 'AI ' . $row['type'] . ' Quiz — ' . $dt->format('j M'),
+				'title'   => 'Quizzical ' . $row['type'] . ' Quiz — ' . $dt->format('j M'),
 				'type'    => $row['type'],
 				'date'    => $quizDate,
 				'source'  => 'ai',

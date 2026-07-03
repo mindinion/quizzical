@@ -1241,7 +1241,7 @@ document.cookie="feedItems=50";
 			aiScore         = aiQuizData.score_so_far || 0;
 			aiAnswerPending = false;
 
-			var label = 'AI ' + aiQuizData.type + ' Quiz – ' + formatQuizDate(aiQuizData.date);
+			var label = 'Quizzical ' + aiQuizData.type + ' Quiz – ' + formatQuizDate(aiQuizData.date);
 			$('#AIQuizTitle').text(label);
 			$('#AIQuizBody').show();
 			$('#AIQuizScoreScreen').hide();
@@ -1353,7 +1353,7 @@ document.cookie="feedItems=50";
 
 	function postAIResult() {
 		var comment  = $('#AIQuizComment').val().trim();
-		var quizType = 'AI ' + aiQuizData.type;
+		var quizType = 'Quizzical ' + aiQuizData.type;
 		$('#AIQuizPostBtn').prop('disabled', true).text('Posting…');
 		$.get('action-newresult.php', {
 			type:       quizType,
