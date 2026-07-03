@@ -1296,7 +1296,7 @@ document.cookie="feedItems=50";
 			chosen_option_id: chosenOptionId
 		}, function(raw) {
 			var resp = JSON.parse(raw);
-			aiScore = resp.score || aiScore;
+			if (resp.correct) aiScore++;
 			revealAnswer(chosenOptionId, resp.correct_option_id, resp.correct, false);
 
 			if (resp.completed) {
@@ -1344,6 +1344,7 @@ document.cookie="feedItems=50";
 		var pct = Math.round((aiScore / 15) * 100);
 		$('#AIQuizScoreDisplay').text(aiScore + ' / 15');
 		$('#AIQuizComment').val('');
+		$('#AIQuizPostBtn').prop('disabled', false).text('Post to Feed');
 		$('#AIQuizScoreScreen').show();
 		$('#AIQuizProgressFill').css('width', '100%');
 		// Animate the score bar after a brief delay
