@@ -45,7 +45,7 @@ if ($stmt->num_rows > 0) {
 $stmt->close();
 
 // --- Fetch recent headlines from free RSS feeds ---
-$headlines = fetchHeadlines();
+$headlines = fetchHeadlines($quizType);
 
 // --- Build the OpenAI prompt ---
 $headlineBlock = implode("\n", array_map(fn($h) => '- ' . $h, $headlines));
@@ -230,14 +230,16 @@ exit(0);
 
 // ---------------------------------------------------------------------------
 
-function fetchHeadlines(): array {
+function fetchHeadlines(string $quizType): array {
     $feeds = [
         'https://www.rnz.co.nz/rss/national.rss',
         'https://www.abc.net.au/news/feed/51120/rss.xml',
         'https://news.google.com/rss?hl=en-NZ&gl=NZ&ceid=NZ:en',
     ];
 
-    $cutoff   = time() - (36 * 3600); // last 36 hours
+    // Afternoon gets a shorter window so it draws on fresher news than morning
+    $hours  = ($quizType === 'afternoon') ? 12 : 36;
+    $cutoff = time() - ($hours * 3600);
     $headlines = [];
 
     foreach ($feeds as $url) {
