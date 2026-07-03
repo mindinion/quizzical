@@ -50,11 +50,14 @@ $stmt->execute();
 $optionsRaw = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// Load this user's existing answers for this quiz (for resume support)
+// Load this user's existing answers, deriving is_correct from AIOption directly
+// so stale cached values in AIAnswer.is_correct don't affect the score.
 $stmt = $conn->prepare(
-    "SELECT a.question_id, a.chosen_option_id, a.is_correct,
+    "SELECT a.question_id, a.chosen_option_id,
+            o.is_correct,
             (SELECT id FROM AIOption WHERE question_id = a.question_id AND is_correct = 1 LIMIT 1) AS correct_option_id
      FROM AIAnswer a
+     INNER JOIN AIOption o ON a.chosen_option_id = o.id
      WHERE a.user_id = ? AND a.quiz_id = ?"
 );
 $stmt->bind_param('ii', $userid, $quizId);
