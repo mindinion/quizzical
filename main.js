@@ -1132,7 +1132,8 @@ document.cookie="feedItems=50";
 			return;
 		}
 		quizList.forEach(function(q, i) {
-			var label = q.type + ' \u2013 ' + formatQuizDate(q.date);
+			var prefix = q.source === 'ai' ? 'Quizzical ' : '';
+			var label = prefix + q.type + ' \u2013 ' + formatQuizDate(q.date);
 			if (q.done) label += ' \u2713 ' + q.score + '/' + q.max;
 			var $opt = $('<option>').val(i).text(label);
 			if (q.done) $opt.prop('disabled', true);
