@@ -6,7 +6,7 @@
 
 <script src="jquery.js"></script>
 <script src="cropper.min.js"></script>
-<script src="main.js?id=63"></script>
+<script src="main.js?id=64"></script>
 
 
 
@@ -29,7 +29,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-		<link href="styles-main.css?id=1276" type="text/css" rel="stylesheet" />
+		<link href="styles-main.css?id=1277" type="text/css" rel="stylesheet" />
 		<link href="styles-profile.css?id=23" type="text/css" rel="stylesheet" />
 		<link href="styles-rankings.css?id=13" type="text/css" rel="stylesheet" />
 		<link href="cropper.min.css" type="text/css" rel="stylesheet" />
@@ -44,6 +44,7 @@
 	
 		
 		<div id=RightButtons>
+			<button id="TestQuizButton" onclick="openTestQuiz()" style="display:none">Test Quiz</button>
 			<button id="WhatsNewButton" onclick="showWelcome(true)">&#x2605;<span class="whats-new-label"> What&#x2019;s New</span></button>
 			<a href="javascript:showProfile();">
 				<div id="MenuButton" class=right>
@@ -238,6 +239,18 @@
 				<button id="AIQuizSkipPost" onclick="closeAIQuiz()">Close</button>
 				<button id="AIQuizPostBtn" onclick="postAIResult()">Post to Feed</button>
 			</div>
+		</div>
+	</div>
+
+	<div id="TestQuizModal" style="display:none">
+		<div id="TestQuizHeader">
+			<span id="TestQuizTitle">Test Quiz Generation</span>
+			<button id="TestQuizClose" onclick="closeTestQuiz()">&#x2715;</button>
+		</div>
+		<div id="TestQuizBody">
+			<div id="TestQuizLoading">Generating quiz&#x2026; this calls OpenAI live and can take up to a minute.</div>
+			<div id="TestQuizError" style="display:none"></div>
+			<div id="TestQuizQuestions"></div>
 		</div>
 	</div>
 

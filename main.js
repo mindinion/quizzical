@@ -805,6 +805,7 @@ document.cookie="feedItems=50";
 			fetchFeedRankers();
 			downloadResults();
 			loadQuizList();
+			if (getSetting("superuser") == 1) $('#TestQuizButton').show();
 		});
 	}
 	
@@ -1407,6 +1408,55 @@ document.cookie="feedItems=50";
 	}
 
 	// ── End AI Quiz Wizard ───────────────────────────────────────────────────
+
+	// ── Test Quiz Generation (superuser only, no DB write) ──────────────────
+
+	function openTestQuiz() {
+		$('#TestQuizModal').css('display', 'flex');
+		$('#TestQuizLoading').show();
+		$('#TestQuizError').hide();
+		$('#TestQuizQuestions').empty();
+
+		$.get('action-test-generate-quiz.php', { type: 'morning' })
+			.done(function(data) {
+				var res = (typeof data === 'string') ? JSON.parse(data) : data;
+				$('#TestQuizLoading').hide();
+				if (res.error) {
+					$('#TestQuizError').text(res.error).show();
+					return;
+				}
+				renderTestQuiz(res.questions);
+			})
+			.fail(function(xhr) {
+				$('#TestQuizLoading').hide();
+				var msg = 'Failed to generate quiz.';
+				try { msg = JSON.parse(xhr.responseText).error || msg; } catch (e) {}
+				$('#TestQuizError').text(msg).show();
+			});
+	}
+
+	function closeTestQuiz() {
+		$('#TestQuizModal').hide();
+	}
+
+	function renderTestQuiz(questions) {
+		var html = '';
+		questions.forEach(function(q, idx) {
+			html += '<div class="test-quiz-question">';
+			html += '<div class="test-quiz-category">' + escapeHtml(q.category) + '</div>';
+			html += '<div class="test-quiz-text">' + (idx + 1) + '. ' + escapeHtml(q.question) + '</div>';
+			html += '<div class="test-quiz-options">';
+			q.options.forEach(function(opt) {
+				var cls = opt.correct ? ' class="test-quiz-option-correct"' : '';
+				var mark = opt.correct ? '&#x2713; ' : '&#x2013; ';
+				html += '<div' + cls + '>' + mark + escapeHtml(opt.text) + '</div>';
+			});
+			html += '</div></div>';
+		});
+		$('#TestQuizQuestions').html(html);
+	}
+
+	// ── End Test Quiz Generation ─────────────────────────────────────────────
 
 	function clearComposerAttachment() {
 		window.composerAttachments = [];

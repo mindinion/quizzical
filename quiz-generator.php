@@ -1,0 +1,285 @@
+<?php
+/**
+ * quiz-generator.php
+ *
+ * Shared quiz-generation logic used by both generate-quiz.php (CLI cron, writes to DB)
+ * and action-test-generate-quiz.php (ad hoc admin preview, does not write to DB).
+ * Fetches headlines, builds the prompt, calls OpenAI, and validates the result.
+ * Has no DB dependency of its own.
+ */
+
+require_once __DIR__ . '/dblogin.php'; // defines OPENAI_API_KEY
+require_once __DIR__ . '/config.php';
+
+const CATEGORY_TARGETS = [
+    'NZ Trivia'              => 2,
+    'Australia Trivia'       => 2,
+    'Sports'                 => 2,
+    'NZ Current Events'      => 1,
+    'Aussie Current Events'  => 1,
+    'Geography'              => 2,
+    'History'                => 2,
+    'General Knowledge'      => 3,
+];
+
+const MAX_ATTEMPTS = 3;
+
+/**
+ * Generates and validates a 15-question quiz. Returns the array of question objects.
+ * Throws RuntimeException if OpenAI fails to produce a valid quiz within MAX_ATTEMPTS.
+ *
+ * @param string $quizType 'morning' or 'afternoon' — controls the headline recency window.
+ * @param string $today Y-m-d date string used in the prompt.
+ * @param string[] $avoidQuestions Question texts to avoid repeating (e.g. sibling quiz same day).
+ */
+function generateQuizQuestions(string $quizType, string $today, array $avoidQuestions = []): array {
+    $headlinesByRegion = fetchHeadlines($quizType);
+    $nzHeadlineBlock = implode("\n", array_map(fn($h) => '- ' . $h, $headlinesByRegion['NZ']));
+    $auHeadlineBlock = implode("\n", array_map(fn($h) => '- ' . $h, $headlinesByRegion['AU']));
+
+    $distributionLines = implode("\n", array_map(
+        fn($cat, $n) => "- $cat: exactly $n question" . ($n === 1 ? '' : 's'),
+        array_keys(CATEGORY_TARGETS),
+        array_values(CATEGORY_TARGETS)
+    ));
+
+    $systemPrompt = <<<PROMPT
+You are generating a daily quiz for a New Zealand audience. The quiz has 15 questions covering:
+NZ Trivia, Australia Trivia, Sports, NZ Current Events, Aussie Current Events, Geography, History, General Knowledge.
+
+Required category distribution (exact, not approximate — the quiz will be rejected and regenerated if these counts are wrong):
+$distributionLines
+
+Only "NZ Current Events" and "Aussie Current Events" questions may be based on the provided headlines — "NZ Current Events" must be based on the NZ headlines block, and "Aussie Current Events" must be based on the Australian headlines block. NZ Trivia, Australia Trivia, Sports, Geography, History, and General Knowledge questions MUST be based on established, verifiable facts that would be true regardless of today's news — do NOT let recent headlines leak into these categories, even indirectly (e.g. do not turn a news story about a school into an "NZ Trivia" question, or a news story about weather into a "General Knowledge" question).
+
+Format rules:
+- 13 questions must be multiple choice (format: "mc") with exactly 4 options, exactly 1 correct.
+- 2 questions must be true/false (format: "tf") with exactly 2 options ("True" and "False"), exactly 1 correct.
+- For 3–4 of the MC questions, include one answer option that sounds almost plausible but is subtly absurd — the kind that makes you wonder for a moment before realising it's wrong. Do NOT make it obviously silly or comedic. It should sound like a real answer.
+
+Difficulty: The quiz should be genuinely challenging. A knowledgeable player should score around 10–11 out of 15. An average player should score 7–9. Getting 15/15 should be rare.
+
+Do NOT ask questions that are too easy (e.g., "What is the capital of Australia?") unless you make the wrong answers very plausible.
+
+For "NZ Current Events" and "Aussie Current Events" questions, you MUST draw from the matching headlines block below. Phrase the question naturally — do not say "according to recent news" or "as reported today".
+
+Return exactly 15 questions.
+PROMPT;
+
+    $avoidBlock = '';
+    if ($avoidQuestions) {
+        $avoidList = implode("\n", array_map(fn($q) => '- ' . $q, $avoidQuestions));
+        $avoidBlock = "\n\nToday's other quiz already covered these topics/questions — do NOT repeat them or ask near-duplicates of them:\n$avoidList";
+    }
+
+    $userPrompt = "Today is $today.\n\nNZ headlines:\n$nzHeadlineBlock\n\nAustralian headlines:\n$auHeadlineBlock$avoidBlock\n\nGenerate the quiz now.";
+
+    $schema = [
+        'type' => 'json_schema',
+        'json_schema' => [
+            'name'   => 'quiz_response',
+            'strict' => true,
+            'schema' => [
+                'type' => 'object',
+                'properties' => [
+                    'questions' => [
+                        'type'  => 'array',
+                        'items' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'position' => ['type' => 'integer'],
+                                'question' => ['type' => 'string'],
+                                'category' => [
+                                    'type' => 'string',
+                                    'enum' => ['NZ Trivia','Australia Trivia','Sports','NZ Current Events','Aussie Current Events','Geography','History','General Knowledge'],
+                                ],
+                                'format'   => ['type' => 'string', 'enum' => ['mc','tf']],
+                                'options'  => [
+                                    'type'  => 'array',
+                                    'items' => [
+                                        'type' => 'object',
+                                        'properties' => [
+                                            'text'    => ['type' => 'string'],
+                                            'correct' => ['type' => 'boolean'],
+                                        ],
+                                        'required'             => ['text','correct'],
+                                        'additionalProperties' => false,
+                                    ],
+                                ],
+                            ],
+                            'required'             => ['position','question','category','format','options'],
+                            'additionalProperties' => false,
+                        ],
+                    ],
+                ],
+                'required'             => ['questions'],
+                'additionalProperties' => false,
+            ],
+        ],
+    ];
+
+    $quizJson = null;
+    $attemptUserPrompt = $userPrompt;
+
+    for ($attempt = 1; $attempt <= MAX_ATTEMPTS; $attempt++) {
+        $payload = json_encode([
+            'model'           => 'gpt-4o-mini',
+            'messages'        => [
+                ['role' => 'system', 'content' => $systemPrompt],
+                ['role' => 'user',   'content' => $attemptUserPrompt],
+            ],
+            'response_format' => $schema,
+            'temperature'     => 0.9,
+        ]);
+
+        $ch = curl_init('https://api.openai.com/v1/chat/completions');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $payload,
+            CURLOPT_TIMEOUT        => 60,
+            CURLOPT_HTTPHEADER     => [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . OPENAI_API_KEY,
+            ],
+        ]);
+        $response = curl_exec($ch);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($curlError) {
+            logQuizGenError("Attempt $attempt: cURL error: $curlError");
+            continue;
+        }
+
+        $decoded = json_decode($response, true);
+        if (!isset($decoded['choices'][0]['message']['content'])) {
+            logQuizGenError("Attempt $attempt: Unexpected OpenAI response: $response");
+            continue;
+        }
+
+        $candidate = json_decode($decoded['choices'][0]['message']['content'], true);
+        $validationError = validateQuiz($candidate);
+        if ($validationError !== null) {
+            logQuizGenError("Attempt $attempt: $validationError");
+            $attemptUserPrompt = $userPrompt . "\n\nNOTE: Your previous attempt was rejected because: $validationError. Follow the category distribution exactly this time.";
+            continue;
+        }
+
+        $quizJson = $candidate;
+        break;
+    }
+
+    if ($quizJson === null) {
+        logQuizGenError("All " . MAX_ATTEMPTS . " attempts failed validation — giving up.");
+        throw new RuntimeException("Failed to generate a valid quiz after " . MAX_ATTEMPTS . " attempts — check logs/generate-quiz.log");
+    }
+
+    return $quizJson['questions'];
+}
+
+/**
+ * Validates overall quiz structure, per-question answer/option counts, and
+ * exact category distribution. Returns null if valid, or an error string.
+ */
+function validateQuiz(?array $quizJson): ?string {
+    if (!isset($quizJson['questions']) || count($quizJson['questions']) !== 15) {
+        return "expected 15 questions, got: " . json_encode($quizJson);
+    }
+
+    $categoryCounts = [];
+    foreach ($quizJson['questions'] as $i => $q) {
+        $correctCount = 0;
+        foreach ($q['options'] as $opt) {
+            if ($opt['correct']) $correctCount++;
+        }
+        if ($correctCount !== 1) {
+            return "question " . ($i+1) . " has $correctCount correct answers (expected 1)";
+        }
+        $expectedOptions = ($q['format'] === 'tf') ? 2 : 4;
+        if (count($q['options']) !== $expectedOptions) {
+            return "question " . ($i+1) . " ({$q['format']}) has " . count($q['options']) . " options (expected $expectedOptions)";
+        }
+        $categoryCounts[$q['category']] = ($categoryCounts[$q['category']] ?? 0) + 1;
+    }
+
+    foreach (CATEGORY_TARGETS as $cat => $expected) {
+        $actual = $categoryCounts[$cat] ?? 0;
+        if ($actual !== $expected) {
+            return "category '$cat' has $actual questions (expected exactly $expected) — full distribution: " . json_encode($categoryCounts);
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Returns headlines keyed by region, e.g. ['NZ' => [...], 'AU' => [...]],
+ * each capped independently so neither region can crowd out the other.
+ */
+function fetchHeadlines(string $quizType): array {
+    $feedsByRegion = [
+        'NZ' => [
+            'https://www.rnz.co.nz/rss/national.rss',
+            'https://news.google.com/rss?hl=en-NZ&gl=NZ&ceid=NZ:en',
+        ],
+        'AU' => [
+            'https://www.abc.net.au/news/feed/51120/rss.xml',
+            'https://news.google.com/rss?hl=en-AU&gl=AU&ceid=AU:en',
+        ],
+    ];
+
+    // Afternoon gets a shorter window so it draws on fresher news than morning
+    $hours  = ($quizType === 'afternoon') ? 12 : 36;
+    $cutoff = time() - ($hours * 3600);
+    $perRegionCap = 15;
+    $headlinesByRegion = [];
+
+    foreach ($feedsByRegion as $region => $feeds) {
+        $regionHeadlines = [];
+        foreach ($feeds as $url) {
+            $xml = fetchRss($url);
+            if (!$xml) continue;
+
+            // Support both RSS <item> and Atom <entry>
+            $items = $xml->channel->item ?? $xml->entry ?? [];
+            foreach ($items as $item) {
+                $pubDate = (string)($item->pubDate ?? $item->published ?? '');
+                if ($pubDate && strtotime($pubDate) < $cutoff) continue;
+
+                $title = trim(strip_tags((string)($item->title ?? '')));
+                if ($title) $regionHeadlines[] = $title;
+            }
+        }
+        $regionHeadlines = array_values(array_unique($regionHeadlines));
+        $headlinesByRegion[$region] = array_slice($regionHeadlines, 0, $perRegionCap);
+    }
+
+    return $headlinesByRegion;
+}
+
+function fetchRss(string $url): ?SimpleXMLElement {
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 10,
+        CURLOPT_USERAGENT      => 'Mozilla/5.0',
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+    ]);
+    $body = curl_exec($ch);
+    curl_close($ch);
+    if (!$body) return null;
+    libxml_use_internal_errors(true);
+    $xml = simplexml_load_string($body);
+    return $xml ?: null;
+}
+
+function logQuizGenError(string $msg): void {
+    $ts = date('Y-m-d H:i:s');
+    $line = "[$ts] ERROR: $msg\n";
+    file_put_contents(__DIR__ . '/logs/generate-quiz.log', $line, FILE_APPEND | LOCK_EX);
+    if (php_sapi_name() === 'cli') {
+        fwrite(STDERR, $line);
+    }
+}
