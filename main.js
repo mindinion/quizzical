@@ -1164,6 +1164,10 @@ document.cookie="feedItems=50";
 		if (idx === '' || idx === null) return;
 		selectedQuiz = quizList[parseInt(idx)];
 		if (!selectedQuiz || selectedQuiz.done) return;
+		if (selectedQuiz.source === 'ai') {
+			openAIQuiz(selectedQuiz);
+			return;
+		}
 		var label = selectedQuiz.type + ' \u2013 ' + formatQuizDate(selectedQuiz.date);
 		$('#QuizCardTitle').text(label);
 		$('#QuizIframe').attr('src', selectedQuiz.url);
@@ -1223,6 +1227,182 @@ document.cookie="feedItems=50";
 			}
 		});
 	}
+
+	// ── AI Quiz Wizard ──────────────────────────────────────────────────────
+
+	var aiQuizData       = null;   // full quiz object from action-get-ai-quiz.php
+	var aiCurrentIdx     = 0;      // 0-based index of the question being shown
+	var aiScore          = 0;
+	var aiAnswerPending  = false;  // debounce: prevent double-tapping an option
+
+	function openAIQuiz(quiz) {
+		$.get('action-get-ai-quiz.php', { quiz_id: quiz.quiz_id }, function(raw) {
+			aiQuizData      = JSON.parse(raw);
+			aiScore         = aiQuizData.score_so_far || 0;
+			aiAnswerPending = false;
+
+			var label = 'AI ' + aiQuizData.type + ' Quiz – ' + formatQuizDate(aiQuizData.date);
+			$('#AIQuizTitle').text(label);
+			$('#AIQuizBody').show();
+			$('#AIQuizScoreScreen').hide();
+			$('#AIQuizModal').show();
+			$('#TabBar').hide();
+
+			// Resume from first unanswered question
+			aiCurrentIdx = aiQuizData.answered_count || 0;
+			if (aiCurrentIdx >= 15) {
+				showAIScoreScreen();
+			} else {
+				renderAIQuestion(aiCurrentIdx);
+			}
+		});
+	}
+
+	function renderAIQuestion(idx) {
+		var q = aiQuizData.questions[idx];
+		var total = aiQuizData.questions.length;
+
+		$('#AIQuizProgress').text((idx + 1) + ' / ' + total);
+		$('#AIQuizProgressFill').css('width', ((idx / total) * 100) + '%');
+		$('#AIQuizCategory').text(q.category);
+		$('#AIQuizQuestion').text(q.question_text);
+		$('#AIQuizFeedback').hide().removeClass('feedback-correct feedback-wrong').text('');
+		$('#AIQuizNext').hide();
+
+		var html = '';
+		q.options.forEach(function(opt) {
+			html += '<div class="ai-option" data-optid="' + opt.id + '">' + escapeHtml(opt.text) + '</div>';
+		});
+		$('#AIQuizOptions').html(html);
+
+		// If this question was already answered (resume), show the reveal immediately
+		if (q.answered) {
+			revealAnswer(q.chosen_option_id, q.correct_option_id, q.is_correct, true);
+		} else {
+			$('#AIQuizOptions').on('click', '.ai-option', function() {
+				if (aiAnswerPending) return;
+				aiAnswerPending = true;
+				var optId = parseInt($(this).data('optid'));
+				submitAIAnswer(q.id, optId);
+			});
+		}
+	}
+
+	function submitAIAnswer(questionId, chosenOptionId) {
+		$.get('action-submit-ai-answer.php', {
+			quiz_id:          aiQuizData.quiz_id,
+			question_id:      questionId,
+			chosen_option_id: chosenOptionId
+		}, function(raw) {
+			var resp = JSON.parse(raw);
+			aiScore = resp.score || aiScore;
+			revealAnswer(chosenOptionId, resp.correct_option_id, resp.correct, false);
+
+			if (resp.completed) {
+				setTimeout(showAIScoreScreen, 1200);
+			} else {
+				$('#AIQuizNext').show();
+			}
+		});
+	}
+
+	function revealAnswer(chosenId, correctId, wasCorrect, isResume) {
+		$('#AIQuizOptions').off('click', '.ai-option');
+		$('#AIQuizOptions .ai-option').each(function() {
+			var optId = parseInt($(this).data('optid'));
+			if (optId === correctId) {
+				$(this).addClass('ai-option-correct');
+			} else if (optId === chosenId && !wasCorrect) {
+				$(this).addClass('ai-option-wrong');
+			} else {
+				$(this).addClass('ai-option-neutral');
+			}
+		});
+
+		if (!isResume) {
+			var $fb = $('#AIQuizFeedback');
+			if (wasCorrect) {
+				$fb.text('Correct!').addClass('feedback-correct').show();
+			} else {
+				$fb.text('Not quite.').addClass('feedback-wrong').show();
+			}
+		}
+
+		aiAnswerPending = false;
+	}
+
+	function nextAIQuestion() {
+		aiCurrentIdx++;
+		// Update the question data with answered state from server-side truth
+		aiQuizData.questions[aiCurrentIdx - 1].answered = true;
+		renderAIQuestion(aiCurrentIdx);
+	}
+
+	function showAIScoreScreen() {
+		$('#AIQuizBody').hide();
+		var pct = Math.round((aiScore / 15) * 100);
+		$('#AIQuizScoreDisplay').text(aiScore + ' / 15');
+		$('#AIQuizComment').val('');
+		$('#AIQuizScoreScreen').show();
+		$('#AIQuizProgressFill').css('width', '100%');
+		// Animate the score bar after a brief delay
+		setTimeout(function() {
+			$('#AIQuizScoreFill').css('width', pct + '%');
+		}, 100);
+	}
+
+	function postAIResult() {
+		var comment  = $('#AIQuizComment').val().trim();
+		var quizType = 'AI ' + aiQuizData.type;
+		$('#AIQuizPostBtn').prop('disabled', true).text('Posting…');
+		$.get('action-newresult.php', {
+			type:       quizType,
+			score:      aiScore,
+			questions:  15,
+			dateOption: 'today',
+			comment:    comment
+		}, function(raw) {
+			var resp = null;
+			try { resp = JSON.parse(raw); } catch(e) {}
+			if (resp && resp.post_id > 0) {
+				var quizDate = aiQuizData.date;
+				closeAIQuiz();
+				prependFeedItem(resp.post_id, {
+					isResult:  true,
+					score:     aiScore,
+					total:     15,
+					quizType:  quizType,
+					quizDate:  quizDate,
+					comment:   comment
+				});
+				rankingsLoaded = false;
+				if ($('#RankingsPanel').is(':visible')) loadRankings(rankingsCurrentPeriod);
+				loadQuizList();
+				$.get('action-emailresult.php', { resultId: resp.result_id }, function() {});
+			} else {
+				alert('Something went wrong posting your result. Try again.');
+				$('#AIQuizPostBtn').prop('disabled', false).text('Post to Feed');
+			}
+		});
+	}
+
+	function closeAIQuiz() {
+		$('#AIQuizModal').hide();
+		$('#AIQuizBody').show();
+		$('#AIQuizScoreScreen').hide();
+		$('#AIQuizOptions').off('click', '.ai-option');
+		$('#TabBar').show();
+		aiQuizData      = null;
+		aiCurrentIdx    = 0;
+		aiScore         = 0;
+		aiAnswerPending = false;
+	}
+
+	function escapeHtml(str) {
+		return $('<div>').text(str).html();
+	}
+
+	// ── End AI Quiz Wizard ───────────────────────────────────────────────────
 
 	function clearComposerAttachment() {
 		window.composerAttachments = [];

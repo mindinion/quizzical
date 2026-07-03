@@ -9,6 +9,8 @@
 // When true, emails are only sent to superuser accounts
 define('DEV_MODE', false);
 
+// OPENAI_API_KEY is defined in dblogin.php (gitignored) alongside DB credentials.
+
 define('MAIL_FROM',      'noreply@quizzical.co.nz');
 define('MAIL_FROM_NAME', 'Quizzical');
 define('SMTP_HOST',      's04ne.syd7.hostingplatform.net.au');

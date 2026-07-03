@@ -120,5 +120,49 @@
 		}
 	}
 
+	// --- Append AI-generated quizzes ---
+	$aiCutoff = (new DateTime('now', $nztz))->modify('-7 days')->format('Y-m-d');
+	$aiResult = $conn->query(
+		"SELECT id, type, date FROM AIQuiz WHERE status = 'active' AND date >= '$aiCutoff' ORDER BY date DESC, type ASC"
+	);
+	if ($aiResult) {
+		// Collect AI quiz IDs the user has already completed (Results rows with AI types)
+		$aiDone = [];
+		$doneQ = $conn->query(
+			"SELECT REPLACE(type, 'AI ', '') AS base_type, DATE_FORMAT(date, '%Y-%m-%d') AS date, score, max
+			 FROM Results
+			 WHERE user = $userid AND status = 'active' AND type IN ('AI Morning', 'AI Afternoon')
+			 AND date >= DATE_SUB(CURDATE(), INTERVAL 8 DAY)"
+		);
+		if ($doneQ) {
+			while ($row = $doneQ->fetch_assoc()) {
+				$aiDone[$row['base_type'] . '|' . $row['date']] = ['score' => (int)$row['score'], 'max' => (int)$row['max']];
+			}
+		}
+
+		while ($row = $aiResult->fetch_assoc()) {
+			$dt = new DateTime($row['date'], $nztz);
+			$quizDate = $dt->format('Y-m-d');
+
+			if ($typefilter === 'main' && $row['type'] !== 'Morning' && $row['type'] !== 'Afternoon') continue;
+
+			$key   = $row['type'] . '|' . $quizDate;
+			$entry = [
+				'url'     => null,
+				'title'   => 'AI ' . $row['type'] . ' Quiz — ' . $dt->format('j M'),
+				'type'    => $row['type'],
+				'date'    => $quizDate,
+				'source'  => 'ai',
+				'quiz_id' => (int)$row['id'],
+				'done'    => isset($aiDone[$key]),
+			];
+			if (isset($aiDone[$key])) {
+				$entry['score'] = $aiDone[$key]['score'];
+				$entry['max']   = $aiDone[$key]['max'];
+			}
+			$quizzes[] = $entry;
+		}
+	}
+
 	echo json_encode($quizzes);
 ?>

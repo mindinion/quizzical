@@ -6,7 +6,7 @@
 
 <script src="jquery.js"></script>
 <script src="cropper.min.js"></script>
-<script src="main.js?id=58"></script>
+<script src="main.js?id=59"></script>
 
 
 
@@ -29,7 +29,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-		<link href="styles-main.css?id=1275" type="text/css" rel="stylesheet" />
+		<link href="styles-main.css?id=1276" type="text/css" rel="stylesheet" />
 		<link href="styles-profile.css?id=23" type="text/css" rel="stylesheet" />
 		<link href="styles-rankings.css?id=13" type="text/css" rel="stylesheet" />
 		<link href="cropper.min.css" type="text/css" rel="stylesheet" />
@@ -209,6 +209,34 @@
 				<button id="QuizCardCancel" onclick="closeQuizCard()">Cancel</button>
 				<button id="QuizCardOpen" onclick="openQuizNative()">Open on Stuff &#x2197;</button>
 				<button id="QuizCardSubmit" onclick="submitQuizResult()">Submit Score</button>
+			</div>
+		</div>
+	</div>
+
+	<div id="AIQuizModal" style="display:none">
+		<div id="AIQuizHeader">
+			<div id="AIQuizMeta">
+				<span id="AIQuizTitle"></span>
+				<span id="AIQuizProgress"></span>
+			</div>
+			<button id="AIQuizClose" onclick="closeAIQuiz()">&#x2715;</button>
+		</div>
+		<div id="AIQuizProgressBar"><div id="AIQuizProgressFill"></div></div>
+		<div id="AIQuizBody">
+			<div id="AIQuizCategory"></div>
+			<div id="AIQuizQuestion"></div>
+			<div id="AIQuizOptions"></div>
+			<div id="AIQuizFeedback" style="display:none"></div>
+			<button id="AIQuizNext" onclick="nextAIQuestion()" style="display:none">Next &#x2192;</button>
+		</div>
+		<div id="AIQuizScoreScreen" style="display:none">
+			<div id="AIQuizScoreHeading">Quiz complete!</div>
+			<div id="AIQuizScoreDisplay"></div>
+			<div id="AIQuizScoreBar"><div id="AIQuizScoreFill"></div></div>
+			<textarea id="AIQuizComment" placeholder="Add a comment (optional)..."></textarea>
+			<div id="AIQuizScoreButtons">
+				<button id="AIQuizSkipPost" onclick="closeAIQuiz()">Close</button>
+				<button id="AIQuizPostBtn" onclick="postAIResult()">Post to Feed</button>
 			</div>
 		</div>
 	</div>
