@@ -225,7 +225,8 @@ function textContainsKeyword(string $text, array $keywords): ?string {
  * category distribution, and content-level rules the model tends to ignore
  * (NZ/AU content leaking into global categories, current-events cross-country
  * mislabeling, true/false questions phrased as WH-questions, current-events
- * content dressed up as evergreen trivia).
+ * content dressed up as evergreen trivia, MC questions that name their own
+ * answer in the question text).
  *
  * Collects ALL violations in one pass (rather than stopping at the first) so a
  * single retry can be told everything wrong at once — real quizzes have shown
@@ -268,6 +269,16 @@ function validateQuiz(?array $quizJson): array {
                 $errors[] = "question $qNum (\"{$q['question']}\") matches banned pattern: $reason — pick a different, less obvious question";
                 break;
             }
+        }
+
+        // A well-formed MC question should never name its own answer in the
+        // prompt (e.g. "...hosting the annual Sydney Festival?" with "Sydney" as
+        // the correct option). Word-boundary match, case-insensitive; skip tf
+        // (its "True"/"False" text isn't a meaningful giveaway) and very short
+        // answers (avoid noise from incidental short-word overlap).
+        if ($q['format'] === 'mc' && strlen($correctText) >= 3
+            && preg_match('/\b' . preg_quote($correctText, '/') . '\b/i', $q['question'])) {
+            $errors[] = "question $qNum gives away its own answer — correct answer \"$correctText\" appears verbatim in the question text (\"{$q['question']}\")";
         }
 
         $combined = $q['question'] . ' ' . $correctText;
