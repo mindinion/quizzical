@@ -4,9 +4,18 @@
  *
  * Shared quiz-generation logic used by both generate-quiz.php (CLI cron, writes to DB)
  * and action-test-generate-quiz.php (ad hoc admin preview, does not write to DB).
- * Fetches headlines, builds the prompt, calls OpenAI, and validates the result.
  * The core generation logic has no DB dependency; fetchRecentQuestions() below is
  * a read-only helper both callers can use for cross-day duplicate avoidance.
+ *
+ * Generates one category at a time (small, fixed-count OpenAI calls) rather than
+ * all 15 questions in a single call. A single call asking for 8 exact category
+ * counts at once proved unreliable in practice — a real cron run exhausted 7
+ * retries with the model unable to converge on the distribution (Sports kept
+ * coming back empty, General Knowledge kept over-producing). Asking for e.g.
+ * "exactly 2 Sports questions" in isolation is a far easier constraint for the
+ * model to satisfy, and the app (not the model) now assigns each question's
+ * category and decides which categories host the 2 true/false questions, which
+ * also structurally rules out the model mislabeling a question's category.
  */
 
 require_once __DIR__ . '/dblogin.php'; // defines OPENAI_API_KEY
@@ -23,66 +32,136 @@ const CATEGORY_TARGETS = [
     'General Knowledge'      => 3,
 ];
 
-const MAX_ATTEMPTS = 7;
+const MAX_ATTEMPTS_PER_CATEGORY = 5;
+
+const NZ_KEYWORDS = [
+    'new zealand', 'nz', 'zealand', 'auckland', 'wellington', 'christchurch', 'dunedin',
+    'hamilton', 'rotorua', 'tauranga', 'queenstown', 'napier', 'nelson', 'invercargill',
+    'maori', 'māori', 'waitangi', 'kiwi', 'aotearoa', 'taupo', 'south island', 'north island',
+    'wakari',
+];
+
+const AU_KEYWORDS = [
+    'australia', 'aussie', 'sydney', 'melbourne', 'brisbane', 'perth', 'canberra', 'adelaide',
+    'queensland', 'victoria', 'new south wales', 'nsw', 'tasmania', 'northern territory',
+    'outback', 'great barrier reef', 'aboriginal',
+];
 
 /**
- * Generates and validates a 15-question quiz. Returns the array of question objects.
- * Throws RuntimeException if OpenAI fails to produce a valid quiz within MAX_ATTEMPTS.
+ * Regex => human-readable reason, for cliché questions the model reaches for
+ * repeatedly despite the prompt's "avoid the single most famous fact" instruction.
+ * Applies across all categories. Add a line here whenever a new recurring
+ * cliché gets spotted — cheaper than trying to word-tune the prompt further.
+ */
+const BANNED_QUESTION_PATTERNS = [
+    '/\bcapital( city)? of\b/i'            => 'capital-of-a-country cliché',
+    '/\bopera house\b/i'                   => 'Sydney Opera House cliché',
+    '/\bnational (symbol|animal|bird)\b/i' => 'national symbol/animal/bird cliché',
+    '/\blongest river in the world\b/i'    => 'disputed fact (Nile vs Amazon) treated as settled',
+];
+
+const CURRENT_EVENTS_CATEGORIES = ['NZ Current Events', 'Aussie Current Events'];
+
+/**
+ * Generates a full 15-question quiz, one category at a time, and returns the
+ * combined array of question objects with positions 1..15 assigned. Throws
+ * RuntimeException if any single category can't produce a valid result within
+ * MAX_ATTEMPTS_PER_CATEGORY.
  *
  * @param string $quizType 'morning' or 'afternoon' — controls the headline recency window.
  * @param string $today Y-m-d date string used in the prompt.
- * @param string[] $avoidQuestions Question texts to avoid repeating (e.g. sibling quiz same day).
+ * @param string[] $avoidQuestions Question texts to avoid repeating (e.g. recent days' quizzes).
  */
 function generateQuizQuestions(string $quizType, string $today, array $avoidQuestions = []): array {
     $headlinesByRegion = fetchHeadlines($quizType);
-    $nzHeadlineBlock = implode("\n", array_map(fn($h) => '- ' . $h, $headlinesByRegion['NZ']));
-    $auHeadlineBlock = implode("\n", array_map(fn($h) => '- ' . $h, $headlinesByRegion['AU']));
+    $tfHosts = pickTfHostCategories();
 
-    $distributionLines = implode("\n", array_map(
-        fn($cat, $n) => "- $cat: exactly $n question" . ($n === 1 ? '' : 's'),
-        array_keys(CATEGORY_TARGETS),
-        array_values(CATEGORY_TARGETS)
-    ));
+    $allQuestions = [];
+    foreach (CATEGORY_TARGETS as $category => $count) {
+        $tfCount = in_array($category, $tfHosts, true) ? 1 : 0;
+        $mcCount = $count - $tfCount;
+
+        // Include topics already generated earlier in this same quiz, on top of
+        // the cross-day avoid-list, so e.g. Geography and History don't both
+        // reach for the same treaty.
+        $avoidForThisCall = array_merge($avoidQuestions, array_column($allQuestions, 'question'));
+
+        $categoryQuestions = generateCategoryQuestions(
+            $category, $mcCount, $tfCount, $headlinesByRegion, $today, $avoidForThisCall
+        );
+        $allQuestions = array_merge($allQuestions, $categoryQuestions);
+    }
+
+    foreach ($allQuestions as $i => &$q) {
+        $q['position'] = $i + 1;
+    }
+    unset($q);
+
+    return $allQuestions;
+}
+
+/**
+ * Picks 2 categories (from those with a count of 2+) to each host exactly one
+ * of the quiz's 2 true/false questions. Randomised per generation for variety
+ * rather than always landing the tf slot on the same categories.
+ */
+function pickTfHostCategories(): array {
+    $eligible = array_keys(array_filter(CATEGORY_TARGETS, fn($count) => $count >= 2));
+    shuffle($eligible);
+    return array_slice($eligible, 0, 2);
+}
+
+/**
+ * Generates and validates the questions for a single category via its own
+ * small, fixed-count OpenAI call and retry loop. The category label itself is
+ * assigned by the caller, not requested from the model, so mislabeling is
+ * structurally impossible — only "wrong content for the requested category"
+ * remains a risk, which validateOneQuestion() still checks for.
+ */
+function generateCategoryQuestions(
+    string $category, int $mcCount, int $tfCount, array $headlinesByRegion, string $today, array $avoidQuestions
+): array {
+    $total = $mcCount + $tfCount;
+
+    $headlineBlock = '';
+    if ($category === 'NZ Current Events') {
+        $headlineBlock = "\n\nNZ headlines:\n" . implode("\n", array_map(fn($h) => '- ' . $h, $headlinesByRegion['NZ']));
+    } elseif ($category === 'Aussie Current Events') {
+        $headlineBlock = "\n\nAustralian headlines:\n" . implode("\n", array_map(fn($h) => '- ' . $h, $headlinesByRegion['AU']));
+    }
+
+    $formatInstruction = $tfCount > 0
+        ? "Produce exactly $total question(s): $mcCount in \"mc\" format (4 options, exactly 1 correct) and $tfCount in \"tf\" format (2 options, \"True\" and \"False\", exactly 1 correct — phrased as a single declarative true/false statement, ideally starting with \"True or False:\". NEVER phrase a tf question as a which/what/who/when/where question, since that can't be sensibly answered with just True or False)."
+        : "Produce exactly $total question(s), all in \"mc\" format (4 options, exactly 1 correct).";
+
+    $categoryGuidance = buildCategoryGuidance($category);
 
     $systemPrompt = <<<PROMPT
-You are generating a daily quiz for a New Zealand audience. The quiz has 15 questions covering:
-NZ Trivia, Australia Trivia, Sports, NZ Current Events, Aussie Current Events, Geography, History, General Knowledge.
+You are writing question(s) for the "$category" section of a daily quiz for a New Zealand audience.
 
-Required category distribution (exact, not approximate — the quiz will be rejected and regenerated if these counts are wrong):
-$distributionLines
+$categoryGuidance
 
-Only "NZ Current Events" and "Aussie Current Events" questions may be based on the provided headlines — "NZ Current Events" must be based ONLY on the NZ headlines block, and "Aussie Current Events" must be based ONLY on the Australian headlines block. Double-check before finalising each Current Events question: if it's filed under "Aussie Current Events" it must not be about a New Zealand story (NZ places, NZ organisations, NZ people), and if it's filed under "NZ Current Events" it must not be about an Australian story. Do not reuse the same underlying story for both.
+$formatInstruction
 
-NZ Trivia, Australia Trivia, Sports, Geography, History, and General Knowledge questions MUST be based on established, verifiable facts that would be true regardless of today's news — do NOT let recent headlines leak into these categories, even indirectly (e.g. do not turn a news story about a school into an "NZ Trivia" question, or a news story about weather into a "General Knowledge" question).
+For any "mc" question, include one answer option that sounds almost plausible but is subtly absurd on reflection — not obviously silly, the kind that makes you second-guess yourself. Aim for roughly 1 in 3 of the mc questions to have this.
 
-Geography, History, and General Knowledge questions MUST be about the rest of the world, NOT New Zealand or Australia — NZ and Australia already have their own dedicated trivia and current-events categories, so Geography/History/General Knowledge exist to cover everything else (other countries, world history, science, arts, etc.). Do NOT ask about NZ/Australian mountains, lakes, treaties, wars, languages, or national symbols in these three categories — pick a different country or a global topic instead. Sports questions MAY reference NZ/Australian teams or leagues, since that's expected content for this audience.
+Difficulty: genuinely challenging — average players should get some wrong. Do NOT ask questions whose answer is the single most famous fact about a topic (e.g. capital cities, a country's national animal/bird, "the" founding treaty of a nation, the primary language of a country, a famous landmark's most basic fact). These are trivially guessable. Ask about specific details, dates, numbers, or lesser-known angles instead.
 
-Format rules:
-- 13 questions must be multiple choice (format: "mc") with exactly 4 options, exactly 1 correct.
-- 2 questions must be true/false (format: "tf") with exactly 2 options ("True" and "False"), exactly 1 correct. Every "tf" question MUST be phrased as a single declarative statement that is either true or false (ideally starting with "True or False:") — NEVER phrase a "tf" question as a "which/what/who/when/where" question, since that cannot be sensibly answered with just True or False.
-- For 3–4 of the MC questions, include one answer option that sounds almost plausible but is subtly absurd — the kind that makes you wonder for a moment before realising it's wrong. Do NOT make it obviously silly or comedic. It should sound like a real answer.
-
-Difficulty: The quiz should be genuinely challenging. A knowledgeable player should score around 10–11 out of 15. An average player should score 7–9. Getting 15/15 should be rare.
-
-Do NOT ask questions whose answer is the single most famous fact about a topic — e.g. capital cities, a country's national animal/bird, the primary/official language of a country, "the" founding treaty of a nation, or the site of a famous natural landmark. These are trivially guessable. Instead ask about specific details, second-order facts, dates, numbers, or lesser-known angles on a topic that require genuine knowledge, not just cultural familiarity.
-
-For "NZ Current Events" and "Aussie Current Events" questions, you MUST draw from the matching headlines block below. Phrase the question naturally — do not say "according to recent news" or "as reported today".
-
-Return exactly 15 questions.
+Never state the correct answer's exact wording anywhere in the question text itself.
 PROMPT;
 
     $avoidBlock = '';
     if ($avoidQuestions) {
         $avoidList = implode("\n", array_map(fn($q) => '- ' . $q, $avoidQuestions));
-        $avoidBlock = "\n\nToday's other quiz already covered these topics/questions — do NOT repeat them or ask near-duplicates of them:\n$avoidList";
+        $avoidBlock = "\n\nDo NOT repeat or ask a near-duplicate of any of these already-used questions/topics:\n$avoidList";
     }
 
-    $userPrompt = "Today is $today.\n\nNZ headlines:\n$nzHeadlineBlock\n\nAustralian headlines:\n$auHeadlineBlock$avoidBlock\n\nGenerate the quiz now.";
+    $userPrompt = "Today is $today.$headlineBlock$avoidBlock\n\nGenerate the question(s) now.";
 
     $schema = [
         'type' => 'json_schema',
         'json_schema' => [
-            'name'   => 'quiz_response',
+            'name'   => 'category_questions',
             'strict' => true,
             'schema' => [
                 'type' => 'object',
@@ -92,13 +171,8 @@ PROMPT;
                         'items' => [
                             'type' => 'object',
                             'properties' => [
-                                'position' => ['type' => 'integer'],
                                 'question' => ['type' => 'string'],
-                                'category' => [
-                                    'type' => 'string',
-                                    'enum' => ['NZ Trivia','Australia Trivia','Sports','NZ Current Events','Aussie Current Events','Geography','History','General Knowledge'],
-                                ],
-                                'format'   => ['type' => 'string', 'enum' => ['mc','tf']],
+                                'format'   => ['type' => 'string', 'enum' => ['mc', 'tf']],
                                 'options'  => [
                                     'type'  => 'array',
                                     'items' => [
@@ -107,12 +181,12 @@ PROMPT;
                                             'text'    => ['type' => 'string'],
                                             'correct' => ['type' => 'boolean'],
                                         ],
-                                        'required'             => ['text','correct'],
+                                        'required'             => ['text', 'correct'],
                                         'additionalProperties' => false,
                                     ],
                                 ],
                             ],
-                            'required'             => ['position','question','category','format','options'],
+                            'required'             => ['question', 'format', 'options'],
                             'additionalProperties' => false,
                         ],
                     ],
@@ -123,10 +197,10 @@ PROMPT;
         ],
     ];
 
-    $quizJson = null;
+    $result = null;
     $attemptUserPrompt = $userPrompt;
 
-    for ($attempt = 1; $attempt <= MAX_ATTEMPTS; $attempt++) {
+    for ($attempt = 1; $attempt <= MAX_ATTEMPTS_PER_CATEGORY; $attempt++) {
         $payload = json_encode([
             'model'           => 'gpt-4o-mini',
             'messages'        => [
@@ -153,62 +227,184 @@ PROMPT;
         curl_close($ch);
 
         if ($curlError) {
-            logQuizGenError("Attempt $attempt: cURL error: $curlError");
+            logQuizGenError("[$category] Attempt $attempt: cURL error: $curlError");
             continue;
         }
 
         $decoded = json_decode($response, true);
         if (!isset($decoded['choices'][0]['message']['content'])) {
-            logQuizGenError("Attempt $attempt: Unexpected OpenAI response: $response");
+            logQuizGenError("[$category] Attempt $attempt: Unexpected OpenAI response: $response");
             continue;
         }
 
         $candidate = json_decode($decoded['choices'][0]['message']['content'], true);
-        $validationErrors = validateQuiz($candidate);
-        if ($validationErrors) {
-            $errorList = implode("\n", array_map(fn($e) => '- ' . $e, $validationErrors));
-            logQuizGenError("Attempt $attempt: " . count($validationErrors) . " violation(s):\n$errorList");
+        $errors = validateCategoryQuestions($candidate, $category, $mcCount, $tfCount);
+        if ($errors) {
+            $errorList = implode("\n", array_map(fn($e) => '- ' . $e, $errors));
+            logQuizGenError("[$category] Attempt $attempt: " . count($errors) . " violation(s):\n$errorList");
             $attemptUserPrompt = $userPrompt . "\n\nNOTE: Your previous attempt was rejected for the following reasons — fix ALL of them this time:\n$errorList";
             continue;
         }
 
-        $quizJson = $candidate;
+        $result = $candidate['questions'];
         break;
     }
 
-    if ($quizJson === null) {
-        logQuizGenError("All " . MAX_ATTEMPTS . " attempts failed validation — giving up.");
-        throw new RuntimeException("Failed to generate a valid quiz after " . MAX_ATTEMPTS . " attempts — check logs/generate-quiz.log");
+    if ($result === null) {
+        logQuizGenError("[$category] All " . MAX_ATTEMPTS_PER_CATEGORY . " attempts failed validation — giving up.");
+        throw new RuntimeException("Failed to generate '$category' after " . MAX_ATTEMPTS_PER_CATEGORY . " attempts — check logs/generate-quiz.log");
     }
 
-    return $quizJson['questions'];
+    foreach ($result as &$q) {
+        $q['category'] = $category;
+    }
+    unset($q);
+
+    return $result;
 }
 
-const NZ_KEYWORDS = [
-    'new zealand', 'nz', 'zealand', 'auckland', 'wellington', 'christchurch', 'dunedin',
-    'hamilton', 'rotorua', 'tauranga', 'queenstown', 'napier', 'nelson', 'invercargill',
-    'maori', 'māori', 'waitangi', 'kiwi', 'aotearoa', 'taupo', 'south island', 'north island',
-    'wakari',
-];
-
-const AU_KEYWORDS = [
-    'australia', 'aussie', 'sydney', 'melbourne', 'brisbane', 'perth', 'canberra', 'adelaide',
-    'queensland', 'victoria', 'new south wales', 'nsw', 'tasmania', 'northern territory',
-    'outback', 'great barrier reef', 'aboriginal',
-];
+/**
+ * Category-specific instructions: what the content should (and shouldn't) draw
+ * from. Current Events categories are explicitly grounded in headlines; the
+ * other 6 are explicitly told to ignore headlines/today's news entirely, and
+ * their prompts never include a headline block in the first place — removing
+ * the temptation structurally, not just via instruction.
+ */
+function buildCategoryGuidance(string $category): string {
+    switch ($category) {
+        case 'NZ Current Events':
+            return 'These questions MUST be based only on the NZ headlines block below — genuinely current, real stories. Must NOT be about Australia. Phrase naturally — do not say "according to recent news" or "as reported today".';
+        case 'Aussie Current Events':
+            return 'These questions MUST be based only on the Australian headlines block below — genuinely current, real stories. Must NOT be about New Zealand. Phrase naturally — do not say "according to recent news" or "as reported today".';
+        case 'NZ Trivia':
+            return 'General New Zealand trivia — established, verifiable facts that would be true regardless of today\'s news. Do NOT base these on current headlines, even indirectly.';
+        case 'Australia Trivia':
+            return 'General Australia trivia — established, verifiable facts that would be true regardless of today\'s news. Do NOT base these on current headlines, even indirectly.';
+        case 'Sports':
+            return 'General sports trivia (may reference NZ/Australian teams or leagues, since that\'s expected content for this audience) — established, verifiable facts, NOT tied to today\'s news.';
+        case 'Geography':
+        case 'History':
+        case 'General Knowledge':
+            return "Must be about the rest of the world — NOT New Zealand or Australia, which already have their own dedicated trivia and current-events categories. Cover other countries, world history, science, arts, etc. Do NOT base these on today's news.";
+        default:
+            return '';
+    }
+}
 
 /**
- * Regex => human-readable reason, for cliché questions the model reaches for
- * repeatedly despite the prompt's "avoid the single most famous fact" instruction.
- * Applies across all categories. Add a line here whenever a new recurring
- * cliché gets spotted — cheaper than trying to word-tune the prompt further.
+ * Validates a category's generated questions: exact count, exact mc/tf split,
+ * and every per-question content rule (see validateOneQuestion()).
+ *
+ * @return string[] Empty array if valid, otherwise a list of violation descriptions.
  */
-const BANNED_QUESTION_PATTERNS = [
-    '/\bcapital( city)? of\b/i'       => 'capital-of-a-country cliché',
-    '/\bopera house\b/i'              => 'Sydney Opera House cliché',
-    '/\bnational (symbol|animal|bird)\b/i' => 'national symbol/animal/bird cliché',
-    '/\blongest river in the world\b/i'    => 'disputed fact (Nile vs Amazon) treated as settled',
-];
+function validateCategoryQuestions(?array $candidate, string $category, int $mcCount, int $tfCount): array {
+    $total = $mcCount + $tfCount;
+    if (!isset($candidate['questions']) || count($candidate['questions']) !== $total) {
+        return ["expected $total question(s) for '$category', got: " . json_encode($candidate)];
+    }
+
+    $errors = [];
+    $actualMc = 0;
+    $actualTf = 0;
+    foreach ($candidate['questions'] as $i => $q) {
+        $errors = array_merge($errors, validateOneQuestion($q, $category, $i + 1));
+        if ($q['format'] === 'mc') $actualMc++;
+        elseif ($q['format'] === 'tf') $actualTf++;
+    }
+    if ($actualMc !== $mcCount) {
+        $errors[] = "'$category' has $actualMc mc question(s) (expected $mcCount)";
+    }
+    if ($actualTf !== $tfCount) {
+        $errors[] = "'$category' has $actualTf tf question(s) (expected $tfCount)";
+    }
+
+    return $errors;
+}
+
+/**
+ * Validates a single question: option/correct-answer counts, tf phrased as a
+ * WH-question, banned clichés, answer-giveaway, current-events content leaking
+ * into an evergreen category, and NZ/AU content bias or cross-country mixup.
+ *
+ * @return string[] Violation descriptions for this question (empty if clean).
+ */
+function validateOneQuestion(array $q, string $category, int $qNum): array {
+    $errors = [];
+    $correctCount = 0;
+    $correctText = '';
+    foreach ($q['options'] as $opt) {
+        if ($opt['correct']) {
+            $correctCount++;
+            $correctText = $opt['text'];
+        }
+    }
+    if ($correctCount !== 1) {
+        $errors[] = "question $qNum has $correctCount correct answers (expected 1)";
+    }
+    $expectedOptions = ($q['format'] === 'tf') ? 2 : 4;
+    if (count($q['options']) !== $expectedOptions) {
+        $errors[] = "question $qNum ({$q['format']}) has " . count($q['options']) . " options (expected $expectedOptions)";
+    }
+
+    if ($q['format'] === 'tf' && preg_match('/^\s*(which|who|what|when|where|why|how)\b/i', $q['question'])) {
+        $errors[] = "question $qNum is format 'tf' but phrased as a WH-question (\"{$q['question']}\") — tf questions must be true/false statements";
+    }
+
+    foreach (BANNED_QUESTION_PATTERNS as $pattern => $reason) {
+        if (preg_match($pattern, $q['question'])) {
+            $errors[] = "question $qNum (\"{$q['question']}\") matches banned pattern: $reason — pick a different, less obvious question";
+            break;
+        }
+    }
+
+    // A well-formed MC question should never name its own answer in the prompt
+    // (e.g. "...hosting the annual Sydney Festival?" with "Sydney" as the
+    // correct option). Word-boundary match, case-insensitive; skip tf (its
+    // "True"/"False" text isn't a meaningful giveaway) and very short answers
+    // (avoid noise from incidental short-word overlap).
+    if ($q['format'] === 'mc' && strlen($correctText) >= 3
+        && preg_match('/\b' . preg_quote($correctText, '/') . '\b/i', $q['question'])) {
+        $errors[] = "question $qNum gives away its own answer — correct answer \"$correctText\" appears verbatim in the question text (\"{$q['question']}\")";
+    }
+
+    $combined = $q['question'] . ' ' . $correctText;
+
+    // Current events must stay out of the 6 "evergreen" categories — the model
+    // keeps reaching for real news dressed as timeless trivia. Catches explicit
+    // recency language and mentions of the current/previous year; a paraphrased
+    // story with no such marker can still slip through — accepted residual risk.
+    if (!in_array($category, CURRENT_EVENTS_CATEGORIES, true)) {
+        if (preg_match('/\b(recent(ly)?|this year|last year|newly|latest|just (been|announced|appointed|released|launched))\b/i', $combined)) {
+            $errors[] = "question $qNum (category '$category') uses recency language — this category must be evergreen, not current events";
+        }
+        $currentYear = (int) date('Y');
+        foreach ([$currentYear, $currentYear - 1] as $yr) {
+            if (preg_match('/\b' . $yr . '\b/', $combined)) {
+                $errors[] = "question $qNum (category '$category') mentions $yr — looks like current-events content leaking into a non-news category";
+                break;
+            }
+        }
+    }
+
+    if (in_array($category, ['Geography', 'History', 'General Knowledge'], true)) {
+        $hit = textContainsKeyword($combined, NZ_KEYWORDS) ?? textContainsKeyword($combined, AU_KEYWORDS);
+        if ($hit !== null) {
+            $errors[] = "question $qNum (category '$category') is NZ/AU-specific (matched \"$hit\") — this category must be global content";
+        }
+    } elseif ($category === 'Aussie Current Events') {
+        $hit = textContainsKeyword($combined, NZ_KEYWORDS);
+        if ($hit !== null) {
+            $errors[] = "question $qNum is meant to be about Australia but matched NZ term \"$hit\"";
+        }
+    } elseif ($category === 'NZ Current Events') {
+        $hit = textContainsKeyword($combined, AU_KEYWORDS);
+        if ($hit !== null) {
+            $errors[] = "question $qNum is meant to be about New Zealand but matched Australian term \"$hit\"";
+        }
+    }
+
+    return $errors;
+}
 
 /**
  * Case-insensitive whole-word/phrase search across a list of keywords.
@@ -220,119 +416,6 @@ function textContainsKeyword(string $text, array $keywords): ?string {
         }
     }
     return null;
-}
-
-/**
- * Validates overall quiz structure, per-question answer/option counts, exact
- * category distribution, and content-level rules the model tends to ignore
- * (NZ/AU content leaking into global categories, current-events cross-country
- * mislabeling, true/false questions phrased as WH-questions, current-events
- * content dressed up as evergreen trivia, MC questions that name their own
- * answer in the question text).
- *
- * Collects ALL violations in one pass (rather than stopping at the first) so a
- * single retry can be told everything wrong at once — real quizzes have shown
- * up to 8 simultaneous violations, which would exhaust a small retry budget if
- * each attempt only learned about one problem at a time.
- *
- * @return string[] Empty array if valid, otherwise a list of violation descriptions.
- */
-function validateQuiz(?array $quizJson): array {
-    if (!isset($quizJson['questions']) || count($quizJson['questions']) !== 15) {
-        return ["expected 15 questions, got: " . json_encode($quizJson)];
-    }
-
-    $errors = [];
-    $categoryCounts = [];
-    foreach ($quizJson['questions'] as $i => $q) {
-        $qNum = $i + 1;
-        $correctCount = 0;
-        $correctText = '';
-        foreach ($q['options'] as $opt) {
-            if ($opt['correct']) {
-                $correctCount++;
-                $correctText = $opt['text'];
-            }
-        }
-        if ($correctCount !== 1) {
-            $errors[] = "question $qNum has $correctCount correct answers (expected 1)";
-        }
-        $expectedOptions = ($q['format'] === 'tf') ? 2 : 4;
-        if (count($q['options']) !== $expectedOptions) {
-            $errors[] = "question $qNum ({$q['format']}) has " . count($q['options']) . " options (expected $expectedOptions)";
-        }
-
-        if ($q['format'] === 'tf' && preg_match('/^\s*(which|who|what|when|where|why|how)\b/i', $q['question'])) {
-            $errors[] = "question $qNum is format 'tf' but phrased as a WH-question (\"{$q['question']}\") — tf questions must be true/false statements";
-        }
-
-        foreach (BANNED_QUESTION_PATTERNS as $pattern => $reason) {
-            if (preg_match($pattern, $q['question'])) {
-                $errors[] = "question $qNum (\"{$q['question']}\") matches banned pattern: $reason — pick a different, less obvious question";
-                break;
-            }
-        }
-
-        // A well-formed MC question should never name its own answer in the
-        // prompt (e.g. "...hosting the annual Sydney Festival?" with "Sydney" as
-        // the correct option). Word-boundary match, case-insensitive; skip tf
-        // (its "True"/"False" text isn't a meaningful giveaway) and very short
-        // answers (avoid noise from incidental short-word overlap).
-        if ($q['format'] === 'mc' && strlen($correctText) >= 3
-            && preg_match('/\b' . preg_quote($correctText, '/') . '\b/i', $q['question'])) {
-            $errors[] = "question $qNum gives away its own answer — correct answer \"$correctText\" appears verbatim in the question text (\"{$q['question']}\")";
-        }
-
-        $combined = $q['question'] . ' ' . $correctText;
-        $category = $q['category'];
-
-        // Current events must stay out of the 6 "evergreen" categories — the model
-        // keeps reaching for real news dressed as timeless trivia (e.g. a school
-        // competition result phrased as "NZ Trivia"). Catches explicit recency
-        // language and mentions of the current/previous year; a paraphrased story
-        // with no such marker (e.g. "ratings have fallen sharply") can still slip
-        // through — same class of residual risk as the fabrication issue.
-        if (!in_array($category, ['NZ Current Events', 'Aussie Current Events'], true)) {
-            if (preg_match('/\b(recent(ly)?|this year|last year|newly|latest|just (been|announced|appointed|released|launched))\b/i', $combined)) {
-                $errors[] = "question $qNum (category '$category') uses recency language — this category must be evergreen, not current events";
-            }
-            $currentYear = (int) date('Y');
-            foreach ([$currentYear, $currentYear - 1] as $yr) {
-                if (preg_match('/\b' . $yr . '\b/', $combined)) {
-                    $errors[] = "question $qNum (category '$category') mentions $yr — looks like current-events content leaking into a non-news category";
-                    break;
-                }
-            }
-        }
-
-        if (in_array($category, ['Geography', 'History', 'General Knowledge'], true)) {
-            $hit = textContainsKeyword($combined, NZ_KEYWORDS) ?? textContainsKeyword($combined, AU_KEYWORDS);
-            if ($hit !== null) {
-                $errors[] = "question $qNum (category '$category') is NZ/AU-specific (matched \"$hit\") — this category must be global content";
-            }
-        } elseif ($category === 'Aussie Current Events') {
-            $hit = textContainsKeyword($combined, NZ_KEYWORDS);
-            if ($hit !== null) {
-                $errors[] = "question $qNum is labeled 'Aussie Current Events' but matched NZ term \"$hit\" — likely mislabeled, must be about Australia only";
-            }
-        } elseif ($category === 'NZ Current Events') {
-            $hit = textContainsKeyword($combined, AU_KEYWORDS);
-            if ($hit !== null) {
-                $errors[] = "question $qNum is labeled 'NZ Current Events' but matched Australian term \"$hit\" — likely mislabeled, must be about New Zealand only";
-            }
-        }
-
-        $categoryCounts[$category] = ($categoryCounts[$category] ?? 0) + 1;
-    }
-
-    foreach (CATEGORY_TARGETS as $cat => $expected) {
-        $actual = $categoryCounts[$cat] ?? 0;
-        if ($actual !== $expected) {
-            $errors[] = "category '$cat' has $actual questions (expected exactly $expected) — full distribution: " . json_encode($categoryCounts);
-        }
-    }
-
-    return $errors;
 }
 
 /**
