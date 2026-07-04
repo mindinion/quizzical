@@ -17,6 +17,13 @@
 	require_once 'require_auth.php';
 	// $userid set by require_auth.php from validated session
 
+	// Prevent mobile browsers (iOS Safari especially) from serving a stale cached
+	// response for this exact GET URL — quiz availability changes daily and must
+	// always hit the server fresh, not silently reuse a response from before a
+	// quiz existed.
+	header('Cache-Control: no-store, no-cache, must-revalidate');
+	header('Pragma: no-cache');
+
 	$typefilter = isset($_GET['typefilter']) ? sanitizeString($_GET['typefilter']) : 'main';
 
 	// --- RSS cache ---
