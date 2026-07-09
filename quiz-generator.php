@@ -268,8 +268,11 @@ function generateCategoryQuestions(
     $total = $mcCount + $tfCount;
 
     $formatInstruction = $tfCount > 0
-        ? "Produce exactly $total question(s): $mcCount in \"mc\" format (4 options, exactly 1 correct) and $tfCount in \"tf\" format (2 options, \"True\" and \"False\", exactly 1 correct — phrased as a single declarative true/false statement, ideally starting with \"True or False:\". NEVER phrase a tf question as a which/what/who/when/where question, since that can't be sensibly answered with just True or False)."
-        : "Produce exactly $total question(s), all in \"mc\" format (4 options, exactly 1 correct).";
+        ? "Produce exactly $total question(s): exactly $mcCount in \"mc\" format (4 options, exactly 1 correct) and exactly $tfCount in \"tf\" format (2 options, \"True\" and \"False\", exactly 1 correct — phrased as a single declarative true/false statement, ideally starting with \"True or False:\". NEVER phrase a tf question as a which/what/who/when/where question, since that can't be sensibly answered with just True or False)."
+        : "Produce exactly $total question(s), ALL in \"mc\" format (4 options each, exactly 1 correct). "
+            . "CRITICAL: This category has zero true/false slots — every question MUST be format \"mc\". "
+            . "Do NOT use format \"tf\". Do NOT start any question with \"True or False:\". "
+            . "Write which/what/when MC questions with four content-based answer options (years, names, places — not True/False).";
 
     $categoryGuidance = buildCategoryGuidance($category);
     $validatorRules = buildValidatorRulesBlock($category);
@@ -412,7 +415,9 @@ PROMPT;
             $excludedHeadlines = array_values(array_unique($excludedHeadlines));
 
             $retryNote = "Your previous attempt was rejected for the following reasons — fix ALL of them this time:\n$errorList";
-            $retryNote .= buildRetryHintForErrors($errorList, $category);
+            $retryNote .= "\n\nFORMAT REMINDER: This batch requires exactly $mcCount mc question(s)"
+                . ($tfCount > 0 ? " and exactly $tfCount tf question(s)." : " and zero tf questions — do NOT use format \"tf\".");
+            $retryNote .= buildRetryHintForErrors($errorList, $category, $mcCount, $tfCount);
             if (in_array($category, CURRENT_EVENTS_CATEGORIES, true)) {
                 $retryNote .= "\n\nUse a COMPLETELY DIFFERENT news story from the headlines above. "
                     . "Do NOT retry the same story or a reworded version of your rejected question.";
@@ -586,8 +591,19 @@ RULES;
 /**
  * Targeted rewrite hints appended to retry notes based on which validators fired.
  */
-function buildRetryHintForErrors(string $errorList, string $category): string {
+function buildRetryHintForErrors(string $errorList, string $category, int $mcCount, int $tfCount): string {
     $hints = [];
+
+    if (preg_match('/phrased as true\/false|has \d+ mc question|has \d+ tf question/i', $errorList)) {
+        if ($tfCount === 0) {
+            $hints[] = 'MC ONLY: Rewrite every question as format "mc" with four content options. '
+                . 'Do NOT use format "tf" or "True or False:" phrasing — this category has no true/false slot. '
+                . 'Example: "In which year did Victoria become a separate colony?" with year options.';
+        } else {
+            $hints[] = "FORMAT SPLIT: Output exactly $mcCount mc question(s) (4 options each) "
+                . "and exactly $tfCount tf question(s) (True/False options). Check the format field on each question.";
+        }
+    }
 
     if (preg_match('/superlative pattern/i', $errorList)) {
         if ($category === 'Sports') {
@@ -601,8 +617,12 @@ function buildRetryHintForErrors(string $errorList, string $category): string {
 
     if (preg_match('/gives away|image_query/i', $errorList)) {
         if (preg_match('/correct answer "(True|False)"/i', $errorList)) {
-            $hints[] = 'FORMAT FIX: Do not use "True or False:" phrasing in mc questions. '
-                . 'Either set format to "tf" (2 options: True/False) or write a plain MC question with four content options and no True/False prefix.';
+            if ($tfCount === 0) {
+                $hints[] = 'MC ONLY: Remove "True or False:" phrasing. Rewrite as a which/what/when question with four content options.';
+            } else {
+                $hints[] = 'FORMAT FIX: True/False statements must use format "tf" (not "mc"). '
+                    . 'Set format to "tf" with True/False options, or rewrite as a plain MC question.';
+            }
         } else {
             $hints[] = 'GIVEAWAY FIX: The question or image_query names the correct answer. '
                 . 'Rephrase the question without the answer word; use a generic image_query (e.g. "rugby match crowd" not "Sydney Festival").';
