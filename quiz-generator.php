@@ -600,8 +600,13 @@ function buildRetryHintForErrors(string $errorList, string $category): string {
     }
 
     if (preg_match('/gives away|image_query/i', $errorList)) {
-        $hints[] = 'GIVEAWAY FIX: The question or image_query names the correct answer. '
-            . 'Rephrase the question without the answer word; use a generic image_query (e.g. "rugby match crowd" not "Sydney Festival").';
+        if (preg_match('/correct answer "(True|False)"/i', $errorList)) {
+            $hints[] = 'FORMAT FIX: Do not use "True or False:" phrasing in mc questions. '
+                . 'Either set format to "tf" (2 options: True/False) or write a plain MC question with four content options and no True/False prefix.';
+        } else {
+            $hints[] = 'GIVEAWAY FIX: The question or image_query names the correct answer. '
+                . 'Rephrase the question without the answer word; use a generic image_query (e.g. "rugby match crowd" not "Sydney Festival").';
+        }
     }
 
     if (preg_match('/NZ\/AU-specific|meant to be about/i', $errorList)) {
@@ -706,6 +711,10 @@ function validateOneQuestion(array $q, string $category, int $qNum): array {
         }
     }
 
+    if ($q['format'] === 'mc' && preg_match('/^\s*true or false\s*:/i', $q['question'])) {
+        $errors[] = "question $qNum is format 'mc' but phrased as true/false — use format 'tf' for True/False statements, or rewrite as a which/what/when MC question with four content options";
+    }
+
     // A well-formed MC question should never name its own answer in the prompt
     // (e.g. "...hosting the annual Sydney Festival?" with "Sydney" as the
     // correct option). Also catch demonyms/stems (e.g. "French" → France).
@@ -778,6 +787,11 @@ function validateOneQuestion(array $q, string $category, int $qNum): array {
 function answerGiveawayInText(string $correctText, string $haystack): bool {
     if ($correctText === '' || $haystack === '' || strlen($correctText) < 3) {
         return false;
+    }
+
+    // True/False are tf meta-options — the "True or False:" stem prefix is not a content giveaway.
+    if (strcasecmp(trim($correctText), 'true') === 0 || strcasecmp(trim($correctText), 'false') === 0) {
+        $haystack = preg_replace('/^\s*true or false\s*:\s*/i', '', $haystack);
     }
 
     $answer = mb_strtolower(trim($correctText));
