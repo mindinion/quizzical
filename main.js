@@ -548,7 +548,7 @@ document.cookie="feedItems=50";
 			// Create the different quizitem elements
 			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=QuizFeedInfoName data-quizfeedname=" + quizfeedId + ">" + nameFirst + " " + nameLast );
 			$('*[data-quizfeedname="' + quizfeedId + '"]').append("<div id=QuizFeedInfoTimestamp data-quizfeedts=" + quizfeedId + ">" + ago );
-			if (resultId != null)  $('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=QuizFeedInfoStatus>Scored " + score + "/" + max + " in the " + Date.parse(date).toString("MMM dd") + " " + type + " quiz </div id=QuizFeedInfoStatus>");
+			if (resultId != null) $('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=QuizFeedInfoStatus>Scored " + score + "/" + max + " in the " + Date.parse(date).toString("MMM dd") + " " + formatFeedQuizType(type) + " quiz </div id=QuizFeedInfoStatus>");
 			$('*[data-quizfeedname="' + quizfeedId + '"]').append("<a href='javascript:deletePost(" + quizfeedId + ") class=Underline> Delete </a>" );
 			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=QuizFeedInfoComment class=Primary>" + autoLinkUrls(comment || '') + "</div id=QuizFeedInfoComment>");    				
 			$('*[data-quizfeedtext="' + quizfeedId + '"]').append(renderAttachments(result.attachments));
@@ -1173,7 +1173,7 @@ document.cookie="feedItems=50";
 		$empty.hide();
 		$('<option>').val('').text('Select a quiz...').prop('disabled', true).prop('selected', true).attr('hidden', true).appendTo($sel);
 		quizList.forEach(function(q, i) {
-			var label = 'Quizzical ' + q.type + ' \u2013 ' + formatQuizDate(q.date);
+			var label = q.type + ' \u2013 ' + formatQuizDate(q.date);
 			if (q.done) label += ' \u2713 ' + q.score + '/' + q.max + ' (review)';
 			$('<option>').val(i).text(label).appendTo($sel);
 		});
@@ -1227,7 +1227,7 @@ document.cookie="feedItems=50";
 			aiAnswerPending = false;
 
 			var labelPrefix = aiReviewMode ? 'Review: ' : '';
-			var label = labelPrefix + 'Quizzical ' + aiQuizData.type + ' Quiz \u2013 ' + formatQuizDate(aiQuizData.date);
+			var label = labelPrefix + aiQuizData.type + ' \u2013 ' + formatQuizDate(aiQuizData.date);
 			$('#AIQuizTitle').text(label);
 			$('#AIQuizBody').show();
 			$('#AIQuizScoreScreen').hide();

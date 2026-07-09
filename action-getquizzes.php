@@ -44,7 +44,7 @@
 
 			$entry = [
 				'url'     => null,
-				'title'   => 'Quizzical ' . $row['type'] . ' Quiz — ' . $dt->format('j M'),
+				'title'   => $row['type'] . ' Quiz — ' . $dt->format('j M'),
 				'type'    => $row['type'],
 				'date'    => $quizDate,
 				'source'  => 'ai',

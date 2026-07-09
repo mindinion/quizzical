@@ -101,34 +101,45 @@ TextArea {}
 	margin-bottom: 6px;
 }
 
-#QuizDropdown {
+#QuizSelectorControls {
+	display: flex;
+	align-items: stretch;
+	gap: 6px;
 	width: 100%;
+}
+
+#QuizDropdown {
+	flex: 1;
+	min-width: 0;
 	height: 40px;
 	font-size: 14px;
 	font-family: verdana, arial;
 	border: 1px solid rgba(180, 120, 50, 0.35);
 	border-radius: 8px;
 	padding: 0 10px;
-	background: rgba(255, 255, 255, 0.45);
+	background: rgba(255, 255, 255, 0.75);
 	color: #333;
 	-webkit-appearance: auto;
 }
 
 #TakeQuizButton {
-	width: 100%;
+	flex: 0 0 auto;
 	height: 40px;
-	border: none;
+	padding: 0 14px;
+	border: 1px solid rgba(180, 120, 50, 0.35);
 	border-radius: 8px;
-	background: #e67300;
-	color: #fff;
+	background: rgba(255, 255, 255, 0.75);
+	color: #cc5500;
 	font-family: verdana, arial;
 	font-size: 14px;
 	font-weight: bold;
 	cursor: pointer;
+	white-space: nowrap;
 }
 
 #TakeQuizButton:hover {
-	background: #cc5500;
+	background: #fff;
+	border-color: #cc5500;
 }
 
 #QuizEmptyMessage {
