@@ -92,6 +92,8 @@ const SUPERLATIVE_QUESTION_PATTERNS = [
         => 'their-first superlative — ask about a specific year instead',
     '/\b(?:second|third|fourth|fifth|\d+(?:st|nd|rd|th)) time\b.{0,40}\b(?:held|hosted?|host|took place in)\b/i'
         => 'Nth-time plus host-country claim — ask about the year or host separately, not both',
+    '/\bfirst\b.{0,30}\b(successful )?(ascent|descent|summit)\b/i'
+        => 'first-ascent superlative — ask a plain year question with the year in the options only',
 ];
 
 /** Topic labels already used elsewhere in the same quiz — reject repeats like Versailles in History and GK. */
@@ -250,7 +252,7 @@ function generateQuizQuestions(string $quizType, string $today, array $avoidQues
             $category, $mcCount, $tfCount, $headlinesByRegion, $today, $avoidForThisCall, $usedTopicLabels
         );
         foreach ($categoryQuestions as $q) {
-            foreach (duplicateTopicsInQuestion($q['question']) as $topic) {
+            foreach (duplicateTopicsInQuestion($q) as $topic) {
                 $usedTopicLabels[] = $topic;
             }
         }
@@ -577,6 +579,7 @@ Sports has strict automatic rejection rules — follow exactly:
 - No all-time records (most premierships, longest streak, winning percentage, per capita).
 - Prefer: a specific tournament edition/host city, team colours/nicknames, a named athlete at a named Games, stadium or rule facts with the year in the options.
 - Do NOT combine an edition count with a host country in one question (e.g. "third time, held in the UK") — pick one angle only.
+- For Rugby World Cup final questions: verify which team actually won that final before marking a year (e.g. England beat Australia in 2003; Australia beat England in 1991).
 - Do NOT invent obscure team mascots — only well-known colours, nicknames, or stadium facts you are certain about.
 GUIDE;
         case 'Geography':
@@ -772,7 +775,7 @@ function validateOneQuestion(array $q, string $category, int $qNum, array $usedT
         }
     }
 
-    foreach (duplicateTopicsInQuestion($q['question']) as $topic) {
+    foreach (duplicateTopicsInQuestion($q) as $topic) {
         if (in_array($topic, $usedTopicLabels, true)) {
             $errors[] = "question $qNum repeats topic \"$topic\" already used elsewhere in this quiz";
         }
@@ -923,11 +926,20 @@ function questionHasYearStemPattern(string $question): bool {
     return (bool) preg_match('/^\s*In which year (?:did|was|were)\b/i', $question);
 }
 
-/** @return string[] Human-readable topic labels found in question text. */
-function duplicateTopicsInQuestion(string $question): array {
+/** @return string[] Human-readable topic labels found in question text or options. */
+function duplicateTopicsInQuestion(array $q): array {
+    $parts = [trim($q['question'] ?? '')];
+    foreach ($q['options'] ?? [] as $opt) {
+        $parts[] = trim($opt['text'] ?? '');
+    }
+    return duplicateTopicsInText(implode(' ', array_filter($parts)));
+}
+
+/** @return string[] */
+function duplicateTopicsInText(string $text): array {
     $found = [];
     foreach (DUPLICATE_QUIZ_TOPIC_PATTERNS as $pattern => $label) {
-        if (preg_match($pattern, $question)) {
+        if (preg_match($pattern, $text)) {
             $found[] = $label;
         }
     }
