@@ -15,6 +15,11 @@ define('DEV_MODE', false);
 // When true, quiz cron logs retry/fact-check/cleanup detail to generate-quiz.log and stderr
 define('QUIZ_GEN_VERBOSE_LOG', true);
 
+// Agent optimization passes (action-qa-generate-quiz.php). Override in dblogin.php if preferred.
+if (!defined('QA_RUN_TOKEN')) {
+    define('QA_RUN_TOKEN', 'qzz_qa_4e8f1a9c2d7b6305');
+}
+
 define('MAIL_FROM',      'noreply@quizzical.co.nz');
 define('MAIL_FROM_NAME', 'Quizzical');
 define('SMTP_HOST',      's04ne.syd7.hostingplatform.net.au');
