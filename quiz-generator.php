@@ -32,7 +32,7 @@ const CATEGORY_TARGETS = [
     'General Knowledge'      => 3,
 ];
 
-const MAX_ATTEMPTS_PER_CATEGORY = 5;
+const MAX_ATTEMPTS_PER_CATEGORY = 10;
 
 const NZ_KEYWORDS = [
     'new zealand', 'nz', 'zealand', 'auckland', 'wellington', 'christchurch', 'dunedin',
