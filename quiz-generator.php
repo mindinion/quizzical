@@ -2,8 +2,9 @@
 /**
  * quiz-generator.php
  *
- * Shared quiz-generation logic used by both generate-quiz.php (CLI cron, writes to DB)
- * and action-test-generate-quiz.php (ad hoc admin preview, does not write to DB).
+ * Shared quiz-generation logic used by generate-quiz.php (CLI cron, writes to DB),
+ * action-test-generate-quiz.php (superuser web preview), and qa-generate-quiz.php
+ * (CLI QA harness for optimization passes — does not write to DB).
  * The core generation logic has no DB dependency; fetchRecentQuestions() below is
  * a read-only helper both callers can use for cross-day duplicate avoidance.
  *

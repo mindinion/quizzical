@@ -1,0 +1,54 @@
+---
+description: Run server-side QA optimization passes (generate → review → fix) without user paste
+alwaysApply: false
+---
+
+# Quiz generator QA optimization pass
+
+Use when the user asks for a **QA pass**, **optimization pass**, or to tune `quiz-generator.php` by generating test quizzes.
+
+This is **not** for live cron quizzes — only for improving the generator code.
+
+## Server command (after `qa-generate-quiz.php` is deployed)
+
+SSH to VentraIP, then:
+
+```bash
+cd ~/public_html
+php qa-generate-quiz.php morning --runs=3 --save=logs/qa
+```
+
+- Server path: `/home/quizzica/public_html/`
+- Git root locally: `C:\Users\GGPC\Documents\Quizzical\v2`
+- Uses server `dblogin.php` (DB + OpenAI + Tavily + Pexels) — do not rely on local Windows PHP for generation.
+
+Fetch results for review:
+
+```bash
+cat logs/qa/*-summary.json
+cat logs/qa/*-run1.json
+```
+
+Or SCP the `logs/qa/` folder locally if SSH from the agent environment.
+
+## Agent loop (one pass)
+
+1. Run 3 test quizzes on the server (`--runs=3 --save=logs/qa`).
+2. Read each run's JSON: all 15 questions + `log` + `stats`.
+3. Flag clear factual errors, deadlocks, repetition, validator gaps.
+4. Patch `quiz-generator.php` when a **pattern** repeats (not one-off noise).
+5. Commit, push, deploy webhook (see `deploy-after-push.mdc`).
+6. Optionally re-run 3 on server after deploy to verify.
+7. Summarize for the user: completion rate, wrong-answer count, fixes made, whether another pass is warranted.
+
+## Default acceptance targets (adjust if user says otherwise)
+
+- 3/3 complete 15/15
+- ≤1 clear factual error per quiz
+- 0 category deadlocks (10 attempts exhausted)
+
+## User kickoff phrase
+
+> Run an optimization pass: 3 test quizzes, review each, fix patterns, deploy, summarize.
+
+User does **not** paste quiz output. They only say whether to run another pass.
