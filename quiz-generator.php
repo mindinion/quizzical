@@ -94,6 +94,8 @@ const SUPERLATIVE_QUESTION_PATTERNS = [
         => 'Nth-time plus host-country claim — ask about the year or host separately, not both',
     '/\bfirst\b.{0,30}\b(successful )?(ascent|descent|summit)\b/i'
         => 'first-ascent superlative — ask a plain year question with the year in the options only',
+    '/\bworld\'s largest\b/i'
+        => 'world\'s-largest superlative — ask a plain factual question without record claims',
 ];
 
 /** Topic labels already used elsewhere in the same quiz — reject repeats like Versailles in History and GK. */
@@ -580,6 +582,7 @@ Sports has strict automatic rejection rules — follow exactly:
 - Prefer: a specific tournament edition/host city, team colours/nicknames, a named athlete at a named Games, stadium or rule facts with the year in the options.
 - Do NOT combine an edition count with a host country in one question (e.g. "third time, held in the UK") — pick one angle only.
 - For Rugby World Cup final questions: verify which team actually won that final before marking a year (e.g. England beat Australia in 2003; Australia beat England in 1991).
+- For Cricket World Cup questions: verify the host country matches the year (e.g. 2011 was India/Sri Lanka/Bangladesh, not New Zealand; 2015 was Australia/New Zealand).
 - Do NOT invent obscure team mascots — only well-known colours, nicknames, or stadium facts you are certain about.
 GUIDE;
         case 'Geography':
@@ -766,7 +769,7 @@ function validateOneQuestion(array $q, string $category, int $qNum, array $usedT
     $yearStemQuestion = questionHasYearStemPattern($q['question']);
 
     foreach (SUPERLATIVE_QUESTION_PATTERNS as $pattern => $reason) {
-        if ($yearStemQuestion && str_contains($reason, 'first')) {
+        if ($yearStemQuestion && str_contains($reason, 'first') && $category !== 'Sports') {
             continue;
         }
         if (preg_match($pattern, $q['question'])) {
