@@ -39,13 +39,14 @@ const NZ_KEYWORDS = [
     'new zealand', 'nz', 'zealand', 'auckland', 'wellington', 'christchurch', 'dunedin',
     'hamilton', 'rotorua', 'tauranga', 'queenstown', 'napier', 'nelson', 'invercargill',
     'maori', 'māori', 'waitangi', 'kiwi', 'aotearoa', 'taupo', 'south island', 'north island',
-    'wakari',
+    'wakari', 'kakapo', 'tuatara', 'all blacks', 'silver ferns',
 ];
 
 const AU_KEYWORDS = [
     'australia', 'aussie', 'sydney', 'melbourne', 'brisbane', 'perth', 'canberra', 'adelaide',
     'queensland', 'victoria', 'new south wales', 'nsw', 'tasmania', 'northern territory',
     'outback', 'great barrier reef', 'aboriginal',
+    'kangaroo', 'koala', 'platypus', 'wombat', 'echidna', 'wallaby',
 ];
 
 /**
@@ -886,6 +887,7 @@ function validateOneQuestion(array $q, string $category, int $qNum, array $usedT
     }
 
     $combined = $q['question'] . ' ' . $correctText;
+    $regionText = triviaRegionCombinedText($q);
 
     // Current events must stay out of the 6 "evergreen" categories — the model
     // keeps reaching for real news dressed as timeless trivia. Catches explicit
@@ -927,7 +929,7 @@ function validateOneQuestion(array $q, string $category, int $qNum, array $usedT
         if (preg_match('/\bgreat barrier reef\b/i', $combined)) {
             $errors[] = "question $qNum (category '$category') is about the Great Barrier Reef — Australia Trivia only";
         }
-        if (textContainsKeyword($combined, NZ_KEYWORDS) === null) {
+        if (textContainsKeyword($regionText, NZ_KEYWORDS) === null) {
             $errors[] = "question $qNum (category '$category') has no New Zealand topic — NZ Trivia must mention NZ places, people, or culture";
         }
     } elseif ($category === 'Australia Trivia') {
@@ -935,7 +937,7 @@ function validateOneQuestion(array $q, string $category, int $qNum, array $usedT
         if ($hit !== null) {
             $errors[] = "question $qNum (category '$category') is NZ-specific (matched \"$hit\") — Australia Trivia only";
         }
-        if (textContainsKeyword($combined, AU_KEYWORDS) === null) {
+        if (textContainsKeyword($regionText, AU_KEYWORDS) === null) {
             $errors[] = "question $qNum (category '$category') has no Australian topic — Australia Trivia must mention Australia, its places, or culture";
         }
     }
@@ -1032,6 +1034,15 @@ function duplicateTopicsInQuestion(array $q): array {
         $parts[] = trim($opt['text'] ?? '');
     }
     return duplicateTopicsInText(implode(' ', array_filter($parts)));
+}
+
+/** Question stem plus all option text — for region/topic checks that should see answer choices. */
+function triviaRegionCombinedText(array $q): string {
+    $parts = [trim($q['question'] ?? '')];
+    foreach ($q['options'] ?? [] as $opt) {
+        $parts[] = trim($opt['text'] ?? '');
+    }
+    return implode(' ', array_filter($parts));
 }
 
 /** @return string[] */
