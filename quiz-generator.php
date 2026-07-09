@@ -62,6 +62,29 @@ const BANNED_QUESTION_PATTERNS = [
     '/\blongest river in the world\b/i'                 => 'disputed fact (Nile vs Amazon) treated as settled',
 ];
 
+/**
+ * Superlative / record / obscure-stat patterns — high rate of wrong marked answers in testing.
+ * Prefer specific-year or plain factual questions instead.
+ */
+const SUPERLATIVE_QUESTION_PATTERNS = [
+    '/\bfirst\b.{0,45}\b(to win|to ever|Olympic gold|All Blacks|Test match|participate)\b/i'
+        => 'first-ever superlative — ask "In which year did…?" instead',
+    '/\bfirst\b.{0,25}\b(to enact|to grant|to allow|to introduce|to pass)\b/i'
+        => 'first-to-do-something superlative — embeds disputed "first" claims',
+    '/\b(longest consecutive|most premiership)\b/i'
+        => 'sports record superlative — ask about a specific season or year instead',
+    '/\b(highest|greatest|lowest) overall winning\b/i'
+        => 'winning-percentage record claim — ask about a specific season instead',
+    '/\brecord (for|holder)\b/i'
+        => 'record-holder superlative',
+    '/\bper capita\b/i'
+        => 'per-capita statistic — often fabricated or unverifiable',
+    '/\bwinning percentage in\b.{0,30}\bhistory\b/i'
+        => 'all-time winning-percentage record',
+    '/\b(largest number|most per capita)\b/i'
+        => 'largest/most superlative with obscure counting metric',
+];
+
 /** Country/place answer => adjective/demonym forms that give the answer away in question text or image_query. */
 const ANSWER_GIVEAWAY_FORMS = [
     'france'          => ['french', 'francais', 'français', 'parisian'],
@@ -258,6 +281,8 @@ $formatInstruction
 For any "mc" question, include one answer option that sounds almost plausible but is subtly absurd on reflection — not obviously silly, the kind that makes you second-guess yourself. Aim for roughly 1 in 3 of the mc questions to have this.
 
 Difficulty: genuinely challenging — average players should get some wrong. Do NOT ask questions whose answer is the single most famous fact about a topic (e.g. capital cities, a country's national animal/bird, "the" founding treaty of a nation, the primary language of a country, a famous landmark's most basic fact). These are trivially guessable. Ask about specific details, dates, numbers, or lesser-known angles instead.
+
+Avoid superlative and record-breaking questions (e.g. "first ever to…", "most wins in history", "longest consecutive streak", "per capita", "highest winning percentage"). Prefer "In which year did…?" or "Which country/team…?" without all-time record claims. Do NOT embed specific years or precise statistics in the question text unless you are certain they are correct — wrong dates in the question are automatic failures.
 
 Never state the correct answer's exact wording anywhere in the question text itself. Also never use the adjective/demonym form when the answer is the country name (e.g. do NOT say "French" in the question if the correct answer is "France").
 
@@ -577,6 +602,13 @@ function validateOneQuestion(array $q, string $category, int $qNum): array {
     foreach (BANNED_QUESTION_PATTERNS as $pattern => $reason) {
         if (preg_match($pattern, $q['question'])) {
             $errors[] = "question $qNum (\"{$q['question']}\") matches banned pattern: $reason — pick a different, less obvious question";
+            break;
+        }
+    }
+
+    foreach (SUPERLATIVE_QUESTION_PATTERNS as $pattern => $reason) {
+        if (preg_match($pattern, $q['question'])) {
+            $errors[] = "question $qNum (\"{$q['question']}\") matches superlative pattern: $reason";
             break;
         }
     }
@@ -999,6 +1031,72 @@ function callOpenAIJsonVerifier(string $systemPrompt, string $userPrompt): ?arra
 }
 
 /**
+ * MC questions only — true when the stem embeds a date or precise stat worth verifying.
+ */
+function questionNeedsPremiseCheck(string $question, string $format): bool {
+    if ($format !== 'mc') {
+        return false;
+    }
+    if (preg_match('/\b(18|19|20)\d{2}\b/', $question)) {
+        return true;
+    }
+    if (preg_match('/\b\d{1,3}[,.]?\d*\s*(km|kilometers|kilometres|metres|meters|percent|%)\b/i', $question)) {
+        return true;
+    }
+    if (preg_match('/\b(approximately|roughly|about)\s+\d/i', $question)) {
+        return true;
+    }
+    return false;
+}
+
+function verifyQuestionPremiseWithSnippets(string $question, array $snippets): array {
+    $snippetBlock = implode("\n\n", array_map(
+        fn($s, $i) => '[' . ($i + 1) . '] ' . $s,
+        $snippets,
+        array_keys($snippets)
+    ));
+
+    $systemPrompt = <<<'PROMPT'
+You verify whether factual claims stated IN the quiz question text are accurate, using ONLY the provided search snippets — not your own memory.
+
+Scope:
+- Check dates, numbers, statistics, and named historical facts embedded in the question stem.
+- Ignore the answer options entirely — do not judge which answer is correct.
+- Do NOT check whether the question is tricky, oversimplified, or debatable among experts.
+
+Rules:
+- Default to valid: true. Only reject when snippets explicitly contradict a date, number, or fact stated in the question.
+- Example reject: question says "in 1902" but snippets say the event was 1894.
+- Example reject: question says "27,000 kilometers" but snippets cite ~15,000 km.
+- If snippets are silent or vague — you MUST respond valid: true. Absence of evidence is NOT a rejection.
+- NEVER reject because snippets "do not mention" or "fail to support" — those mean valid: true.
+
+If valid is false, your issue must cite the specific contradictory fact from the snippets.
+
+Respond with strict JSON: {"valid": true/false, "issue": "short reason if invalid, else empty string"}
+PROMPT;
+
+    $userPrompt = "Question text to verify:\n$question\n\nSearch snippets:\n$snippetBlock";
+
+    $result = callOpenAIJsonVerifier($systemPrompt, $userPrompt);
+    if ($result === null) {
+        return ['valid' => true, 'issue' => ''];
+    }
+
+    $valid = (bool)($result['valid'] ?? true);
+    $issue = trim($result['issue'] ?? '');
+
+    if (!$valid && $issue !== '' && factCheckIssueIsSilenceOnly($issue)) {
+        return ['valid' => true, 'issue' => ''];
+    }
+
+    return [
+        'valid' => $valid,
+        'issue' => $issue,
+    ];
+}
+
+/**
  * @return string[] Violation descriptions (empty if all questions pass).
  */
 function factCheckCategoryQuestions(array $questions, string $category, array $headlinesByRegion): array {
@@ -1039,6 +1137,17 @@ function factCheckCategoryQuestions(array $questions, string $category, array $h
             bumpQuizGenStat('fact_check_skips');
             logQuizGenError("[$category] [fact-check] No snippets — skipped fact-check for question $qNum");
             continue;
+        }
+
+        if (questionNeedsPremiseCheck($q['question'], $q['format'])) {
+            $premiseVerdict = verifyQuestionPremiseWithSnippets($q['question'], $snippets);
+            if (!$premiseVerdict['valid']) {
+                $reason = $premiseVerdict['issue'] !== ''
+                    ? $premiseVerdict['issue']
+                    : 'question contains an inaccurate date or statistic';
+                $errors[] = "question $qNum [fact-check premise]: question text rejected — $reason";
+                continue;
+            }
         }
 
         $verdict = verifyAnswerWithSnippets(
