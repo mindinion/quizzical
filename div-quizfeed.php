@@ -126,7 +126,10 @@
 					</div id="QuizFeedInfoName">
 					<?php
 					if ($score != null) {
-						?> <div id="QuizFeedInfoStatus">Scored <?php echo $score ?>/<?php echo $max ?> in the <?php echo Date("M-j",strtotime( $quizDate) ). " " . $quizType ?> Quiz </div id="QuizFeedInfoStatus">	
+						$displayType = (strpos($quizType, 'Quizzical ') === 0)
+							? substr($quizType, strlen('Quizzical '))
+							: $quizType;
+						?> <div id="QuizFeedInfoStatus">Scored <?php echo $score ?>/<?php echo $max ?> in the <?php echo Date("M-j",strtotime( $quizDate) ). " " . $displayType ?> quiz </div id="QuizFeedInfoStatus">	
 					<?php } ?>
 					<div id="QuizFeedInfoComment" class="Primary"><?php echo $comment ?></div id="QuizFeedInfoComment">					
 					

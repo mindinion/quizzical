@@ -69,8 +69,8 @@
 	<input type="number" name="questions" id ="NewResultTotal" value=15 min="0">
 	<div id="NewScoreLabelType">Type</div>
 	<select name="type" id="NewScoreType">
-		<option value="Morning">Morning</option>
-		<option value="Afternoon">Afternoon</option>
+		<option value="Quizzical Morning">Morning</option>
+		<option value="Quizzical Afternoon">Afternoon</option>
 		<option value="Daily">Daily</option>
 		<option value="Biz">Biz</option>
 		<option value="Sports">Sports</option>

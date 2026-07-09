@@ -6,7 +6,7 @@
 
 <script src="jquery.js"></script>
 <script src="cropper.min.js"></script>
-<script src="main.js?id=65"></script>
+<script src="main.js?id=66"></script>
 
 
 
@@ -29,7 +29,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-		<link href="styles-main.css?id=1279" type="text/css" rel="stylesheet" />
+		<link href="styles-main.css?id=1280" type="text/css" rel="stylesheet" />
 		<link href="styles-profile.css?id=23" type="text/css" rel="stylesheet" />
 		<link href="styles-rankings.css?id=14" type="text/css" rel="stylesheet" />
 		<link href="cropper.min.css" type="text/css" rel="stylesheet" />
@@ -45,7 +45,6 @@
 		
 		<div id=RightButtons>
 			<button id="TestQuizButton" onclick="openTestQuiz()" style="display:none">Test Quiz</button>
-			<button id="WhatsNewButton" onclick="showWelcome(true)">&#x2605;<span class="whats-new-label"> What&#x2019;s New</span></button>
 			<a href="javascript:showProfile();">
 				<div id="MenuButton" class=right>
 					<div id="MenuButtonGraphic">
@@ -56,9 +55,11 @@
 		</div>	
 		<div id="NewPost">
 			<div id="QuizSelectorRow">
+				<button id="TakeQuizButton" onclick="startTodaysQuiz()" style="display:none">Take today&#x2019;s quiz</button>
 				<select id="QuizDropdown">
 					<option value="">Loading quizzes...</option>
 				</select>
+				<div id="QuizEmptyMessage" style="display:none"></div>
 			</div>
 		</div id="NewPost">
 	</div id="Header">
@@ -177,14 +178,6 @@
 
 
 	<div id="InfoTooltip"></div>
-
-	<div id="WelcomeOverlay" style="display:none">
-		<div id="WelcomeModal">
-			<div id="WelcomeBody"></div>
-			<button id="WelcomeDismiss" onclick="dismissWelcome()">Got it &#x2192;</button>
-		</div>
-	</div>
-
 
 	<div id="AIQuizModal" style="display:none">
 		<div id="AIQuizHeader">

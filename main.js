@@ -346,7 +346,7 @@ document.cookie="feedItems=50";
 				downloadResults(1);
 				rankingsLoaded = false;
 				if ($('#RankingsPanel').is(':visible')) loadRankings(rankingsCurrentPeriod);
-				document.getElementById("NewScoreType").value = 'Daily';
+				document.getElementById("NewScoreType").value = 'Quizzical Morning';
 				document.getElementById("NewResultScore").value = '';
 				document.getElementById("NewResultTotal").value = '15';
 				document.getElementById("NewScoreDate").value = 'Today';
@@ -699,7 +699,7 @@ document.cookie="feedItems=50";
 
 		if (opts.isResult) {
 			var dateStr = Date.parse(opts.quizDate).toString('MMM dd');
-			$text.append($('<div>').attr('id', 'QuizFeedInfoStatus').text('Scored ' + opts.score + '/' + opts.total + ' in the ' + dateStr + ' ' + opts.quizType + ' quiz'));
+			$text.append($('<div>').attr('id', 'QuizFeedInfoStatus').text('Scored ' + opts.score + '/' + opts.total + ' in the ' + dateStr + ' ' + formatFeedQuizType(opts.quizType) + ' quiz'));
 		}
 
 		var $commentDiv = $('<div>').attr({ id: 'QuizFeedInfoComment', 'class': 'Primary' }).html(autoLinkUrls(opts.comment || ''));
@@ -1115,6 +1115,40 @@ document.cookie="feedItems=50";
 	}
 
 
+	function formatFeedQuizType(quizType) {
+		if (!quizType) return '';
+		return quizType.replace(/^Quizzical /, '');
+	}
+
+	function getNextQuizMessage() {
+		if (typeof moment === 'undefined' || !moment.tz) {
+			return 'No quizzes available yet — check back at 9am or 3pm NZT.';
+		}
+		var now = moment.tz('Pacific/Auckland');
+		var hour = now.hour();
+		if (hour < 9) return 'No quizzes yet — today\u2019s morning quiz generates at 9am NZT.';
+		if (hour < 15) return 'No quizzes yet — today\u2019s afternoon quiz generates at 3pm NZT.';
+		return 'No quizzes yet — tomorrow\u2019s morning quiz generates at 9am NZT.';
+	}
+
+	function findQuizToTake() {
+		var today = (typeof moment !== 'undefined' && moment.tz)
+			? moment.tz('Pacific/Auckland').format('YYYY-MM-DD')
+			: null;
+		if (today) {
+			var todayUndone = quizList.find(function(q) { return q.date === today && !q.done; });
+			if (todayUndone) return todayUndone;
+		}
+		return quizList.find(function(q) { return !q.done; }) || null;
+	}
+
+	function startTodaysQuiz() {
+		var quiz = findQuizToTake();
+		if (!quiz) return;
+		selectedQuiz = quiz;
+		openAIQuiz(quiz, false);
+	}
+
 	function loadQuizList() {
 		$.get('action-getquizzes.php', function(data) {
 			quizList = JSON.parse(data);
@@ -1124,19 +1158,34 @@ document.cookie="feedItems=50";
 
 	function renderQuizDropdown() {
 		var $sel = $('#QuizDropdown');
+		var $take = $('#TakeQuizButton');
+		var $empty = $('#QuizEmptyMessage');
 		$sel.empty();
-		$('<option>').val('').text('Select a quiz...').prop('disabled', true).prop('selected', true).attr('hidden', true).appendTo($sel);
+
 		if (!quizList.length) {
-			$('<option>').val('').text('No quizzes found').prop('disabled', true).appendTo($sel);
+			$sel.hide();
+			$take.hide();
+			$empty.text(getNextQuizMessage()).show();
 			return;
 		}
+
+		$sel.show();
+		$empty.hide();
+		$('<option>').val('').text('Select a quiz...').prop('disabled', true).prop('selected', true).attr('hidden', true).appendTo($sel);
 		quizList.forEach(function(q, i) {
 			var label = 'Quizzical ' + q.type + ' \u2013 ' + formatQuizDate(q.date);
 			if (q.done) label += ' \u2713 ' + q.score + '/' + q.max + ' (review)';
 			$('<option>').val(i).text(label).appendTo($sel);
 		});
-		var firstOpen = quizList.findIndex(function(q) { return !q.done; });
-		if (firstOpen >= 0) $sel.val(firstOpen);
+
+		var toTake = findQuizToTake();
+		if (toTake) {
+			$take.show();
+			var idx = quizList.indexOf(toTake);
+			if (idx >= 0) $sel.val(idx);
+		} else {
+			$take.hide();
+		}
 	}
 
 	function formatQuizDate(dateStr) {
@@ -1333,7 +1382,7 @@ document.cookie="feedItems=50";
 					isResult:  true,
 					score:     finalScore,
 					total:     15,
-					quizType:  quizType,
+					quizType:  aiQuizData.type,
 					quizDate:  quizDate,
 					comment:   comment
 				});
@@ -1843,26 +1892,11 @@ document.cookie="feedItems=50";
 		document.getElementById("profilepic").value = "";
 	}
 
-	function showWelcome(force) {
-		var WELCOME_VERSION = 'v4';
-		if (!force && localStorage.getItem('quizzical_welcome') === WELCOME_VERSION) return;
-		$.get('welcome-v4.html', function(html) {
-			$('#WelcomeBody').html(html);
-			$('#WelcomeOverlay').fadeIn(200);
-		});
-	}
-
-	function dismissWelcome() {
-		localStorage.setItem('quizzical_welcome', 'v4');
-		$('#WelcomeOverlay').fadeOut(200);
-	}
-
 	$( document ).ready(function() {
 		if (!document.getElementById("MainContent")) return;
 		getSettings();
 		activateListeners();
 		$("#userid").val(getCookie("userid"));
-		showWelcome();
 	});
 	
 	
