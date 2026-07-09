@@ -69,6 +69,10 @@ const BANNED_QUESTION_PATTERNS = [
     '/\bopera house\b/i'                               => 'Sydney Opera House cliché',
     '/\bnational (symbol|animal|bird)\b/i'             => 'national symbol/animal/bird cliché',
     '/\blongest river in the world\b/i'                 => 'disputed fact (Nile vs Amazon) treated as settled',
+    '/\bextends across both\b.{0,25}\b(Europe and Asia|Asia and Europe)\b/i'
+        => 'geography extent error — Himalayas are Asia-only; Urals/Caucasus divide Europe and Asia',
+    '/\b(both Europe and Asia|Europe and Asia)\b.{0,40}\b(mountain|range|river)\b/i'
+        => 'geography extent error — verify which continent(s) a feature actually spans',
 ];
 
 /**
@@ -80,7 +84,7 @@ const SUPERLATIVE_QUESTION_PATTERNS = [
         => 'first-ever superlative — ask "In which year did…?" instead',
     '/\bfirst\b.{0,35}\b(World Cup|FIFA|Olympics|Olympic Games)\b/i'
         => 'first-at-tournament superlative — ask about a specific year or edition instead',
-    '/\bfirst\b.{0,25}\b(to enact|to grant|to allow|to introduce|to pass)\b/i'
+    '/\bfirst\b.{0,25}\b(to enact|to grant|to allow|to introduce|to pass|to adopt)\b/i'
         => 'first-to-do-something superlative — embeds disputed "first" claims',
     '/\b(longest consecutive|most premiership)\b/i'
         => 'sports record superlative — ask about a specific season or year instead',
@@ -104,6 +108,10 @@ const SUPERLATIVE_QUESTION_PATTERNS = [
         => 'first-ascent superlative — ask a plain year question with the year in the options only',
     '/\bworld\'s largest\b/i'
         => 'world\'s-largest superlative — ask a plain factual question without record claims',
+    '/\blargest\b.{0,35}\b(in the world|on earth|on Earth|living structure)\b/i'
+        => 'largest-on-earth superlative — ask a plain factual question without record claims',
+    '/\blargest coral reef\b/i'
+        => 'largest coral reef superlative — ask about a specific place or feature without record claims',
     '/\blast (country|countries|nation|nations|to)\b.{0,40}\b(Europe|Asia|Africa|Americas|the world)\b/i'
         => 'last-in-region superlative — regional rankings are disputed (e.g. Belarus still has the death penalty in Europe)',
     '/\bonly country (in|to)\b.{0,40}\b(Europe|Asia|Africa|the world)\b/i'
@@ -488,12 +496,15 @@ PROMPT;
 
     $result = null;
     $lastCandidate = null;
+    $bestCandidate = null;
+    $bestErrorCount = PHP_INT_MAX;
     $maxAttempts = maxAttemptsForCategory($category);
 
     for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
         $headlineBlock = buildCategoryHeadlineBlock($category, $headlinesByRegion, $excludedHeadlines);
         $avoidBlock = buildQuestionAvoidBlock($avoidQuestions, $failedQuestions);
-        $attemptUserPrompt = "Today is $today.$headlineBlock$avoidBlock\n\nGenerate the question(s) now.";
+        $topicsBlock = buildUsedTopicsAvoidBlock($usedTopicLabels);
+        $attemptUserPrompt = "Today is $today.$headlineBlock$avoidBlock$topicsBlock\n\nGenerate the question(s) now.";
         if ($retryNote !== '') {
             $attemptUserPrompt .= "\n\nNOTE: $retryNote";
         }
@@ -546,6 +557,12 @@ PROMPT;
             );
         }
         if ($errors) {
+            $errorCount = count($errors);
+            if (is_array($candidate) && isset($candidate['questions']) && $errorCount < $bestErrorCount) {
+                $bestErrorCount = $errorCount;
+                $bestCandidate = $candidate;
+            }
+
             $errorList = implode("\n", array_map(fn($e) => '- ' . $e, $errors));
             logQuizGenError("[$category] Attempt $attempt: " . count($errors) . " violation(s):\n$errorList");
 
@@ -571,6 +588,9 @@ PROMPT;
             $retryNote .= "\n\nFORMAT REMINDER: This batch requires exactly $mcCount mc question(s)"
                 . ($tfCount > 0 ? " and exactly $tfCount tf question(s)." : " and zero tf questions — do NOT use format \"tf\".");
             $retryNote .= buildRetryHintForErrors($errorList, $category, $mcCount, $tfCount, $attempt);
+            if (preg_match('/repeats topic/i', $errorList) && $usedTopicLabels) {
+                $retryNote .= buildUsedTopicsAvoidBlock($usedTopicLabels);
+            }
             if (in_array($category, CURRENT_EVENTS_CATEGORIES, true)) {
                 $retryNote .= "\n\nUse a COMPLETELY DIFFERENT news story from the headlines above. "
                     . "Do NOT retry the same story or a reworded version of your rejected question.";
@@ -591,12 +611,18 @@ PROMPT;
     }
 
     if ($result === null) {
-        if ($lastCandidate !== null && isset($lastCandidate['questions']) && is_array($lastCandidate['questions'])) {
+        $fallbackCandidate = ($bestCandidate !== null && $bestErrorCount < PHP_INT_MAX)
+            ? $bestCandidate
+            : $lastCandidate;
+        if ($fallbackCandidate !== null && isset($fallbackCandidate['questions']) && is_array($fallbackCandidate['questions'])) {
+            $pickLabel = ($fallbackCandidate === $bestCandidate && $bestCandidate !== null) ? 'best' : 'last';
             logQuizGenError(
-                "[$category] All $maxAttempts attempts failed validation — accepting last attempt (best effort)."
+                "[$category] All $maxAttempts attempts failed validation — accepting $pickLabel attempt"
+                . ($pickLabel === 'best' ? " ($bestErrorCount violation(s))" : '')
+                . ' (best effort).'
             );
             bumpQuizGenStat('category_cap_fallbacks');
-            $result = $lastCandidate['questions'];
+            $result = $fallbackCandidate['questions'];
         } else {
             logQuizGenError(
                 "[$category] All $maxAttempts attempts failed with no model output — using emergency fallback questions."
@@ -686,6 +712,18 @@ function buildQuestionAvoidBlock(array $avoidQuestions, array $failedQuestions =
 }
 
 /**
+ * Topics (treaties, landmarks, etc.) already used in earlier categories this quiz.
+ */
+function buildUsedTopicsAvoidBlock(array $usedTopicLabels): string {
+    $topics = array_values(array_unique(array_filter($usedTopicLabels)));
+    if (!$topics) {
+        return '';
+    }
+    $list = implode("\n", array_map(fn($t) => '- ' . $t, $topics));
+    return "\n\nTopics already used elsewhere in THIS quiz — do NOT mention these in any question or option:\n$list";
+}
+
+/**
  * Heuristic: does this question appear to be based on this headline?
  */
 function questionMatchesHeadline(string $question, string $headline): bool {
@@ -762,7 +800,7 @@ Sports has strict automatic rejection rules — follow exactly:
 - Do NOT invent obscure team mascots — only well-known colours, nicknames, or stadium facts you are certain about.
 GUIDE;
         case 'Geography':
-            return 'Must be about the rest of the world — NOT New Zealand or Australia. No Great Barrier Reef, Sydney, or other NZ/AU references. No "longest river in the world" (Nile vs Amazon) questions. No Sydney Opera House. For year questions, put the year in the answer options, not in the question stem.';
+            return 'Must be about the rest of the world — NOT New Zealand or Australia. No Great Barrier Reef, Sydney, or other NZ/AU references. No "longest river in the world" (Nile vs Amazon) questions. No Sydney Opera House. Do NOT claim a mountain range "extends across both Europe and Asia" — the Himalayas are Asia-only; the Urals/Caucasus mark the Europe–Asia boundary. For year questions, put the year in the answer options, not in the question stem.';
         case 'History':
             return 'Must be about the rest of the world — NOT New Zealand or Australia. Use standard names for treaties and events (e.g. "Treaty of Paris", "Congress of Vienna" — never invent names like "Treaty of Vienna"). No "first country to…" superlatives. TF statements must be plain factual claims, not joke premises. For year questions, put the year in the answer options, not in the question stem.';
         case 'General Knowledge':
@@ -890,7 +928,15 @@ function buildRetryHintForErrors(string $errorList, string $category, int $mcCou
     }
 
     if (preg_match('/repeats topic/i', $errorList)) {
-        $hints[] = 'DUPLICATE TOPIC: This treaty/event was already used elsewhere in the quiz — pick a completely different subject.';
+        $hints[] = 'DUPLICATE TOPIC: This treaty/event was already used elsewhere in the quiz — pick a completely different subject (see blocklist above).';
+    }
+
+    if (preg_match('/geography extent|Europe and Asia/i', $errorList)) {
+        $hints[] = 'GEOGRAPHY FIX: The Himalayas are in Asia only. The Urals/Caucasus mark the Europe–Asia boundary — do not ask which range spans both continents.';
+    }
+
+    if (preg_match('/largest-on-earth|largest coral reef/i', $errorList)) {
+        $hints[] = 'SUPERLATIVE FIX: Do not use "largest in the world/on Earth" framing — ask a specific verifiable fact about a place instead.';
     }
 
     if (!$hints) {
@@ -1603,6 +1649,9 @@ function questionNeedsPremiseCheck(string $question, string $format, string $cat
     if ($category === 'Sports' && questionNeedsSportsHostPremiseCheck($question)) {
         return true;
     }
+    if ($category === 'Geography' && questionHasGeographyExtentClaim($question)) {
+        return true;
+    }
     if ($format === 'tf') {
         return true;
     }
@@ -1622,6 +1671,16 @@ function questionNeedsPremiseCheck(string $question, string $format, string $cat
         return true;
     }
     return false;
+}
+
+function questionHasGeographyExtentClaim(string $question): bool {
+    if (preg_match('/\bextends across\b/i', $question)) {
+        return true;
+    }
+    return (bool) preg_match(
+        '/\b(both|between|across)\b.{0,25}\b(Europe and Asia|Asia and Europe)\b/i',
+        $question
+    );
 }
 
 function verifyQuestionPremiseWithSnippets(
@@ -1665,6 +1724,16 @@ Tournament host mode:
 - Reject when snippets show a different host country for that year (e.g. 2011 Cricket World Cup was in India/Sri Lanka/Bangladesh, not New Zealand).
 - Reject when snippets show the named place hosted in a different year than the marked answer.
 - If no marked year is provided, verify only explicit factual claims in the question stem (not which option is correct).
+PROMPT;
+    }
+
+    if (questionHasGeographyExtentClaim($question)) {
+        $systemPrompt .= <<<'PROMPT'
+
+Geography extent mode:
+- The question claims a geographic feature spans or connects Europe and Asia (or "both continents").
+- Reject if snippets show the named feature lies wholly in one continent (e.g. Himalayas are in Asia, not Europe).
+- The conventional Europe–Asia boundary is the Ural Mountains, Ural River, Caspian Sea, Caucasus — not the Himalayas.
 PROMPT;
     }
 
