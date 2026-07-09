@@ -623,10 +623,13 @@ function verifyAnswerWithSnippets(
 You verify quiz answers using ONLY the provided search snippets — not your own memory.
 
 Rules:
-- Only reject if snippets clearly contradict the marked answer.
+- Default to valid: true. Only reject when snippets contain explicit evidence the marked answer is wrong.
+- Reject if snippets clearly contradict the marked answer (state a different fact, number, date, or name).
+- If snippets are silent, off-topic, or too vague to verify — respond valid: true. Absence of evidence is NOT a rejection.
+- Do NOT reject because snippets fail to mention the answer, the topic, or Jane Campion / a specific obscure detail.
 - Do NOT reject because another option seems plausible, the question is oversimplified, or historians might debate nuance.
-- For tf questions: first judge whether the STATEMENT in the question is true or false, then whether the marked True/False option is correct.
-- For mc questions: check whether snippets support the marked option over the alternatives.
+- For tf questions: reject only if snippets show the statement is the opposite truth to the marked True/False option.
+- For mc questions: reject only if snippets clearly support a different listed option over the marked one — not merely because the marked option is unmentioned.
 
 Respond with strict JSON: {"valid": true/false, "issue": "short reason if invalid, else empty string"}
 PROMPT;
