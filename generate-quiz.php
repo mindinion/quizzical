@@ -53,7 +53,7 @@ $recentQuestions = fetchRecentQuestions($conn, $today, 5);
 cleanupQuizImages($conn);
 
 try {
-    $questions = generateQuizQuestions($type, $today, $recentQuestions);
+    $questions = generateQuizQuestionsWithFinalGate($type, $today, $recentQuestions);
 } catch (RuntimeException $e) {
     logQuizGenError($e->getMessage());
     notifySuperusersOfFailure($conn, "$quizType quiz for $today failed to generate", $e->getMessage());
@@ -116,7 +116,8 @@ try {
 
     $stats = getQuizGenStats();
     echo "Generated $quizType quiz (ID $quizId) for $today — " . count($questions) . " questions, $imagesFetched images. "
-        . "Fact-check: {$stats['categories_retried']} categories retried, {$stats['fact_check_skips']} skipped.\n";
+        . "Fact-check: {$stats['categories_retried']} categories retried, {$stats['fact_check_skips']} skipped. "
+        . "Final gate: {$stats['final_gate_quiz_attempts']} attempt(s), {$stats['final_gate_rejections']} rejection(s).\n";
 
 } catch (Exception $e) {
     $conn->rollback();

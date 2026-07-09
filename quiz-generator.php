@@ -156,18 +156,25 @@ const ANSWER_GIVEAWAY_FORMS = [
 
 const CURRENT_EVENTS_CATEGORIES = ['NZ Current Events', 'Aussie Current Events'];
 
-/** @var array{categories_retried: int, fact_check_skips: int, preview_images_fetched: int} */
+/** Full-quiz regeneration attempts when the pre-publish final fact-check gate fails. */
+const MAX_FINAL_GATE_QUIZ_ATTEMPTS = 3;
+
+/** @var array{categories_retried: int, fact_check_skips: int, preview_images_fetched: int, final_gate_quiz_attempts: int, final_gate_rejections: int} */
 $GLOBALS['quizGenStats'] = [
-    'categories_retried'      => 0,
-    'fact_check_skips'        => 0,
-    'preview_images_fetched'  => 0,
+    'categories_retried'       => 0,
+    'fact_check_skips'         => 0,
+    'preview_images_fetched'   => 0,
+    'final_gate_quiz_attempts' => 0,
+    'final_gate_rejections'    => 0,
 ];
 
 function resetQuizGenStats(): void {
     $GLOBALS['quizGenStats'] = [
-        'categories_retried'      => 0,
-        'fact_check_skips'        => 0,
-        'preview_images_fetched'  => 0,
+        'categories_retried'       => 0,
+        'fact_check_skips'         => 0,
+        'preview_images_fetched'   => 0,
+        'final_gate_quiz_attempts' => 0,
+        'final_gate_rejections'    => 0,
     ];
 }
 
@@ -232,7 +239,9 @@ function appendQuizGenLogCapture(string $level, string $msg): void {
  * @param string[] $avoidQuestions Question texts to avoid repeating (e.g. recent days' quizzes).
  */
 function generateQuizQuestions(string $quizType, string $today, array $avoidQuestions = []): array {
-    resetQuizGenStats();
+    if (empty($GLOBALS['quizGenSkipStatsReset'])) {
+        resetQuizGenStats();
+    }
     logQuizGenInfo('Fetching headlines…');
     $headlinesByRegion = fetchHeadlines($quizType);
     $tfHosts = pickTfHostCategories();
@@ -269,6 +278,81 @@ function generateQuizQuestions(string $quizType, string $today, array $avoidQues
     unset($q);
 
     return $allQuestions;
+}
+
+/**
+ * Generates a full quiz and runs a fresh fact-check on all 15 accepted questions
+ * before returning. Regenerates the whole quiz up to MAX_FINAL_GATE_QUIZ_ATTEMPTS
+ * when the gate fails (cron / QA publish path).
+ *
+ * @param string[] $avoidQuestions
+ * @throws RuntimeException when generation or the final gate never succeeds
+ */
+function generateQuizQuestionsWithFinalGate(
+    string $quizType, string $today, array $avoidQuestions = [], int $maxAttempts = MAX_FINAL_GATE_QUIZ_ATTEMPTS
+): array {
+    $lastErrors = [];
+
+    resetQuizGenStats();
+
+    for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+        bumpQuizGenStat('final_gate_quiz_attempts');
+        if ($attempt > 1) {
+            logQuizGenInfo("[final-gate] Regenerating full quiz (attempt $attempt/$maxAttempts)…");
+        }
+
+        $GLOBALS['quizGenSkipStatsReset'] = true;
+        try {
+            $questions = generateQuizQuestions($quizType, $today, $avoidQuestions);
+        } finally {
+            $GLOBALS['quizGenSkipStatsReset'] = false;
+        }
+        $gateErrors = verifyFinalQuizGate($questions, $quizType);
+        if (!$gateErrors) {
+            return $questions;
+        }
+
+        bumpQuizGenStat('final_gate_rejections');
+        $lastErrors = $gateErrors;
+    }
+
+    $errorList = implode("\n", array_map(fn($e) => '- ' . $e, $lastErrors));
+    throw new RuntimeException(
+        "Final publish gate failed after $maxAttempts full quiz attempt(s):\n$errorList"
+    );
+}
+
+/**
+ * Fresh Tavily/headline fact-check on every question in the accepted quiz set.
+ *
+ * @return string[] Empty when all pass; otherwise human-readable failure lines.
+ */
+function verifyFinalQuizGate(array $questions, string $quizType): array {
+    if (count($questions) !== 15) {
+        return ['expected 15 questions, got ' . count($questions)];
+    }
+
+    logQuizGenInfo('[final-gate] Verifying all 15 questions with fresh sources…');
+    $headlinesByRegion = fetchHeadlines($quizType);
+    $errors = [];
+
+    foreach ($questions as $q) {
+        $pos = (int)($q['position'] ?? 0);
+        $category = $q['category'] ?? '';
+        $qErrors = factCheckOneQuestion($q, $pos, $category, $headlinesByRegion, '[final-gate]');
+        foreach ($qErrors as $err) {
+            $errors[] = "Q$pos [$category] $err";
+        }
+    }
+
+    if ($errors) {
+        $errorList = implode("\n", array_map(fn($e) => '- ' . $e, $errors));
+        logQuizGenError('[final-gate] ' . count($errors) . " failure(s):\n$errorList");
+    } else {
+        logQuizGenInfo('[final-gate] All 15 questions passed — OK to publish');
+    }
+
+    return $errors;
 }
 
 /**
@@ -1415,87 +1499,104 @@ PROMPT;
 }
 
 /**
- * @return string[] Violation descriptions (empty if all questions pass).
+ * Fact-checks a single question (premise, answer, distractor). Used during category
+ * validation and the pre-publish final gate.
+ *
+ * @return string[] Violation descriptions (empty if pass or skipped).
  */
-function factCheckCategoryQuestions(array $questions, string $category, array $headlinesByRegion): array {
+function factCheckOneQuestion(
+    array $q, int $qNum, string $category, array $headlinesByRegion, string $logLabel = ''
+): array {
+    if ($logLabel === '') {
+        $logLabel = "[$category]";
+    }
+
     if (!defined('TAVILY_API_KEY') || TAVILY_API_KEY === '') {
-        if (in_array($category, CURRENT_EVENTS_CATEGORIES, true)) {
-            // Current events can still verify against headlines without Tavily
-        } else {
+        if (!in_array($category, CURRENT_EVENTS_CATEGORIES, true)) {
             return [];
         }
     }
 
-    $errors = [];
-    foreach ($questions as $i => $q) {
-        $qNum = $i + 1;
-        $markedAnswer = '';
-        foreach ($q['options'] as $opt) {
-            if ($opt['correct']) {
-                $markedAnswer = $opt['text'];
-                break;
-            }
-        }
-
-        if ($category === 'NZ Current Events') {
-            $snippets = array_map(fn($h) => 'Headline: ' . $h, $headlinesByRegion['NZ'] ?? []);
-        } elseif ($category === 'Aussie Current Events') {
-            $snippets = array_map(fn($h) => 'Headline: ' . $h, $headlinesByRegion['AU'] ?? []);
-        } else {
-            $query = buildFactCheckQuery($q['question']);
-            $snippets = tavilySearch($query);
-            if ($snippets === null) {
-                bumpQuizGenStat('fact_check_skips');
-                logQuizGenError("[$category] [fact-check] Tavily unavailable — skipped fact-check for question $qNum");
-                continue;
-            }
-        }
-
-        if (!$snippets) {
-            bumpQuizGenStat('fact_check_skips');
-            logQuizGenError("[$category] [fact-check] No snippets — skipped fact-check for question $qNum");
-            continue;
-        }
-
-        if (questionNeedsPremiseCheck($q['question'], $q['format'])) {
-            logQuizGenInfo("[$category] question $qNum [fact-check premise]: checking question text…");
-            $premiseVerdict = verifyQuestionPremiseWithSnippets($q['question'], $snippets);
-            if (!$premiseVerdict['valid']) {
-                $reason = $premiseVerdict['issue'] !== ''
-                    ? $premiseVerdict['issue']
-                    : 'question contains an inaccurate date or statistic';
-                $errors[] = "question $qNum [fact-check premise]: question text rejected — $reason";
-                continue;
-            }
-            logQuizGenInfo("[$category] question $qNum [fact-check premise]: passed");
-        }
-
-        $verdict = verifyAnswerWithSnippets(
-            $q['question'], $markedAnswer, $q['options'], $q['format'], $snippets,
-            in_array($category, CURRENT_EVENTS_CATEGORIES, true)
-        );
-
-        if (!$verdict['valid']) {
-            $reason = $verdict['issue'] !== '' ? $verdict['issue'] : 'marked answer not supported by sources';
-            $errors[] = "question $qNum [fact-check]: marked answer \"$markedAnswer\" rejected — $reason";
-            continue;
-        }
-
-        // Distractor check uses Tavily-style snippets; headline feeds list many unrelated
-        // stories so wrong options often appear "supported" — skip for current events.
-        if ($q['format'] === 'mc' && !in_array($category, CURRENT_EVENTS_CATEGORIES, true)) {
-            $distractorVerdict = verifyNoDistractorIsCorrectWithSnippets(
-                $q['question'], $markedAnswer, $q['options'], $snippets
-            );
-            if (!$distractorVerdict['valid']) {
-                $reason = $distractorVerdict['issue'] !== ''
-                    ? $distractorVerdict['issue']
-                    : 'a wrong option is better supported by sources than the marked answer';
-                $errors[] = "question $qNum [fact-check distractor]: $reason";
-            }
+    $markedAnswer = '';
+    foreach ($q['options'] as $opt) {
+        if ($opt['correct']) {
+            $markedAnswer = $opt['text'];
+            break;
         }
     }
 
+    if ($category === 'NZ Current Events') {
+        $snippets = array_map(fn($h) => 'Headline: ' . $h, $headlinesByRegion['NZ'] ?? []);
+    } elseif ($category === 'Aussie Current Events') {
+        $snippets = array_map(fn($h) => 'Headline: ' . $h, $headlinesByRegion['AU'] ?? []);
+    } else {
+        $query = buildFactCheckQuery($q['question']);
+        $snippets = tavilySearch($query);
+        if ($snippets === null) {
+            bumpQuizGenStat('fact_check_skips');
+            logQuizGenError("$logLabel [fact-check] Tavily unavailable — skipped fact-check for question $qNum");
+            return [];
+        }
+    }
+
+    if (!$snippets) {
+        bumpQuizGenStat('fact_check_skips');
+        logQuizGenError("$logLabel [fact-check] No snippets — skipped fact-check for question $qNum");
+        return [];
+    }
+
+    $errors = [];
+
+    if (questionNeedsPremiseCheck($q['question'], $q['format'])) {
+        logQuizGenInfo("$logLabel question $qNum [fact-check premise]: checking question text…");
+        $premiseVerdict = verifyQuestionPremiseWithSnippets($q['question'], $snippets);
+        if (!$premiseVerdict['valid']) {
+            $reason = $premiseVerdict['issue'] !== ''
+                ? $premiseVerdict['issue']
+                : 'question contains an inaccurate date or statistic';
+            $errors[] = "question $qNum [fact-check premise]: question text rejected — $reason";
+            return $errors;
+        }
+        logQuizGenInfo("$logLabel question $qNum [fact-check premise]: passed");
+    }
+
+    $verdict = verifyAnswerWithSnippets(
+        $q['question'], $markedAnswer, $q['options'], $q['format'], $snippets,
+        in_array($category, CURRENT_EVENTS_CATEGORIES, true)
+    );
+
+    if (!$verdict['valid']) {
+        $reason = $verdict['issue'] !== '' ? $verdict['issue'] : 'marked answer not supported by sources';
+        $errors[] = "question $qNum [fact-check]: marked answer \"$markedAnswer\" rejected — $reason";
+        return $errors;
+    }
+
+    if ($q['format'] === 'mc' && !in_array($category, CURRENT_EVENTS_CATEGORIES, true)) {
+        $distractorVerdict = verifyNoDistractorIsCorrectWithSnippets(
+            $q['question'], $markedAnswer, $q['options'], $snippets
+        );
+        if (!$distractorVerdict['valid']) {
+            $reason = $distractorVerdict['issue'] !== ''
+                ? $distractorVerdict['issue']
+                : 'a wrong option is better supported by sources than the marked answer';
+            $errors[] = "question $qNum [fact-check distractor]: $reason";
+        }
+    }
+
+    return $errors;
+}
+
+/**
+ * @return string[] Violation descriptions (empty if all questions pass).
+ */
+function factCheckCategoryQuestions(array $questions, string $category, array $headlinesByRegion): array {
+    $errors = [];
+    foreach ($questions as $i => $q) {
+        $errors = array_merge(
+            $errors,
+            factCheckOneQuestion($q, $i + 1, $category, $headlinesByRegion)
+        );
+    }
     return $errors;
 }
 

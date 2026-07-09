@@ -28,7 +28,7 @@ function qaRunOnce(int $runNum, string $type, string $today, int $lookback, bool
     ];
 
     try {
-        $questions = generateQuizQuestions($type, $today, $recentQuestions);
+        $questions = generateQuizQuestionsWithFinalGate($type, $today, $recentQuestions);
         if (!$skipImages) {
             $questions = attachPreviewImages($questions);
         }
