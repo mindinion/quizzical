@@ -48,7 +48,7 @@ $stmt->close();
 
 // Last 3 days of quizzes (both slots) so we don't repeat a topic that's still
 // fresh even after it's rotated out of the headline window
-$recentQuestions = fetchRecentQuestions($conn, $today, 3);
+$recentQuestions = fetchRecentQuestions($conn, $today, 5);
 
 cleanupQuizImages($conn);
 

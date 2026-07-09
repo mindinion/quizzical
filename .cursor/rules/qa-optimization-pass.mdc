@@ -5,50 +5,42 @@ alwaysApply: false
 
 # Quiz generator QA optimization pass
 
-Use when the user asks for a **QA pass**, **optimization pass**, or to tune `quiz-generator.php` by generating test quizzes.
+Use when the user asks for a **QA pass**, **optimization pass**, or to tune `quiz-generator.php`.
 
-This is **not** for live cron quizzes — only for improving the generator code.
+## Trigger QA runs (agent — after QA_RUN_TOKEN is in server dblogin.php)
 
-## Server command (after `qa-generate-quiz.php` is deployed)
-
-SSH to VentraIP, then:
+One run per POST (~7 min) to avoid gateway timeouts; repeat 3× for a full pass:
 
 ```bash
-cd ~/public_html
-php qa-generate-quiz.php morning --runs=3 --save=logs/qa
+curl.exe -sk -X POST "https://quizzical.co.nz/action-qa-generate-quiz.php" ^
+  -H "Content-Type: application/json" ^
+  -d "{\"token\":\"TOKEN\",\"type\":\"morning\",\"runs\":1,\"lookback\":5}"
 ```
 
-- Server path: `/home/quizzica/public_html/`
-- Git root locally: `C:\Users\GGPC\Documents\Quizzical\v2`
-- Uses server `dblogin.php` (DB + OpenAI + Tavily + Pexels) — do not rely on local Windows PHP for generation.
+Response JSON includes `summary_file` and per-run `saved_to` paths on the server under `logs/qa/`. Files are **not** web-accessible (`.htaccess` deny).
 
-Fetch results for review:
+CLI alternative (cPanel): `php qa-generate-quiz.php morning --runs=3 --save=logs/qa`
 
-```bash
-cat logs/qa/*-summary.json
-cat logs/qa/*-run1.json
+## Agent loop
+
+1. POST to trigger 3 runs (or ask user to run CLI once if token not set yet).
+2. Read returned JSON (questions + log + stats in response body).
+3. Patch `quiz-generator.php` for recurring patterns.
+4. Commit, push, deploy (see `deploy-after-push.mdc`).
+5. Re-run 3 if needed; summarize for user.
+
+## Server setup (one time)
+
+Add to **server** `dblogin.php` (gitignored):
+
+```php
+define('QA_RUN_TOKEN', 'your-long-random-token');
 ```
 
-Or SCP the `logs/qa/` folder locally if SSH from the agent environment.
+Use the same token in agent curl commands. Deploy does not overwrite `dblogin.php`.
 
-## Agent loop (one pass)
+## User kickoff
 
-1. Run 3 test quizzes on the server (`--runs=3 --save=logs/qa`).
-2. Read each run's JSON: all 15 questions + `log` + `stats`.
-3. Flag clear factual errors, deadlocks, repetition, validator gaps.
-4. Patch `quiz-generator.php` when a **pattern** repeats (not one-off noise).
-5. Commit, push, deploy webhook (see `deploy-after-push.mdc`).
-6. Optionally re-run 3 on server after deploy to verify.
-7. Summarize for the user: completion rate, wrong-answer count, fixes made, whether another pass is warranted.
+> Run an optimization pass.
 
-## Default acceptance targets (adjust if user says otherwise)
-
-- 3/3 complete 15/15
-- ≤1 clear factual error per quiz
-- 0 category deadlocks (10 attempts exhausted)
-
-## User kickoff phrase
-
-> Run an optimization pass: 3 test quizzes, review each, fix patterns, deploy, summarize.
-
-User does **not** paste quiz output. They only say whether to run another pass.
+User does not paste quiz output. They only say whether to run another pass.

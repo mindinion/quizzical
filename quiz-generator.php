@@ -86,6 +86,21 @@ const SUPERLATIVE_QUESTION_PATTERNS = [
         => 'all-time winning-percentage record',
     '/\b(largest number|most per capita)\b/i'
         => 'largest/most superlative with obscure counting metric',
+    '/\bfor the first time\b/i'
+        => 'first-time phrasing — ask "In which year did…?" with year in options only',
+    '/\btheir first\b/i'
+        => 'their-first superlative — ask about a specific year instead',
+    '/\b(?:second|third|fourth|fifth|\d+(?:st|nd|rd|th)) time\b.{0,40}\b(?:held|hosted?|host|took place in)\b/i'
+        => 'Nth-time plus host-country claim — ask about the year or host separately, not both',
+];
+
+/** Topic labels already used elsewhere in the same quiz — reject repeats like Versailles in History and GK. */
+const DUPLICATE_QUIZ_TOPIC_PATTERNS = [
+    '/\btreaty of versailles\b/i'  => 'Treaty of Versailles',
+    '/\bmagna carta\b/i'            => 'Magna Carta',
+    '/\btreaty of waitangi\b/i'     => 'Treaty of Waitangi',
+    '/\bberlin wall\b/i'            => 'Berlin Wall',
+    '/\bgreat barrier reef\b/i'     => 'Great Barrier Reef',
 ];
 
 /** Country/place answer => adjective/demonym forms that give the answer away in question text or image_query. */
@@ -219,6 +234,7 @@ function generateQuizQuestions(string $quizType, string $today, array $avoidQues
     $tfHosts = pickTfHostCategories();
 
     $allQuestions = [];
+    $usedTopicLabels = [];
     foreach (CATEGORY_TARGETS as $category => $count) {
         $tfCount = in_array($category, $tfHosts, true) ? 1 : 0;
         $mcCount = $count - $tfCount;
@@ -231,8 +247,14 @@ function generateQuizQuestions(string $quizType, string $today, array $avoidQues
         $avoidForThisCall = array_merge($avoidQuestions, array_column($allQuestions, 'question'));
 
         $categoryQuestions = generateCategoryQuestions(
-            $category, $mcCount, $tfCount, $headlinesByRegion, $today, $avoidForThisCall
+            $category, $mcCount, $tfCount, $headlinesByRegion, $today, $avoidForThisCall, $usedTopicLabels
         );
+        foreach ($categoryQuestions as $q) {
+            foreach (duplicateTopicsInQuestion($q['question']) as $topic) {
+                $usedTopicLabels[] = $topic;
+            }
+        }
+        $usedTopicLabels = array_values(array_unique($usedTopicLabels));
         $allQuestions = array_merge($allQuestions, $categoryQuestions);
         logQuizGenInfo("Accepted: $category");
     }
@@ -264,7 +286,8 @@ function pickTfHostCategories(): array {
  * remains a risk, which validateOneQuestion() still checks for.
  */
 function generateCategoryQuestions(
-    string $category, int $mcCount, int $tfCount, array $headlinesByRegion, string $today, array $avoidQuestions
+    string $category, int $mcCount, int $tfCount, array $headlinesByRegion, string $today, array $avoidQuestions,
+    array $usedTopicLabels = []
 ): array {
     $total = $mcCount + $tfCount;
 
@@ -387,7 +410,7 @@ PROMPT;
         }
 
         $candidate = json_decode($decoded['choices'][0]['message']['content'], true);
-        $errors = validateCategoryQuestions($candidate, $category, $mcCount, $tfCount);
+        $errors = validateCategoryQuestions($candidate, $category, $mcCount, $tfCount, $usedTopicLabels);
         if (!$errors) {
             $errors = factCheckCategoryQuestions(
                 $candidate['questions'] ?? [], $category, $headlinesByRegion
@@ -536,9 +559,9 @@ function buildCategoryGuidance(string $category): string {
         case 'Aussie Current Events':
             return 'These questions MUST be based only on the Australian headlines block below — genuinely current, real stories. Must NOT be about New Zealand. Phrase naturally — do not say "according to recent news" or "as reported today". The marked correct answer must stay close to what the headlines actually say — do not add speculative detail that headlines do not support. For image_query use generic scene words — never repeat an option word from the answers.';
         case 'NZ Trivia':
-            return 'General New Zealand trivia — established, verifiable facts that would be true regardless of today\'s news. Do NOT base these on current headlines, even indirectly. Use widely documented facts only — NOT obscure micro-records (e.g. "first descent" of a specific river, one-off local sporting feats). For year questions, put the year in the answer options, not in the question stem.';
+            return 'General New Zealand trivia — established, verifiable facts that would be true regardless of today\'s news. Do NOT base these on current headlines, even indirectly. Must NOT be about Australia (no Great Barrier Reef, kangaroos, Australian cities, or other AU-only topics). Use widely documented facts only — NOT obscure micro-records (e.g. "first descent" of a specific river, one-off local sporting feats). For year questions, put the year in the answer options, not in the question stem.';
         case 'Australia Trivia':
-            return 'General Australia trivia — established, verifiable facts that would be true regardless of today\'s news. Do NOT base these on current headlines, even indirectly. Avoid the Sydney Opera House, Australia Day, and "national animal/bird" angles. Do NOT name a city or holiday in the question if it is the correct answer (e.g. do not mention "Sydney Festival" if Sydney is an option). For year questions, put the year in the answer options, not in the question stem.';
+            return 'General Australia trivia — established, verifiable facts that would be true regardless of today\'s news. Do NOT base these on current headlines, even indirectly. Must NOT be about New Zealand (no All Blacks, Māori topics, NZ cities, or other NZ-only topics). Avoid the Sydney Opera House, Australia Day, and "national animal/bird" angles. Do NOT name a city or holiday in the question if it is the correct answer (e.g. do not mention "Sydney Festival" if Sydney is an option). For year questions, put the year in the answer options, not in the question stem.';
         case 'Sports':
             return <<<'GUIDE'
 General sports trivia (NZ/Australian teams and leagues are fine) — established, verifiable facts, NOT tied to today's news.
@@ -553,6 +576,8 @@ Sports has strict automatic rejection rules — follow exactly:
 - For year MC questions: describe the event in the question; put years ONLY in the four options. Do not embed a year in the question stem.
 - No all-time records (most premierships, longest streak, winning percentage, per capita).
 - Prefer: a specific tournament edition/host city, team colours/nicknames, a named athlete at a named Games, stadium or rule facts with the year in the options.
+- Do NOT combine an edition count with a host country in one question (e.g. "third time, held in the UK") — pick one angle only.
+- Do NOT invent obscure team mascots — only well-known colours, nicknames, or stadium facts you are certain about.
 GUIDE;
         case 'Geography':
             return 'Must be about the rest of the world — NOT New Zealand or Australia. No Great Barrier Reef, Sydney, or other NZ/AU references. No "longest river in the world" (Nile vs Amazon) questions. No Sydney Opera House. For year questions, put the year in the answer options, not in the question stem.';
@@ -652,6 +677,14 @@ function buildRetryHintForErrors(string $errorList, string $category, int $mcCou
         $hints[] = 'FACT-CHECK FIX: The marked answer is not supported by sources. Change the marked answer or rewrite the question entirely.';
     }
 
+    if (preg_match('/repeats topic/i', $errorList)) {
+        $hints[] = 'DUPLICATE TOPIC: This treaty/event was already used elsewhere in the quiz — pick a completely different subject.';
+    }
+
+    if (preg_match('/NZ Trivia only|Australia Trivia only|is NZ-specific|is Australian-specific/i', $errorList)) {
+        $hints[] = 'REGION FIX: Match the category country — NZ Trivia must be NZ-only; Australia Trivia must be AU-only.';
+    }
+
     if (!$hints) {
         return '';
     }
@@ -665,7 +698,9 @@ function buildRetryHintForErrors(string $errorList, string $category, int $mcCou
  *
  * @return string[] Empty array if valid, otherwise a list of violation descriptions.
  */
-function validateCategoryQuestions(?array $candidate, string $category, int $mcCount, int $tfCount): array {
+function validateCategoryQuestions(
+    ?array $candidate, string $category, int $mcCount, int $tfCount, array $usedTopicLabels = []
+): array {
     $total = $mcCount + $tfCount;
     if (!isset($candidate['questions']) || count($candidate['questions']) !== $total) {
         return ["expected $total question(s) for '$category', got: " . json_encode($candidate)];
@@ -675,7 +710,7 @@ function validateCategoryQuestions(?array $candidate, string $category, int $mcC
     $actualMc = 0;
     $actualTf = 0;
     foreach ($candidate['questions'] as $i => $q) {
-        $errors = array_merge($errors, validateOneQuestion($q, $category, $i + 1));
+        $errors = array_merge($errors, validateOneQuestion($q, $category, $i + 1, $usedTopicLabels));
         if ($q['format'] === 'mc') $actualMc++;
         elseif ($q['format'] === 'tf') $actualTf++;
     }
@@ -696,7 +731,7 @@ function validateCategoryQuestions(?array $candidate, string $category, int $mcC
  *
  * @return string[] Violation descriptions for this question (empty if clean).
  */
-function validateOneQuestion(array $q, string $category, int $qNum): array {
+function validateOneQuestion(array $q, string $category, int $qNum, array $usedTopicLabels = []): array {
     $errors = [];
     $correctCount = 0;
     $correctText = '';
@@ -725,10 +760,21 @@ function validateOneQuestion(array $q, string $category, int $qNum): array {
         }
     }
 
+    $yearStemQuestion = questionHasYearStemPattern($q['question']);
+
     foreach (SUPERLATIVE_QUESTION_PATTERNS as $pattern => $reason) {
+        if ($yearStemQuestion && str_contains($reason, 'first')) {
+            continue;
+        }
         if (preg_match($pattern, $q['question'])) {
             $errors[] = "question $qNum (\"{$q['question']}\") matches superlative pattern: $reason";
             break;
+        }
+    }
+
+    foreach (duplicateTopicsInQuestion($q['question']) as $topic) {
+        if (in_array($topic, $usedTopicLabels, true)) {
+            $errors[] = "question $qNum repeats topic \"$topic\" already used elsewhere in this quiz";
         }
     }
 
@@ -776,6 +822,19 @@ function validateOneQuestion(array $q, string $category, int $qNum): array {
         $hit = textContainsKeyword($combined, AU_KEYWORDS);
         if ($hit !== null) {
             $errors[] = "question $qNum is meant to be about New Zealand but matched Australian term \"$hit\"";
+        }
+    } elseif ($category === 'NZ Trivia') {
+        $hit = textContainsKeyword($combined, AU_KEYWORDS);
+        if ($hit !== null) {
+            $errors[] = "question $qNum (category '$category') is Australian-specific (matched \"$hit\") — NZ Trivia only";
+        }
+        if (preg_match('/\bgreat barrier reef\b/i', $combined)) {
+            $errors[] = "question $qNum (category '$category') is about the Great Barrier Reef — Australia Trivia only";
+        }
+    } elseif ($category === 'Australia Trivia') {
+        $hit = textContainsKeyword($combined, NZ_KEYWORDS);
+        if ($hit !== null) {
+            $errors[] = "question $qNum (category '$category') is NZ-specific (matched \"$hit\") — Australia Trivia only";
         }
     }
 
@@ -857,6 +916,22 @@ function textContainsKeyword(string $text, array $keywords): ?string {
         }
     }
     return null;
+}
+
+/** True when the question stem asks for a year in the MC options (superlative "first" in the stem is OK). */
+function questionHasYearStemPattern(string $question): bool {
+    return (bool) preg_match('/^\s*In which year (?:did|was|were)\b/i', $question);
+}
+
+/** @return string[] Human-readable topic labels found in question text. */
+function duplicateTopicsInQuestion(string $question): array {
+    $found = [];
+    foreach (DUPLICATE_QUIZ_TOPIC_PATTERNS as $pattern => $label) {
+        if (preg_match($pattern, $question)) {
+            $found[] = $label;
+        }
+    }
+    return $found;
 }
 
 /**

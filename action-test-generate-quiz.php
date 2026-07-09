@@ -30,7 +30,7 @@ $stream = isset($_GET['stream']) && $_GET['stream'] === '1';
 $nztz  = new DateTimeZone('Pacific/Auckland');
 $today = (new DateTime('now', $nztz))->format('Y-m-d');
 
-$recentQuestions = fetchRecentQuestions($conn, $today, 3);
+$recentQuestions = fetchRecentQuestions($conn, $today, 5);
 
 function emitTestQuizSse(array $payload): void {
     echo 'data: ' . json_encode($payload, JSON_UNESCAPED_UNICODE) . "\n\n";
