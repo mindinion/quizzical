@@ -54,10 +54,12 @@ const AU_KEYWORDS = [
  * cliché gets spotted — cheaper than trying to word-tune the prompt further.
  */
 const BANNED_QUESTION_PATTERNS = [
-    '/\bcapital( city)? of\b/i'            => 'capital-of-a-country cliché',
-    '/\bopera house\b/i'                   => 'Sydney Opera House cliché',
-    '/\bnational (symbol|animal|bird)\b/i' => 'national symbol/animal/bird cliché',
-    '/\blongest river in the world\b/i'    => 'disputed fact (Nile vs Amazon) treated as settled',
+    // "capital city of France" — but not nicknames like "Adventure Capital of the World"
+    '/\bcapital city of\b/i'                          => 'capital-of-a-country cliché',
+    '/\bcapital of (?!the world\b)/i'                  => 'capital-of-a-country cliché',
+    '/\bopera house\b/i'                               => 'Sydney Opera House cliché',
+    '/\bnational (symbol|animal|bird)\b/i'             => 'national symbol/animal/bird cliché',
+    '/\blongest river in the world\b/i'                 => 'disputed fact (Nile vs Amazon) treated as settled',
 ];
 
 const CURRENT_EVENTS_CATEGORIES = ['NZ Current Events', 'Aussie Current Events'];
@@ -669,11 +671,13 @@ You verify quiz answers using ONLY the provided search snippets — not your own
 Rules:
 - Default to valid: true. Only reject when snippets contain explicit evidence the marked answer is wrong.
 - Reject if snippets clearly contradict the marked answer (state a different fact, number, date, or name).
-- If snippets are silent, off-topic, or too vague to verify — respond valid: true. Absence of evidence is NOT a rejection.
-- Do NOT reject because snippets fail to mention the answer, the topic, or Jane Campion / a specific obscure detail.
+- If snippets are silent, off-topic, or too vague to verify — you MUST respond valid: true. Absence of evidence is NOT a rejection.
+- NEVER reject because snippets "do not mention", "do not provide", "fail to support", "are silent on", or "insufficient" — those always mean valid: true.
 - Do NOT reject because another option seems plausible, the question is oversimplified, or historians might debate nuance.
 - For tf questions: reject only if snippets show the statement is the opposite truth to the marked True/False option.
 - For mc questions: reject only if snippets clearly support a different listed option over the marked one — not merely because the marked option is unmentioned.
+
+If valid is false, your issue must quote or paraphrase a specific contradictory fact from the snippets — not the absence of mention.
 
 Respond with strict JSON: {"valid": true/false, "issue": "short reason if invalid, else empty string"}
 PROMPT;
@@ -685,10 +689,30 @@ PROMPT;
         return ['valid' => true, 'issue' => ''];
     }
 
+    $valid = (bool)($result['valid'] ?? true);
+    $issue = trim($result['issue'] ?? '');
+
+    if (!$valid && $issue !== '' && factCheckIssueIsSilenceOnly($issue)) {
+        return ['valid' => true, 'issue' => ''];
+    }
+
     return [
-        'valid' => (bool)($result['valid'] ?? true),
-        'issue' => trim($result['issue'] ?? ''),
+        'valid' => $valid,
+        'issue' => $issue,
     ];
+}
+
+/**
+ * Rejects verifier outputs that cite missing snippet support without an actual contradiction.
+ */
+function factCheckIssueIsSilenceOnly(string $issue): bool {
+    if (preg_match('/\b(contradict|incorrect|wrong|instead|rather than|actually|different (date|year|number|answer))\b/i', $issue)) {
+        return false;
+    }
+    return (bool) preg_match(
+        '/\b(silent|do not mention|does not mention|not mention|do not provide|does not provide|not provide|insufficient|fail to support|not supported|no information|without evidence|unverified)\b/i',
+        $issue
+    );
 }
 
 function callOpenAIJsonVerifier(string $systemPrompt, string $userPrompt): ?array {
