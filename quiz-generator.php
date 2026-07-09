@@ -661,6 +661,10 @@ function buildRetryHintForErrors(string $errorList, string $category, int $mcCou
         }
     }
 
+    if (preg_match('/NZ Trivia only|Australia Trivia only|no New Zealand topic|no Australian topic/i', $errorList)) {
+        $hints[] = 'REGION FIX: Match the category country — NZ Trivia must mention New Zealand; Australia Trivia must mention Australia.';
+    }
+
     if (preg_match('/NZ\/AU-specific|meant to be about/i', $errorList)) {
         $hints[] = 'CATEGORY FIX: This category must not mention New Zealand or Australia at all — pick a different country/topic.';
     }
@@ -685,10 +689,6 @@ function buildRetryHintForErrors(string $errorList, string $category, int $mcCou
 
     if (preg_match('/repeats topic/i', $errorList)) {
         $hints[] = 'DUPLICATE TOPIC: This treaty/event was already used elsewhere in the quiz — pick a completely different subject.';
-    }
-
-    if (preg_match('/NZ Trivia only|Australia Trivia only|is NZ-specific|is Australian-specific/i', $errorList)) {
-        $hints[] = 'REGION FIX: Match the category country — NZ Trivia must be NZ-only; Australia Trivia must be AU-only.';
     }
 
     if (!$hints) {
@@ -837,10 +837,16 @@ function validateOneQuestion(array $q, string $category, int $qNum, array $usedT
         if (preg_match('/\bgreat barrier reef\b/i', $combined)) {
             $errors[] = "question $qNum (category '$category') is about the Great Barrier Reef — Australia Trivia only";
         }
+        if (textContainsKeyword($combined, NZ_KEYWORDS) === null) {
+            $errors[] = "question $qNum (category '$category') has no New Zealand topic — NZ Trivia must mention NZ places, people, or culture";
+        }
     } elseif ($category === 'Australia Trivia') {
         $hit = textContainsKeyword($combined, NZ_KEYWORDS);
         if ($hit !== null) {
             $errors[] = "question $qNum (category '$category') is NZ-specific (matched \"$hit\") — Australia Trivia only";
+        }
+        if (textContainsKeyword($combined, AU_KEYWORDS) === null) {
+            $errors[] = "question $qNum (category '$category') has no Australian topic — Australia Trivia must mention Australia, its places, or culture";
         }
     }
 
