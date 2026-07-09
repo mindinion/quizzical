@@ -31,11 +31,22 @@ $today = (new DateTime('now', $nztz))->format('Y-m-d');
 // duplicate-avoidance behaviour the cron job gets, without writing anything.
 $recentQuestions = fetchRecentQuestions($conn, $today, 3);
 
+startQuizGenLogCapture();
 try {
     $questions = generateQuizQuestions($type, $today, $recentQuestions);
     $questions = attachPreviewImages($questions);
-    echo json_encode(['questions' => $questions]);
+    $log = stopQuizGenLogCapture();
+    echo json_encode([
+        'questions' => $questions,
+        'log'       => $log,
+        'stats'     => getQuizGenStats(),
+    ]);
 } catch (RuntimeException $e) {
+    $log = stopQuizGenLogCapture();
     http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    echo json_encode([
+        'error' => $e->getMessage(),
+        'log'   => $log,
+        'stats' => getQuizGenStats(),
+    ]);
 }

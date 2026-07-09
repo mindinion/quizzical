@@ -79,6 +79,32 @@ function bumpQuizGenStat(string $key): void {
     }
 }
 
+/** @var array<int, array{time: string, level: string, message: string}>|null */
+$GLOBALS['quizGenLogCapture'] = null;
+
+function startQuizGenLogCapture(): void {
+    $GLOBALS['quizGenLogCapture'] = [];
+}
+
+function stopQuizGenLogCapture(): array {
+    $lines = is_array($GLOBALS['quizGenLogCapture'] ?? null)
+        ? $GLOBALS['quizGenLogCapture']
+        : [];
+    $GLOBALS['quizGenLogCapture'] = null;
+    return $lines;
+}
+
+function appendQuizGenLogCapture(string $level, string $msg): void {
+    if (!is_array($GLOBALS['quizGenLogCapture'] ?? null)) {
+        return;
+    }
+    $GLOBALS['quizGenLogCapture'][] = [
+        'time'    => date('Y-m-d H:i:s'),
+        'level'   => $level,
+        'message' => $msg,
+    ];
+}
+
 /**
  * Generates a full 15-question quiz, one category at a time, and returns the
  * combined array of question objects with positions 1..15 assigned. Throws
@@ -936,6 +962,7 @@ function logQuizGenInfo(string $msg): void {
     if (defined('QUIZ_GEN_VERBOSE_LOG') && !QUIZ_GEN_VERBOSE_LOG) {
         return;
     }
+    appendQuizGenLogCapture('INFO', $msg);
     $ts = date('Y-m-d H:i:s');
     $line = "[$ts] INFO: $msg\n";
     file_put_contents(__DIR__ . '/logs/generate-quiz.log', $line, FILE_APPEND | LOCK_EX);
@@ -945,6 +972,7 @@ function logQuizGenInfo(string $msg): void {
 }
 
 function logQuizGenError(string $msg): void {
+    appendQuizGenLogCapture('ERROR', $msg);
     $ts = date('Y-m-d H:i:s');
     $line = "[$ts] ERROR: $msg\n";
     file_put_contents(__DIR__ . '/logs/generate-quiz.log', $line, FILE_APPEND | LOCK_EX);

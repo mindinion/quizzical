@@ -1436,12 +1436,14 @@ document.cookie="feedItems=50";
 		$('#TestQuizModal').css('display', 'flex');
 		$('#TestQuizLoading').show();
 		$('#TestQuizError').hide();
+		$('#TestQuizLog').hide().empty();
 		$('#TestQuizQuestions').empty();
 
 		$.get('action-test-generate-quiz.php', { type: 'morning' })
 			.done(function(data) {
 				var res = (typeof data === 'string') ? JSON.parse(data) : data;
 				$('#TestQuizLoading').hide();
+				renderTestQuizLog(res.log, res.stats);
 				if (res.error) {
 					$('#TestQuizError').text(res.error).show();
 					return;
@@ -1451,9 +1453,41 @@ document.cookie="feedItems=50";
 			.fail(function(xhr) {
 				$('#TestQuizLoading').hide();
 				var msg = 'Failed to generate quiz.';
-				try { msg = JSON.parse(xhr.responseText).error || msg; } catch (e) {}
+				var res = null;
+				try { res = JSON.parse(xhr.responseText); msg = res.error || msg; } catch (e) {}
+				if (res) renderTestQuizLog(res.log, res.stats);
 				$('#TestQuizError').text(msg).show();
 			});
+	}
+
+	function renderTestQuizLog(log, stats) {
+		var $log = $('#TestQuizLog');
+		$log.empty();
+
+		var statsLine = '';
+		if (stats) {
+			statsLine = 'Categories retried: ' + (stats.categories_retried || 0)
+				+ ' · Fact-check skips: ' + (stats.fact_check_skips || 0);
+		}
+
+		if (!log || !log.length) {
+			if (statsLine) {
+				$log.append($('<div>').addClass('test-quiz-log-summary').text(statsLine + ' · Clean run'));
+			}
+			$log.show();
+			return;
+		}
+
+		if (statsLine) {
+			$log.append($('<div>').addClass('test-quiz-log-summary').text(statsLine));
+		}
+
+		var $pre = $('<pre>').addClass('test-quiz-log-text');
+		log.forEach(function(entry) {
+			var line = '[' + entry.time + '] ' + entry.level + ': ' + entry.message + '\n';
+			$pre.append($('<span>').addClass(entry.level === 'ERROR' ? 'test-quiz-log-error' : 'test-quiz-log-info').text(line));
+		});
+		$log.append($pre).show();
 	}
 
 	function closeTestQuiz() {

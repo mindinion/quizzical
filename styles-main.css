@@ -1640,6 +1640,41 @@ A {}
 	margin-bottom: 16px;
 }
 
+#TestQuizLog {
+	margin-bottom: 16px;
+}
+
+.test-quiz-log-summary {
+	font-family: verdana, arial;
+	font-size: 11px;
+	font-weight: bold;
+	color: #666;
+	margin-bottom: 8px;
+}
+
+.test-quiz-log-text {
+	font-family: Consolas, Monaco, "Courier New", monospace;
+	font-size: 11px;
+	line-height: 1.45;
+	background: #f5f0e8;
+	border: 1px solid #e8dfc8;
+	border-radius: 8px;
+	padding: 12px 14px;
+	margin: 0;
+	max-height: 220px;
+	overflow-y: auto;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.test-quiz-log-error {
+	color: #b71c1c;
+}
+
+.test-quiz-log-info {
+	color: #555;
+}
+
 .test-quiz-question {
 	padding: 16px 0;
 	border-bottom: 1px solid #f0e8d8;
