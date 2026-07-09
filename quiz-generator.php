@@ -195,13 +195,6 @@ function generateCategoryQuestions(
 ): array {
     $total = $mcCount + $tfCount;
 
-    $headlineBlock = '';
-    if ($category === 'NZ Current Events') {
-        $headlineBlock = "\n\nNZ headlines:\n" . implode("\n", array_map(fn($h) => '- ' . $h, $headlinesByRegion['NZ']));
-    } elseif ($category === 'Aussie Current Events') {
-        $headlineBlock = "\n\nAustralian headlines:\n" . implode("\n", array_map(fn($h) => '- ' . $h, $headlinesByRegion['AU']));
-    }
-
     $formatInstruction = $tfCount > 0
         ? "Produce exactly $total question(s): $mcCount in \"mc\" format (4 options, exactly 1 correct) and $tfCount in \"tf\" format (2 options, \"True\" and \"False\", exactly 1 correct — phrased as a single declarative true/false statement, ideally starting with \"True or False:\". NEVER phrase a tf question as a which/what/who/when/where question, since that can't be sensibly answered with just True or False)."
         : "Produce exactly $total question(s), all in \"mc\" format (4 options, exactly 1 correct).";
@@ -224,13 +217,9 @@ Never state the correct answer's exact wording anywhere in the question text its
 For each question also output image_query: a 2–4 word visual search term for a stock photo related to the question topic. Must NOT name or depict the correct answer, must not repeat option text verbatim, and for tf questions must illustrate the subject — never "true" or "false".
 PROMPT;
 
-    $avoidBlock = '';
-    if ($avoidQuestions) {
-        $avoidList = implode("\n", array_map(fn($q) => '- ' . $q, $avoidQuestions));
-        $avoidBlock = "\n\nDo NOT repeat or ask a near-duplicate of any of these already-used questions/topics:\n$avoidList";
-    }
-
-    $userPrompt = "Today is $today.$headlineBlock$avoidBlock\n\nGenerate the question(s) now.";
+    $excludedHeadlines = [];
+    $failedQuestions   = [];
+    $retryNote         = '';
 
     $schema = [
         'type' => 'json_schema',
@@ -273,9 +262,15 @@ PROMPT;
     ];
 
     $result = null;
-    $attemptUserPrompt = $userPrompt;
 
     for ($attempt = 1; $attempt <= MAX_ATTEMPTS_PER_CATEGORY; $attempt++) {
+        $headlineBlock = buildCategoryHeadlineBlock($category, $headlinesByRegion, $excludedHeadlines);
+        $avoidBlock = buildQuestionAvoidBlock($avoidQuestions, $failedQuestions);
+        $attemptUserPrompt = "Today is $today.$headlineBlock$avoidBlock\n\nGenerate the question(s) now.";
+        if ($retryNote !== '') {
+            $attemptUserPrompt .= "\n\nNOTE: $retryNote";
+        }
+
         $payload = json_encode([
             'model'           => 'gpt-4o-mini',
             'messages'        => [
@@ -322,7 +317,34 @@ PROMPT;
         if ($errors) {
             $errorList = implode("\n", array_map(fn($e) => '- ' . $e, $errors));
             logQuizGenError("[$category] Attempt $attempt: " . count($errors) . " violation(s):\n$errorList");
-            $attemptUserPrompt = $userPrompt . "\n\nNOTE: Your previous attempt was rejected for the following reasons — fix ALL of them this time:\n$errorList";
+
+            foreach ($candidate['questions'] ?? [] as $q) {
+                $qText = trim($q['question'] ?? '');
+                if ($qText === '') {
+                    continue;
+                }
+                $failedQuestions[] = $qText;
+                if (in_array($category, CURRENT_EVENTS_CATEGORIES, true)) {
+                    $region = $category === 'NZ Current Events' ? 'NZ' : 'AU';
+                    foreach ($headlinesByRegion[$region] ?? [] as $headline) {
+                        if (questionMatchesHeadline($qText, $headline)) {
+                            $excludedHeadlines[] = $headline;
+                        }
+                    }
+                }
+            }
+            $failedQuestions = array_values(array_unique($failedQuestions));
+            $excludedHeadlines = array_values(array_unique($excludedHeadlines));
+
+            $retryNote = "Your previous attempt was rejected for the following reasons — fix ALL of them this time:\n$errorList";
+            if (in_array($category, CURRENT_EVENTS_CATEGORIES, true)) {
+                $retryNote .= "\n\nUse a COMPLETELY DIFFERENT news story from the headlines above. "
+                    . "Do NOT retry the same story or a reworded version of your rejected question.";
+                if ($excludedHeadlines) {
+                    $retryNote .= "\n\nAlready-tried stories (do NOT use again):\n"
+                        . implode("\n", array_map(fn($h) => '- ' . $h, $excludedHeadlines));
+                }
+            }
             continue;
         }
 
@@ -345,6 +367,77 @@ PROMPT;
     unset($q);
 
     return $result;
+}
+
+function buildCategoryHeadlineBlock(string $category, array $headlinesByRegion, array $excludedHeadlines = []): string {
+    if ($category === 'NZ Current Events') {
+        $label = 'NZ headlines';
+        $headlines = $headlinesByRegion['NZ'] ?? [];
+    } elseif ($category === 'Aussie Current Events') {
+        $label = 'Australian headlines';
+        $headlines = $headlinesByRegion['AU'] ?? [];
+    } else {
+        return '';
+    }
+
+    if ($excludedHeadlines) {
+        $excludeSet = array_flip($excludedHeadlines);
+        $headlines = array_values(array_filter(
+            $headlines,
+            fn($h) => !isset($excludeSet[$h])
+        ));
+    }
+
+    if (!$headlines) {
+        return "\n\n($label: all provided stories were already tried — pick any fresh angle from today's news.)";
+    }
+
+    return "\n\n$label:\n" . implode("\n", array_map(fn($h) => '- ' . $h, $headlines));
+}
+
+function buildQuestionAvoidBlock(array $avoidQuestions, array $failedQuestions = []): string {
+    $combined = array_values(array_unique(array_filter(array_merge($avoidQuestions, $failedQuestions))));
+    if (!$combined) {
+        return '';
+    }
+
+    $avoidList = implode("\n", array_map(fn($q) => '- ' . $q, $combined));
+    return "\n\nDo NOT repeat or ask a near-duplicate of any of these already-used questions/topics:\n$avoidList";
+}
+
+/**
+ * Heuristic: does this question appear to be based on this headline?
+ */
+function questionMatchesHeadline(string $question, string $headline): bool {
+    $q = mb_strtolower(trim($question));
+    $h = mb_strtolower(trim($headline));
+    if ($q === '' || $h === '') {
+        return false;
+    }
+
+    if (str_contains($q, mb_substr($h, 0, 40)) || str_contains($h, mb_substr($q, 0, 40))) {
+        return true;
+    }
+
+    $stopWords = ['with', 'from', 'that', 'this', 'were', 'been', 'have', 'after', 'into', 'over', 'amid'];
+    $words = preg_split('/\s+/', preg_replace('/[^\p{L}\p{N}\s]/u', ' ', $h));
+    $significant = array_values(array_filter(
+        $words,
+        fn($w) => mb_strlen($w) >= 4 && !in_array($w, $stopWords, true)
+    ));
+
+    if (count($significant) < 2) {
+        return false;
+    }
+
+    $hits = 0;
+    foreach ($significant as $word) {
+        if (str_contains($q, $word)) {
+            $hits++;
+        }
+    }
+
+    return $hits >= 2;
 }
 
 /**
@@ -682,6 +775,7 @@ Rules:
 - If snippets are silent, off-topic, or too vague to verify — you MUST respond valid: true. Absence of evidence is NOT a rejection.
 - NEVER reject because snippets "do not mention", "do not provide", "fail to support", "are silent on", or "insufficient" — those always mean valid: true.
 - Do NOT reject because another option seems plausible, the question is oversimplified, or historians might debate nuance.
+- Do NOT reject when the marked answer is a shorter summary of what snippets state (e.g. "16 officers" vs "16 driver testing officers suspended"). Compatible summaries are valid, not contradictions.
 - For tf questions: reject only if snippets show the statement is the opposite truth to the marked True/False option.
 - For mc questions: reject only if snippets clearly support a different listed option over the marked one — not merely because the marked option is unmentioned.
 
@@ -704,6 +798,10 @@ PROMPT;
         return ['valid' => true, 'issue' => ''];
     }
 
+    if (!$valid && $issue !== '' && factCheckIssueIsSpecificityMismatch($issue, $markedAnswer, $snippets)) {
+        return ['valid' => true, 'issue' => ''];
+    }
+
     return [
         'valid' => $valid,
         'issue' => $issue,
@@ -721,6 +819,44 @@ function factCheckIssueIsSilenceOnly(string $issue): bool {
         '/\b(silent|do not mention|does not mention|not mention|do not provide|does not provide|not provide|insufficient|fail to support|not supported|no information|without evidence|unverified)\b/i',
         $issue
     );
+}
+
+/**
+ * Rejects verifier outputs that treat a compatible summary as a contradiction.
+ */
+function factCheckIssueIsSpecificityMismatch(string $issue, string $markedAnswer, array $snippets): bool {
+    if (!preg_match('/\bcontradict/i', $issue)) {
+        return false;
+    }
+
+    $snippetText = mb_strtolower(implode(' ', $snippets));
+    $answer = mb_strtolower(trim($markedAnswer));
+    if ($answer === '') {
+        return false;
+    }
+
+    if (preg_match_all('/\d+/', $answer, $nums) && !empty($nums[0])) {
+        foreach ($nums[0] as $num) {
+            if (!str_contains($snippetText, $num)) {
+                return false;
+            }
+        }
+    }
+
+    $words = preg_split('/\s+/', preg_replace('/[^\p{L}\p{N}\s]/u', ' ', $answer));
+    $significant = array_values(array_filter($words, fn($w) => mb_strlen($w) >= 4));
+    if (!$significant) {
+        return false;
+    }
+
+    $matched = 0;
+    foreach ($significant as $word) {
+        if (str_contains($snippetText, $word)) {
+            $matched++;
+        }
+    }
+
+    return $matched >= max(1, (int)ceil(count($significant) * 0.5));
 }
 
 function callOpenAIJsonVerifier(string $systemPrompt, string $userPrompt): ?array {
