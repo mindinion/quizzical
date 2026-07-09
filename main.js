@@ -1534,10 +1534,10 @@ document.cookie="feedItems=50";
 		questions.forEach(function(q, idx) {
 			html += '<div class="test-quiz-question">';
 			html += '<div class="test-quiz-category">' + escapeHtml(q.category) + '</div>';
+			html += '<div class="test-quiz-text">' + (idx + 1) + '. ' + escapeHtml(q.question) + '</div>';
 			if (q.image_url) {
 				html += '<div class="test-quiz-image"><img src="' + escapeHtml(q.image_url) + '" alt="" loading="lazy"></div>';
 			}
-			html += '<div class="test-quiz-text">' + (idx + 1) + '. ' + escapeHtml(q.question) + '</div>';
 			html += '<div class="test-quiz-options">';
 			q.options.forEach(function(opt) {
 				var cls = opt.correct ? ' class="test-quiz-option-correct"' : '';

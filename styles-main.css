@@ -1369,7 +1369,7 @@ A {}
 }
 
 #AIQuizImage {
-	margin: 0 auto 12px;
+	margin: 12px auto 16px;
 	border-radius: 8px;
 	overflow: hidden;
 	width: 100%;
@@ -1396,7 +1396,7 @@ A {}
 	font-weight: bold;
 	color: #222;
 	line-height: 1.45;
-	margin-bottom: 20px;
+	margin-bottom: 0;
 }
 
 #AIQuizOptions {
@@ -1698,7 +1698,7 @@ A {}
 }
 
 .test-quiz-image {
-	margin: 0 auto 10px;
+	margin: 10px auto 12px;
 	border-radius: 8px;
 	overflow: hidden;
 	width: 100%;
@@ -1719,7 +1719,7 @@ A {}
 	font-weight: bold;
 	color: #222;
 	line-height: 1.4;
-	margin-bottom: 10px;
+	margin-bottom: 0;
 }
 
 .test-quiz-options {
