@@ -669,6 +669,9 @@ Sports has strict automatic rejection rules — follow exactly:
 - Do NOT combine an edition count with a host country in one question (e.g. "third time, held in the UK") — pick one angle only.
 - For Rugby World Cup final questions: verify which team actually won that final before marking a year (e.g. England beat Australia in 2003; Australia beat England in 1991).
 - For Cricket World Cup questions: verify the host country matches the year (e.g. 2011 was India/Sri Lanka/Bangladesh, not New Zealand; 2015 was Australia/New Zealand).
+- NEVER use "hosted" or "host" for World Cup / tournament questions — it causes host-country/year mismatches. Use "held in [place]" instead, with the year only in the options.
+  GOOD: "In which year was the Cricket World Cup held in New Zealand?"
+  BAD:  "In which year did New Zealand host the Cricket World Cup?"
 - Do NOT invent obscure team mascots — only well-known colours, nicknames, or stadium facts you are certain about.
 GUIDE;
         case 'Geography':
@@ -701,6 +704,7 @@ RULES;
 
     if ($category === 'Sports') {
         $rules .= "\n- Sports reminder: if you are about to write \"first\", stop and rephrase without it.";
+        $rules .= "\n- Sports tournament hosts: never write \"[country] hosted [World Cup]\" — use \"In which year was [tournament] held in [place]?\" with years in the options only.";
     }
 
     return $rules;
@@ -762,6 +766,11 @@ function buildRetryHintForErrors(string $errorList, string $category, int $mcCou
     if (preg_match('/\[fact-check premise\]/i', $errorList)) {
         $hints[] = 'PREMISE FIX: A date or fact stated in the question text is wrong. '
             . 'Either correct it or remove the date from the question stem and put years only in the MC options.';
+    }
+
+    if (preg_match('/tournament host phrasing|hosted.*World Cup/i', $errorList)) {
+        $hints[] = 'HOST PHRASING FIX: Do not use "hosted" for World Cups. '
+            . 'Ask "In which year was the [Cricket/Rugby] World Cup held in [country]?" and verify the year matches that host nation (e.g. NZ co-hosted CWC in 2015, not 2011).';
     }
 
     if (preg_match('/\[fact-check distractor\]/i', $errorList)) {
@@ -940,6 +949,10 @@ function validateOneQuestion(array $q, string $category, int $qNum, array $usedT
         if (textContainsKeyword($regionText, AU_KEYWORDS) === null) {
             $errors[] = "question $qNum (category '$category') has no Australian topic — Australia Trivia must mention Australia, its places, or culture";
         }
+    }
+
+    if ($category === 'Sports' && questionUsesBannedTournamentHostPhrasing($q['question'])) {
+        $errors[] = "question $qNum (\"{$q['question']}\") uses banned tournament host phrasing — rephrase as 'In which year was [tournament] held in [place]?' (no 'hosted' / '[country] host … World Cup')";
     }
 
     $imageQuery = trim($q['image_query'] ?? '');
@@ -1140,6 +1153,43 @@ function fetchRss(string $url): ?SimpleXMLElement {
 }
 
 // ── Fact-check (web search + snippet verifier) ─────────────────────────────
+
+/**
+ * Sports questions that assert "[country] hosted … World Cup" often pair the wrong year with the host.
+ */
+function questionUsesBannedTournamentHostPhrasing(string $question): bool {
+    if (!preg_match('/\b(hosted?|hosts?)\b/i', $question)) {
+        return false;
+    }
+    return (bool) preg_match('/\b(world cup|cricket world cup|rugby world cup|icc|olympics|olympic games)\b/i', $question);
+}
+
+/**
+ * "Held in [place]" tournament questions need host-country vs year verification.
+ */
+function questionNeedsSportsHostPremiseCheck(string $question): bool {
+    if (!preg_match('/\bheld in\b/i', $question)) {
+        return false;
+    }
+    return (bool) preg_match('/\b(world cup|cricket|rugby|icc|olympics|olympic games|tournament)\b/i', $question);
+}
+
+function buildSportsTournamentHostQuery(string $question, string $markedAnswer): string {
+    $year = trim($markedAnswer);
+    if ($year !== '' && preg_match('/^\d{4}$/', $year)) {
+        if (preg_match('/\b(cricket|icc)\b/i', $question)) {
+            return "$year cricket world cup host country";
+        }
+        if (preg_match('/\brugby\b/i', $question)) {
+            return "$year rugby world cup host country";
+        }
+        if (preg_match('/\b(football|soccer|fifa)\b/i', $question)) {
+            return "$year fifa world cup host country";
+        }
+        return "$year world cup host country";
+    }
+    return buildFactCheckQuery($question) . ' world cup host';
+}
 
 function buildFactCheckQuery(string $question): string {
     $q = preg_replace('/^\s*true or false\s*:\s*/i', '', $question);
@@ -1373,7 +1423,10 @@ function callOpenAIJsonVerifier(string $systemPrompt, string $userPrompt): ?arra
  * True when the question embeds a date, stat, or factual claim worth verifying before answer check.
  * TF questions always need premise check (the entire statement is a factual claim).
  */
-function questionNeedsPremiseCheck(string $question, string $format): bool {
+function questionNeedsPremiseCheck(string $question, string $format, string $category = ''): bool {
+    if ($category === 'Sports' && questionNeedsSportsHostPremiseCheck($question)) {
+        return true;
+    }
     if ($format === 'tf') {
         return true;
     }
@@ -1395,7 +1448,9 @@ function questionNeedsPremiseCheck(string $question, string $format): bool {
     return false;
 }
 
-function verifyQuestionPremiseWithSnippets(string $question, array $snippets): array {
+function verifyQuestionPremiseWithSnippets(
+    string $question, array $snippets, bool $tournamentHostCheck = false, string $markedAnswer = ''
+): array {
     $snippetBlock = implode("\n\n", array_map(
         fn($s, $i) => '[' . ($i + 1) . '] ' . $s,
         $snippets,
@@ -1425,7 +1480,22 @@ If valid is false, your issue must cite the specific contradictory fact from the
 Respond with strict JSON: {"valid": true/false, "issue": "short reason if invalid, else empty string"}
 PROMPT;
 
+    if ($tournamentHostCheck) {
+        $systemPrompt .= <<<'PROMPT'
+
+Tournament host mode:
+- The question names a host country or city for a World Cup / major tournament (e.g. "held in New Zealand").
+- If a marked year is provided, verify that place was actually a host for that tournament in THAT year according to the snippets.
+- Reject when snippets show a different host country for that year (e.g. 2011 Cricket World Cup was in India/Sri Lanka/Bangladesh, not New Zealand).
+- Reject when snippets show the named place hosted in a different year than the marked answer.
+- If no marked year is provided, verify only explicit factual claims in the question stem (not which option is correct).
+PROMPT;
+    }
+
     $userPrompt = "Question text to verify:\n$question\n\nSearch snippets:\n$snippetBlock";
+    if ($tournamentHostCheck && preg_match('/^\d{4}$/', trim($markedAnswer))) {
+        $userPrompt .= "\n\nMarked correct answer year: $markedAnswer — verify this year matches the host place named in the question.";
+    }
 
     $result = callOpenAIJsonVerifier($systemPrompt, $userPrompt);
     if ($result === null) {
@@ -1536,12 +1606,16 @@ function factCheckOneQuestion(
         }
     }
 
+    $tournamentHostCheck = $category === 'Sports' && questionNeedsSportsHostPremiseCheck($q['question']);
+
     if ($category === 'NZ Current Events') {
         $snippets = array_map(fn($h) => 'Headline: ' . $h, $headlinesByRegion['NZ'] ?? []);
     } elseif ($category === 'Aussie Current Events') {
         $snippets = array_map(fn($h) => 'Headline: ' . $h, $headlinesByRegion['AU'] ?? []);
     } else {
-        $query = buildFactCheckQuery($q['question']);
+        $query = $tournamentHostCheck
+            ? buildSportsTournamentHostQuery($q['question'], $markedAnswer)
+            : buildFactCheckQuery($q['question']);
         $snippets = tavilySearch($query);
         if ($snippets === null) {
             bumpQuizGenStat('fact_check_skips');
@@ -1558,9 +1632,11 @@ function factCheckOneQuestion(
 
     $errors = [];
 
-    if (questionNeedsPremiseCheck($q['question'], $q['format'])) {
+    if (questionNeedsPremiseCheck($q['question'], $q['format'], $category)) {
         logQuizGenInfo("$logLabel question $qNum [fact-check premise]: checking question text…");
-        $premiseVerdict = verifyQuestionPremiseWithSnippets($q['question'], $snippets);
+        $premiseVerdict = verifyQuestionPremiseWithSnippets(
+            $q['question'], $snippets, $tournamentHostCheck, $markedAnswer
+        );
         if (!$premiseVerdict['valid']) {
             $reason = $premiseVerdict['issue'] !== ''
                 ? $premiseVerdict['issue']
