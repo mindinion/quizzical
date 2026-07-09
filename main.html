@@ -6,7 +6,7 @@
 
 <script src="jquery.js"></script>
 <script src="cropper.min.js"></script>
-<script src="main.js?id=73"></script>
+<script src="main.js?id=74"></script>
 
 
 
@@ -45,6 +45,7 @@
 		
 		<div id=RightButtons>
 			<button id="TestQuizButton" onclick="openTestQuiz()" style="display:none">Test Quiz</button>
+			<button id="WhatsNewButton" onclick="showWelcome(true)">&#x2605;<span class="whats-new-label"> What&#x2019;s New</span></button>
 			<a href="javascript:showProfile();">
 				<div id="MenuButton" class=right>
 					<div id="MenuButtonGraphic">
@@ -207,6 +208,13 @@
 				<button id="AIQuizSkipPost" onclick="closeAIQuiz()">Close</button>
 				<button id="AIQuizPostBtn" onclick="postAIResult()">Post to Feed</button>
 			</div>
+		</div>
+	</div>
+
+	<div id="WelcomeOverlay" style="display:none">
+		<div id="WelcomeModal">
+			<div id="WelcomeBody"></div>
+			<button id="WelcomeDismiss" onclick="dismissWelcome()">Got it &#x2192;</button>
 		</div>
 	</div>
 

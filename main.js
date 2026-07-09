@@ -1975,11 +1975,26 @@ document.cookie="feedItems=50";
 		document.getElementById("profilepic").value = "";
 	}
 
+	function showWelcome(force) {
+		var WELCOME_VERSION = 'v4';
+		if (!force && localStorage.getItem('quizzical_welcome') === WELCOME_VERSION) return;
+		$.get('welcome-v4.html', function(html) {
+			$('#WelcomeBody').html(html);
+			$('#WelcomeOverlay').fadeIn(200);
+		});
+	}
+
+	function dismissWelcome() {
+		localStorage.setItem('quizzical_welcome', 'v4');
+		$('#WelcomeOverlay').fadeOut(200);
+	}
+
 	$( document ).ready(function() {
 		if (!document.getElementById("MainContent")) return;
 		getSettings();
 		activateListeners();
 		$("#userid").val(getCookie("userid"));
+		showWelcome();
 	});
 	
 	
