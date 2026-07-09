@@ -18,6 +18,9 @@ require_once __DIR__ . '/qa-run-lib.php';
 
 header('Content-Type: application/json');
 
+@ignore_user_abort(true);
+@set_time_limit(600);
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['error' => 'POST only']);

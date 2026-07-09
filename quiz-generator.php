@@ -34,6 +34,7 @@ const CATEGORY_TARGETS = [
 ];
 
 const MAX_ATTEMPTS_PER_CATEGORY = 10;
+const MAX_ATTEMPTS_SPORTS = 15;
 
 const NZ_KEYWORDS = [
     'new zealand', 'nz', 'zealand', 'auckland', 'wellington', 'christchurch', 'dunedin',
@@ -97,6 +98,10 @@ const SUPERLATIVE_QUESTION_PATTERNS = [
         => 'first-ascent superlative — ask a plain year question with the year in the options only',
     '/\bworld\'s largest\b/i'
         => 'world\'s-largest superlative — ask a plain factual question without record claims',
+    '/\blast (country|countries|nation|nations|to)\b.{0,40}\b(Europe|Asia|Africa|Americas|the world)\b/i'
+        => 'last-in-region superlative — regional rankings are disputed (e.g. Belarus still has the death penalty in Europe)',
+    '/\bonly country (in|to)\b.{0,40}\b(Europe|Asia|Africa|the world)\b/i'
+        => 'only-country-in-region superlative — ask a plain verifiable fact instead',
 ];
 
 /** Topic labels already used elsewhere in the same quiz — reject repeats like Versailles in History and GK. */
@@ -357,6 +362,13 @@ function verifyFinalQuizGate(array $questions, string $quizType): array {
 }
 
 /**
+ * Sports needs extra retries — World Cup host/year questions often need several reformulations.
+ */
+function maxAttemptsForCategory(string $category): int {
+    return $category === 'Sports' ? MAX_ATTEMPTS_SPORTS : MAX_ATTEMPTS_PER_CATEGORY;
+}
+
+/**
  * Picks 2 categories (from those with a count of 2+) to each host exactly one
  * of the quiz's 2 true/false questions. Randomised per generation for variety
  * rather than always landing the tf slot on the same categories.
@@ -453,8 +465,9 @@ PROMPT;
     ];
 
     $result = null;
+    $maxAttempts = maxAttemptsForCategory($category);
 
-    for ($attempt = 1; $attempt <= MAX_ATTEMPTS_PER_CATEGORY; $attempt++) {
+    for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
         $headlineBlock = buildCategoryHeadlineBlock($category, $headlinesByRegion, $excludedHeadlines);
         $avoidBlock = buildQuestionAvoidBlock($avoidQuestions, $failedQuestions);
         $attemptUserPrompt = "Today is $today.$headlineBlock$avoidBlock\n\nGenerate the question(s) now.";
@@ -530,7 +543,7 @@ PROMPT;
             $retryNote = "Your previous attempt was rejected for the following reasons — fix ALL of them this time:\n$errorList";
             $retryNote .= "\n\nFORMAT REMINDER: This batch requires exactly $mcCount mc question(s)"
                 . ($tfCount > 0 ? " and exactly $tfCount tf question(s)." : " and zero tf questions — do NOT use format \"tf\".");
-            $retryNote .= buildRetryHintForErrors($errorList, $category, $mcCount, $tfCount);
+            $retryNote .= buildRetryHintForErrors($errorList, $category, $mcCount, $tfCount, $attempt);
             if (in_array($category, CURRENT_EVENTS_CATEGORIES, true)) {
                 $retryNote .= "\n\nUse a COMPLETELY DIFFERENT news story from the headlines above. "
                     . "Do NOT retry the same story or a reworded version of your rejected question.";
@@ -551,8 +564,9 @@ PROMPT;
     }
 
     if ($result === null) {
-        logQuizGenError("[$category] All " . MAX_ATTEMPTS_PER_CATEGORY . " attempts failed validation — giving up.");
-        throw new RuntimeException("Failed to generate '$category' after " . MAX_ATTEMPTS_PER_CATEGORY . " attempts — check logs/generate-quiz.log");
+        $maxAttempts = maxAttemptsForCategory($category);
+        logQuizGenError("[$category] All $maxAttempts attempts failed validation — giving up.");
+        throw new RuntimeException("Failed to generate '$category' after $maxAttempts attempts — check logs/generate-quiz.log");
     }
 
     foreach ($result as &$q) {
@@ -657,21 +671,22 @@ General sports trivia (NZ/Australian teams and leagues are fine) — established
 
 Sports has strict automatic rejection rules — follow exactly:
 - The word "first" must NEVER appear in any question (not "first win", "first time", "first World Cup", "first ever", "first to qualify"). Rephrase as a plain event/year question with no "first".
-  GOOD: "In which year was the Rugby World Cup held in South Africa?"
-  GOOD: "Which AFL club is known for black and white vertical stripes?"
-  GOOD: "In which year did Cathy Freeman win Olympic gold in the 400 metres?"
-  BAD:  "In which year did the All Blacks first win the Rugby World Cup?"
-  BAD:  "When did the Silver Ferns win their first World Cup title?"
 - For year MC questions: describe the event in the question; put years ONLY in the four options. Do not embed a year in the question stem.
 - No all-time records (most premierships, longest streak, winning percentage, per capita).
-- Prefer: a specific tournament edition/host city, team colours/nicknames, a named athlete at a named Games, stadium or rule facts with the year in the options.
-- Prefer team colours, home venues, or host-nation year questions over "which year did [team] win [tournament]?" — win-year questions often fail fact-check.
-- Do NOT combine an edition count with a host country in one question (e.g. "third time, held in the UK") — pick one angle only.
-- For Rugby World Cup final questions: verify which team actually won that final before marking a year (e.g. England beat Australia in 2003; Australia beat England in 1991).
-- For Cricket World Cup questions: verify the host country matches the year (e.g. 2011 was India/Sri Lanka/Bangladesh, not New Zealand; 2015 was Australia/New Zealand).
-- NEVER use "hosted" or "host" for World Cup / tournament questions — it causes host-country/year mismatches. Use "held in [place]" instead, with the year only in the options.
-  GOOD: "In which year was the Cricket World Cup held in New Zealand?"
+- At least ONE of your two questions MUST be domestic league trivia with NO World Cup, Olympics host, or championship win-year angle:
+  GOOD: "Which AFL club is known for black and white vertical stripes?"
+  GOOD: "What is the home ground of the Canterbury Crusaders?"
+  GOOD: "Which NRL team plays home games at Suncorp Stadium?"
+- The other question MAY ask "In which year was [tournament] held in [place]?" ONLY if you are certain the place and year match (verify before answering).
+  GOOD: "In which year was the Rugby World Cup held in South Africa?"
+  BAD:  "In which year did the All Blacks first win the Rugby World Cup?"
+  BAD:  "In which year did Australia win the Cricket World Cup, when the final was against Pakistan?"
+- NEVER ask which year a team WON a World Cup, Grand Final, premiership, or Ashes — these fail fact-check constantly.
+- NEVER use "hosted" or "host" for World Cup / tournament questions — use "held in [place]" instead, with the year only in the options.
   BAD:  "In which year did New Zealand host the Cricket World Cup?"
+- Do NOT combine an edition count with a host country in one question (e.g. "third time, held in the UK") — pick one angle only.
+- Do NOT combine a host-place claim with a final-opponent claim (e.g. "held in X, final against Y") — pick host-year OR domestic trivia only.
+- For Cricket World Cup: 2011 was India/Sri Lanka/Bangladesh; 2015 was Australia/New Zealand; 2019 was England/Wales.
 - Do NOT invent obscure team mascots — only well-known colours, nicknames, or stadium facts you are certain about.
 GUIDE;
         case 'Geography':
@@ -679,7 +694,7 @@ GUIDE;
         case 'History':
             return 'Must be about the rest of the world — NOT New Zealand or Australia. Use standard names for treaties and events (e.g. "Treaty of Paris", "Congress of Vienna" — never invent names like "Treaty of Vienna"). No "first country to…" superlatives. TF statements must be plain factual claims, not joke premises. For year questions, put the year in the answer options, not in the question stem.';
         case 'General Knowledge':
-            return 'Must be about the rest of the world — NOT New Zealand or Australia. No Great Barrier Reef or other NZ/AU references. Use real, standard names for treaties, laws, and historical figures — do not invent obscure attributions. Distinguish declaration vs recognition vs annexation for independence questions (e.g. Philippines independence from the US was 1946, not 1898). For year questions, put the year in the answer options, not in the question stem.';
+            return 'Must be about the rest of the world — NOT New Zealand or Australia. No Great Barrier Reef or other NZ/AU references. Use real, standard names for treaties, laws, and historical figures — do not invent obscure attributions. Distinguish declaration vs recognition vs annexation for independence questions (e.g. Philippines independence from the US was 1946, not 1898). No "last country in Europe to…" or "only country in Europe to…" superlatives — many rankings are disputed (e.g. Belarus still has the death penalty). For year questions, put the year in the answer options, not in the question stem.';
         default:
             return '';
     }
@@ -705,6 +720,8 @@ RULES;
     if ($category === 'Sports') {
         $rules .= "\n- Sports reminder: if you are about to write \"first\", stop and rephrase without it.";
         $rules .= "\n- Sports tournament hosts: never write \"[country] hosted [World Cup]\" — use \"In which year was [tournament] held in [place]?\" with years in the options only.";
+        $rules .= "\n- Sports win-year: never ask which year a team WON a World Cup/premiership/final — use domestic league colours, stadiums, or host-place year questions instead.";
+        $rules .= "\n- At least one Sports question must be domestic league trivia (AFL/NRL/Super Rugby colours, nickname, or home ground) with no World Cup or win-year angle.";
     }
 
     return $rules;
@@ -713,7 +730,7 @@ RULES;
 /**
  * Targeted rewrite hints appended to retry notes based on which validators fired.
  */
-function buildRetryHintForErrors(string $errorList, string $category, int $mcCount, int $tfCount): string {
+function buildRetryHintForErrors(string $errorList, string $category, int $mcCount, int $tfCount, int $attempt = 1): string {
     $hints = [];
 
     if (preg_match('/phrased as true\/false|has \d+ mc question|has \d+ tf question/i', $errorList)) {
@@ -773,6 +790,24 @@ function buildRetryHintForErrors(string $errorList, string $category, int $mcCou
             . 'Ask "In which year was the [Cricket/Rugby] World Cup held in [country]?" and verify the year matches that host nation (e.g. NZ co-hosted CWC in 2015, not 2011).';
     }
 
+    if (preg_match('/win-year|won the.*World Cup|final against|final was contested|banned win-year/i', $errorList)) {
+        $hints[] = 'WIN-YEAR FIX: Do NOT ask which year a team won a World Cup or beat someone in a final. '
+            . 'Use AFL/NRL/Super Rugby colours, a home stadium, or a verified "held in [place]?" host-year question instead.';
+    }
+
+    if (preg_match('/domestic league question/i', $errorList)) {
+        $hints[] = 'DOMESTIC FIX: At least one Sports question must be AFL/NRL/Super Rugby team colours, nickname, or home ground — no World Cup, Olympics, or win-year.';
+    }
+
+    if ($category === 'Sports' && $attempt >= 3 && preg_match('/\[fact-check premise\]|World Cup|held in|hosted|Rugby|Cricket/i', $errorList)) {
+        $hints[] = 'SPORTS ESCALATION: Abandon World Cup host/win questions for this batch. '
+            . 'Output one domestic league question (colours/nickname/home ground) and one simple non-tournament fact you are 100% certain about.';
+    }
+
+    if (preg_match('/last-in-region superlative|only-country-in-region/i', $errorList)) {
+        $hints[] = 'SUPERLATIVE FIX: Do not ask "last/only country in Europe/world to…" — ask a plain verifiable fact (e.g. a treaty, inventor, or city landmark).';
+    }
+
     if (preg_match('/\[fact-check distractor\]/i', $errorList)) {
         $hints[] = 'ANSWER FIX: The marked correct year/fact is wrong — a different option is actually correct. '
             . 'Verify all four options and mark the one that matches established fact.';
@@ -825,6 +860,19 @@ function validateCategoryQuestions(
     }
     if ($actualTf !== $tfCount) {
         $errors[] = "'$category' has $actualTf tf question(s) (expected $tfCount)";
+    }
+
+    if ($category === 'Sports' && $total >= 2) {
+        $hasDomestic = false;
+        foreach ($candidate['questions'] as $q) {
+            if (questionIsSportsDomesticLeague($q['question'] ?? '')) {
+                $hasDomestic = true;
+                break;
+            }
+        }
+        if (!$hasDomestic) {
+            $errors[] = "'Sports' batch must include at least one domestic league question (AFL/NRL/Super Rugby colours, nickname, or home ground) with no World Cup or win-year angle";
+        }
     }
 
     return $errors;
@@ -953,6 +1001,10 @@ function validateOneQuestion(array $q, string $category, int $qNum, array $usedT
 
     if ($category === 'Sports' && questionUsesBannedTournamentHostPhrasing($q['question'])) {
         $errors[] = "question $qNum (\"{$q['question']}\") uses banned tournament host phrasing — rephrase as 'In which year was [tournament] held in [place]?' (no 'hosted' / '[country] host … World Cup')";
+    }
+
+    if ($category === 'Sports' && questionUsesBannedSportsWinYearPhrasing($q['question'])) {
+        $errors[] = "question $qNum (\"{$q['question']}\") uses banned win-year phrasing — use domestic league colours/stadium or a verified 'held in [place]?' host-year question instead";
     }
 
     $imageQuery = trim($q['image_query'] ?? '');
@@ -1160,6 +1212,58 @@ function fetchRss(string $url): ?SimpleXMLElement {
 function questionUsesBannedTournamentHostPhrasing(string $question): bool {
     if (!preg_match('/\b(hosted?|hosts?)\b/i', $question)) {
         return false;
+    }
+    return (bool) preg_match('/\b(world cup|cricket world cup|rugby world cup|icc|olympics|olympic games)\b/i', $question);
+}
+
+/**
+ * Win-year and final-opponent year questions fail fact-check often (e.g. CWC final vs Pakistan → 1999 not 1996).
+ */
+function questionUsesBannedSportsWinYearPhrasing(string $question): bool {
+    if (preg_match(
+        '/\b(win|won|winning|triumph(ed)?|lifted|capture(d)?)\b.{0,55}\b('
+        . 'world cup|cricket world cup|rugby world cup|icc|premiership|grand final|ashes|sheffield shield'
+        . ')\b/i',
+        $question
+    )) {
+        return true;
+    }
+    if (preg_match('/\b(in which year|what year)\b/i', $question)
+        && preg_match(
+            '/\b(final (was )?(contested|played) against|against .{0,45} in the (final|decider)|beat .{0,45} in the final)\b/i',
+            $question
+        )) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Domestic league angles that steer away from World Cup host/win deadlocks.
+ */
+function questionIsSportsDomesticLeague(string $question): bool {
+    if (questionIsSportsWorldCupOrWinYear($question)) {
+        return false;
+    }
+    if (preg_match('/\b(AFL|NRL|Super Rugby|A-League|Big Bash|Sheffield Shield|State of Origin|ANZAC Test)\b/i', $question)) {
+        return true;
+    }
+    if (preg_match('/\b(home ground|home stadium|nicknamed|known for|colours|colors|stripes|jersey)\b/i', $question)
+        && preg_match('/\b(club|team|side|franchise|Crusaders|Waratahs|Blues|Highlanders|Chiefs|All Blacks|Wallabies|Magpies|Tigers|Roosters|Storm|Broncos)\b/i', $question)) {
+        return true;
+    }
+    return false;
+}
+
+function questionIsSportsWorldCupOrWinYear(string $question): bool {
+    if (questionUsesBannedSportsWinYearPhrasing($question)) {
+        return true;
+    }
+    if (questionUsesBannedTournamentHostPhrasing($question)) {
+        return true;
+    }
+    if (questionNeedsSportsHostPremiseCheck($question)) {
+        return true;
     }
     return (bool) preg_match('/\b(world cup|cricket world cup|rugby world cup|icc|olympics|olympic games)\b/i', $question);
 }
