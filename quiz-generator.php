@@ -67,8 +67,10 @@ const BANNED_QUESTION_PATTERNS = [
  * Prefer specific-year or plain factual questions instead.
  */
 const SUPERLATIVE_QUESTION_PATTERNS = [
-    '/\bfirst\b.{0,45}\b(to win|to ever|Olympic gold|All Blacks|Test match|participate)\b/i'
+    '/\bfirst\b.{0,45}\b(to win|to ever|Olympic gold|All Blacks|Test match|participate|qualif(y|ied|ying|ication)|qualified for)\b/i'
         => 'first-ever superlative — ask "In which year did…?" instead',
+    '/\bfirst\b.{0,35}\b(World Cup|FIFA|Olympics|Olympic Games)\b/i'
+        => 'first-at-tournament superlative — ask about a specific year or edition instead',
     '/\bfirst\b.{0,25}\b(to enact|to grant|to allow|to introduce|to pass)\b/i'
         => 'first-to-do-something superlative — embeds disputed "first" claims',
     '/\b(longest consecutive|most premiership)\b/i'
@@ -1031,11 +1033,15 @@ function callOpenAIJsonVerifier(string $systemPrompt, string $userPrompt): ?arra
 }
 
 /**
- * MC questions only — true when the stem embeds a date or precise stat worth verifying.
+ * True when the question embeds a date, stat, or factual claim worth verifying before answer check.
+ * TF questions always need premise check (the entire statement is a factual claim).
  */
 function questionNeedsPremiseCheck(string $question, string $format): bool {
-    if ($format !== 'mc') {
-        return false;
+    if ($format === 'tf') {
+        return true;
+    }
+    if (preg_match('/\b\d+\s*(BC|BCE|AD|CE)\b/i', $question)) {
+        return true;
     }
     if (preg_match('/\b(18|19|20)\d{2}\b/', $question)) {
         return true;
@@ -1044,6 +1050,9 @@ function questionNeedsPremiseCheck(string $question, string $format): bool {
         return true;
     }
     if (preg_match('/\b(approximately|roughly|about)\s+\d/i', $question)) {
+        return true;
+    }
+    if (preg_match('/\b(flag|national flag|officially adopted|adopted as)\b/i', $question)) {
         return true;
     }
     return false;
@@ -1061,12 +1070,15 @@ You verify whether factual claims stated IN the quiz question text are accurate,
 
 Scope:
 - Check dates, numbers, statistics, and named historical facts embedded in the question stem.
+- For true/false questions, verify the factual claims in the statement (not whether True or False is the right answer — that is checked separately).
 - Ignore the answer options entirely — do not judge which answer is correct.
 - Do NOT check whether the question is tricky, oversimplified, or debatable among experts.
 
 Rules:
 - Default to valid: true. Only reject when snippets explicitly contradict a date, number, or fact stated in the question.
 - Example reject: question says "in 1902" but snippets say the event was 1894.
+- Example reject: question says "built starting in 700 BC" but snippets say construction began circa 221 BC.
+- Example reject (tf): statement says "dedicated to the goddess Isis" but snippets say it honours Ptolemy V.
 - Example reject: question says "27,000 kilometers" but snippets cite ~15,000 km.
 - If snippets are silent or vague — you MUST respond valid: true. Absence of evidence is NOT a rejection.
 - NEVER reject because snippets "do not mention" or "fail to support" — those mean valid: true.
@@ -1077,6 +1089,69 @@ Respond with strict JSON: {"valid": true/false, "issue": "short reason if invali
 PROMPT;
 
     $userPrompt = "Question text to verify:\n$question\n\nSearch snippets:\n$snippetBlock";
+
+    $result = callOpenAIJsonVerifier($systemPrompt, $userPrompt);
+    if ($result === null) {
+        return ['valid' => true, 'issue' => ''];
+    }
+
+    $valid = (bool)($result['valid'] ?? true);
+    $issue = trim($result['issue'] ?? '');
+
+    if (!$valid && $issue !== '' && factCheckIssueIsSilenceOnly($issue)) {
+        return ['valid' => true, 'issue' => ''];
+    }
+
+    return [
+        'valid' => $valid,
+        'issue' => $issue,
+    ];
+}
+
+/**
+ * MC only — reject when snippets clearly support a wrong option over the marked answer.
+ */
+function verifyNoDistractorIsCorrectWithSnippets(
+    string $question, string $markedAnswer, array $allOptions, array $snippets
+): array {
+    $wrongOptions = array_values(array_filter(
+        $allOptions,
+        fn($o) => empty($o['correct'])
+    ));
+    if (!$wrongOptions) {
+        return ['valid' => true, 'issue' => ''];
+    }
+
+    $snippetBlock = implode("\n\n", array_map(
+        fn($s, $i) => '[' . ($i + 1) . '] ' . $s,
+        $snippets,
+        array_keys($snippets)
+    ));
+
+    $optionsBlock = implode(', ', array_map(
+        fn($o) => '"' . $o['text'] . '"' . ($o['correct'] ? ' (marked correct)' : ' (wrong option)'),
+        $allOptions
+    ));
+
+    $systemPrompt = <<<'PROMPT'
+You verify multiple-choice quiz answers using ONLY the provided search snippets — not your own memory.
+
+Task: Determine whether any WRONG option is clearly the correct answer according to the snippets, instead of the marked correct option.
+
+Rules:
+- Default to valid: true. Only reject when snippets EXPLICITLY support a wrong option and contradict the marked answer.
+- Reject if snippets state a date, number, name, or fact that matches a wrong option and contradicts the marked answer.
+- Example reject: marked "1991" but snippets say "1987"; wrong option "1987" is in the list.
+- Example reject: marked "1959" but snippets say the flag was adopted in "1902"; wrong option "1902" is in the list.
+- Example reject: marked "2003" but snippets say first qualification was "1999"; wrong option "1999" is in the list.
+- Do NOT reject merely because the marked answer lacks snippet mention.
+- Do NOT reject because both options seem plausible without explicit snippet text favoring the wrong one.
+- If valid is false, your issue must name the wrong option and cite the contradictory snippet fact.
+
+Respond with strict JSON: {"valid": true/false, "issue": "short reason if invalid, else empty string"}
+PROMPT;
+
+    $userPrompt = "Question: $question\nOptions: $optionsBlock\nMarked correct: \"$markedAnswer\"\n\nSearch snippets:\n$snippetBlock";
 
     $result = callOpenAIJsonVerifier($systemPrompt, $userPrompt);
     if ($result === null) {
@@ -1140,6 +1215,7 @@ function factCheckCategoryQuestions(array $questions, string $category, array $h
         }
 
         if (questionNeedsPremiseCheck($q['question'], $q['format'])) {
+            logQuizGenInfo("[$category] question $qNum [fact-check premise]: checking question text…");
             $premiseVerdict = verifyQuestionPremiseWithSnippets($q['question'], $snippets);
             if (!$premiseVerdict['valid']) {
                 $reason = $premiseVerdict['issue'] !== ''
@@ -1148,6 +1224,7 @@ function factCheckCategoryQuestions(array $questions, string $category, array $h
                 $errors[] = "question $qNum [fact-check premise]: question text rejected — $reason";
                 continue;
             }
+            logQuizGenInfo("[$category] question $qNum [fact-check premise]: passed");
         }
 
         $verdict = verifyAnswerWithSnippets(
@@ -1157,6 +1234,19 @@ function factCheckCategoryQuestions(array $questions, string $category, array $h
         if (!$verdict['valid']) {
             $reason = $verdict['issue'] !== '' ? $verdict['issue'] : 'marked answer not supported by sources';
             $errors[] = "question $qNum [fact-check]: marked answer \"$markedAnswer\" rejected — $reason";
+            continue;
+        }
+
+        if ($q['format'] === 'mc') {
+            $distractorVerdict = verifyNoDistractorIsCorrectWithSnippets(
+                $q['question'], $markedAnswer, $q['options'], $snippets
+            );
+            if (!$distractorVerdict['valid']) {
+                $reason = $distractorVerdict['issue'] !== ''
+                    ? $distractorVerdict['issue']
+                    : 'a wrong option is better supported by sources than the marked answer';
+                $errors[] = "question $qNum [fact-check distractor]: $reason";
+            }
         }
     }
 
