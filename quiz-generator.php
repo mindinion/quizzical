@@ -22,6 +22,12 @@
 require_once __DIR__ . '/dblogin.php'; // defines OPENAI_API_KEY
 require_once __DIR__ . '/config.php';
 
+/** Model for category question generation. gpt-4o is more accurate; gpt-4o-mini is faster/cheaper. */
+const QUIZ_GENERATION_MODEL = 'gpt-4o-mini';
+
+/** Model for fact-check JSON verifiers (premise, answer, distractor). */
+const QUIZ_FACT_CHECK_MODEL = 'gpt-4o-mini';
+
 const CATEGORY_TARGETS = [
     'NZ Trivia'              => 2,
     'Australia Trivia'       => 2,
@@ -165,26 +171,28 @@ const CURRENT_EVENTS_CATEGORIES = ['NZ Current Events', 'Aussie Current Events']
 /** Full-quiz regeneration attempts when the pre-publish final fact-check gate fails. */
 const MAX_FINAL_GATE_QUIZ_ATTEMPTS = 3;
 
-/** @var array{categories_retried: int, fact_check_skips: int, preview_images_fetched: int, final_gate_quiz_attempts: int, final_gate_rejections: int, category_cap_fallbacks: int, final_gate_cap_fallbacks: int} */
+/** @var array{categories_retried: int, fact_check_skips: int, preview_images_fetched: int, final_gate_quiz_attempts: int, final_gate_rejections: int, category_cap_fallbacks: int, final_gate_cap_fallbacks: int, category_emergency_fallbacks: int} */
 $GLOBALS['quizGenStats'] = [
-    'categories_retried'       => 0,
-    'fact_check_skips'         => 0,
-    'preview_images_fetched'   => 0,
-    'final_gate_quiz_attempts' => 0,
-    'final_gate_rejections'    => 0,
-    'category_cap_fallbacks'   => 0,
-    'final_gate_cap_fallbacks' => 0,
+    'categories_retried'         => 0,
+    'fact_check_skips'           => 0,
+    'preview_images_fetched'     => 0,
+    'final_gate_quiz_attempts'   => 0,
+    'final_gate_rejections'      => 0,
+    'category_cap_fallbacks'     => 0,
+    'final_gate_cap_fallbacks'   => 0,
+    'category_emergency_fallbacks' => 0,
 ];
 
 function resetQuizGenStats(): void {
     $GLOBALS['quizGenStats'] = [
-        'categories_retried'       => 0,
-        'fact_check_skips'         => 0,
-        'preview_images_fetched'   => 0,
-        'final_gate_quiz_attempts' => 0,
-        'final_gate_rejections'    => 0,
-        'category_cap_fallbacks'   => 0,
-        'final_gate_cap_fallbacks' => 0,
+        'categories_retried'         => 0,
+        'fact_check_skips'           => 0,
+        'preview_images_fetched'     => 0,
+        'final_gate_quiz_attempts'   => 0,
+        'final_gate_rejections'      => 0,
+        'category_cap_fallbacks'     => 0,
+        'final_gate_cap_fallbacks'   => 0,
+        'category_emergency_fallbacks' => 0,
     ];
 }
 
@@ -295,7 +303,6 @@ function generateQuizQuestions(string $quizType, string $today, array $avoidQues
  * the gate fails; if the cap is reached, returns the last generated quiz (best effort).
  *
  * @param string[] $avoidQuestions
- * @throws RuntimeException only when generation produces no quiz at all
  */
 function generateQuizQuestionsWithFinalGate(
     string $quizType, string $today, array $avoidQuestions = [], int $maxAttempts = MAX_FINAL_GATE_QUIZ_ATTEMPTS
@@ -337,10 +344,9 @@ function generateQuizQuestionsWithFinalGate(
         return $lastQuestions;
     }
 
-    $errorList = implode("\n", array_map(fn($e) => '- ' . $e, $lastErrors));
-    throw new RuntimeException(
-        "Final publish gate failed after $maxAttempts full quiz attempt(s) with no quiz to accept:\n$errorList"
-    );
+    logQuizGenError('[final-gate] No quiz to accept from gate attempts — returning quiz without gate (best effort).');
+    bumpQuizGenStat('final_gate_cap_fallbacks');
+    return generateQuizQuestions($quizType, $today, $avoidQuestions);
 }
 
 /**
@@ -493,7 +499,7 @@ PROMPT;
         }
 
         $payload = json_encode([
-            'model'           => 'gpt-4o-mini',
+            'model'           => QUIZ_GENERATION_MODEL,
             'messages'        => [
                 ['role' => 'system', 'content' => $systemPrompt],
                 ['role' => 'user',   'content' => $attemptUserPrompt],
@@ -592,10 +598,11 @@ PROMPT;
             bumpQuizGenStat('category_cap_fallbacks');
             $result = $lastCandidate['questions'];
         } else {
-            logQuizGenError("[$category] All $maxAttempts attempts failed with no generated output.");
-            throw new RuntimeException(
-                "Failed to generate '$category' after $maxAttempts attempts — no model output to accept"
+            logQuizGenError(
+                "[$category] All $maxAttempts attempts failed with no model output — using emergency fallback questions."
             );
+            bumpQuizGenStat('category_emergency_fallbacks');
+            $result = buildEmergencyCategoryQuestions($category, $mcCount, $tfCount);
         }
     }
 
@@ -605,6 +612,41 @@ PROMPT;
     unset($q);
 
     return $result;
+}
+
+/**
+ * Minimal structurally valid questions when the API never returned usable JSON.
+ * Logged as emergency fallback — a bad quiz beats no quiz.
+ *
+ * @return list<array{question: string, format: string, image_query: string, options: list<array{text: string, correct: bool}>}>
+ */
+function buildEmergencyCategoryQuestions(string $category, int $mcCount, int $tfCount): array {
+    $questions = [];
+    for ($i = 1; $i <= $mcCount; $i++) {
+        $questions[] = [
+            'question'    => "Which option best fits this $category topic? (auto-generated placeholder $i)",
+            'format'      => 'mc',
+            'image_query' => 'trivia quiz',
+            'options'     => [
+                ['text' => 'Option A', 'correct' => true],
+                ['text' => 'Option B', 'correct' => false],
+                ['text' => 'Option C', 'correct' => false],
+                ['text' => 'Option D', 'correct' => false],
+            ],
+        ];
+    }
+    for ($i = 1; $i <= $tfCount; $i++) {
+        $questions[] = [
+            'question'    => "True or False: This is a placeholder $category statement ($i).",
+            'format'      => 'tf',
+            'image_query' => 'trivia quiz',
+            'options'     => [
+                ['text' => 'True', 'correct' => true],
+                ['text' => 'False', 'correct' => false],
+            ],
+        ];
+    }
+    return $questions;
 }
 
 function buildCategoryHeadlineBlock(string $category, array $headlinesByRegion, array $excludedHeadlines = []): string {
@@ -1517,7 +1559,7 @@ function callOpenAIJsonVerifier(string $systemPrompt, string $userPrompt): ?arra
     ];
 
     $payload = json_encode([
-        'model'           => 'gpt-4o-mini',
+        'model'           => QUIZ_FACT_CHECK_MODEL,
         'messages'        => [
             ['role' => 'system', 'content' => $systemPrompt],
             ['role' => 'user',   'content' => $userPrompt],

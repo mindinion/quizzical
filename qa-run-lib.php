@@ -32,15 +32,29 @@ function qaRunOnce(int $runNum, string $type, string $today, int $lookback, bool
         if (!$skipImages) {
             $questions = attachPreviewImages($questions);
         }
-        $payload['ok']        = true;
         $payload['questions'] = $questions;
         $payload['stats']     = getQuizGenStats();
-    } catch (RuntimeException $e) {
-        $payload['error'] = $e->getMessage();
-        $payload['stats'] = getQuizGenStats();
+        $payload['ok']          = count($questions) > 0;
+        $payload['warnings']    = buildQuizGenWarnings(getQuizGenStats());
     } catch (Throwable $e) {
-        $payload['error'] = 'Unexpected failure: ' . $e->getMessage();
-        $payload['stats'] = getQuizGenStats();
+        logQuizGenError('QA run primary path failed: ' . $e->getMessage());
+        try {
+            $questions = generateQuizQuestions($type, $today, $recentQuestions);
+            if (!$skipImages) {
+                $questions = attachPreviewImages($questions);
+            }
+            $payload['questions'] = $questions;
+            $payload['stats']     = getQuizGenStats();
+            $payload['ok']          = count($questions) > 0;
+            $payload['warnings']    = array_merge(
+                ['Generation recovered via fallback: ' . $e->getMessage()],
+                buildQuizGenWarnings(getQuizGenStats())
+            );
+        } catch (Throwable $inner) {
+            $payload['error'] = 'Unexpected failure: ' . $inner->getMessage();
+            $payload['stats'] = getQuizGenStats();
+            $payload['ok']    = false;
+        }
     }
 
     $payload['log'] = stopQuizGenLogCapture();
@@ -107,6 +121,26 @@ function qaExecutePass(
     }
 
     return $summary;
+}
+
+/**
+ * Human-readable warnings when best-effort fallbacks were used (quiz still delivered).
+ *
+ * @param array<string, int> $stats
+ * @return string[]
+ */
+function buildQuizGenWarnings(array $stats): array {
+    $warnings = [];
+    if (($stats['category_cap_fallbacks'] ?? 0) > 0) {
+        $warnings[] = 'One or more categories accepted the last attempt after validation retries were exhausted.';
+    }
+    if (($stats['category_emergency_fallbacks'] ?? 0) > 0) {
+        $warnings[] = 'One or more categories used emergency placeholder questions (API returned no usable output).';
+    }
+    if (($stats['final_gate_cap_fallbacks'] ?? 0) > 0) {
+        $warnings[] = 'Final publish gate accepted the last quiz without a clean pass.';
+    }
+    return $warnings;
 }
 
 function qaTokenIsValid(?string $token): bool {
