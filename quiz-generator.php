@@ -1014,7 +1014,7 @@ function cleanupQuizImages(mysqli $conn): void {
 
 function attachPreviewImages(array $questions): array {
     if (!defined('PEXELS_API_KEY') || PEXELS_API_KEY === '') {
-        logQuizGenError('[images] Preview images skipped — set PEXELS_API_KEY in config.php');
+        logQuizGenError('[images] Preview images skipped — set PEXELS_API_KEY in dblogin.php');
         return $questions;
     }
 

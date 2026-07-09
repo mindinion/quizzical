@@ -9,13 +9,8 @@
 // When true, emails are only sent to superuser accounts
 define('DEV_MODE', false);
 
-// OPENAI_API_KEY is defined in dblogin.php (gitignored) alongside DB credentials.
-
-// Stock photo search for AI quiz question images — https://www.pexels.com/api/
-define('PEXELS_API_KEY', '');
-
-// Web search for fact-checking marked answers at generation time — https://tavily.com
-define('TAVILY_API_KEY', '');
+// OPENAI_API_KEY, PEXELS_API_KEY, and TAVILY_API_KEY are defined in dblogin.php
+// (gitignored — deploy never overwrites that file).
 
 // When true, quiz cron logs retry/fact-check/cleanup detail to generate-quiz.log and stderr
 define('QUIZ_GEN_VERBOSE_LOG', true);
