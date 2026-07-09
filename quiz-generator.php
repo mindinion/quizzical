@@ -531,9 +531,9 @@ function questionMatchesHeadline(string $question, string $headline): bool {
 function buildCategoryGuidance(string $category): string {
     switch ($category) {
         case 'NZ Current Events':
-            return 'These questions MUST be based only on the NZ headlines block below — genuinely current, real stories. Must NOT be about Australia. Phrase naturally — do not say "according to recent news" or "as reported today". The marked correct answer must stay close to what the headlines actually say — do not add speculative detail (e.g. "under suspicious circumstances") that headlines do not support.';
+            return 'These questions MUST be based only on the NZ headlines block below — genuinely current, real stories. Must NOT be about Australia. Phrase naturally — do not say "according to recent news" or "as reported today". The marked correct answer must stay close to what the headlines actually say — do not add speculative detail (e.g. "under suspicious circumstances") that headlines do not support. For image_query use generic scene words (e.g. "emergency response") — never repeat an option word like "Flooding" or "Landslide".';
         case 'Aussie Current Events':
-            return 'These questions MUST be based only on the Australian headlines block below — genuinely current, real stories. Must NOT be about New Zealand. Phrase naturally — do not say "according to recent news" or "as reported today". The marked correct answer must stay close to what the headlines actually say — do not add speculative detail that headlines do not support.';
+            return 'These questions MUST be based only on the Australian headlines block below — genuinely current, real stories. Must NOT be about New Zealand. Phrase naturally — do not say "according to recent news" or "as reported today". The marked correct answer must stay close to what the headlines actually say — do not add speculative detail that headlines do not support. For image_query use generic scene words — never repeat an option word from the answers.';
         case 'NZ Trivia':
             return 'General New Zealand trivia — established, verifiable facts that would be true regardless of today\'s news. Do NOT base these on current headlines, even indirectly. Use widely documented facts only — NOT obscure micro-records (e.g. "first descent" of a specific river, one-off local sporting feats). For year questions, put the year in the answer options, not in the question stem.';
         case 'Australia Trivia':
@@ -996,7 +996,8 @@ function tavilySearch(string $query): ?array {
 }
 
 function verifyAnswerWithSnippets(
-    string $question, string $markedAnswer, array $allOptions, string $format, array $snippets
+    string $question, string $markedAnswer, array $allOptions, string $format, array $snippets,
+    bool $headlineGrounding = false
 ): array {
     $snippetBlock = implode("\n\n", array_map(
         fn($s, $i) => '[' . ($i + 1) . '] ' . $s,
@@ -1026,6 +1027,19 @@ If valid is false, your issue must quote or paraphrase a specific contradictory 
 
 Respond with strict JSON: {"valid": true/false, "issue": "short reason if invalid, else empty string"}
 PROMPT;
+
+    if ($headlineGrounding) {
+        $systemPrompt .= <<<'PROMPT'
+
+
+Headline mode (snippets are unrelated news headlines from the past day):
+- The question is based on ONE story. Valid if ANY headline supports the marked answer.
+- Do NOT reject because other headlines mention different, unrelated stories — that is expected.
+- Do NOT reject because the marked answer paraphrases a headline with different wording (e.g. "Flooding" vs "wild weather", "Hutt Valley" vs "landslip near petrol station", "South Island" vs "South Islanders in clean-up after floods").
+- Do NOT reject because no headline names every detail in the answer (e.g. a suburb not spelled out in the headline).
+- Reject ONLY if no headline relates to the question topic at all, OR a headline clearly contradicts the marked answer.
+PROMPT;
+    }
 
     $userPrompt = "Question: $question\nFormat: $format\nOptions: $optionsBlock\nMarked correct: \"$markedAnswer\"\n\nSearch snippets:\n$snippetBlock";
 
@@ -1354,7 +1368,8 @@ function factCheckCategoryQuestions(array $questions, string $category, array $h
         }
 
         $verdict = verifyAnswerWithSnippets(
-            $q['question'], $markedAnswer, $q['options'], $q['format'], $snippets
+            $q['question'], $markedAnswer, $q['options'], $q['format'], $snippets,
+            in_array($category, CURRENT_EVENTS_CATEGORIES, true)
         );
 
         if (!$verdict['valid']) {
@@ -1363,7 +1378,9 @@ function factCheckCategoryQuestions(array $questions, string $category, array $h
             continue;
         }
 
-        if ($q['format'] === 'mc') {
+        // Distractor check uses Tavily-style snippets; headline feeds list many unrelated
+        // stories so wrong options often appear "supported" — skip for current events.
+        if ($q['format'] === 'mc' && !in_array($category, CURRENT_EVENTS_CATEGORIES, true)) {
             $distractorVerdict = verifyNoDistractorIsCorrectWithSnippets(
                 $q['question'], $markedAnswer, $q['options'], $snippets
             );
