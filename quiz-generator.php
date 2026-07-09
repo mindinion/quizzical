@@ -165,13 +165,15 @@ const CURRENT_EVENTS_CATEGORIES = ['NZ Current Events', 'Aussie Current Events']
 /** Full-quiz regeneration attempts when the pre-publish final fact-check gate fails. */
 const MAX_FINAL_GATE_QUIZ_ATTEMPTS = 3;
 
-/** @var array{categories_retried: int, fact_check_skips: int, preview_images_fetched: int, final_gate_quiz_attempts: int, final_gate_rejections: int} */
+/** @var array{categories_retried: int, fact_check_skips: int, preview_images_fetched: int, final_gate_quiz_attempts: int, final_gate_rejections: int, category_cap_fallbacks: int, final_gate_cap_fallbacks: int} */
 $GLOBALS['quizGenStats'] = [
     'categories_retried'       => 0,
     'fact_check_skips'         => 0,
     'preview_images_fetched'   => 0,
     'final_gate_quiz_attempts' => 0,
     'final_gate_rejections'    => 0,
+    'category_cap_fallbacks'   => 0,
+    'final_gate_cap_fallbacks' => 0,
 ];
 
 function resetQuizGenStats(): void {
@@ -181,6 +183,8 @@ function resetQuizGenStats(): void {
         'preview_images_fetched'   => 0,
         'final_gate_quiz_attempts' => 0,
         'final_gate_rejections'    => 0,
+        'category_cap_fallbacks'   => 0,
+        'final_gate_cap_fallbacks' => 0,
     ];
 }
 
@@ -236,9 +240,8 @@ function appendQuizGenLogCapture(string $level, string $msg): void {
 
 /**
  * Generates a full 15-question quiz, one category at a time, and returns the
- * combined array of question objects with positions 1..15 assigned. Throws
- * RuntimeException if any single category can't produce a valid result within
- * MAX_ATTEMPTS_PER_CATEGORY.
+ * combined array of question objects with positions 1..15 assigned. When a
+ * category exhausts its retry cap, the last generated batch is accepted (best effort).
  *
  * @param string $quizType 'morning' or 'afternoon' — controls the headline recency window.
  * @param string $today Y-m-d date string used in the prompt.
@@ -288,16 +291,17 @@ function generateQuizQuestions(string $quizType, string $today, array $avoidQues
 
 /**
  * Generates a full quiz and runs a fresh fact-check on all 15 accepted questions
- * before returning. Regenerates the whole quiz up to MAX_FINAL_GATE_QUIZ_ATTEMPTS
- * when the gate fails (cron / QA publish path).
+ * before returning. Retries the whole quiz up to MAX_FINAL_GATE_QUIZ_ATTEMPTS when
+ * the gate fails; if the cap is reached, returns the last generated quiz (best effort).
  *
  * @param string[] $avoidQuestions
- * @throws RuntimeException when generation or the final gate never succeeds
+ * @throws RuntimeException only when generation produces no quiz at all
  */
 function generateQuizQuestionsWithFinalGate(
     string $quizType, string $today, array $avoidQuestions = [], int $maxAttempts = MAX_FINAL_GATE_QUIZ_ATTEMPTS
 ): array {
     $lastErrors = [];
+    $lastQuestions = null;
 
     resetQuizGenStats();
 
@@ -313,6 +317,8 @@ function generateQuizQuestionsWithFinalGate(
         } finally {
             $GLOBALS['quizGenSkipStatsReset'] = false;
         }
+        $lastQuestions = $questions;
+
         $gateErrors = verifyFinalQuizGate($questions, $quizType);
         if (!$gateErrors) {
             return $questions;
@@ -322,9 +328,18 @@ function generateQuizQuestionsWithFinalGate(
         $lastErrors = $gateErrors;
     }
 
+    if ($lastQuestions !== null) {
+        $errorList = implode("\n", array_map(fn($e) => '- ' . $e, $lastErrors));
+        logQuizGenError(
+            "[final-gate] Cap reached after $maxAttempts full quiz attempt(s) — accepting last quiz (best effort):\n$errorList"
+        );
+        bumpQuizGenStat('final_gate_cap_fallbacks');
+        return $lastQuestions;
+    }
+
     $errorList = implode("\n", array_map(fn($e) => '- ' . $e, $lastErrors));
     throw new RuntimeException(
-        "Final publish gate failed after $maxAttempts full quiz attempt(s):\n$errorList"
+        "Final publish gate failed after $maxAttempts full quiz attempt(s) with no quiz to accept:\n$errorList"
     );
 }
 
@@ -384,7 +399,8 @@ function pickTfHostCategories(): array {
  * small, fixed-count OpenAI call and retry loop. The category label itself is
  * assigned by the caller, not requested from the model, so mislabeling is
  * structurally impossible — only "wrong content for the requested category"
- * remains a risk, which validateOneQuestion() still checks for.
+ * remains a risk, which validateOneQuestion() still checks for. When the retry
+ * cap is reached, the last model output is accepted (best effort).
  */
 function generateCategoryQuestions(
     string $category, int $mcCount, int $tfCount, array $headlinesByRegion, string $today, array $avoidQuestions,
@@ -465,6 +481,7 @@ PROMPT;
     ];
 
     $result = null;
+    $lastCandidate = null;
     $maxAttempts = maxAttemptsForCategory($category);
 
     for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
@@ -512,6 +529,10 @@ PROMPT;
         }
 
         $candidate = json_decode($decoded['choices'][0]['message']['content'], true);
+        if (is_array($candidate) && isset($candidate['questions']) && is_array($candidate['questions'])) {
+            $lastCandidate = $candidate;
+        }
+
         $errors = validateCategoryQuestions($candidate, $category, $mcCount, $tfCount, $usedTopicLabels);
         if (!$errors) {
             $errors = factCheckCategoryQuestions(
@@ -564,9 +585,18 @@ PROMPT;
     }
 
     if ($result === null) {
-        $maxAttempts = maxAttemptsForCategory($category);
-        logQuizGenError("[$category] All $maxAttempts attempts failed validation — giving up.");
-        throw new RuntimeException("Failed to generate '$category' after $maxAttempts attempts — check logs/generate-quiz.log");
+        if ($lastCandidate !== null && isset($lastCandidate['questions']) && is_array($lastCandidate['questions'])) {
+            logQuizGenError(
+                "[$category] All $maxAttempts attempts failed validation — accepting last attempt (best effort)."
+            );
+            bumpQuizGenStat('category_cap_fallbacks');
+            $result = $lastCandidate['questions'];
+        } else {
+            logQuizGenError("[$category] All $maxAttempts attempts failed with no generated output.");
+            throw new RuntimeException(
+                "Failed to generate '$category' after $maxAttempts attempts — no model output to accept"
+            );
+        }
     }
 
     foreach ($result as &$q) {
