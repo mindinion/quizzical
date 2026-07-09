@@ -62,6 +62,23 @@ const BANNED_QUESTION_PATTERNS = [
 
 const CURRENT_EVENTS_CATEGORIES = ['NZ Current Events', 'Aussie Current Events'];
 
+/** @var array{categories_retried: int, fact_check_skips: int} */
+$GLOBALS['quizGenStats'] = ['categories_retried' => 0, 'fact_check_skips' => 0];
+
+function resetQuizGenStats(): void {
+    $GLOBALS['quizGenStats'] = ['categories_retried' => 0, 'fact_check_skips' => 0];
+}
+
+function getQuizGenStats(): array {
+    return $GLOBALS['quizGenStats'];
+}
+
+function bumpQuizGenStat(string $key): void {
+    if (isset($GLOBALS['quizGenStats'][$key])) {
+        $GLOBALS['quizGenStats'][$key]++;
+    }
+}
+
 /**
  * Generates a full 15-question quiz, one category at a time, and returns the
  * combined array of question objects with positions 1..15 assigned. Throws
@@ -73,6 +90,7 @@ const CURRENT_EVENTS_CATEGORIES = ['NZ Current Events', 'Aussie Current Events']
  * @param string[] $avoidQuestions Question texts to avoid repeating (e.g. recent days' quizzes).
  */
 function generateQuizQuestions(string $quizType, string $today, array $avoidQuestions = []): array {
+    resetQuizGenStats();
     $headlinesByRegion = fetchHeadlines($quizType);
     $tfHosts = pickTfHostCategories();
 
@@ -148,6 +166,8 @@ For any "mc" question, include one answer option that sounds almost plausible bu
 Difficulty: genuinely challenging — average players should get some wrong. Do NOT ask questions whose answer is the single most famous fact about a topic (e.g. capital cities, a country's national animal/bird, "the" founding treaty of a nation, the primary language of a country, a famous landmark's most basic fact). These are trivially guessable. Ask about specific details, dates, numbers, or lesser-known angles instead.
 
 Never state the correct answer's exact wording anywhere in the question text itself.
+
+For each question also output image_query: a 2–4 word visual search term for a stock photo related to the question topic. Must NOT name or depict the correct answer, must not repeat option text verbatim, and for tf questions must illustrate the subject — never "true" or "false".
 PROMPT;
 
     $avoidBlock = '';
@@ -171,9 +191,10 @@ PROMPT;
                         'items' => [
                             'type' => 'object',
                             'properties' => [
-                                'question' => ['type' => 'string'],
-                                'format'   => ['type' => 'string', 'enum' => ['mc', 'tf']],
-                                'options'  => [
+                                'question'    => ['type' => 'string'],
+                                'format'      => ['type' => 'string', 'enum' => ['mc', 'tf']],
+                                'image_query' => ['type' => 'string'],
+                                'options'     => [
                                     'type'  => 'array',
                                     'items' => [
                                         'type' => 'object',
@@ -186,7 +207,7 @@ PROMPT;
                                     ],
                                 ],
                             ],
-                            'required'             => ['question', 'format', 'options'],
+                            'required'             => ['question', 'format', 'image_query', 'options'],
                             'additionalProperties' => false,
                         ],
                     ],
@@ -239,11 +260,20 @@ PROMPT;
 
         $candidate = json_decode($decoded['choices'][0]['message']['content'], true);
         $errors = validateCategoryQuestions($candidate, $category, $mcCount, $tfCount);
+        if (!$errors) {
+            $errors = factCheckCategoryQuestions(
+                $candidate['questions'] ?? [], $category, $headlinesByRegion
+            );
+        }
         if ($errors) {
             $errorList = implode("\n", array_map(fn($e) => '- ' . $e, $errors));
             logQuizGenError("[$category] Attempt $attempt: " . count($errors) . " violation(s):\n$errorList");
             $attemptUserPrompt = $userPrompt . "\n\nNOTE: Your previous attempt was rejected for the following reasons — fix ALL of them this time:\n$errorList";
             continue;
+        }
+
+        if ($attempt > 1) {
+            bumpQuizGenStat('categories_retried');
         }
 
         $result = $candidate['questions'];
@@ -403,6 +433,26 @@ function validateOneQuestion(array $q, string $category, int $qNum): array {
         }
     }
 
+    $imageQuery = trim($q['image_query'] ?? '');
+    if ($imageQuery === '') {
+        $errors[] = "question $qNum is missing image_query";
+    } else {
+        if ($q['format'] === 'mc' && strlen($correctText) >= 3
+            && preg_match('/\b' . preg_quote($correctText, '/') . '\b/i', $imageQuery)) {
+            $errors[] = "question $qNum image_query gives away the correct answer — \"$correctText\" appears in image_query";
+        }
+        foreach ($q['options'] as $opt) {
+            $optText = $opt['text'];
+            if (strlen($optText) >= 3 && preg_match('/\b' . preg_quote($optText, '/') . '\b/i', $imageQuery)) {
+                $errors[] = "question $qNum image_query repeats option text \"$optText\"";
+                break;
+            }
+        }
+        if (preg_match('/\b(true|false)\b/i', $imageQuery) && $q['format'] === 'tf') {
+            $errors[] = "question $qNum image_query must not reference true/false for a tf question";
+        }
+    }
+
     return $errors;
 }
 
@@ -499,6 +549,396 @@ function fetchRss(string $url): ?SimpleXMLElement {
     libxml_use_internal_errors(true);
     $xml = simplexml_load_string($body);
     return $xml ?: null;
+}
+
+// ── Fact-check (web search + snippet verifier) ─────────────────────────────
+
+function buildFactCheckQuery(string $question): string {
+    $q = preg_replace('/^\s*true or false\s*:\s*/i', '', $question);
+    $q = preg_replace('/^\s*(which|who|what|when|where|why|how)\s+/i', '', $q);
+    $q = preg_replace('/[^\w\s]/u', ' ', $q);
+    $words = preg_split('/\s+/', trim($q), -1, PREG_SPLIT_NO_EMPTY);
+    return implode(' ', array_slice($words, 0, 8));
+}
+
+function tavilySearch(string $query): ?array {
+    if (!defined('TAVILY_API_KEY') || TAVILY_API_KEY === '') {
+        return null;
+    }
+
+    $payload = json_encode([
+        'api_key'      => TAVILY_API_KEY,
+        'query'        => $query,
+        'search_depth' => 'basic',
+        'max_results'  => 5,
+    ]);
+
+    $ch = curl_init('https://api.tavily.com/search');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => $payload,
+        CURLOPT_TIMEOUT        => 20,
+        CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+    ]);
+    $response = curl_exec($ch);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+
+    if ($curlError || !$response) {
+        return null;
+    }
+
+    $decoded = json_decode($response, true);
+    if (!isset($decoded['results']) || !is_array($decoded['results'])) {
+        return null;
+    }
+
+    $snippets = [];
+    foreach ($decoded['results'] as $row) {
+        $content = trim($row['content'] ?? '');
+        if ($content !== '') {
+            $snippets[] = mb_substr($content, 0, 400);
+        }
+    }
+
+    return $snippets ?: null;
+}
+
+function verifyAnswerWithSnippets(
+    string $question, string $markedAnswer, array $allOptions, string $format, array $snippets
+): array {
+    $snippetBlock = implode("\n\n", array_map(
+        fn($s, $i) => '[' . ($i + 1) . '] ' . $s,
+        $snippets,
+        array_keys($snippets)
+    ));
+
+    $optionsBlock = implode(', ', array_map(
+        fn($o) => '"' . $o['text'] . '"' . ($o['correct'] ? ' (marked correct)' : ''),
+        $allOptions
+    ));
+
+    $systemPrompt = <<<'PROMPT'
+You verify quiz answers using ONLY the provided search snippets — not your own memory.
+
+Rules:
+- Only reject if snippets clearly contradict the marked answer.
+- Do NOT reject because another option seems plausible, the question is oversimplified, or historians might debate nuance.
+- For tf questions: first judge whether the STATEMENT in the question is true or false, then whether the marked True/False option is correct.
+- For mc questions: check whether snippets support the marked option over the alternatives.
+
+Respond with strict JSON: {"valid": true/false, "issue": "short reason if invalid, else empty string"}
+PROMPT;
+
+    $userPrompt = "Question: $question\nFormat: $format\nOptions: $optionsBlock\nMarked correct: \"$markedAnswer\"\n\nSearch snippets:\n$snippetBlock";
+
+    $result = callOpenAIJsonVerifier($systemPrompt, $userPrompt);
+    if ($result === null) {
+        return ['valid' => true, 'issue' => ''];
+    }
+
+    return [
+        'valid' => (bool)($result['valid'] ?? true),
+        'issue' => trim($result['issue'] ?? ''),
+    ];
+}
+
+function callOpenAIJsonVerifier(string $systemPrompt, string $userPrompt): ?array {
+    $schema = [
+        'type' => 'json_schema',
+        'json_schema' => [
+            'name'   => 'fact_check',
+            'strict' => true,
+            'schema' => [
+                'type' => 'object',
+                'properties' => [
+                    'valid' => ['type' => 'boolean'],
+                    'issue' => ['type' => 'string'],
+                ],
+                'required'             => ['valid', 'issue'],
+                'additionalProperties' => false,
+            ],
+        ],
+    ];
+
+    $payload = json_encode([
+        'model'           => 'gpt-4o-mini',
+        'messages'        => [
+            ['role' => 'system', 'content' => $systemPrompt],
+            ['role' => 'user',   'content' => $userPrompt],
+        ],
+        'response_format' => $schema,
+        'temperature'     => 0,
+    ]);
+
+    $ch = curl_init('https://api.openai.com/v1/chat/completions');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => $payload,
+        CURLOPT_TIMEOUT        => 30,
+        CURLOPT_HTTPHEADER     => [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . OPENAI_API_KEY,
+        ],
+    ]);
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    if (!$response) {
+        return null;
+    }
+
+    $decoded = json_decode($response, true);
+    $content = $decoded['choices'][0]['message']['content'] ?? null;
+    if (!$content) {
+        return null;
+    }
+
+    return json_decode($content, true);
+}
+
+/**
+ * @return string[] Violation descriptions (empty if all questions pass).
+ */
+function factCheckCategoryQuestions(array $questions, string $category, array $headlinesByRegion): array {
+    if (!defined('TAVILY_API_KEY') || TAVILY_API_KEY === '') {
+        if (in_array($category, CURRENT_EVENTS_CATEGORIES, true)) {
+            // Current events can still verify against headlines without Tavily
+        } else {
+            return [];
+        }
+    }
+
+    $errors = [];
+    foreach ($questions as $i => $q) {
+        $qNum = $i + 1;
+        $markedAnswer = '';
+        foreach ($q['options'] as $opt) {
+            if ($opt['correct']) {
+                $markedAnswer = $opt['text'];
+                break;
+            }
+        }
+
+        if ($category === 'NZ Current Events') {
+            $snippets = array_map(fn($h) => 'Headline: ' . $h, $headlinesByRegion['NZ'] ?? []);
+        } elseif ($category === 'Aussie Current Events') {
+            $snippets = array_map(fn($h) => 'Headline: ' . $h, $headlinesByRegion['AU'] ?? []);
+        } else {
+            $query = buildFactCheckQuery($q['question']);
+            $snippets = tavilySearch($query);
+            if ($snippets === null) {
+                bumpQuizGenStat('fact_check_skips');
+                logQuizGenError("[$category] [fact-check] Tavily unavailable — skipped fact-check for question $qNum");
+                continue;
+            }
+        }
+
+        if (!$snippets) {
+            bumpQuizGenStat('fact_check_skips');
+            logQuizGenError("[$category] [fact-check] No snippets — skipped fact-check for question $qNum");
+            continue;
+        }
+
+        $verdict = verifyAnswerWithSnippets(
+            $q['question'], $markedAnswer, $q['options'], $q['format'], $snippets
+        );
+
+        if (!$verdict['valid']) {
+            $reason = $verdict['issue'] !== '' ? $verdict['issue'] : 'marked answer not supported by sources';
+            $errors[] = "question $qNum [fact-check]: marked answer \"$markedAnswer\" rejected — $reason";
+        }
+    }
+
+    return $errors;
+}
+
+// ── Question images (Pexels keyword search) ────────────────────────────────
+
+function fetchQuestionImage(string $imageQuery, string $destDir, string $filenameBase): ?array {
+    if (!defined('PEXELS_API_KEY') || PEXELS_API_KEY === '') {
+        return null;
+    }
+
+    $url = 'https://api.pexels.com/v1/search?' . http_build_query([
+        'query'       => $imageQuery,
+        'orientation' => 'landscape',
+        'per_page'    => 1,
+    ]);
+
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 15,
+        CURLOPT_HTTPHEADER     => ['Authorization: ' . PEXELS_API_KEY],
+    ]);
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    if (!$response) {
+        return null;
+    }
+
+    $decoded = json_decode($response, true);
+    $photo = $decoded['photos'][0] ?? null;
+    if (!$photo) {
+        return null;
+    }
+
+    $imageUrl = $photo['src']['large'] ?? $photo['src']['medium'] ?? null;
+    if (!$imageUrl) {
+        return null;
+    }
+
+    if (!is_dir($destDir) && !mkdir($destDir, 0755, true)) {
+        return null;
+    }
+
+    $destPath = rtrim($destDir, '/\\') . DIRECTORY_SEPARATOR . $filenameBase . '.jpg';
+    if (!downloadAndResizeImage($imageUrl, $destPath)) {
+        return null;
+    }
+
+    $photographer = $photo['photographer'] ?? 'Unknown';
+    return [
+        'path'         => $destPath,
+        'attribution'  => "Photo by $photographer on Pexels",
+    ];
+}
+
+function downloadAndResizeImage(string $url, string $destPath, int $maxW = 800, int $maxH = 450): bool {
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 20,
+        CURLOPT_FOLLOWLOCATION => true,
+    ]);
+    $body = curl_exec($ch);
+    curl_close($ch);
+
+    if (!$body) {
+        return false;
+    }
+
+    $src = @imagecreatefromstring($body);
+    if (!$src) {
+        return false;
+    }
+
+    $srcW = imagesx($src);
+    $srcH = imagesy($src);
+    $scale = min($maxW / $srcW, $maxH / $srcH, 1.0);
+    $newW = max(1, (int)round($srcW * $scale));
+    $newH = max(1, (int)round($srcH * $scale));
+
+    $out = imagecreatetruecolor($newW, $newH);
+    imagecopyresampled($out, $src, 0, 0, 0, 0, $newW, $newH, $srcW, $srcH);
+    imagedestroy($src);
+
+    $ok = imagejpeg($out, $destPath, 85);
+    imagedestroy($out);
+
+    return $ok;
+}
+
+function quizImagesRoot(): string {
+    return __DIR__ . '/uploads/quiz-images';
+}
+
+function relativeQuizImagePath(string $absolutePath): string {
+    $root = str_replace('\\', '/', __DIR__);
+    $abs  = str_replace('\\', '/', $absolutePath);
+    return ltrim(str_replace($root . '/', '', $abs), '/');
+}
+
+function deleteDirectory(string $dir): void {
+    if (!is_dir($dir)) {
+        return;
+    }
+    foreach (scandir($dir) as $item) {
+        if ($item === '.' || $item === '..') {
+            continue;
+        }
+        $path = $dir . DIRECTORY_SEPARATOR . $item;
+        if (is_dir($path)) {
+            deleteDirectory($path);
+        } else {
+            unlink($path);
+        }
+    }
+    rmdir($dir);
+}
+
+function cleanupQuizImages(mysqli $conn): void {
+    $imagesRoot = quizImagesRoot();
+    $liveCleaned = 0;
+    $previewCleaned = 0;
+
+    $result = $conn->query(
+        "SELECT id FROM AIQuiz WHERE date < DATE_SUB(CURDATE(), INTERVAL 14 DAY)"
+    );
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $quizId = (int)$row['id'];
+            $dir = $imagesRoot . DIRECTORY_SEPARATOR . $quizId;
+            if (is_dir($dir)) {
+                deleteDirectory($dir);
+                $liveCleaned++;
+            }
+            $stmt = $conn->prepare(
+                'UPDATE AIQuestion SET image_path = NULL, image_attribution = NULL WHERE quiz_id = ?'
+            );
+            $stmt->bind_param('i', $quizId);
+            $stmt->execute();
+            $stmt->close();
+        }
+    }
+
+    $previewRoot = $imagesRoot . DIRECTORY_SEPARATOR . 'preview';
+    if (is_dir($previewRoot)) {
+        foreach (glob($previewRoot . '/*', GLOB_ONLYDIR) ?: [] as $dir) {
+            if (filemtime($dir) < time() - 86400) {
+                deleteDirectory($dir);
+                $previewCleaned++;
+            }
+        }
+    }
+
+    logQuizGenInfo("Cleaned $liveCleaned quiz image folders, $previewCleaned preview folders");
+}
+
+function attachPreviewImages(array $questions): array {
+    $runId = uniqid('', true);
+    $previewDir = quizImagesRoot() . DIRECTORY_SEPARATOR . 'preview' . DIRECTORY_SEPARATOR . $runId;
+
+    foreach ($questions as &$q) {
+        $query = trim($q['image_query'] ?? '');
+        if ($query === '') {
+            continue;
+        }
+        $result = fetchQuestionImage($query, $previewDir, (string)($q['position'] ?? '0'));
+        if ($result) {
+            $q['image_url'] = relativeQuizImagePath($result['path']);
+            $q['image_attribution'] = $result['attribution'];
+        }
+    }
+    unset($q);
+
+    return $questions;
+}
+
+function logQuizGenInfo(string $msg): void {
+    if (defined('QUIZ_GEN_VERBOSE_LOG') && !QUIZ_GEN_VERBOSE_LOG) {
+        return;
+    }
+    $ts = date('Y-m-d H:i:s');
+    $line = "[$ts] INFO: $msg\n";
+    file_put_contents(__DIR__ . '/logs/generate-quiz.log', $line, FILE_APPEND | LOCK_EX);
+    if (php_sapi_name() === 'cli') {
+        fwrite(STDOUT, $line);
+    }
 }
 
 function logQuizGenError(string $msg): void {

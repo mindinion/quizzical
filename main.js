@@ -1231,6 +1231,7 @@ document.cookie="feedItems=50";
 			$('#AIQuizTitle').text(label);
 			$('#AIQuizBody').show();
 			$('#AIQuizScoreScreen').hide();
+			$('#AIQuizNext').hide().text('Next \u2192');
 			$('#AIQuizModal').show();
 			$('#TabBar').hide();
 
@@ -1255,6 +1256,14 @@ document.cookie="feedItems=50";
 		$('#AIQuizProgress').text((idx + 1) + ' / ' + total);
 		$('#AIQuizProgressFill').css('width', ((idx / total) * 100) + '%');
 		$('#AIQuizCategory').text(q.category);
+		if (q.image_url) {
+			$('#AIQuizImage').html(
+				'<img src="' + escapeHtml(q.image_url) + '" alt="" loading="lazy" onerror="this.parentNode.style.display=\'none\'">'
+				+ (q.image_attribution ? '<div class="ai-quiz-image-credit">' + escapeHtml(q.image_attribution) + '</div>' : '')
+			).show();
+		} else {
+			$('#AIQuizImage').empty().hide();
+		}
 		$('#AIQuizQuestion').text(q.question_text);
 		$('#AIQuizFeedback').hide().removeClass('feedback-correct feedback-wrong').text('');
 		$('#AIQuizNext').hide();
@@ -1273,7 +1282,7 @@ document.cookie="feedItems=50";
 			} else if (aiCurrentIdx >= total - 1) {
 				showAIScoreScreen();
 			} else {
-				$('#AIQuizNext').show();
+				$('#AIQuizNext').show().text('Next \u2192');
 			}
 		} else if (!aiReviewMode) {
 			$('#AIQuizOptions').on('click', '.ai-option', function() {
@@ -1299,7 +1308,7 @@ document.cookie="feedItems=50";
 			if (resp.completed) {
 				setTimeout(showAIScoreScreen, 1200);
 			} else {
-				$('#AIQuizNext').show();
+				$('#AIQuizNext').show().text('Next \u2192');
 			}
 		});
 	}
@@ -1375,14 +1384,15 @@ document.cookie="feedItems=50";
 			var resp = null;
 			try { resp = JSON.parse(raw); } catch(e) {}
 			if (resp && resp.post_id > 0) {
-				var quizDate = aiQuizData.date;
+				var quizDate   = aiQuizData.date;
+				var quizType   = aiQuizData.type;
 				var finalScore = aiScore;
 				closeAIQuiz();
 				prependFeedItem(resp.post_id, {
 					isResult:  true,
 					score:     finalScore,
 					total:     15,
-					quizType:  aiQuizData.type,
+					quizType:  quizType,
 					quizDate:  quizDate,
 					comment:   comment
 				});
@@ -1403,6 +1413,7 @@ document.cookie="feedItems=50";
 		$('#AIQuizBody').show();
 		$('#AIQuizScoreScreen').hide();
 		$('#AIQuizOptions').off('click', '.ai-option');
+		$('#AIQuizNext').hide().text('Next \u2192');
 		$('#TabBar').show();
 		aiQuizData      = null;
 		aiCurrentIdx    = 0;
@@ -1454,6 +1465,9 @@ document.cookie="feedItems=50";
 		questions.forEach(function(q, idx) {
 			html += '<div class="test-quiz-question">';
 			html += '<div class="test-quiz-category">' + escapeHtml(q.category) + '</div>';
+			if (q.image_url) {
+				html += '<div class="test-quiz-image"><img src="' + escapeHtml(q.image_url) + '" alt="" loading="lazy"></div>';
+			}
 			html += '<div class="test-quiz-text">' + (idx + 1) + '. ' + escapeHtml(q.question) + '</div>';
 			html += '<div class="test-quiz-options">';
 			q.options.forEach(function(opt) {

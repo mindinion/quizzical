@@ -50,6 +50,8 @@ $stmt->close();
 // fresh even after it's rotated out of the headline window
 $recentQuestions = fetchRecentQuestions($conn, $today, 3);
 
+cleanupQuizImages($conn);
+
 try {
     $questions = generateQuizQuestions($type, $today, $recentQuestions);
 } catch (RuntimeException $e) {
@@ -69,6 +71,10 @@ try {
 
     $stmtQ = $conn->prepare("INSERT INTO AIQuestion (quiz_id, position, question_text, category, format) VALUES (?, ?, ?, ?, ?)");
     $stmtO = $conn->prepare("INSERT INTO AIOption (question_id, position, option_text, is_correct) VALUES (?, ?, ?, ?)");
+    $stmtImg = $conn->prepare("UPDATE AIQuestion SET image_path = ?, image_attribution = ? WHERE id = ?");
+
+    $imagesRoot = quizImagesRoot() . DIRECTORY_SEPARATOR . $quizId;
+    $imagesFetched = 0;
 
     foreach ($questions as $q) {
         $pos      = (int)$q['position'];
@@ -87,12 +93,30 @@ try {
             $stmtO->bind_param('iisi', $questionId, $oPos, $oText, $isCorrect);
             $stmtO->execute();
         }
+
+        $imageQuery = trim($q['image_query'] ?? '');
+        if ($imageQuery !== '') {
+            $imageResult = fetchQuestionImage($imageQuery, $imagesRoot, (string)$questionId);
+            if ($imageResult) {
+                $relPath = relativeQuizImagePath($imageResult['path']);
+                $attribution = $imageResult['attribution'];
+                $stmtImg->bind_param('ssi', $relPath, $attribution, $questionId);
+                $stmtImg->execute();
+                $imagesFetched++;
+            } else {
+                logQuizGenError("Image fetch failed for question $questionId (query: $imageQuery)");
+            }
+        }
     }
 
     $stmtQ->close();
     $stmtO->close();
+    $stmtImg->close();
     $conn->commit();
-    echo "Generated $quizType quiz (ID $quizId) for $today — " . count($questions) . " questions.\n";
+
+    $stats = getQuizGenStats();
+    echo "Generated $quizType quiz (ID $quizId) for $today — " . count($questions) . " questions, $imagesFetched images. "
+        . "Fact-check: {$stats['categories_retried']} categories retried, {$stats['fact_check_skips']} skipped.\n";
 
 } catch (Exception $e) {
     $conn->rollback();

@@ -33,6 +33,7 @@ $recentQuestions = fetchRecentQuestions($conn, $today, 3);
 
 try {
     $questions = generateQuizQuestions($type, $today, $recentQuestions);
+    $questions = attachPreviewImages($questions);
     echo json_encode(['questions' => $questions]);
 } catch (RuntimeException $e) {
     http_response_code(500);

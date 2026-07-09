@@ -11,6 +11,15 @@ define('DEV_MODE', false);
 
 // OPENAI_API_KEY is defined in dblogin.php (gitignored) alongside DB credentials.
 
+// Stock photo search for AI quiz question images — https://www.pexels.com/api/
+define('PEXELS_API_KEY', '');
+
+// Web search for fact-checking marked answers at generation time — https://tavily.com
+define('TAVILY_API_KEY', '');
+
+// When true, quiz cron logs retry/fact-check/cleanup detail to generate-quiz.log and stderr
+define('QUIZ_GEN_VERBOSE_LOG', true);
+
 define('MAIL_FROM',      'noreply@quizzical.co.nz');
 define('MAIL_FROM_NAME', 'Quizzical');
 define('SMTP_HOST',      's04ne.syd7.hostingplatform.net.au');

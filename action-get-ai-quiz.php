@@ -40,7 +40,7 @@ $reviewMode = (bool)$postedResult;
 
 // Load all questions
 $stmt = $conn->prepare(
-    "SELECT id, position, question_text, category, format FROM AIQuestion WHERE quiz_id = ? ORDER BY position"
+    "SELECT id, position, question_text, category, format, image_path, image_attribution FROM AIQuestion WHERE quiz_id = ? ORDER BY position"
 );
 $stmt->bind_param('i', $quizId);
 $stmt->execute();
@@ -106,6 +106,11 @@ foreach ($questionsRaw as $q) {
         'options'       => $optionsByQuestion[$qid] ?? [],
         'answered'      => $answered,
     ];
+
+    if (!empty($q['image_path'])) {
+        $entry['image_url'] = $q['image_path'];
+        $entry['image_attribution'] = $q['image_attribution'] ?? '';
+    }
 
     if ($answered) {
         $entry['chosen_option_id']  = (int)$answers[$qid]['chosen_option_id'];
