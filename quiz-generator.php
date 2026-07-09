@@ -62,6 +62,53 @@ const BANNED_QUESTION_PATTERNS = [
     '/\blongest river in the world\b/i'                 => 'disputed fact (Nile vs Amazon) treated as settled',
 ];
 
+/** Country/place answer => adjective/demonym forms that give the answer away in question text or image_query. */
+const ANSWER_GIVEAWAY_FORMS = [
+    'france'          => ['french', 'francais', 'français', 'parisian'],
+    'italy'           => ['italian'],
+    'spain'           => ['spanish'],
+    'germany'         => ['german'],
+    'australia'       => ['australian', 'aussie'],
+    'england'         => ['english'],
+    'united kingdom'  => ['british', 'english'],
+    'china'           => ['chinese'],
+    'japan'           => ['japanese'],
+    'russia'          => ['russian'],
+    'brazil'          => ['brazilian'],
+    'mexico'          => ['mexican'],
+    'canada'          => ['canadian'],
+    'india'           => ['indian'],
+    'greece'          => ['greek'],
+    'turkey'          => ['turkish'],
+    'poland'          => ['polish'],
+    'sweden'          => ['swedish'],
+    'norway'          => ['norwegian'],
+    'denmark'         => ['danish'],
+    'finland'         => ['finnish'],
+    'netherlands'     => ['dutch', 'holland'],
+    'holland'         => ['dutch'],
+    'switzerland'     => ['swiss'],
+    'portugal'        => ['portuguese'],
+    'argentina'       => ['argentine', 'argentinian'],
+    'egypt'           => ['egyptian'],
+    'israel'          => ['israeli'],
+    'korea'           => ['korean'],
+    'south korea'     => ['korean'],
+    'north korea'     => ['korean'],
+    'vietnam'         => ['vietnamese'],
+    'thailand'        => ['thai'],
+    'ireland'         => ['irish'],
+    'scotland'        => ['scottish'],
+    'wales'           => ['welsh'],
+    'america'         => ['american'],
+    'united states'   => ['american'],
+    'austria'         => ['austrian'],
+    'belgium'         => ['belgian'],
+    'monaco'          => ['monegasque'],
+    'st. petersburg'  => ['petersburg', 'leningrad'],
+    'saint petersburg'=> ['petersburg', 'leningrad'],
+];
+
 const CURRENT_EVENTS_CATEGORIES = ['NZ Current Events', 'Aussie Current Events'];
 
 /** @var array{categories_retried: int, fact_check_skips: int, preview_images_fetched: int} */
@@ -212,9 +259,9 @@ For any "mc" question, include one answer option that sounds almost plausible bu
 
 Difficulty: genuinely challenging — average players should get some wrong. Do NOT ask questions whose answer is the single most famous fact about a topic (e.g. capital cities, a country's national animal/bird, "the" founding treaty of a nation, the primary language of a country, a famous landmark's most basic fact). These are trivially guessable. Ask about specific details, dates, numbers, or lesser-known angles instead.
 
-Never state the correct answer's exact wording anywhere in the question text itself.
+Never state the correct answer's exact wording anywhere in the question text itself. Also never use the adjective/demonym form when the answer is the country name (e.g. do NOT say "French" in the question if the correct answer is "France").
 
-For each question also output image_query: a 2–4 word visual search term for a stock photo related to the question topic. Must NOT name or depict the correct answer, must not repeat option text verbatim, and for tf questions must illustrate the subject — never "true" or "false".
+For each question also output image_query: a 2–4 word visual search term for a stock photo related to the question topic. Must NOT name or depict the correct answer (including demonyms like "French" for France), must not repeat option text verbatim, and for tf questions must illustrate the subject — never "true" or "false".
 PROMPT;
 
     $excludedHeadlines = [];
@@ -536,12 +583,9 @@ function validateOneQuestion(array $q, string $category, int $qNum): array {
 
     // A well-formed MC question should never name its own answer in the prompt
     // (e.g. "...hosting the annual Sydney Festival?" with "Sydney" as the
-    // correct option). Word-boundary match, case-insensitive; skip tf (its
-    // "True"/"False" text isn't a meaningful giveaway) and very short answers
-    // (avoid noise from incidental short-word overlap).
-    if ($q['format'] === 'mc' && strlen($correctText) >= 3
-        && preg_match('/\b' . preg_quote($correctText, '/') . '\b/i', $q['question'])) {
-        $errors[] = "question $qNum gives away its own answer — correct answer \"$correctText\" appears verbatim in the question text (\"{$q['question']}\")";
+    // correct option). Also catch demonyms/stems (e.g. "French" → France).
+    if ($q['format'] === 'mc' && answerGiveawayInText($correctText, $q['question'])) {
+        $errors[] = "question $qNum gives away its own answer — correct answer \"$correctText\" is hinted in the question text (\"{$q['question']}\")";
     }
 
     $combined = $q['question'] . ' ' . $correctText;
@@ -584,9 +628,8 @@ function validateOneQuestion(array $q, string $category, int $qNum): array {
     if ($imageQuery === '') {
         $errors[] = "question $qNum is missing image_query";
     } else {
-        if ($q['format'] === 'mc' && strlen($correctText) >= 3
-            && preg_match('/\b' . preg_quote($correctText, '/') . '\b/i', $imageQuery)) {
-            $errors[] = "question $qNum image_query gives away the correct answer — \"$correctText\" appears in image_query";
+        if ($q['format'] === 'mc' && answerGiveawayInText($correctText, $imageQuery)) {
+            $errors[] = "question $qNum image_query gives away the correct answer — \"$correctText\" is hinted in image_query \"$imageQuery\"";
         }
         foreach ($q['options'] as $opt) {
             $optText = $opt['text'];
@@ -601,6 +644,47 @@ function validateOneQuestion(array $q, string $category, int $qNum): array {
     }
 
     return $errors;
+}
+
+/**
+ * Detects whether haystack text hints at the correct MC answer — verbatim match,
+ * demonym forms (French → France), or close orthographic stems.
+ */
+function answerGiveawayInText(string $correctText, string $haystack): bool {
+    if ($correctText === '' || $haystack === '' || strlen($correctText) < 3) {
+        return false;
+    }
+
+    $answer = mb_strtolower(trim($correctText));
+    $text = mb_strtolower($haystack);
+
+    if (preg_match('/\b' . preg_quote($answer, '/') . '\b/ui', $text)) {
+        return true;
+    }
+
+    foreach (ANSWER_GIVEAWAY_FORMS[$answer] ?? [] as $form) {
+        if (preg_match('/\b' . preg_quote($form, '/') . '\b/ui', $text)) {
+            return true;
+        }
+    }
+
+    $answerNorm = preg_replace('/[^\p{L}]/u', '', $answer);
+    if (mb_strlen($answerNorm) < 4) {
+        return false;
+    }
+
+    preg_match_all('/\p{L}{4,}/u', $text, $matches);
+    foreach ($matches[0] as $word) {
+        if (abs(mb_strlen($word) - mb_strlen($answerNorm)) > 2) {
+            continue;
+        }
+        similar_text($answerNorm, $word, $pct);
+        if ($pct >= 76) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /**
