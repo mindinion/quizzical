@@ -272,19 +272,20 @@ function generateCategoryQuestions(
         : "Produce exactly $total question(s), all in \"mc\" format (4 options, exactly 1 correct).";
 
     $categoryGuidance = buildCategoryGuidance($category);
+    $validatorRules = buildValidatorRulesBlock($category);
 
     $systemPrompt = <<<PROMPT
 You are writing question(s) for the "$category" section of a daily quiz for a New Zealand audience.
 
 $categoryGuidance
 
+$validatorRules
+
 $formatInstruction
 
 For any "mc" question, include one answer option that sounds almost plausible but is subtly absurd on reflection — not obviously silly, the kind that makes you second-guess yourself. Aim for roughly 1 in 3 of the mc questions to have this.
 
-Difficulty: genuinely challenging — average players should get some wrong. Do NOT ask questions whose answer is the single most famous fact about a topic (e.g. capital cities, a country's national animal/bird, "the" founding treaty of a nation, the primary language of a country, a famous landmark's most basic fact). These are trivially guessable. Ask about specific details, dates, numbers, or lesser-known angles instead.
-
-Avoid superlative and record-breaking questions (e.g. "first ever to…", "most wins in history", "longest consecutive streak", "per capita", "highest winning percentage"). Prefer "In which year did…?" or "Which country/team…?" without all-time record claims. Do NOT embed specific years or precise statistics in the question text unless you are certain they are correct — wrong dates in the question are automatic failures.
+Difficulty: genuinely challenging — average players should get some wrong. Do NOT ask questions whose answer is the single most famous fact about a topic (e.g. capital cities, a country's national animal/bird, "the" founding treaty of a nation, the primary language of a country, a famous landmark's most basic fact). These are trivially guessable. Ask about specific details, dates, numbers, or lesser-known angles instead — but only facts you are confident are real and verifiable from standard reference sources, not obscure one-off records you are unsure about.
 
 Never state the correct answer's exact wording anywhere in the question text itself. Also never use the adjective/demonym form when the answer is the country name (e.g. do NOT say "French" in the question if the correct answer is "France").
 
@@ -411,6 +412,7 @@ PROMPT;
             $excludedHeadlines = array_values(array_unique($excludedHeadlines));
 
             $retryNote = "Your previous attempt was rejected for the following reasons — fix ALL of them this time:\n$errorList";
+            $retryNote .= buildRetryHintForErrors($errorList, $category);
             if (in_array($category, CURRENT_EVENTS_CATEGORIES, true)) {
                 $retryNote .= "\n\nUse a COMPLETELY DIFFERENT news story from the headlines above. "
                     . "Do NOT retry the same story or a reworded version of your rejected question.";
@@ -524,22 +526,111 @@ function questionMatchesHeadline(string $question, string $headline): bool {
 function buildCategoryGuidance(string $category): string {
     switch ($category) {
         case 'NZ Current Events':
-            return 'These questions MUST be based only on the NZ headlines block below — genuinely current, real stories. Must NOT be about Australia. Phrase naturally — do not say "according to recent news" or "as reported today".';
+            return 'These questions MUST be based only on the NZ headlines block below — genuinely current, real stories. Must NOT be about Australia. Phrase naturally — do not say "according to recent news" or "as reported today". The marked correct answer must stay close to what the headlines actually say — do not add speculative detail (e.g. "under suspicious circumstances") that headlines do not support.';
         case 'Aussie Current Events':
-            return 'These questions MUST be based only on the Australian headlines block below — genuinely current, real stories. Must NOT be about New Zealand. Phrase naturally — do not say "according to recent news" or "as reported today".';
+            return 'These questions MUST be based only on the Australian headlines block below — genuinely current, real stories. Must NOT be about New Zealand. Phrase naturally — do not say "according to recent news" or "as reported today". The marked correct answer must stay close to what the headlines actually say — do not add speculative detail that headlines do not support.';
         case 'NZ Trivia':
-            return 'General New Zealand trivia — established, verifiable facts that would be true regardless of today\'s news. Do NOT base these on current headlines, even indirectly.';
+            return 'General New Zealand trivia — established, verifiable facts that would be true regardless of today\'s news. Do NOT base these on current headlines, even indirectly. Use widely documented facts only — NOT obscure micro-records (e.g. "first descent" of a specific river, one-off local sporting feats). For year questions, put the year in the answer options, not in the question stem.';
         case 'Australia Trivia':
-            return 'General Australia trivia — established, verifiable facts that would be true regardless of today\'s news. Do NOT base these on current headlines, even indirectly.';
+            return 'General Australia trivia — established, verifiable facts that would be true regardless of today\'s news. Do NOT base these on current headlines, even indirectly. Avoid the Sydney Opera House, Australia Day, and "national animal/bird" angles. Do NOT name a city or holiday in the question if it is the correct answer (e.g. do not mention "Sydney Festival" if Sydney is an option). For year questions, put the year in the answer options, not in the question stem.';
         case 'Sports':
-            return 'General sports trivia (may reference NZ/Australian teams or leagues, since that\'s expected content for this audience) — established, verifiable facts, NOT tied to today\'s news.';
+            return <<<'GUIDE'
+General sports trivia (NZ/Australian teams and leagues are fine) — established, verifiable facts, NOT tied to today's news.
+
+Sports has strict automatic rejection rules — follow exactly:
+- The word "first" must NEVER appear in any question (not "first win", "first time", "first World Cup", "first ever", "first to qualify"). Rephrase as a plain event/year question with no "first".
+  GOOD: "In which year was the Rugby World Cup held in South Africa?"
+  GOOD: "Which AFL club is known for black and white vertical stripes?"
+  GOOD: "In which year did Cathy Freeman win Olympic gold in the 400 metres?"
+  BAD:  "In which year did the All Blacks first win the Rugby World Cup?"
+  BAD:  "When did the Silver Ferns win their first World Cup title?"
+- For year MC questions: describe the event in the question; put years ONLY in the four options. Do not embed a year in the question stem.
+- No all-time records (most premierships, longest streak, winning percentage, per capita).
+- Prefer: a specific tournament edition/host city, team colours/nicknames, a named athlete at a named Games, stadium or rule facts with the year in the options.
+GUIDE;
         case 'Geography':
+            return 'Must be about the rest of the world — NOT New Zealand or Australia. No Great Barrier Reef, Sydney, or other NZ/AU references. No "longest river in the world" (Nile vs Amazon) questions. No Sydney Opera House. For year questions, put the year in the answer options, not in the question stem.';
         case 'History':
+            return 'Must be about the rest of the world — NOT New Zealand or Australia. Use standard names for treaties and events (e.g. "Treaty of Paris", "Congress of Vienna" — never invent names like "Treaty of Vienna"). No "first country to…" superlatives. TF statements must be plain factual claims, not joke premises. For year questions, put the year in the answer options, not in the question stem.';
         case 'General Knowledge':
-            return "Must be about the rest of the world — NOT New Zealand or Australia, which already have their own dedicated trivia and current-events categories. Cover other countries, world history, science, arts, etc. Do NOT base these on today's news.";
+            return 'Must be about the rest of the world — NOT New Zealand or Australia. No Great Barrier Reef or other NZ/AU references. Use real, standard names for treaties, laws, and historical figures — do not invent obscure attributions. Distinguish declaration vs recognition vs annexation for independence questions. For year questions, put the year in the answer options, not in the question stem.';
         default:
             return '';
     }
+}
+
+/**
+ * Shared automatic-rejection rules mirrored from the PHP validators — the model
+ * sees these on every category so it can steer away from failures upfront.
+ */
+function buildValidatorRulesBlock(string $category): string {
+    $rules = <<<'RULES'
+Automatic rejection rules (violating ANY of these fails the whole batch):
+- Superlatives: never use "first", "most", "longest", "record holder", "per capita", or "winning percentage in history". Especially in Sports — the word "first" alone causes rejection.
+- Answer giveaway: the correct option's exact text (or its demonym, e.g. French→France) must not appear in the question text or image_query.
+- image_query: 2–4 words, no option text, no correct answer hint.
+- tf format: a declarative "True or False: …" statement — never a which/what/who/when question.
+- Geography / History / General Knowledge: zero NZ or Australia content (no cities, landmarks, or teams from NZ/AU).
+- Clichés: no "capital of [country]", no "national animal/bird/symbol", no "longest river in the world", no Sydney Opera House.
+- Evergreen categories: no "recently", "this year", "last year", or the current/previous calendar year in the question.
+- Wrong dates in the question stem are rejected by fact-check — if asking "in which year", keep the year out of the question text.
+RULES;
+
+    if ($category === 'Sports') {
+        $rules .= "\n- Sports reminder: if you are about to write \"first\", stop and rephrase without it.";
+    }
+
+    return $rules;
+}
+
+/**
+ * Targeted rewrite hints appended to retry notes based on which validators fired.
+ */
+function buildRetryHintForErrors(string $errorList, string $category): string {
+    $hints = [];
+
+    if (preg_match('/superlative pattern/i', $errorList)) {
+        if ($category === 'Sports') {
+            $hints[] = 'SPORTS REPHRASE REQUIRED: Remove the word "first" from every question. '
+                . 'Ask "In which year was [event] held in [place]?" or "Which team is known for [colours/nickname]?" '
+                . 'Example: instead of "first Rugby World Cup win", ask "In which year was the Rugby World Cup held in South Africa?"';
+        } else {
+            $hints[] = 'Remove all "first/most/longest/record" framing. Ask a plain "In which year did…?" question with the year only in the options.';
+        }
+    }
+
+    if (preg_match('/gives away|image_query/i', $errorList)) {
+        $hints[] = 'GIVEAWAY FIX: The question or image_query names the correct answer. '
+            . 'Rephrase the question without the answer word; use a generic image_query (e.g. "rugby match crowd" not "Sydney Festival").';
+    }
+
+    if (preg_match('/NZ\/AU-specific|meant to be about/i', $errorList)) {
+        $hints[] = 'CATEGORY FIX: This category must not mention New Zealand or Australia at all — pick a different country/topic.';
+    }
+
+    if (preg_match('/banned pattern|cliché/i', $errorList)) {
+        $hints[] = 'CLICHÉ FIX: Pick a less famous angle on the topic — not capital cities, national symbols, Opera House, or longest-river debates.';
+    }
+
+    if (preg_match('/\[fact-check premise\]/i', $errorList)) {
+        $hints[] = 'PREMISE FIX: A date or fact stated in the question text is wrong. '
+            . 'Either correct it or remove the date from the question stem and put years only in the MC options.';
+    }
+
+    if (preg_match('/\[fact-check distractor\]/i', $errorList)) {
+        $hints[] = 'ANSWER FIX: The marked correct year/fact is wrong — a different option is actually correct. '
+            . 'Verify all four options and mark the one that matches established fact.';
+    }
+
+    if (preg_match('/\[fact-check\]:/i', $errorList) && !preg_match('/\[fact-check distractor\]/i', $errorList)) {
+        $hints[] = 'FACT-CHECK FIX: The marked answer is not supported by sources. Change the marked answer or rewrite the question entirely.';
+    }
+
+    if (!$hints) {
+        return '';
+    }
+
+    return "\n\n" . implode("\n", $hints);
 }
 
 /**
@@ -934,7 +1025,7 @@ function factCheckIssueIsSilenceOnly(string $issue): bool {
         return false;
     }
     return (bool) preg_match(
-        '/\b(silent|do not mention|does not mention|not mention|do not provide|does not provide|not provide|insufficient|fail to support|not supported|no information|without evidence|unverified)\b/i',
+        '/\b(silent|absence of|do not mention|does not mention|not mention|do not provide|does not provide|not provide|insufficient|fail to support|not supported|no information|without evidence|unverified)\b/i',
         $issue
     );
 }
@@ -1139,8 +1230,9 @@ You verify multiple-choice quiz answers using ONLY the provided search snippets 
 Task: Determine whether any WRONG option is clearly the correct answer according to the snippets, instead of the marked correct option.
 
 Rules:
-- Default to valid: true. Only reject when snippets EXPLICITLY support a wrong option and contradict the marked answer.
-- Reject if snippets state a date, number, name, or fact that matches a wrong option and contradicts the marked answer.
+- Default to valid: true. Only reject when snippets EXPLICITLY support a wrong option AND contradict the marked answer.
+- Wrong options are SUPPOSED to be incorrect. Do NOT reject merely because a distractor is obviously wrong, implausible, or contradicted by snippets — that is normal.
+- Reject ONLY when snippets state a date, number, name, or fact that matches a wrong option and clearly shows the MARKED answer is wrong.
 - Example reject: marked "1991" but snippets say "1987"; wrong option "1987" is in the list.
 - Example reject: marked "1959" but snippets say the flag was adopted in "1902"; wrong option "1902" is in the list.
 - Example reject: marked "2003" but snippets say first qualification was "1999"; wrong option "1999" is in the list.
