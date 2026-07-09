@@ -86,23 +86,37 @@ function startQuizGenLogCapture(): void {
     $GLOBALS['quizGenLogCapture'] = [];
 }
 
+function enableQuizGenLogStream(callable $emitter): void {
+    startQuizGenLogCapture();
+    $GLOBALS['quizGenLogStreamEmitter'] = $emitter;
+}
+
+function disableQuizGenLogStream(): void {
+    $GLOBALS['quizGenLogStreamEmitter'] = null;
+}
+
 function stopQuizGenLogCapture(): array {
     $lines = is_array($GLOBALS['quizGenLogCapture'] ?? null)
         ? $GLOBALS['quizGenLogCapture']
         : [];
     $GLOBALS['quizGenLogCapture'] = null;
+    disableQuizGenLogStream();
     return $lines;
 }
 
 function appendQuizGenLogCapture(string $level, string $msg): void {
-    if (!is_array($GLOBALS['quizGenLogCapture'] ?? null)) {
-        return;
-    }
-    $GLOBALS['quizGenLogCapture'][] = [
+    $entry = [
         'time'    => date('Y-m-d H:i:s'),
         'level'   => $level,
         'message' => $msg,
     ];
+    if (is_array($GLOBALS['quizGenLogCapture'] ?? null)) {
+        $GLOBALS['quizGenLogCapture'][] = $entry;
+    }
+    $emitter = $GLOBALS['quizGenLogStreamEmitter'] ?? null;
+    if (is_callable($emitter)) {
+        $emitter(['type' => 'log', 'entry' => $entry]);
+    }
 }
 
 /**
@@ -117,6 +131,7 @@ function appendQuizGenLogCapture(string $level, string $msg): void {
  */
 function generateQuizQuestions(string $quizType, string $today, array $avoidQuestions = []): array {
     resetQuizGenStats();
+    logQuizGenInfo('Fetching headlines…');
     $headlinesByRegion = fetchHeadlines($quizType);
     $tfHosts = pickTfHostCategories();
 
@@ -124,6 +139,8 @@ function generateQuizQuestions(string $quizType, string $today, array $avoidQues
     foreach (CATEGORY_TARGETS as $category => $count) {
         $tfCount = in_array($category, $tfHosts, true) ? 1 : 0;
         $mcCount = $count - $tfCount;
+
+        logQuizGenInfo("Generating: $category ($count question(s))");
 
         // Include topics already generated earlier in this same quiz, on top of
         // the cross-day avoid-list, so e.g. Geography and History don't both
@@ -134,6 +151,7 @@ function generateQuizQuestions(string $quizType, string $today, array $avoidQues
             $category, $mcCount, $tfCount, $headlinesByRegion, $today, $avoidForThisCall
         );
         $allQuestions = array_merge($allQuestions, $categoryQuestions);
+        logQuizGenInfo("Accepted: $category");
     }
 
     foreach ($allQuestions as $i => &$q) {

@@ -1432,65 +1432,96 @@ document.cookie="feedItems=50";
 
 	// ── Test Quiz Generation (superuser only, no DB write) ──────────────────
 
-	function openTestQuiz() {
-		$('#TestQuizModal').css('display', 'flex');
-		$('#TestQuizLoading').show();
-		$('#TestQuizError').hide();
-		$('#TestQuizLog').hide().empty();
-		$('#TestQuizQuestions').empty();
+	var testQuizEventSource = null;
+	var testQuizStreamFinished = false;
 
-		$.get('action-test-generate-quiz.php', { type: 'morning' })
-			.done(function(data) {
-				var res = (typeof data === 'string') ? JSON.parse(data) : data;
-				$('#TestQuizLoading').hide();
-				renderTestQuizLog(res.log, res.stats);
-				if (res.error) {
-					$('#TestQuizError').text(res.error).show();
-					return;
-				}
-				renderTestQuiz(res.questions);
-			})
-			.fail(function(xhr) {
-				$('#TestQuizLoading').hide();
-				var msg = 'Failed to generate quiz.';
-				var res = null;
-				try { res = JSON.parse(xhr.responseText); msg = res.error || msg; } catch (e) {}
-				if (res) renderTestQuizLog(res.log, res.stats);
-				$('#TestQuizError').text(msg).show();
-			});
+	function closeTestQuizStream() {
+		if (testQuizEventSource) {
+			testQuizEventSource.close();
+			testQuizEventSource = null;
+		}
+	}
+
+	function openTestQuiz() {
+		closeTestQuizStream();
+		testQuizStreamFinished = false;
+
+		$('#TestQuizModal').css('display', 'flex');
+		$('#TestQuizLoading').hide();
+		$('#TestQuizError').hide();
+		$('#TestQuizQuestions').empty();
+		initTestQuizLogPanel();
+
+		testQuizEventSource = new EventSource('action-test-generate-quiz.php?type=morning&stream=1');
+		testQuizEventSource.onmessage = function(e) {
+			var msg = JSON.parse(e.data);
+			if (msg.type === 'log') {
+				appendTestQuizLogLine(msg.entry);
+			} else if (msg.type === 'status') {
+				appendTestQuizLogLine({ time: formatTestQuizTime(new Date()), level: 'INFO', message: msg.message });
+			} else if (msg.type === 'done') {
+				testQuizStreamFinished = true;
+				closeTestQuizStream();
+				finishTestQuizLog(msg.stats, msg.log);
+				renderTestQuiz(msg.questions);
+			} else if (msg.type === 'error') {
+				testQuizStreamFinished = true;
+				closeTestQuizStream();
+				finishTestQuizLog(msg.stats, msg.log);
+				$('#TestQuizError').text(msg.error || 'Generation failed.').show();
+			}
+		};
+		testQuizEventSource.onerror = function() {
+			if (testQuizStreamFinished || !testQuizEventSource) return;
+			closeTestQuizStream();
+			$('#TestQuizError').text('Connection lost during generation.').show();
+		};
+	}
+
+	function formatTestQuizTime(d) {
+		var p = function(n) { return (n < 10 ? '0' : '') + n; };
+		return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' '
+			+ p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+	}
+
+	function initTestQuizLogPanel() {
+		var $log = $('#TestQuizLog');
+		$log.empty().show();
+		$log.append($('<div>').addClass('test-quiz-log-summary').attr('id', 'TestQuizLogSummary').text('Generating…'));
+		$log.append($('<pre>').addClass('test-quiz-log-text').attr('id', 'TestQuizLogText'));
+	}
+
+	function appendTestQuizLogLine(entry) {
+		if (!entry) return;
+		var line = '[' + entry.time + '] ' + entry.level + ': ' + entry.message + '\n';
+		$('#TestQuizLogText').append(
+			$('<span>').addClass(entry.level === 'ERROR' ? 'test-quiz-log-error' : 'test-quiz-log-info').text(line)
+		);
+		var el = document.getElementById('TestQuizLogText');
+		if (el) el.scrollTop = el.scrollHeight;
+	}
+
+	function finishTestQuizLog(stats, log) {
+		var retried = stats && stats.categories_retried ? stats.categories_retried : 0;
+		var skipped = stats && stats.fact_check_skips ? stats.fact_check_skips : 0;
+		var summary = 'Categories retried: ' + retried + ' · Fact-check skips: ' + skipped;
+		if (!log || !log.length) {
+			summary += ' · Clean run';
+		}
+		$('#TestQuizLogSummary').text(summary);
 	}
 
 	function renderTestQuizLog(log, stats) {
-		var $log = $('#TestQuizLog');
-		$log.empty();
-
-		var statsLine = '';
-		if (stats) {
-			statsLine = 'Categories retried: ' + (stats.categories_retried || 0)
-				+ ' · Fact-check skips: ' + (stats.fact_check_skips || 0);
+		initTestQuizLogPanel();
+		if (log && log.length) {
+			log.forEach(function(entry) { appendTestQuizLogLine(entry); });
 		}
-
-		if (!log || !log.length) {
-			if (statsLine) {
-				$log.append($('<div>').addClass('test-quiz-log-summary').text(statsLine + ' · Clean run'));
-			}
-			$log.show();
-			return;
-		}
-
-		if (statsLine) {
-			$log.append($('<div>').addClass('test-quiz-log-summary').text(statsLine));
-		}
-
-		var $pre = $('<pre>').addClass('test-quiz-log-text');
-		log.forEach(function(entry) {
-			var line = '[' + entry.time + '] ' + entry.level + ': ' + entry.message + '\n';
-			$pre.append($('<span>').addClass(entry.level === 'ERROR' ? 'test-quiz-log-error' : 'test-quiz-log-info').text(line));
-		});
-		$log.append($pre).show();
+		finishTestQuizLog(stats, log);
 	}
 
 	function closeTestQuiz() {
+		testQuizStreamFinished = true;
+		closeTestQuizStream();
 		$('#TestQuizModal').hide();
 	}
 
