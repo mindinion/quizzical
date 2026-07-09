@@ -1462,12 +1462,12 @@ document.cookie="feedItems=50";
 			} else if (msg.type === 'done') {
 				testQuizStreamFinished = true;
 				closeTestQuizStream();
-				finishTestQuizLog(msg.stats, msg.log);
+				renderTestQuizLog(msg.log, msg.stats);
 				renderTestQuiz(msg.questions);
 			} else if (msg.type === 'error') {
 				testQuizStreamFinished = true;
 				closeTestQuizStream();
-				finishTestQuizLog(msg.stats, msg.log);
+				renderTestQuizLog(msg.log, msg.stats);
 				$('#TestQuizError').text(msg.error || 'Generation failed.').show();
 			}
 		};
@@ -1504,7 +1504,11 @@ document.cookie="feedItems=50";
 	function finishTestQuizLog(stats, log) {
 		var retried = stats && stats.categories_retried ? stats.categories_retried : 0;
 		var skipped = stats && stats.fact_check_skips ? stats.fact_check_skips : 0;
+		var images = stats && stats.preview_images_fetched != null ? stats.preview_images_fetched : null;
 		var summary = 'Categories retried: ' + retried + ' · Fact-check skips: ' + skipped;
+		if (images !== null) {
+			summary += ' · Images: ' + images + '/15';
+		}
 		if (!log || !log.length) {
 			summary += ' · Clean run';
 		}

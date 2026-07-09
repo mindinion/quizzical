@@ -49,6 +49,8 @@ if ($stream) {
         ob_end_flush();
     }
 
+    @set_time_limit(300);
+
     enableQuizGenLogStream(function (array $payload): void {
         emitTestQuizSse($payload);
     });
@@ -70,6 +72,14 @@ if ($stream) {
         emitTestQuizSse([
             'type'  => 'error',
             'error' => $e->getMessage(),
+            'log'   => $log,
+            'stats' => getQuizGenStats(),
+        ]);
+    } catch (Throwable $e) {
+        $log = stopQuizGenLogCapture();
+        emitTestQuizSse([
+            'type'  => 'error',
+            'error' => 'Image fetch failed: ' . $e->getMessage(),
             'log'   => $log,
             'stats' => getQuizGenStats(),
         ]);

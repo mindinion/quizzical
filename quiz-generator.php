@@ -64,11 +64,19 @@ const BANNED_QUESTION_PATTERNS = [
 
 const CURRENT_EVENTS_CATEGORIES = ['NZ Current Events', 'Aussie Current Events'];
 
-/** @var array{categories_retried: int, fact_check_skips: int} */
-$GLOBALS['quizGenStats'] = ['categories_retried' => 0, 'fact_check_skips' => 0];
+/** @var array{categories_retried: int, fact_check_skips: int, preview_images_fetched: int} */
+$GLOBALS['quizGenStats'] = [
+    'categories_retried'      => 0,
+    'fact_check_skips'        => 0,
+    'preview_images_fetched'  => 0,
+];
 
 function resetQuizGenStats(): void {
-    $GLOBALS['quizGenStats'] = ['categories_retried' => 0, 'fact_check_skips' => 0];
+    $GLOBALS['quizGenStats'] = [
+        'categories_retried'      => 0,
+        'fact_check_skips'        => 0,
+        'preview_images_fetched'  => 0,
+    ];
 }
 
 function getQuizGenStats(): array {
@@ -842,33 +850,48 @@ function fetchQuestionImage(string $imageQuery, string $destDir, string $filenam
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT        => 15,
+        CURLOPT_CONNECTTIMEOUT => 5,
+        CURLOPT_TIMEOUT        => 10,
         CURLOPT_HTTPHEADER     => ['Authorization: ' . PEXELS_API_KEY],
     ]);
     $response = curl_exec($ch);
+    $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlErr = curl_error($ch);
     curl_close($ch);
 
     if (!$response) {
+        $detail = $curlErr !== '' ? $curlErr : 'no response';
+        logQuizGenError("[images] Pexels request failed for \"$imageQuery\" ($detail)");
         return null;
     }
 
     $decoded = json_decode($response, true);
+    if ($httpCode >= 400) {
+        $err = $decoded['error'] ?? "HTTP $httpCode";
+        logQuizGenError("[images] Pexels API error for \"$imageQuery\": $err");
+        return null;
+    }
+
     $photo = $decoded['photos'][0] ?? null;
     if (!$photo) {
+        logQuizGenError("[images] Pexels returned no photos for \"$imageQuery\"");
         return null;
     }
 
     $imageUrl = $photo['src']['large'] ?? $photo['src']['medium'] ?? null;
     if (!$imageUrl) {
+        logQuizGenError("[images] Pexels photo missing src URL for \"$imageQuery\"");
         return null;
     }
 
     if (!is_dir($destDir) && !mkdir($destDir, 0755, true)) {
+        logQuizGenError("[images] Could not create directory: $destDir");
         return null;
     }
 
     $destPath = rtrim($destDir, '/\\') . DIRECTORY_SEPARATOR . $filenameBase . '.jpg';
     if (!downloadAndResizeImage($imageUrl, $destPath)) {
+        logQuizGenError("[images] Download/resize failed for \"$imageQuery\"");
         return null;
     }
 
@@ -883,18 +906,27 @@ function downloadAndResizeImage(string $url, string $destPath, int $maxW = 800, 
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT        => 20,
+        CURLOPT_CONNECTTIMEOUT => 5,
+        CURLOPT_TIMEOUT        => 12,
         CURLOPT_FOLLOWLOCATION => true,
     ]);
     $body = curl_exec($ch);
+    $curlErr = curl_error($ch);
     curl_close($ch);
 
     if (!$body) {
+        if ($curlErr !== '') {
+            logQuizGenError("[images] Image download failed: $curlErr");
+        }
         return false;
     }
 
     $src = @imagecreatefromstring($body);
     if (!$src) {
+        // GD unavailable or unsupported format — save original bytes if valid image
+        if (@getimagesizefromstring($body)) {
+            return file_put_contents($destPath, $body) !== false;
+        }
         return false;
     }
 
@@ -981,21 +1013,44 @@ function cleanupQuizImages(mysqli $conn): void {
 }
 
 function attachPreviewImages(array $questions): array {
+    if (!defined('PEXELS_API_KEY') || PEXELS_API_KEY === '') {
+        logQuizGenError('[images] Preview images skipped — set PEXELS_API_KEY in config.php');
+        return $questions;
+    }
+
+    if (!function_exists('curl_init')) {
+        logQuizGenError('[images] Preview images skipped — PHP curl extension is not available');
+        return $questions;
+    }
+
     $runId = uniqid('', true);
     $previewDir = quizImagesRoot() . DIRECTORY_SEPARATOR . 'preview' . DIRECTORY_SEPARATOR . $runId;
+    $fetched = 0;
+    $failed = 0;
 
     foreach ($questions as &$q) {
         $query = trim($q['image_query'] ?? '');
+        $pos = $q['position'] ?? '?';
         if ($query === '') {
+            $failed++;
+            logQuizGenError("[images] Question $pos missing image_query");
             continue;
         }
-        $result = fetchQuestionImage($query, $previewDir, (string)($q['position'] ?? '0'));
+        logQuizGenInfo("[images] Q$pos: fetching \"$query\"…");
+        $result = fetchQuestionImage($query, $previewDir, (string)$pos);
         if ($result) {
             $q['image_url'] = relativeQuizImagePath($result['path']);
             $q['image_attribution'] = $result['attribution'];
+            $fetched++;
+            logQuizGenInfo("[images] Q$pos: saved");
+        } else {
+            $failed++;
         }
     }
     unset($q);
+
+    $GLOBALS['quizGenStats']['preview_images_fetched'] = $fetched;
+    logQuizGenInfo("[images] Preview images: $fetched/15 saved" . ($failed ? ", $failed failed" : ''));
 
     return $questions;
 }
