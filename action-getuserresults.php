@@ -13,11 +13,15 @@
 	$groupid    = isset($_GET['groupid'])    ? sanitizeString($_GET['groupid'])    : null;
 	$userid     = isset($_GET['userid'])     ? (int)$_GET['userid']                : 0;
 	$period     = isset($_GET['period'])     ? sanitizeString($_GET['period'])     : 'weekly';
-	$typefilter = isset($_GET['typefilter']) ? sanitizeString($_GET['typefilter']) : 'all';
+	$typefilter = isset($_GET['typefilter']) ? sanitizeString($_GET['typefilter']) : 'quizzical';
 
-	$typeSQL = ($typefilter === 'main')
-		? "AND (UPPER(Results.type) = 'MORNING' OR UPPER(Results.type) = 'AFTERNOON')"
-		: "";
+	if ($typefilter === 'stuff') {
+		$typeSQL = "AND Results.type IN ('Morning', 'Afternoon')";
+	} elseif ($typefilter === 'all') {
+		$typeSQL = "";
+	} else {
+		$typeSQL = "AND Results.type IN ('Quizzical Morning', 'Quizzical Afternoon')";
+	}
 
 	if (!$groupid || !$userid) { echo '[]'; exit; }
 

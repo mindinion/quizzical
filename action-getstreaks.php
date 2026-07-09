@@ -4,22 +4,32 @@
  *
  * Returns the current result streak for each user in a group.
  * Streak = consecutive days (backwards from today or yesterday) on which
- * the user posted at least one result of any quiz type.
+ * the user posted at least one result matching the type filter.
+ *
+ * typefilter: 'quizzical' (default), 'stuff', or 'all'
  */
 
 	require_once 'require_auth.php';
 	require_once 'security.php';
 
 	if (isset($_GET['groupid'])) $groupid = sanitizeString($_GET['groupid']);
+	$typefilter = isset($_GET['typefilter']) ? sanitizeString($_GET['typefilter']) : 'quizzical';
 
-	// Fetch all distinct result dates per user, most recent first
+	if ($typefilter === 'stuff') {
+		$typeSQL = "AND Results.type IN ('Morning', 'Afternoon')";
+	} elseif ($typefilter === 'all') {
+		$typeSQL = "";
+	} else {
+		$typeSQL = "AND Results.type IN ('Quizzical Morning', 'Quizzical Afternoon')";
+	}
+
 	$q = "SELECT
 		Users.id AS userid,
 		DATE_FORMAT(Results.date, '%Y-%m-%d') AS result_date
 	FROM Users
 		INNER JOIN Memberships ON Memberships.user_id = Users.id
 		INNER JOIN Results ON Results.user = Users.id AND Results.status = 'active'
-			AND Results.type NOT IN ('Quizzical Morning', 'Quizzical Afternoon')
+			$typeSQL
 	WHERE Memberships.group_id = $groupid
 	GROUP BY Users.id, DATE(Results.date)
 	ORDER BY Users.id, Results.date DESC";
@@ -40,7 +50,6 @@
 	foreach ($userDates as $userid => $dates) {
 		$mostRecent = $dates[0];
 
-		// Streak only counts if the user participated today or yesterday
 		if ($mostRecent !== $today && $mostRecent !== $yesterday) {
 			$streaks[] = ['userid' => (int)$userid, 'streak' => 0];
 			continue;

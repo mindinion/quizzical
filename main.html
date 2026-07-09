@@ -6,7 +6,7 @@
 
 <script src="jquery.js"></script>
 <script src="cropper.min.js"></script>
-<script src="main.js?id=64"></script>
+<script src="main.js?id=65"></script>
 
 
 
@@ -29,9 +29,9 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-		<link href="styles-main.css?id=1278" type="text/css" rel="stylesheet" />
+		<link href="styles-main.css?id=1279" type="text/css" rel="stylesheet" />
 		<link href="styles-profile.css?id=23" type="text/css" rel="stylesheet" />
-		<link href="styles-rankings.css?id=13" type="text/css" rel="stylesheet" />
+		<link href="styles-rankings.css?id=14" type="text/css" rel="stylesheet" />
 		<link href="cropper.min.css" type="text/css" rel="stylesheet" />
 		<link rel="icon" type="image/png" href="quizzical_logo.png">
 	</head>
@@ -59,10 +59,6 @@
 				<select id="QuizDropdown">
 					<option value="">Loading quizzes...</option>
 				</select>
-				<div id="QuizTypeFilter">
-					<span class="quiz-type-btn quiz-type-active" id="QuizTypeMain" onclick="setQuizTypeFilter('main')">Morning &amp; Afternoon</span>
-					<span class="quiz-type-btn" id="QuizTypeAll" onclick="setQuizTypeFilter('all')">All Types</span>
-				</div>
 			</div>
 		</div id="NewPost">
 	</div id="Header">
@@ -87,7 +83,8 @@
 					<div class="period-tab" id="Period-alltime" onclick="switchPeriod('alltime')">All Time</div>
 				</div>
 				<div id="TypeFilterTabs">
-					<div class="type-tab type-active" id="TypeTab-main" onclick="switchTypeFilter('main')">Morning &amp; Afternoon</div>
+					<div class="type-tab type-active" id="TypeTab-quizzical" onclick="switchTypeFilter('quizzical')">Quizzical</div>
+					<div class="type-tab" id="TypeTab-stuff" onclick="switchTypeFilter('stuff')">Stuff</div>
 					<div class="type-tab" id="TypeTab-all" onclick="switchTypeFilter('all')">All Types</div>
 				</div>
 			</div>
@@ -188,31 +185,6 @@
 		</div>
 	</div>
 
-	<div id="QuizCard" style="display:none">
-		<div id="QuizCardHeader">
-			<span id="QuizCardTitle"></span>
-			<button id="QuizCardClose" onclick="closeQuizCard()">&#x2715;</button>
-		</div>
-		<iframe id="QuizIframe" src="" frameborder="0"></iframe>
-		<div id="QuizPlaceholder" style="display:none">
-			<p>Quiz opened in Stuff &#x2197;</p>
-			<p>Come back here and enter your score when you&#x2019;re done.</p>
-			<button id="QuizShowIframe" onclick="showQuizIframe()">Show quiz in app instead</button>
-		</div>
-		<div id="QuizCardFooter">
-			<div id="QuizScoreRow">
-				<span class="quiz-score-label">Your score</span>
-				<input type="number" id="QuizScore" placeholder="0" min="0">
-				<span class="quiz-score-label">out of</span>
-				<input type="number" id="QuizTotal" value="10" min="1">
-			</div>
-			<div id="QuizCardButtons">
-				<button id="QuizCardCancel" onclick="closeQuizCard()">Cancel</button>
-				<button id="QuizCardOpen" onclick="openQuizNative()">Open on Stuff &#x2197;</button>
-				<button id="QuizCardSubmit" onclick="submitQuizResult()">Submit Score</button>
-			</div>
-		</div>
-	</div>
 
 	<div id="AIQuizModal" style="display:none">
 		<div id="AIQuizHeader">

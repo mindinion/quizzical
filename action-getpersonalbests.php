@@ -12,18 +12,18 @@
 
 	if (isset($_GET['groupid'])) $groupid = sanitizeString($_GET['groupid']);
 	$period     = isset($_GET['period'])     ? sanitizeString($_GET['period'])     : 'alltime';
-	$typefilter = isset($_GET['typefilter']) ? sanitizeString($_GET['typefilter']) : 'all';
+	$typefilter = isset($_GET['typefilter']) ? sanitizeString($_GET['typefilter']) : 'quizzical';
 
-	$typeSQL    = ($typefilter === 'main')
-		? "AND (UPPER(r.type) = 'MORNING' OR UPPER(r.type) = 'AFTERNOON')"
-		: "";
-	$subTypeSQL = ($typefilter === 'main')
-		? "AND (UPPER(type) = 'MORNING' OR UPPER(type) = 'AFTERNOON')"
-		: "";
-
-	// AI quiz results never count towards stats
-	$typeSQL    .= " AND r.type NOT IN ('Quizzical Morning', 'Quizzical Afternoon')";
-	$subTypeSQL .= " AND type NOT IN ('Quizzical Morning', 'Quizzical Afternoon')";
+	if ($typefilter === 'stuff') {
+		$typeSQL    = "AND r.type IN ('Morning', 'Afternoon')";
+		$subTypeSQL = "AND type IN ('Morning', 'Afternoon')";
+	} elseif ($typefilter === 'all') {
+		$typeSQL    = "";
+		$subTypeSQL = "";
+	} else {
+		$typeSQL    = "AND r.type IN ('Quizzical Morning', 'Quizzical Afternoon')";
+		$subTypeSQL = "AND type IN ('Quizzical Morning', 'Quizzical Afternoon')";
+	}
 
 	if ($period === 'weekly') {
 		$dateFilter = "AND r.date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";

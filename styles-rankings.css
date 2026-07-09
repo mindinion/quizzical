@@ -122,11 +122,11 @@
 }
 
 .type-tab {
-	padding: 5px 10px;
+	padding: 5px 8px;
 	cursor: pointer;
 	border-radius: 4px;
 	font-family: verdana, arial;
-	font-size: 10px;
+	font-size: 9px;
 	font-weight: bold;
 	color: #a07040;
 	white-space: nowrap;

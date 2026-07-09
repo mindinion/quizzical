@@ -786,7 +786,7 @@ document.cookie="feedItems=50";
 
 	function fetchFeedRankers() {
 		var groupid = getSetting('group_id');
-		$.get('action-getrankings.php', { groupid: groupid, period: 'weekly', typefilter: 'main' }, function(data) {
+		$.get('action-getrankings.php', { groupid: groupid, period: 'weekly', typefilter: 'quizzical' }, function(data) {
 			feedTopRankers = {};
 			JSON.parse(data).slice(0, 3).forEach(function(r, i) { feedTopRankers[r.userid] = i + 1; });
 			applyFeedRankBadges();
@@ -818,9 +818,8 @@ document.cookie="feedItems=50";
 	var rankingsLoaded = false;
 	var currentPbs = [];
 	var feedTopRankers = {};
-	var rankingsTypeFilter = 'main';
+	var rankingsTypeFilter = 'quizzical';
 	var quizList = [];
-	var quizTypeFilter = 'main';
 	var selectedQuiz = null;
 
 	function switchTab(tab) {
@@ -857,7 +856,9 @@ document.cookie="feedItems=50";
 	}
 
 	function toggleTypeFilter() {
-		switchTypeFilter(rankingsTypeFilter === 'main' ? 'all' : 'main');
+		var order = ['quizzical', 'stuff', 'all'];
+		var idx = order.indexOf(rankingsTypeFilter);
+		switchTypeFilter(order[(idx + 1) % order.length]);
 	}
 
 	function loadRankings(period) {
@@ -868,7 +869,7 @@ document.cookie="feedItems=50";
 		$('#RankingsPersonalBests').html('');
 		$.when(
 			$.get("action-getrankings.php", { groupid: groupid, period: period, typefilter: rankingsTypeFilter }),
-			$.get("action-getstreaks.php", { groupid: groupid }),
+			$.get("action-getstreaks.php", { groupid: groupid, typefilter: rankingsTypeFilter }),
 			$.get("action-getpersonalbests.php", { groupid: groupid, period: period, typefilter: rankingsTypeFilter })
 		).done(function(rankingsResp, streaksResp, pbResp) {
 			var rankings = JSON.parse(rankingsResp[0]);
@@ -1115,10 +1116,7 @@ document.cookie="feedItems=50";
 
 
 	function loadQuizList() {
-		$.get('action-getquizzes.php', {
-			userid: getSetting('user_id'),
-			typefilter: quizTypeFilter
-		}, function(data) {
+		$.get('action-getquizzes.php', function(data) {
 			quizList = JSON.parse(data);
 			renderQuizDropdown();
 		});
@@ -1133,13 +1131,12 @@ document.cookie="feedItems=50";
 			return;
 		}
 		quizList.forEach(function(q, i) {
-			var prefix = q.source === 'ai' ? 'Quizzical ' : '';
-			var label = prefix + q.type + ' \u2013 ' + formatQuizDate(q.date);
-			if (q.done) label += ' \u2713 ' + q.score + '/' + q.max;
-			var $opt = $('<option>').val(i).text(label);
-			if (q.done) $opt.prop('disabled', true);
-			$sel.append($opt);
+			var label = 'Quizzical ' + q.type + ' \u2013 ' + formatQuizDate(q.date);
+			if (q.done) label += ' \u2713 ' + q.score + '/' + q.max + ' (review)';
+			$('<option>').val(i).text(label).appendTo($sel);
 		});
+		var firstOpen = quizList.findIndex(function(q) { return !q.done; });
+		if (firstOpen >= 0) $sel.val(firstOpen);
 	}
 
 	function formatQuizDate(dateStr) {
@@ -1154,108 +1151,50 @@ document.cookie="feedItems=50";
 		return days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()];
 	}
 
-	function setQuizTypeFilter(filter) {
-		quizTypeFilter = filter;
-		$('.quiz-type-btn').removeClass('quiz-type-active');
-		$('#QuizType' + (filter === 'main' ? 'Main' : 'All')).addClass('quiz-type-active');
-		loadQuizList();
-	}
 
 	function openQuizCard() {
 		var idx = $('#QuizDropdown').val();
 		if (idx === '' || idx === null) return;
 		selectedQuiz = quizList[parseInt(idx)];
-		if (!selectedQuiz || selectedQuiz.done) return;
-		if (selectedQuiz.source === 'ai') {
-			openAIQuiz(selectedQuiz);
-			return;
-		}
-		var label = selectedQuiz.type + ' \u2013 ' + formatQuizDate(selectedQuiz.date);
-		$('#QuizCardTitle').text(label);
-		$('#QuizIframe').attr('src', selectedQuiz.url);
-		$('#QuizScore').val('');
-		$('#QuizTotal').val('15');
-		$('#QuizCard').show();
-		$('#TabBar').hide();
-	}
-
-	function openQuizNative() {
 		if (!selectedQuiz) return;
-		window.open(selectedQuiz.url, '_blank');
-		$('#QuizIframe').hide();
-		$('#QuizPlaceholder').show();
-	}
-
-	function showQuizIframe() {
-		$('#QuizPlaceholder').hide();
-		$('#QuizIframe').show();
-	}
-
-	function closeQuizCard() {
-		$('#QuizCard').hide();
-		$('#QuizIframe').attr('src', '').show();
-		$('#QuizPlaceholder').hide();
-		$('#TabBar').show();
-		selectedQuiz = null;
-	}
-
-	function submitQuizResult() {
-		var score = $('#QuizScore').val();
-		var total = $('#QuizTotal').val();
-		if (!score || score === '') { alert('Please enter your score'); return; }
-		if (!selectedQuiz) return;
-		$.get('action-newresult.php', {
-			type: selectedQuiz.type,
-			score: score,
-			questions: total,
-			date: selectedQuiz.date,
-			dateOption: 'other',
-			userid: getSetting('user_id'),
-			timezone: getSetting('timezone')
-		}, function(data) {
-			var resp = null;
-			try { resp = JSON.parse(data); } catch(e) {}
-			if (resp && resp.post_id > 0) {
-				var quizType = selectedQuiz.type;
-				var quizDate = selectedQuiz.date;
-				closeQuizCard();
-				prependFeedItem(resp.post_id, { isResult: true, score: score, total: total, quizType: quizType, quizDate: quizDate });
-				rankingsLoaded = false;
-				if ($('#RankingsPanel').is(':visible')) loadRankings(rankingsCurrentPeriod);
-				loadQuizList();
-				$.get('action-emailresult.php', { resultId: resp.result_id }, function(r) { console.log(r); });
-			} else {
-				alert('You have already logged a result for that quiz!');
-			}
-		});
+		openAIQuiz(selectedQuiz, selectedQuiz.done);
 	}
 
 	// ── AI Quiz Wizard ──────────────────────────────────────────────────────
 
-	var aiQuizData       = null;   // full quiz object from action-get-ai-quiz.php
-	var aiCurrentIdx     = 0;      // 0-based index of the question being shown
+	var aiQuizData       = null;
+	var aiCurrentIdx     = 0;
 	var aiScore          = 0;
-	var aiAnswerPending  = false;  // debounce: prevent double-tapping an option
+	var aiAnswerPending  = false;
+	var aiReviewMode     = false;
 
-	function openAIQuiz(quiz) {
+	function openAIQuiz(quiz, reviewMode) {
 		$.get('action-get-ai-quiz.php', { quiz_id: quiz.quiz_id }, function(raw) {
 			aiQuizData      = JSON.parse(raw);
-			aiScore         = aiQuizData.score_so_far || 0;
+			aiReviewMode    = reviewMode || aiQuizData.review_mode;
+			aiScore         = aiReviewMode && aiQuizData.final_score != null
+				? aiQuizData.final_score
+				: (aiQuizData.score_so_far || 0);
 			aiAnswerPending = false;
 
-			var label = 'Quizzical ' + aiQuizData.type + ' Quiz – ' + formatQuizDate(aiQuizData.date);
+			var labelPrefix = aiReviewMode ? 'Review: ' : '';
+			var label = labelPrefix + 'Quizzical ' + aiQuizData.type + ' Quiz \u2013 ' + formatQuizDate(aiQuizData.date);
 			$('#AIQuizTitle').text(label);
 			$('#AIQuizBody').show();
 			$('#AIQuizScoreScreen').hide();
 			$('#AIQuizModal').show();
 			$('#TabBar').hide();
 
-			// Resume from first unanswered question
-			aiCurrentIdx = aiQuizData.answered_count || 0;
-			if (aiCurrentIdx >= 15) {
-				showAIScoreScreen();
+			if (aiReviewMode) {
+				aiCurrentIdx = 0;
+				renderAIQuestion(0);
 			} else {
-				renderAIQuestion(aiCurrentIdx);
+				aiCurrentIdx = aiQuizData.answered_count || 0;
+				if (aiCurrentIdx >= 15) {
+					showAIScoreScreen();
+				} else {
+					renderAIQuestion(aiCurrentIdx);
+				}
 			}
 		});
 	}
@@ -1277,10 +1216,17 @@ document.cookie="feedItems=50";
 		});
 		$('#AIQuizOptions').html(html);
 
-		// If this question was already answered (resume), show the reveal immediately
+		// If already answered (resume or review), show the reveal immediately
 		if (q.answered) {
 			revealAnswer(q.chosen_option_id, q.correct_option_id, q.is_correct, true);
-		} else {
+			if (aiReviewMode) {
+				$('#AIQuizNext').show().text(aiCurrentIdx >= total - 1 ? 'See score \u2192' : 'Next \u2192');
+			} else if (aiCurrentIdx >= total - 1) {
+				showAIScoreScreen();
+			} else {
+				$('#AIQuizNext').show();
+			}
+		} else if (!aiReviewMode) {
 			$('#AIQuizOptions').on('click', '.ai-option', function() {
 				if (aiAnswerPending) return;
 				aiAnswerPending = true;
@@ -1335,21 +1281,32 @@ document.cookie="feedItems=50";
 	}
 
 	function nextAIQuestion() {
+		if (aiReviewMode) {
+			if (aiCurrentIdx >= aiQuizData.questions.length - 1) {
+				showAIScoreScreen();
+				return;
+			}
+			aiCurrentIdx++;
+			renderAIQuestion(aiCurrentIdx);
+			return;
+		}
+
 		aiCurrentIdx++;
-		// Update the question data with answered state from server-side truth
 		aiQuizData.questions[aiCurrentIdx - 1].answered = true;
 		renderAIQuestion(aiCurrentIdx);
 	}
 
 	function showAIScoreScreen() {
 		$('#AIQuizBody').hide();
-		var pct = Math.round((aiScore / 15) * 100);
-		$('#AIQuizScoreDisplay').text(aiScore + ' / 15');
-		$('#AIQuizComment').val('');
-		$('#AIQuizPostBtn').prop('disabled', false).text('Post to Feed');
+		var maxScore = aiQuizData.final_max || 15;
+		var pct = Math.round((aiScore / maxScore) * 100);
+		$('#AIQuizScoreHeading').text(aiReviewMode ? 'Your score' : 'Quiz complete!');
+		$('#AIQuizScoreDisplay').text(aiScore + ' / ' + maxScore);
+		$('#AIQuizComment').val('').toggle(!aiReviewMode);
+		$('#AIQuizPostBtn').prop('disabled', false).text('Post to Feed').toggle(!aiReviewMode);
+		$('#AIQuizSkipPost').text('Close').show();
 		$('#AIQuizScoreScreen').show();
 		$('#AIQuizProgressFill').css('width', '100%');
-		// Animate the score bar after a brief delay
 		setTimeout(function() {
 			$('#AIQuizScoreFill').css('width', pct + '%');
 		}, 100);
@@ -1383,6 +1340,7 @@ document.cookie="feedItems=50";
 				rankingsLoaded = false;
 				if ($('#RankingsPanel').is(':visible')) loadRankings(rankingsCurrentPeriod);
 				loadQuizList();
+				fetchFeedRankers();
 				$.get('action-emailresult.php', { resultId: resp.result_id }, function() {});
 			} else {
 				alert('Something went wrong posting your result. Try again.');
@@ -1401,6 +1359,9 @@ document.cookie="feedItems=50";
 		aiCurrentIdx    = 0;
 		aiScore         = 0;
 		aiAnswerPending = false;
+		aiReviewMode    = false;
+		selectedQuiz    = null;
+		$('#QuizDropdown').val('');
 	}
 
 	function escapeHtml(str) {
@@ -1883,16 +1844,16 @@ document.cookie="feedItems=50";
 	}
 
 	function showWelcome(force) {
-		var WELCOME_VERSION = 'v3';
+		var WELCOME_VERSION = 'v4';
 		if (!force && localStorage.getItem('quizzical_welcome') === WELCOME_VERSION) return;
-		$.get('welcome-v3.html', function(html) {
+		$.get('welcome-v4.html', function(html) {
 			$('#WelcomeBody').html(html);
 			$('#WelcomeOverlay').fadeIn(200);
 		});
 	}
 
 	function dismissWelcome() {
-		localStorage.setItem('quizzical_welcome', 'v3');
+		localStorage.setItem('quizzical_welcome', 'v4');
 		$('#WelcomeOverlay').fadeOut(200);
 	}
 

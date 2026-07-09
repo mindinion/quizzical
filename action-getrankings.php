@@ -6,7 +6,7 @@
  * Each entry includes: avg %, previous period avg % (for trend arrow), days active, period days.
  *
  * period:     'weekly' (last 7 days vs previous 7), 'monthly' (last 30 days vs previous 30), 'alltime'
- * typefilter: 'all' (every quiz type) or 'main' (Morning & Afternoon only)
+ * typefilter: 'quizzical' (default), 'stuff' (Morning/Afternoon), or 'all'
  *
  * Alltime response also includes last_result_date for ghost detection in JS.
  */
@@ -16,19 +16,18 @@
 
 	if (isset($_GET['groupid'])) $groupid = sanitizeString($_GET['groupid']);
 	$period     = isset($_GET['period'])     ? sanitizeString($_GET['period'])     : 'weekly';
-	$typefilter = isset($_GET['typefilter']) ? sanitizeString($_GET['typefilter']) : 'all';
+	$typefilter = isset($_GET['typefilter']) ? sanitizeString($_GET['typefilter']) : 'quizzical';
 
-	// SQL fragment added to JOIN / CASE WHEN when typefilter = 'main'
-	$typeJoin = ($typefilter === 'main')
-		? "AND (UPPER(Results.type) = 'MORNING' OR UPPER(Results.type) = 'AFTERNOON')"
-		: "";
-	$typeSub = ($typefilter === 'main')
-		? "AND (UPPER(type) = 'MORNING' OR UPPER(type) = 'AFTERNOON')"
-		: "";
-
-	// AI quiz results never count towards stats
-	$typeJoin .= " AND Results.type NOT IN ('Quizzical Morning', 'Quizzical Afternoon')";
-	$typeSub  .= " AND type NOT IN ('Quizzical Morning', 'Quizzical Afternoon')";
+	if ($typefilter === 'stuff') {
+		$typeJoin = "AND Results.type IN ('Morning', 'Afternoon')";
+		$typeSub  = "AND type IN ('Morning', 'Afternoon')";
+	} elseif ($typefilter === 'all') {
+		$typeJoin = "";
+		$typeSub  = "";
+	} else {
+		$typeJoin = "AND Results.type IN ('Quizzical Morning', 'Quizzical Afternoon')";
+		$typeSub  = "AND type IN ('Quizzical Morning', 'Quizzical Afternoon')";
+	}
 
 	if ($period === 'monthly') {
 		$days = 30;

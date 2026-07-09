@@ -41,6 +41,32 @@ if ($stmt->get_result()->num_rows === 0) {
 }
 $stmt->close();
 
+// Block new answers once the user has posted a result for this quiz
+$stmt = $conn->prepare("SELECT type, date FROM AIQuiz WHERE id = ? AND status = 'active'");
+$stmt->bind_param('i', $quizId);
+$stmt->execute();
+$quizRow = $stmt->get_result()->fetch_assoc();
+$stmt->close();
+
+if (!$quizRow) {
+    http_response_code(404);
+    echo json_encode(['error' => 'Quiz not found']);
+    exit;
+}
+
+$resultType = 'Quizzical ' . $quizRow['type'];
+$stmt = $conn->prepare(
+    "SELECT id FROM Results WHERE user = ? AND status = 'active' AND type = ? AND date = ? LIMIT 1"
+);
+$stmt->bind_param('iss', $userid, $resultType, $quizRow['date']);
+$stmt->execute();
+if ($stmt->get_result()->num_rows > 0) {
+    http_response_code(403);
+    echo json_encode(['error' => 'Quiz already completed']);
+    exit;
+}
+$stmt->close();
+
 // Idempotency: return stored result if already answered
 $stmt = $conn->prepare(
     "SELECT a.is_correct, a.chosen_option_id,

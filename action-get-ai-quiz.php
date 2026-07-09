@@ -28,6 +28,16 @@ $stmt->close();
 
 if (!$quiz) { http_response_code(404); echo json_encode(['error' => 'Quiz not found']); exit; }
 
+$resultType = 'Quizzical ' . $quiz['type'];
+$stmt = $conn->prepare(
+    "SELECT score, max FROM Results WHERE user = ? AND status = 'active' AND type = ? AND date = ? LIMIT 1"
+);
+$stmt->bind_param('iss', $userid, $resultType, $quiz['date']);
+$stmt->execute();
+$postedResult = $stmt->get_result()->fetch_assoc();
+$stmt->close();
+$reviewMode = (bool)$postedResult;
+
 // Load all questions
 $stmt = $conn->prepare(
     "SELECT id, position, question_text, category, format FROM AIQuestion WHERE quiz_id = ? ORDER BY position"
@@ -117,4 +127,7 @@ echo json_encode([
     'answered_count' => $answeredCount,
     'score_so_far'   => $totalScore,
     'completed'      => $answeredCount >= 15,
+    'review_mode'    => $reviewMode,
+    'final_score'    => $postedResult ? (int)$postedResult['score'] : null,
+    'final_max'      => $postedResult ? (int)$postedResult['max'] : 15,
 ]);
