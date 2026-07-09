@@ -580,6 +580,7 @@ Sports has strict automatic rejection rules — follow exactly:
 - For year MC questions: describe the event in the question; put years ONLY in the four options. Do not embed a year in the question stem.
 - No all-time records (most premierships, longest streak, winning percentage, per capita).
 - Prefer: a specific tournament edition/host city, team colours/nicknames, a named athlete at a named Games, stadium or rule facts with the year in the options.
+- Prefer team colours, home venues, or host-nation year questions over "which year did [team] win [tournament]?" — win-year questions often fail fact-check.
 - Do NOT combine an edition count with a host country in one question (e.g. "third time, held in the UK") — pick one angle only.
 - For Rugby World Cup final questions: verify which team actually won that final before marking a year (e.g. England beat Australia in 2003; Australia beat England in 1991).
 - For Cricket World Cup questions: verify the host country matches the year (e.g. 2011 was India/Sri Lanka/Bangladesh, not New Zealand; 2015 was Australia/New Zealand).
@@ -590,7 +591,7 @@ GUIDE;
         case 'History':
             return 'Must be about the rest of the world — NOT New Zealand or Australia. Use standard names for treaties and events (e.g. "Treaty of Paris", "Congress of Vienna" — never invent names like "Treaty of Vienna"). No "first country to…" superlatives. TF statements must be plain factual claims, not joke premises. For year questions, put the year in the answer options, not in the question stem.';
         case 'General Knowledge':
-            return 'Must be about the rest of the world — NOT New Zealand or Australia. No Great Barrier Reef or other NZ/AU references. Use real, standard names for treaties, laws, and historical figures — do not invent obscure attributions. Distinguish declaration vs recognition vs annexation for independence questions. For year questions, put the year in the answer options, not in the question stem.';
+            return 'Must be about the rest of the world — NOT New Zealand or Australia. No Great Barrier Reef or other NZ/AU references. Use real, standard names for treaties, laws, and historical figures — do not invent obscure attributions. Distinguish declaration vs recognition vs annexation for independence questions (e.g. Philippines independence from the US was 1946, not 1898). For year questions, put the year in the answer options, not in the question stem.';
         default:
             return '';
     }
@@ -715,8 +716,13 @@ function validateCategoryQuestions(
     $errors = [];
     $actualMc = 0;
     $actualTf = 0;
+    $batchTopicLabels = $usedTopicLabels;
     foreach ($candidate['questions'] as $i => $q) {
-        $errors = array_merge($errors, validateOneQuestion($q, $category, $i + 1, $usedTopicLabels));
+        $errors = array_merge($errors, validateOneQuestion($q, $category, $i + 1, $batchTopicLabels));
+        foreach (duplicateTopicsInQuestion($q) as $topic) {
+            $batchTopicLabels[] = $topic;
+        }
+        $batchTopicLabels = array_values(array_unique($batchTopicLabels));
         if ($q['format'] === 'mc') $actualMc++;
         elseif ($q['format'] === 'tf') $actualTf++;
     }
