@@ -1181,8 +1181,6 @@ document.cookie="feedItems=50";
 		var toTake = findQuizToTake();
 		if (toTake) {
 			$take.show();
-			var idx = quizList.indexOf(toTake);
-			if (idx >= 0) $sel.val(idx);
 		} else {
 			$take.hide();
 		}
@@ -1384,18 +1382,8 @@ document.cookie="feedItems=50";
 			var resp = null;
 			try { resp = JSON.parse(raw); } catch(e) {}
 			if (resp && resp.post_id > 0) {
-				var quizDate   = aiQuizData.date;
-				var quizType   = aiQuizData.type;
-				var finalScore = aiScore;
 				closeAIQuiz();
-				prependFeedItem(resp.post_id, {
-					isResult:  true,
-					score:     finalScore,
-					total:     15,
-					quizType:  quizType,
-					quizDate:  quizDate,
-					comment:   comment
-				});
+				downloadResults(1);
 				rankingsLoaded = false;
 				if ($('#RankingsPanel').is(':visible')) loadRankings(rankingsCurrentPeriod);
 				loadQuizList();
