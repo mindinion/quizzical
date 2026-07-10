@@ -52,17 +52,11 @@ $recentQuestions = fetchRecentQuestions($conn, $today, 5);
 
 cleanupQuizImages($conn);
 
-try {
-    $questions = generateQuizQuestionsWithFinalGate($type, $today, $recentQuestions);
-} catch (Throwable $e) {
-    logQuizGenError('Final-gate path failed, falling back to direct generation: ' . $e->getMessage());
-    $questions = generateQuizQuestions($type, $today, $recentQuestions);
-}
+$questions = generateQuizQuestions($type, $today, $recentQuestions);
 
 $stats = getQuizGenStats();
 if (($stats['category_cap_fallbacks'] ?? 0) > 0
-    || ($stats['category_emergency_fallbacks'] ?? 0) > 0
-    || ($stats['final_gate_cap_fallbacks'] ?? 0) > 0) {
+    || ($stats['category_emergency_fallbacks'] ?? 0) > 0) {
     logQuizGenError('Quiz published with best-effort fallbacks — review recommended. Stats: ' . json_encode($stats));
 }
 
@@ -123,8 +117,7 @@ try {
     $stats = getQuizGenStats();
     echo "Generated $quizType quiz (ID $quizId) for $today — " . count($questions) . " questions, $imagesFetched images. "
         . "Fact-check: {$stats['categories_retried']} categories retried, {$stats['fact_check_skips']} skipped, {$stats['answer_corrections']} answer correction(s). "
-        . "Final gate: {$stats['final_gate_quiz_attempts']} attempt(s), {$stats['final_gate_rejections']} rejection(s). "
-        . "Fallbacks: {$stats['category_cap_fallbacks']} category cap, {$stats['category_emergency_fallbacks']} emergency, {$stats['final_gate_cap_fallbacks']} gate cap.\n";
+        . "Fallbacks: {$stats['category_cap_fallbacks']} category cap, {$stats['category_emergency_fallbacks']} emergency.\n";
 
 } catch (Exception $e) {
     $conn->rollback();

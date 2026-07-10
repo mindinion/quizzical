@@ -28,7 +28,7 @@ function qaRunOnce(int $runNum, string $type, string $today, int $lookback, bool
     ];
 
     try {
-        $questions = generateQuizQuestionsWithFinalGate($type, $today, $recentQuestions);
+        $questions = generateQuizQuestions($type, $today, $recentQuestions);
         if (!$skipImages) {
             $questions = attachPreviewImages($questions);
         }
@@ -37,7 +37,7 @@ function qaRunOnce(int $runNum, string $type, string $today, int $lookback, bool
         $payload['ok']          = count($questions) > 0;
         $payload['warnings']    = buildQuizGenWarnings(getQuizGenStats());
     } catch (Throwable $e) {
-        logQuizGenError('QA run primary path failed: ' . $e->getMessage());
+        logQuizGenError('QA run failed: ' . $e->getMessage());
         try {
             $questions = generateQuizQuestions($type, $today, $recentQuestions);
             if (!$skipImages) {
@@ -47,7 +47,7 @@ function qaRunOnce(int $runNum, string $type, string $today, int $lookback, bool
             $payload['stats']     = getQuizGenStats();
             $payload['ok']          = count($questions) > 0;
             $payload['warnings']    = array_merge(
-                ['Generation recovered via fallback: ' . $e->getMessage()],
+                ['Generation recovered via retry: ' . $e->getMessage()],
                 buildQuizGenWarnings(getQuizGenStats())
             );
         } catch (Throwable $inner) {
@@ -136,9 +136,6 @@ function buildQuizGenWarnings(array $stats): array {
     }
     if (($stats['category_emergency_fallbacks'] ?? 0) > 0) {
         $warnings[] = 'One or more categories used emergency placeholder questions (API returned no usable output).';
-    }
-    if (($stats['final_gate_cap_fallbacks'] ?? 0) > 0) {
-        $warnings[] = 'Final publish gate accepted the last quiz without a clean pass.';
     }
     return $warnings;
 }

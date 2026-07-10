@@ -176,9 +176,6 @@ const ANSWER_GIVEAWAY_FORMS = [
 
 const CURRENT_EVENTS_CATEGORIES = ['NZ Current Events', 'Aussie Current Events'];
 
-/** Full-quiz regeneration attempts when the pre-publish final fact-check gate fails. */
-const MAX_FINAL_GATE_QUIZ_ATTEMPTS = 3;
-
 /**
  * Soft cap on MC questions whose answers are calendar years (e.g. "1987").
  * Categories generate independently, so the running count is passed forward
@@ -186,15 +183,12 @@ const MAX_FINAL_GATE_QUIZ_ATTEMPTS = 3;
  */
 const MAX_YEAR_ANSWER_QUESTIONS = 4;
 
-/** @var array{categories_retried: int, fact_check_skips: int, preview_images_fetched: int, final_gate_quiz_attempts: int, final_gate_rejections: int, category_cap_fallbacks: int, final_gate_cap_fallbacks: int, category_emergency_fallbacks: int, answer_corrections: int} */
+/** @var array{categories_retried: int, fact_check_skips: int, preview_images_fetched: int, category_cap_fallbacks: int, category_emergency_fallbacks: int, answer_corrections: int} */
 $GLOBALS['quizGenStats'] = [
     'categories_retried'         => 0,
     'fact_check_skips'           => 0,
     'preview_images_fetched'     => 0,
-    'final_gate_quiz_attempts'   => 0,
-    'final_gate_rejections'      => 0,
     'category_cap_fallbacks'     => 0,
-    'final_gate_cap_fallbacks'   => 0,
     'category_emergency_fallbacks' => 0,
     'answer_corrections'         => 0,
 ];
@@ -204,10 +198,7 @@ function resetQuizGenStats(): void {
         'categories_retried'         => 0,
         'fact_check_skips'           => 0,
         'preview_images_fetched'     => 0,
-        'final_gate_quiz_attempts'   => 0,
-        'final_gate_rejections'      => 0,
         'category_cap_fallbacks'     => 0,
-        'final_gate_cap_fallbacks'   => 0,
         'category_emergency_fallbacks' => 0,
         'answer_corrections'         => 0,
     ];
@@ -273,9 +264,7 @@ function appendQuizGenLogCapture(string $level, string $msg): void {
  * @param string[] $avoidQuestions Question texts to avoid repeating (e.g. recent days' quizzes).
  */
 function generateQuizQuestions(string $quizType, string $today, array $avoidQuestions = []): array {
-    if (empty($GLOBALS['quizGenSkipStatsReset'])) {
-        resetQuizGenStats();
-    }
+    resetQuizGenStats();
     logQuizGenInfo('Fetching headlines…');
     $headlinesByRegion = fetchHeadlines($quizType);
     $tfHosts = pickTfHostCategories();
@@ -317,92 +306,6 @@ function generateQuizQuestions(string $quizType, string $today, array $avoidQues
     unset($q);
 
     return $allQuestions;
-}
-
-/**
- * Generates a full quiz and runs a fresh fact-check on all 15 accepted questions
- * before returning. Retries the whole quiz up to MAX_FINAL_GATE_QUIZ_ATTEMPTS when
- * the gate fails; if the cap is reached, returns the last generated quiz (best effort).
- *
- * @param string[] $avoidQuestions
- */
-function generateQuizQuestionsWithFinalGate(
-    string $quizType, string $today, array $avoidQuestions = [], int $maxAttempts = MAX_FINAL_GATE_QUIZ_ATTEMPTS
-): array {
-    $lastErrors = [];
-    $lastQuestions = null;
-
-    resetQuizGenStats();
-
-    for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
-        bumpQuizGenStat('final_gate_quiz_attempts');
-        if ($attempt > 1) {
-            logQuizGenInfo("[final-gate] Regenerating full quiz (attempt $attempt/$maxAttempts)…");
-        }
-
-        $GLOBALS['quizGenSkipStatsReset'] = true;
-        try {
-            $questions = generateQuizQuestions($quizType, $today, $avoidQuestions);
-        } finally {
-            $GLOBALS['quizGenSkipStatsReset'] = false;
-        }
-        $lastQuestions = $questions;
-
-        $gateErrors = verifyFinalQuizGate($questions, $quizType);
-        if (!$gateErrors) {
-            return $questions;
-        }
-
-        bumpQuizGenStat('final_gate_rejections');
-        $lastErrors = $gateErrors;
-    }
-
-    if ($lastQuestions !== null) {
-        $errorList = implode("\n", array_map(fn($e) => '- ' . $e, $lastErrors));
-        logQuizGenError(
-            "[final-gate] Cap reached after $maxAttempts full quiz attempt(s) — accepting last quiz (best effort):\n$errorList"
-        );
-        bumpQuizGenStat('final_gate_cap_fallbacks');
-        return $lastQuestions;
-    }
-
-    logQuizGenError('[final-gate] No quiz to accept from gate attempts — returning quiz without gate (best effort).');
-    bumpQuizGenStat('final_gate_cap_fallbacks');
-    return generateQuizQuestions($quizType, $today, $avoidQuestions);
-}
-
-/**
- * Fresh Tavily/headline fact-check on every question in the accepted quiz set.
- *
- * @return string[] Empty when all pass; otherwise human-readable failure lines.
- */
-function verifyFinalQuizGate(array &$questions, string $quizType): array {
-    if (count($questions) !== 15) {
-        return ['expected 15 questions, got ' . count($questions)];
-    }
-
-    logQuizGenInfo('[final-gate] Verifying all 15 questions with fresh sources…');
-    $headlinesByRegion = fetchHeadlines($quizType);
-    $errors = [];
-
-    foreach ($questions as &$q) {
-        $pos = (int)($q['position'] ?? 0);
-        $category = $q['category'] ?? '';
-        $qErrors = factCheckOneQuestion($q, $pos, $category, $headlinesByRegion, '[final-gate]');
-        foreach ($qErrors as $err) {
-            $errors[] = "Q$pos [$category] $err";
-        }
-    }
-    unset($q);
-
-    if ($errors) {
-        $errorList = implode("\n", array_map(fn($e) => '- ' . $e, $errors));
-        logQuizGenError('[final-gate] ' . count($errors) . " failure(s):\n$errorList");
-    } else {
-        logQuizGenInfo('[final-gate] All 15 questions passed — OK to publish');
-    }
-
-    return $errors;
 }
 
 /**
@@ -956,6 +859,7 @@ Pop culture rules:
 - Use well-documented, classic entertainment facts you are confident about — obscure deep cuts fail fact-check.
 - No NZ or AU films, bands, or TV shows (those belong in regional trivia categories).
 - Famous entertainment facts are OK here (unlike treaty/history angles where the most famous fact is discouraged).
+- When the correct answer is a film/book/album title, do NOT name characters, bands, or distinctive title words in the question stem (e.g. do not say "Harry" if the answer is Harry Potter and the Philosopher's Stone).
 
 Other GK rules:
 - No treaties duplicated from History, no superlatives, no disputed rankings.
@@ -974,7 +878,7 @@ function buildValidatorRulesBlock(string $category): string {
     $rules = <<<'RULES'
 Automatic rejection rules (violating ANY of these fails the whole batch):
 - Superlatives: never use "first", "most", "longest", "record holder", "per capita", or "winning percentage in history". Especially in Sports — the word "first" alone causes rejection.
-- Answer giveaway: the correct option's exact text (or its demonym, e.g. French→France) must not appear in the question text or image_query.
+- Answer giveaway: distinctive words from the correct option (character names, title words, demonyms) must not appear in the question text or image_query — not just the full phrase.
 - image_query: 2–4 words, no option text, no correct answer hint.
 - tf format: a declarative "True or False: …" statement — never a which/what/who/when question.
 - Geography / History / General Knowledge: zero NZ or Australia content (no cities, landmarks, or teams from NZ/AU).
@@ -1058,8 +962,8 @@ function buildRetryHintForErrors(
                     . 'Set format to "tf" with True/False options, or rewrite as a plain MC question.';
             }
         } else {
-            $hints[] = 'GIVEAWAY FIX: The question or image_query names the correct answer. '
-                . 'Rephrase the question without the answer word; use a generic image_query (e.g. "rugby match crowd" not "Sydney Festival").';
+            $hints[] = 'GIVEAWAY FIX: The question or image_query names the correct answer (including character or title words). '
+                . 'Rephrase without those words; use a generic image_query (e.g. "animated ocean scene" not "Nemo fish").';
         }
     }
 
@@ -1359,9 +1263,38 @@ function validateOneQuestion(array $q, string $category, int $qNum, array $usedT
     return $errors;
 }
 
+/** Stopwords skipped when extracting distinctive tokens from MC answer text. */
+const ANSWER_GIVEAWAY_STOPWORDS = [
+    'the', 'and', 'with', 'from', 'that', 'this', 'have', 'were', 'been', 'their', 'which',
+    'film', 'book', 'part', 'series', 'true', 'false',
+];
+
+/**
+ * Distinctive 4+ letter tokens from a correct MC answer (e.g. harry, nemo, potter).
+ *
+ * @return string[]
+ */
+function answerGiveawayTokens(string $correctText): array {
+    $answer = mb_strtolower(trim($correctText));
+    if ($answer === 'true' || $answer === 'false') {
+        return [];
+    }
+
+    preg_match_all('/\p{L}{4,}/u', $answer, $matches);
+    $tokens = [];
+    foreach ($matches[0] as $word) {
+        if (in_array($word, ANSWER_GIVEAWAY_STOPWORDS, true)) {
+            continue;
+        }
+        $tokens[] = $word;
+    }
+
+    return array_values(array_unique($tokens));
+}
+
 /**
  * Detects whether haystack text hints at the correct MC answer — verbatim match,
- * demonym forms (French → France), or close orthographic stems.
+ * demonym forms (French → France), distinctive answer tokens, or close orthographic stems.
  */
 function answerGiveawayInText(string $correctText, string $haystack): bool {
     if ($correctText === '' || $haystack === '' || strlen($correctText) < 3) {
@@ -1382,6 +1315,12 @@ function answerGiveawayInText(string $correctText, string $haystack): bool {
 
     foreach (ANSWER_GIVEAWAY_FORMS[$answer] ?? [] as $form) {
         if (preg_match('/\b' . preg_quote($form, '/') . '\b/ui', $text)) {
+            return true;
+        }
+    }
+
+    foreach (answerGiveawayTokens($correctText) as $token) {
+        if (preg_match('/\b' . preg_quote($token, '/') . '\b/ui', $text)) {
             return true;
         }
     }
