@@ -268,8 +268,9 @@ function appendQuizGenLogCapture(string $level, string $msg): void {
 
 /**
  * Generates a full 15-question quiz, one category at a time, and returns the
- * combined array of question objects with positions 1..15 assigned. When a
- * category exhausts its retry cap, the last generated batch is accepted (best effort).
+ * combined array of question objects with positions 1..15 assigned. Questions
+ * are shuffled before numbering so presentation order is not fixed by category.
+ * When a category exhausts its retry cap, the last generated batch is accepted (best effort).
  *
  * @param string $quizType 'morning' or 'afternoon' — controls the headline recency window.
  * @param string $today Y-m-d date string used in the prompt.
@@ -322,6 +323,8 @@ function generateQuizQuestions(string $quizType, string $today, array $avoidQues
         $allQuestions = array_merge($allQuestions, $categoryQuestions);
         logQuizGenInfo("Accepted: $category");
     }
+
+    shuffle($allQuestions);
 
     foreach ($allQuestions as $i => &$q) {
         $q['position'] = $i + 1;
