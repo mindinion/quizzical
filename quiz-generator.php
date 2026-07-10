@@ -179,7 +179,14 @@ const CURRENT_EVENTS_CATEGORIES = ['NZ Current Events', 'Aussie Current Events']
 /** Full-quiz regeneration attempts when the pre-publish final fact-check gate fails. */
 const MAX_FINAL_GATE_QUIZ_ATTEMPTS = 3;
 
-/** @var array{categories_retried: int, fact_check_skips: int, preview_images_fetched: int, final_gate_quiz_attempts: int, final_gate_rejections: int, category_cap_fallbacks: int, final_gate_cap_fallbacks: int, category_emergency_fallbacks: int} */
+/**
+ * Soft cap on MC questions whose answers are calendar years (e.g. "1987").
+ * Categories generate independently, so the running count is passed forward
+ * like usedTopicLabels — prompt guidance alone cannot see later categories.
+ */
+const MAX_YEAR_ANSWER_QUESTIONS = 4;
+
+/** @var array{categories_retried: int, fact_check_skips: int, preview_images_fetched: int, final_gate_quiz_attempts: int, final_gate_rejections: int, category_cap_fallbacks: int, final_gate_cap_fallbacks: int, category_emergency_fallbacks: int, answer_corrections: int} */
 $GLOBALS['quizGenStats'] = [
     'categories_retried'         => 0,
     'fact_check_skips'           => 0,
@@ -189,6 +196,7 @@ $GLOBALS['quizGenStats'] = [
     'category_cap_fallbacks'     => 0,
     'final_gate_cap_fallbacks'   => 0,
     'category_emergency_fallbacks' => 0,
+    'answer_corrections'         => 0,
 ];
 
 function resetQuizGenStats(): void {
@@ -201,6 +209,7 @@ function resetQuizGenStats(): void {
         'category_cap_fallbacks'     => 0,
         'final_gate_cap_fallbacks'   => 0,
         'category_emergency_fallbacks' => 0,
+        'answer_corrections'         => 0,
     ];
 }
 
@@ -273,6 +282,7 @@ function generateQuizQuestions(string $quizType, string $today, array $avoidQues
 
     $allQuestions = [];
     $usedTopicLabels = [];
+    $yearAnswerCount = 0;
     foreach (CATEGORY_TARGETS as $category => $count) {
         $tfCount = in_array($category, $tfHosts, true) ? 1 : 0;
         $mcCount = $count - $tfCount;
@@ -285,11 +295,15 @@ function generateQuizQuestions(string $quizType, string $today, array $avoidQues
         $avoidForThisCall = array_merge($avoidQuestions, array_column($allQuestions, 'question'));
 
         $categoryQuestions = generateCategoryQuestions(
-            $category, $mcCount, $tfCount, $headlinesByRegion, $today, $avoidForThisCall, $usedTopicLabels
+            $category, $mcCount, $tfCount, $headlinesByRegion, $today, $avoidForThisCall,
+            $usedTopicLabels, $yearAnswerCount
         );
         foreach ($categoryQuestions as $q) {
             foreach (duplicateTopicsInQuestion($q) as $topic) {
                 $usedTopicLabels[] = $topic;
+            }
+            if (questionIsYearAnswerQuestion($q)) {
+                $yearAnswerCount++;
             }
         }
         $usedTopicLabels = array_values(array_unique($usedTopicLabels));
@@ -362,7 +376,7 @@ function generateQuizQuestionsWithFinalGate(
  *
  * @return string[] Empty when all pass; otherwise human-readable failure lines.
  */
-function verifyFinalQuizGate(array $questions, string $quizType): array {
+function verifyFinalQuizGate(array &$questions, string $quizType): array {
     if (count($questions) !== 15) {
         return ['expected 15 questions, got ' . count($questions)];
     }
@@ -371,7 +385,7 @@ function verifyFinalQuizGate(array $questions, string $quizType): array {
     $headlinesByRegion = fetchHeadlines($quizType);
     $errors = [];
 
-    foreach ($questions as $q) {
+    foreach ($questions as &$q) {
         $pos = (int)($q['position'] ?? 0);
         $category = $q['category'] ?? '';
         $qErrors = factCheckOneQuestion($q, $pos, $category, $headlinesByRegion, '[final-gate]');
@@ -379,6 +393,7 @@ function verifyFinalQuizGate(array $questions, string $quizType): array {
             $errors[] = "Q$pos [$category] $err";
         }
     }
+    unset($q);
 
     if ($errors) {
         $errorList = implode("\n", array_map(fn($e) => '- ' . $e, $errors));
@@ -418,7 +433,7 @@ function pickTfHostCategories(): array {
  */
 function generateCategoryQuestions(
     string $category, int $mcCount, int $tfCount, array $headlinesByRegion, string $today, array $avoidQuestions,
-    array $usedTopicLabels = []
+    array $usedTopicLabels = [], int $yearAnswerCount = 0
 ): array {
     $total = $mcCount + $tfCount;
 
@@ -427,10 +442,14 @@ function generateCategoryQuestions(
         : "Produce exactly $total question(s), ALL in \"mc\" format (4 options each, exactly 1 correct). "
             . "CRITICAL: This category has zero true/false slots — every question MUST be format \"mc\". "
             . "Do NOT use format \"tf\". Do NOT start any question with \"True or False:\". "
-            . "Write which/what/when MC questions with four content-based answer options (years, names, places — not True/False).";
+            . "Write which/what/when MC questions with four content-based answer options (names, places, numbers, or years — not True/False).";
 
     $categoryGuidance = buildCategoryGuidance($category);
     $validatorRules = buildValidatorRulesBlock($category);
+    $yearDiversityRule = buildYearAnswerDiversityPromptRule($yearAnswerCount);
+    $difficultyRule = $category === 'General Knowledge'
+        ? 'Difficulty: genuinely challenging — average players should get some wrong. For academic GK (science, inventions, civics), avoid the single most famous fact. For pop culture (film, TV, music), well-known classics are fine. Prefer names, places, and numbers over a run of year-only answers when possible.'
+        : 'Difficulty: genuinely challenging — average players should get some wrong. Do NOT ask questions whose answer is the single most famous fact about a topic (e.g. capital cities, a country\'s national animal/bird, "the" founding treaty of a nation, the primary language of a country, a famous landmark\'s most basic fact). These are trivially guessable. Ask about specific details, numbers, names, places, or lesser-known angles instead — but only facts you are confident are real and verifiable from standard reference sources, not obscure one-off records you are unsure about.';
 
     $systemPrompt = <<<PROMPT
 You are writing question(s) for the "$category" section of a daily quiz for a New Zealand audience.
@@ -443,7 +462,11 @@ $formatInstruction
 
 For any "mc" question, include one answer option that sounds almost plausible but is subtly absurd on reflection — not obviously silly, the kind that makes you second-guess yourself. Aim for roughly 1 in 3 of the mc questions to have this.
 
-Difficulty: genuinely challenging — average players should get some wrong. Do NOT ask questions whose answer is the single most famous fact about a topic (e.g. capital cities, a country's national animal/bird, "the" founding treaty of a nation, the primary language of a country, a famous landmark's most basic fact). These are trivially guessable. Ask about specific details, dates, numbers, or lesser-known angles instead — but only facts you are confident are real and verifiable from standard reference sources, not obscure one-off records you are unsure about.
+$difficultyRule
+
+Answer-type variety: across the quiz, prefer a mix of names, places, and numbers — not a run of year-only MC answers. Year options are fine in moderation; do not default every "when" question to four calendar years if a name, place, or other fact works.
+
+$yearDiversityRule
 
 Never state the correct answer's exact wording anywhere in the question text itself. Also never use the adjective/demonym form when the answer is the country name (e.g. do NOT say "French" in the question if the correct answer is "France").
 
@@ -504,7 +527,11 @@ PROMPT;
         $headlineBlock = buildCategoryHeadlineBlock($category, $headlinesByRegion, $excludedHeadlines);
         $avoidBlock = buildQuestionAvoidBlock($avoidQuestions, $failedQuestions);
         $topicsBlock = buildUsedTopicsAvoidBlock($usedTopicLabels);
-        $attemptUserPrompt = "Today is $today.$headlineBlock$avoidBlock$topicsBlock\n\nGenerate the question(s) now.";
+        $yearBlock = buildYearAnswerAvoidBlock($yearAnswerCount);
+        $gkAngleBlock = $category === 'General Knowledge'
+            ? "\n\nToday's suggested pop culture angle for General Knowledge: " . pickGkPopCultureAngle() . '.'
+            : '';
+        $attemptUserPrompt = "Today is $today.$headlineBlock$avoidBlock$topicsBlock$yearBlock$gkAngleBlock\n\nGenerate the question(s) now.";
         if ($retryNote !== '') {
             $attemptUserPrompt .= "\n\nNOTE: $retryNote";
         }
@@ -550,11 +577,15 @@ PROMPT;
             $lastCandidate = $candidate;
         }
 
-        $errors = validateCategoryQuestions($candidate, $category, $mcCount, $tfCount, $usedTopicLabels);
+        $errors = validateCategoryQuestions(
+            $candidate, $category, $mcCount, $tfCount, $usedTopicLabels, $yearAnswerCount
+        );
         if (!$errors) {
-            $errors = factCheckCategoryQuestions(
-                $candidate['questions'] ?? [], $category, $headlinesByRegion
-            );
+            $batchQuestions = $candidate['questions'] ?? [];
+            $errors = factCheckCategoryQuestions($batchQuestions, $category, $headlinesByRegion);
+            if (!$errors && isset($candidate['questions'])) {
+                $candidate['questions'] = $batchQuestions;
+            }
         }
         if ($errors) {
             $errorCount = count($errors);
@@ -587,9 +618,18 @@ PROMPT;
             $retryNote = "Your previous attempt was rejected for the following reasons — fix ALL of them this time:\n$errorList";
             $retryNote .= "\n\nFORMAT REMINDER: This batch requires exactly $mcCount mc question(s)"
                 . ($tfCount > 0 ? " and exactly $tfCount tf question(s)." : " and zero tf questions — do NOT use format \"tf\".");
-            $retryNote .= buildRetryHintForErrors($errorList, $category, $mcCount, $tfCount, $attempt);
+            $retryNote .= buildRetryHintForErrors(
+                $errorList, $category, $mcCount, $tfCount, $attempt, $yearAnswerCount
+            );
             if (preg_match('/repeats topic/i', $errorList) && $usedTopicLabels) {
                 $retryNote .= buildUsedTopicsAvoidBlock($usedTopicLabels);
+            }
+            if (preg_match('/year-answer|calendar-year option/i', $errorList)) {
+                $retryNote .= buildYearAnswerAvoidBlock($yearAnswerCount);
+            }
+            if (preg_match('/pop culture question/i', $errorList)) {
+                $retryNote .= "\n\nPOP CULTURE FIX: Include at least one film, TV, music, literature, or video game question (global only — no NZ/AU). "
+                    . 'Example: "Which band released the album Abbey Road?" or "In which city is the sitcom Friends primarily set?"';
             }
             if (in_array($category, CURRENT_EVENTS_CATEGORIES, true)) {
                 $retryNote .= "\n\nUse a COMPLETELY DIFFERENT news story from the headlines above. "
@@ -724,6 +764,102 @@ function buildUsedTopicsAvoidBlock(array $usedTopicLabels): string {
 }
 
 /**
+ * Soft/hard year-answer guidance injected into the system prompt for this category call.
+ */
+function buildYearAnswerDiversityPromptRule(int $yearAnswerCount): string {
+    if ($yearAnswerCount >= MAX_YEAR_ANSWER_QUESTIONS) {
+        return 'YEAR CAP REACHED: Earlier categories already used '
+            . MAX_YEAR_ANSWER_QUESTIONS
+            . ' year-option questions. Do NOT use calendar years as answer options — ask about names, places, colours, nicknames, or other non-year facts.';
+    }
+    if ($yearAnswerCount >= 2) {
+        return "Year-answer budget: $yearAnswerCount of up to "
+            . MAX_YEAR_ANSWER_QUESTIONS
+            . ' year-option questions are already used in this quiz. Prefer non-year answers (names, places, numbers that are not years) unless a year question is clearly the best fit.';
+    }
+    return '';
+}
+
+/**
+ * User-prompt reminder when the quiz is approaching or at the year-answer cap.
+ */
+function buildYearAnswerAvoidBlock(int $yearAnswerCount): string {
+    if ($yearAnswerCount >= MAX_YEAR_ANSWER_QUESTIONS) {
+        return "\n\nYEAR ANSWER CAP: This quiz already has $yearAnswerCount questions with year options "
+            . '(max ' . MAX_YEAR_ANSWER_QUESTIONS . '). Do NOT produce any MC question whose options are calendar years.';
+    }
+    if ($yearAnswerCount >= 2) {
+        $remaining = MAX_YEAR_ANSWER_QUESTIONS - $yearAnswerCount;
+        return "\n\nYear-answer budget: $yearAnswerCount already used; at most $remaining more year-option question(s) allowed in this quiz. Prefer names/places when possible.";
+    }
+    return '';
+}
+
+/** Rotates pop culture sub-genre suggestions for General Knowledge variety. */
+function pickGkPopCultureAngle(): string {
+    $angles = ['film', 'television', 'music', 'literature', 'video games'];
+    return $angles[array_rand($angles)];
+}
+
+/**
+ * True when an MC question uses calendar years as its answer options
+ * (year stem, year marked correct, or mostly year options).
+ */
+function questionIsYearAnswerQuestion(array $q): bool {
+    if (($q['format'] ?? '') !== 'mc') {
+        return false;
+    }
+    if (questionHasYearStemPattern($q['question'] ?? '')) {
+        return true;
+    }
+    $yearOpts = 0;
+    foreach ($q['options'] ?? [] as $opt) {
+        $text = trim($opt['text'] ?? '');
+        if (!preg_match('/^\d{4}$/', $text)) {
+            continue;
+        }
+        $yearOpts++;
+        if (!empty($opt['correct'])) {
+            return true;
+        }
+    }
+    return $yearOpts >= 3;
+}
+
+function countYearAnswerQuestions(array $questions): int {
+    $n = 0;
+    foreach ($questions as $q) {
+        if (questionIsYearAnswerQuestion($q)) {
+            $n++;
+        }
+    }
+    return $n;
+}
+
+/** True when a question is film/TV/music/literature/video-game entertainment trivia. */
+function questionIsPopCulture(array $q): bool {
+    $combined = mb_strtolower(triviaRegionCombinedText($q));
+    if (preg_match('/\b(world cup|premiership|afl|nrl|super rugby|olympics|test match)\b/i', $combined)) {
+        return false;
+    }
+    $patterns = [
+        '/\b(film|films|movie|movies|cinema|oscar|academy award|emmy|grammy|tony award)\b/i',
+        '/\b(tv|television|sitcom|series|netflix|disney|marvel|pixar|animated)\b/i',
+        '/\b(album|song|songs|band|bands|musician|singer|rapper|composer|soundtrack)\b/i',
+        '/\b(novel|author|book series|harry potter|lord of the rings|shakespeare)\b/i',
+        '/\b(video game|playstation|xbox|nintendo|minecraft|pokemon)\b/i',
+        '/\b(actor|actress|director|celebrity|pop star|rock band)\b/i',
+        '/\b(star wars|beatles|rolling stones|taylor swift|beyonc|madonna|elvis)\b/i',
+    ];
+    foreach ($patterns as $pattern) {
+        if (preg_match($pattern, $combined)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * Heuristic: does this question appear to be based on this headline?
  */
 function questionMatchesHeadline(string $question, string $headline): bool {
@@ -804,7 +940,27 @@ GUIDE;
         case 'History':
             return 'Must be about the rest of the world — NOT New Zealand or Australia. Use standard names for treaties and events (e.g. "Treaty of Paris", "Congress of Vienna" — never invent names like "Treaty of Vienna"). No "first country to…" superlatives. TF statements must be plain factual claims, not joke premises. For year questions, put the year in the answer options, not in the question stem.';
         case 'General Knowledge':
-            return 'Must be about the rest of the world — NOT New Zealand or Australia. No Great Barrier Reef or other NZ/AU references. Use real, standard names for treaties, laws, and historical figures — do not invent obscure attributions. Distinguish declaration vs recognition vs annexation for independence questions (e.g. Philippines independence from the US was 1946, not 1898). No "last country in Europe to…" or "only country in Europe to…" superlatives — many rankings are disputed (e.g. Belarus still has the death penalty). For year questions, put the year in the answer options, not in the question stem.';
+            return <<<'GUIDE'
+Global general knowledge — NOT New Zealand or Australia (no NZ/AU cities, artists, or shows).
+
+Topic mix (3 questions per batch):
+- At least ONE must be pop culture / entertainment: film, television, music, literature, or video games from anywhere except NZ/AU.
+- The other two should cover different domains (science, inventions, geography facts, civics) — do not output three similar academic questions.
+
+Pop culture GOOD examples:
+- "Which band released the album Abbey Road?"
+- "In which city is the sitcom Friends primarily set?"
+- "True or False: The film Titanic won the Academy Award for Best Picture."
+
+Pop culture rules:
+- Use well-documented, classic entertainment facts you are confident about — obscure deep cuts fail fact-check.
+- No NZ or AU films, bands, or TV shows (those belong in regional trivia categories).
+- Famous entertainment facts are OK here (unlike treaty/history angles where the most famous fact is discouraged).
+
+Other GK rules:
+- No treaties duplicated from History, no superlatives, no disputed rankings.
+- For year questions, put the year in the answer options, not in the question stem.
+GUIDE;
         default:
             return '';
     }
@@ -834,20 +990,32 @@ RULES;
         $rules .= "\n- At least one Sports question must be domestic league trivia (AFL/NRL/Super Rugby colours, nickname, or home ground) with no World Cup or win-year angle.";
     }
 
+    if ($category === 'General Knowledge') {
+        $rules .= "\n- General Knowledge: at least one question must be pop culture (film, TV, music, literature, or video games) with no NZ/AU content.";
+        $rules .= "\n- General Knowledge: prefer classic, well-documented entertainment facts over obscure deep cuts.";
+    }
+
     return $rules;
 }
 
 /**
  * Targeted rewrite hints appended to retry notes based on which validators fired.
  */
-function buildRetryHintForErrors(string $errorList, string $category, int $mcCount, int $tfCount, int $attempt = 1): string {
+function buildRetryHintForErrors(
+    string $errorList, string $category, int $mcCount, int $tfCount, int $attempt = 1,
+    int $yearAnswerCount = 0
+): string {
     $hints = [];
+    $preferNonYear = $yearAnswerCount >= 2;
 
     if (preg_match('/phrased as true\/false|has \d+ mc question|has \d+ tf question/i', $errorList)) {
         if ($tfCount === 0) {
-            $hints[] = 'MC ONLY: Rewrite every question as format "mc" with four content options. '
-                . 'Do NOT use format "tf" or "True or False:" phrasing — this category has no true/false slot. '
-                . 'Example: "In which year did Victoria become a separate colony?" with year options.';
+            $hints[] = $preferNonYear
+                ? 'MC ONLY: Rewrite every question as format "mc" with four content options (prefer names/places, not years). '
+                    . 'Do NOT use format "tf" or "True or False:" phrasing — this category has no true/false slot.'
+                : 'MC ONLY: Rewrite every question as format "mc" with four content options. '
+                    . 'Do NOT use format "tf" or "True or False:" phrasing — this category has no true/false slot. '
+                    . 'Example: "In which year did Victoria become a separate colony?" with year options.';
         } else {
             $hints[] = "FORMAT SPLIT: Output exactly $mcCount mc question(s) (4 options each) "
                 . "and exactly $tfCount tf question(s) (True/False options). Check the format field on each question.";
@@ -856,12 +1024,29 @@ function buildRetryHintForErrors(string $errorList, string $category, int $mcCou
 
     if (preg_match('/superlative pattern/i', $errorList)) {
         if ($category === 'Sports') {
-            $hints[] = 'SPORTS REPHRASE REQUIRED: Remove the word "first" from every question. '
-                . 'Ask "In which year was [event] held in [place]?" or "Which team is known for [colours/nickname]?" '
-                . 'Example: instead of "first Rugby World Cup win", ask "In which year was the Rugby World Cup held in South Africa?"';
+            $hints[] = $preferNonYear
+                ? 'SPORTS REPHRASE REQUIRED: Remove the word "first" from every question. '
+                    . 'Prefer "Which team is known for [colours/nickname]?" or a home-ground question — avoid year options if possible.'
+                : 'SPORTS REPHRASE REQUIRED: Remove the word "first" from every question. '
+                    . 'Ask "In which year was [event] held in [place]?" or "Which team is known for [colours/nickname]?" '
+                    . 'Example: instead of "first Rugby World Cup win", ask "In which year was the Rugby World Cup held in South Africa?"';
+        } elseif ($category === 'General Knowledge') {
+            $hints[] = 'Remove all "first/most/longest/record" framing. Ask a plain factual MC question — pop culture, science, or invention angles all work.';
         } else {
-            $hints[] = 'Remove all "first/most/longest/record" framing. Ask a plain "In which year did…?" question with the year only in the options.';
+            $hints[] = $preferNonYear
+                ? 'Remove all "first/most/longest/record" framing. Ask a plain factual MC question with name/place options (not years).'
+                : 'Remove all "first/most/longest/record" framing. Ask a plain "In which year did…?" question with the year only in the options, or a name/place question.';
         }
+    }
+
+    if (preg_match('/year-answer cap|calendar-year option/i', $errorList)) {
+        $hints[] = 'YEAR VARIETY FIX: Too many questions in this quiz already use year options. '
+            . 'Rewrite with names, places, colours, nicknames, or other non-year facts — do not use four calendar years as options.';
+    }
+
+    if (preg_match('/pop culture question/i', $errorList)) {
+        $hints[] = 'POP CULTURE FIX: Include at least one film, TV, music, literature, or video game question (global only — no NZ/AU). '
+            . 'Example: "Which band released the album Abbey Road?" or "In which city is the sitcom Friends primarily set?"';
     }
 
     if (preg_match('/gives away|image_query/i', $errorList)) {
@@ -915,7 +1100,9 @@ function buildRetryHintForErrors(string $errorList, string $category, int $mcCou
     }
 
     if (preg_match('/last-in-region superlative|only-country-in-region/i', $errorList)) {
-        $hints[] = 'SUPERLATIVE FIX: Do not ask "last/only country in Europe/world to…" — ask a plain verifiable fact (e.g. a treaty, inventor, or city landmark).';
+        $hints[] = $category === 'General Knowledge'
+            ? 'SUPERLATIVE FIX: Do not ask "last/only country in Europe/world to…" — ask pop culture, science, or a plain verifiable fact instead.'
+            : 'SUPERLATIVE FIX: Do not ask "last/only country in Europe/world to…" — ask a plain verifiable fact (e.g. a treaty, inventor, or city landmark).';
     }
 
     if (preg_match('/\[fact-check distractor\]/i', $errorList)) {
@@ -953,7 +1140,8 @@ function buildRetryHintForErrors(string $errorList, string $category, int $mcCou
  * @return string[] Empty array if valid, otherwise a list of violation descriptions.
  */
 function validateCategoryQuestions(
-    ?array $candidate, string $category, int $mcCount, int $tfCount, array $usedTopicLabels = []
+    ?array $candidate, string $category, int $mcCount, int $tfCount, array $usedTopicLabels = [],
+    int $yearAnswerCount = 0
 ): array {
     $total = $mcCount + $tfCount;
     if (!isset($candidate['questions']) || count($candidate['questions']) !== $total) {
@@ -980,6 +1168,17 @@ function validateCategoryQuestions(
         $errors[] = "'$category' has $actualTf tf question(s) (expected $tfCount)";
     }
 
+    $batchYearCount = countYearAnswerQuestions($candidate['questions']);
+    if ($yearAnswerCount >= MAX_YEAR_ANSWER_QUESTIONS && $batchYearCount > 0) {
+        $errors[] = "year-answer cap: quiz already has $yearAnswerCount calendar-year option questions "
+            . '(max ' . MAX_YEAR_ANSWER_QUESTIONS . ") — this batch has $batchYearCount more; use names/places instead";
+    } elseif ($yearAnswerCount + $batchYearCount > MAX_YEAR_ANSWER_QUESTIONS) {
+        $allowed = max(0, MAX_YEAR_ANSWER_QUESTIONS - $yearAnswerCount);
+        $errors[] = "year-answer cap: batch would bring the quiz to "
+            . ($yearAnswerCount + $batchYearCount) . ' calendar-year option questions (max '
+            . MAX_YEAR_ANSWER_QUESTIONS . "); at most $allowed year-option question(s) allowed here";
+    }
+
     if ($category === 'Sports' && $total >= 2) {
         $hasDomestic = false;
         foreach ($candidate['questions'] as $q) {
@@ -990,6 +1189,19 @@ function validateCategoryQuestions(
         }
         if (!$hasDomestic) {
             $errors[] = "'Sports' batch must include at least one domestic league question (AFL/NRL/Super Rugby colours, nickname, or home ground) with no World Cup or win-year angle";
+        }
+    }
+
+    if ($category === 'General Knowledge' && $total >= 3) {
+        $hasPopCulture = false;
+        foreach ($candidate['questions'] as $q) {
+            if (questionIsPopCulture($q)) {
+                $hasPopCulture = true;
+                break;
+            }
+        }
+        if (!$hasPopCulture) {
+            $errors[] = "'General Knowledge' batch must include at least one pop culture question (film, TV, music, literature, or video games) with no NZ/AU content";
         }
     }
 
@@ -1494,8 +1706,9 @@ Rules:
 - For mc questions: reject only if snippets clearly support a different listed option over the marked one — not merely because the marked option is unmentioned.
 
 If valid is false, your issue must quote or paraphrase a specific contradictory fact from the snippets — not the absence of mention.
+If valid is false and snippets clearly support a different listed option instead, put that option's exact text in correct_option (empty string if valid is true or no listed option matches).
 
-Respond with strict JSON: {"valid": true/false, "issue": "short reason if invalid, else empty string"}
+Respond with strict JSON: {"valid": true/false, "issue": "short reason if invalid, else empty string", "correct_option": "exact text of a listed option snippets support if marked is wrong, else empty string"}
 PROMPT;
 
     if ($headlineGrounding) {
@@ -1508,30 +1721,33 @@ Headline mode (snippets are unrelated news headlines from the past day):
 - Do NOT reject because the marked answer paraphrases a headline with different wording (e.g. "Flooding" vs "wild weather", "Hutt Valley" vs "landslip near petrol station", "South Island" vs "South Islanders in clean-up after floods").
 - Do NOT reject because no headline names every detail in the answer (e.g. a suburb not spelled out in the headline).
 - Reject ONLY if no headline relates to the question topic at all, OR a headline clearly contradicts the marked answer.
+- If rejecting and another listed option matches the headline, put that option's exact text in correct_option.
 PROMPT;
     }
 
     $userPrompt = "Question: $question\nFormat: $format\nOptions: $optionsBlock\nMarked correct: \"$markedAnswer\"\n\nSearch snippets:\n$snippetBlock";
 
-    $result = callOpenAIJsonVerifier($systemPrompt, $userPrompt);
+    $result = callOpenAIJsonVerifier($systemPrompt, $userPrompt, true);
     if ($result === null) {
-        return ['valid' => true, 'issue' => ''];
+        return ['valid' => true, 'issue' => '', 'correct_option' => ''];
     }
 
     $valid = (bool)($result['valid'] ?? true);
     $issue = trim($result['issue'] ?? '');
+    $correctOption = trim((string)($result['correct_option'] ?? ''));
 
     if (!$valid && $issue !== '' && factCheckIssueIsSilenceOnly($issue)) {
-        return ['valid' => true, 'issue' => ''];
+        return ['valid' => true, 'issue' => '', 'correct_option' => ''];
     }
 
     if (!$valid && $issue !== '' && factCheckIssueIsSpecificityMismatch($issue, $markedAnswer, $snippets)) {
-        return ['valid' => true, 'issue' => ''];
+        return ['valid' => true, 'issue' => '', 'correct_option' => ''];
     }
 
     return [
         'valid' => $valid,
         'issue' => $issue,
+        'correct_option' => $correctOption,
     ];
 }
 
@@ -1586,7 +1802,17 @@ function factCheckIssueIsSpecificityMismatch(string $issue, string $markedAnswer
     return $matched >= max(1, (int)ceil(count($significant) * 0.5));
 }
 
-function callOpenAIJsonVerifier(string $systemPrompt, string $userPrompt): ?array {
+function callOpenAIJsonVerifier(string $systemPrompt, string $userPrompt, bool $requestCorrectOption = false): ?array {
+    $properties = [
+        'valid' => ['type' => 'boolean'],
+        'issue' => ['type' => 'string'],
+    ];
+    $required = ['valid', 'issue'];
+    if ($requestCorrectOption) {
+        $properties['correct_option'] = ['type' => 'string'];
+        $required[] = 'correct_option';
+    }
+
     $schema = [
         'type' => 'json_schema',
         'json_schema' => [
@@ -1594,11 +1820,8 @@ function callOpenAIJsonVerifier(string $systemPrompt, string $userPrompt): ?arra
             'strict' => true,
             'schema' => [
                 'type' => 'object',
-                'properties' => [
-                    'valid' => ['type' => 'boolean'],
-                    'issue' => ['type' => 'string'],
-                ],
-                'required'             => ['valid', 'issue'],
+                'properties' => $properties,
+                'required'             => $required,
                 'additionalProperties' => false,
             ],
         ],
@@ -1800,38 +2023,42 @@ Rules:
 - Do NOT reject merely because the marked answer lacks snippet mention.
 - Do NOT reject because both options seem plausible without explicit snippet text favoring the wrong one.
 - If valid is false, your issue must name the wrong option and cite the contradictory snippet fact.
+- If valid is false, put the supported option's exact text in correct_option (empty string if valid is true).
 
-Respond with strict JSON: {"valid": true/false, "issue": "short reason if invalid, else empty string"}
+Respond with strict JSON: {"valid": true/false, "issue": "short reason if invalid, else empty string", "correct_option": "exact text of the supported listed option if marked is wrong, else empty string"}
 PROMPT;
 
     $userPrompt = "Question: $question\nOptions: $optionsBlock\nMarked correct: \"$markedAnswer\"\n\nSearch snippets:\n$snippetBlock";
 
-    $result = callOpenAIJsonVerifier($systemPrompt, $userPrompt);
+    $result = callOpenAIJsonVerifier($systemPrompt, $userPrompt, true);
     if ($result === null) {
-        return ['valid' => true, 'issue' => ''];
+        return ['valid' => true, 'issue' => '', 'correct_option' => ''];
     }
 
     $valid = (bool)($result['valid'] ?? true);
     $issue = trim($result['issue'] ?? '');
+    $correctOption = trim((string)($result['correct_option'] ?? ''));
 
     if (!$valid && $issue !== '' && factCheckIssueIsSilenceOnly($issue)) {
-        return ['valid' => true, 'issue' => ''];
+        return ['valid' => true, 'issue' => '', 'correct_option' => ''];
     }
 
     return [
         'valid' => $valid,
         'issue' => $issue,
+        'correct_option' => $correctOption,
     ];
 }
 
 /**
  * Fact-checks a single question (premise, answer, distractor). Used during category
- * validation and the pre-publish final gate.
+ * validation and the pre-publish final gate. May auto-correct the marked answer
+ * when snippets support a different option already in the list.
  *
- * @return string[] Violation descriptions (empty if pass or skipped).
+ * @return string[] Violation descriptions (empty if pass, skipped, or corrected).
  */
 function factCheckOneQuestion(
-    array $q, int $qNum, string $category, array $headlinesByRegion, string $logLabel = ''
+    array &$q, int $qNum, string $category, array $headlinesByRegion, string $logLabel = ''
 ): array {
     if ($logLabel === '') {
         $logLabel = "[$category]";
@@ -1898,6 +2125,10 @@ function factCheckOneQuestion(
     );
 
     if (!$verdict['valid']) {
+        $correctOption = resolveFactCheckCorrectOption($verdict, $q['options']);
+        if ($correctOption !== '' && tryApplyFactCheckCorrection($q, $qNum, $category, $correctOption, $logLabel, $markedAnswer)) {
+            return [];
+        }
         $reason = $verdict['issue'] !== '' ? $verdict['issue'] : 'marked answer not supported by sources';
         $errors[] = "question $qNum [fact-check]: marked answer \"$markedAnswer\" rejected — $reason";
         return $errors;
@@ -1908,6 +2139,10 @@ function factCheckOneQuestion(
             $q['question'], $markedAnswer, $q['options'], $snippets
         );
         if (!$distractorVerdict['valid']) {
+            $correctOption = resolveFactCheckCorrectOption($distractorVerdict, $q['options']);
+            if ($correctOption !== '' && tryApplyFactCheckCorrection($q, $qNum, $category, $correctOption, $logLabel, $markedAnswer)) {
+                return [];
+            }
             $reason = $distractorVerdict['issue'] !== ''
                 ? $distractorVerdict['issue']
                 : 'a wrong option is better supported by sources than the marked answer';
@@ -1918,17 +2153,117 @@ function factCheckOneQuestion(
     return $errors;
 }
 
+/** Flip the marked-correct flag to an option already in the list. */
+function setQuestionCorrectOption(array &$q, string $correctText): bool {
+    $found = false;
+    foreach ($q['options'] as &$opt) {
+        $match = strcasecmp(trim($opt['text']), trim($correctText)) === 0;
+        $opt['correct'] = $match;
+        if ($match) {
+            $found = true;
+        }
+    }
+    unset($opt);
+    return $found;
+}
+
+/**
+ * Resolve which listed option snippets support from a verifier verdict or issue text.
+ */
+function resolveFactCheckCorrectOption(array $verdict, array $options): string {
+    $fromField = trim((string)($verdict['correct_option'] ?? ''));
+    if ($fromField !== '' && optionTextIsInList($fromField, $options)) {
+        return $fromField;
+    }
+    return extractSupportedOptionFromIssue($verdict['issue'] ?? '', $options) ?? '';
+}
+
+function optionTextIsInList(string $text, array $options): bool {
+    foreach ($options as $opt) {
+        if (strcasecmp(trim($opt['text']), trim($text)) === 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/** Match option text mentioned in a fact-check issue string. Prefers longest match. */
+function extractSupportedOptionFromIssue(string $issue, array $options): ?string {
+    if ($issue === '') {
+        return null;
+    }
+    $best = null;
+    $bestLen = 0;
+    foreach ($options as $opt) {
+        $text = trim($opt['text']);
+        if ($text === '') {
+            continue;
+        }
+        if (preg_match('/["\']' . preg_quote($text, '/') . '["\']/i', $issue)
+            || stripos($issue, $text) !== false) {
+            $len = mb_strlen($text);
+            if ($len > $bestLen) {
+                $best = $text;
+                $bestLen = $len;
+            }
+        }
+    }
+    return $best;
+}
+
+/** After flipping the marked answer, ensure question/image_query do not give it away. */
+function questionHasAnswerGiveawayViolations(array $q, string $category, int $qNum): array {
+    $errors = [];
+    $correctText = '';
+    foreach ($q['options'] as $opt) {
+        if ($opt['correct']) {
+            $correctText = $opt['text'];
+            break;
+        }
+    }
+    if ($correctText === '') {
+        return ['question $qNum has no marked correct answer after correction'];
+    }
+    if (($q['format'] ?? '') === 'mc' && answerGiveawayInText($correctText, $q['question'])) {
+        $errors[] = "question $qNum gives away its own answer — correct answer \"$correctText\" is hinted in the question text (\"{$q['question']}\")";
+    }
+    $imageQuery = trim($q['image_query'] ?? '');
+    if ($imageQuery !== '' && ($q['format'] ?? '') === 'mc' && answerGiveawayInText($correctText, $imageQuery)) {
+        $errors[] = "question $qNum image_query gives away the correct answer — \"$correctText\" is hinted in image_query \"$imageQuery\"";
+    }
+    return $errors;
+}
+
+function tryApplyFactCheckCorrection(
+    array &$q, int $qNum, string $category, string $correctOption, string $logLabel, string $oldMarked
+): bool {
+    if (strcasecmp(trim($correctOption), trim($oldMarked)) === 0) {
+        return false;
+    }
+    if (!setQuestionCorrectOption($q, $correctOption)) {
+        return false;
+    }
+    if (questionHasAnswerGiveawayViolations($q, $category, $qNum)) {
+        setQuestionCorrectOption($q, $oldMarked);
+        return false;
+    }
+    bumpQuizGenStat('answer_corrections');
+    logQuizGenInfo("$logLabel question $qNum [fact-check]: corrected marked answer from \"$oldMarked\" to \"$correctOption\"");
+    return true;
+}
+
 /**
  * @return string[] Violation descriptions (empty if all questions pass).
  */
-function factCheckCategoryQuestions(array $questions, string $category, array $headlinesByRegion): array {
+function factCheckCategoryQuestions(array &$questions, string $category, array $headlinesByRegion): array {
     $errors = [];
-    foreach ($questions as $i => $q) {
+    foreach ($questions as $i => &$q) {
         $errors = array_merge(
             $errors,
             factCheckOneQuestion($q, $i + 1, $category, $headlinesByRegion)
         );
     }
+    unset($q);
     return $errors;
 }
 

@@ -122,7 +122,7 @@ try {
 
     $stats = getQuizGenStats();
     echo "Generated $quizType quiz (ID $quizId) for $today — " . count($questions) . " questions, $imagesFetched images. "
-        . "Fact-check: {$stats['categories_retried']} categories retried, {$stats['fact_check_skips']} skipped. "
+        . "Fact-check: {$stats['categories_retried']} categories retried, {$stats['fact_check_skips']} skipped, {$stats['answer_corrections']} answer correction(s). "
         . "Final gate: {$stats['final_gate_quiz_attempts']} attempt(s), {$stats['final_gate_rejections']} rejection(s). "
         . "Fallbacks: {$stats['category_cap_fallbacks']} category cap, {$stats['category_emergency_fallbacks']} emergency, {$stats['final_gate_cap_fallbacks']} gate cap.\n";
 
