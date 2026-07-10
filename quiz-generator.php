@@ -284,6 +284,7 @@ function generateQuizQuestions(string $quizType, string $today, array $avoidQues
     $allQuestions = [];
     $usedTopicLabels = [];
     $yearAnswerCount = 0;
+    $quizTfFirstCorrectIsTrue = null;
     foreach (CATEGORY_TARGETS as $category => $count) {
         $tfCount = in_array($category, $tfHosts, true) ? 1 : 0;
         $mcCount = $count - $tfCount;
@@ -295,9 +296,16 @@ function generateQuizQuestions(string $quizType, string $today, array $avoidQues
         // reach for the same treaty.
         $avoidForThisCall = array_merge($avoidQuestions, array_column($allQuestions, 'question'));
 
+        $tfCorrectPreference = null;
+        if ($tfCount === 1) {
+            $tfCorrectPreference = $quizTfFirstCorrectIsTrue === null
+                ? (random_int(0, 1) === 0 ? 'true' : 'false')
+                : ($quizTfFirstCorrectIsTrue ? 'false' : 'true');
+        }
+
         $categoryQuestions = generateCategoryQuestions(
             $category, $mcCount, $tfCount, $headlinesByRegion, $today, $avoidForThisCall,
-            $usedTopicLabels, $yearAnswerCount
+            $usedTopicLabels, $yearAnswerCount, $tfCorrectPreference
         );
         foreach ($categoryQuestions as $q) {
             foreach (duplicateTopicsInQuestion($q) as $topic) {
@@ -305,6 +313,9 @@ function generateQuizQuestions(string $quizType, string $today, array $avoidQues
             }
             if (questionIsYearAnswerQuestion($q)) {
                 $yearAnswerCount++;
+            }
+            if ($quizTfFirstCorrectIsTrue === null && ($q['format'] ?? '') === 'tf') {
+                $quizTfFirstCorrectIsTrue = tfQuestionCorrectIsTrue($q);
             }
         }
         $usedTopicLabels = array_values(array_unique($usedTopicLabels));
@@ -348,12 +359,12 @@ function pickTfHostCategories(): array {
  */
 function generateCategoryQuestions(
     string $category, int $mcCount, int $tfCount, array $headlinesByRegion, string $today, array $avoidQuestions,
-    array $usedTopicLabels = [], int $yearAnswerCount = 0
+    array $usedTopicLabels = [], int $yearAnswerCount = 0, ?string $tfCorrectPreference = null
 ): array {
     $total = $mcCount + $tfCount;
 
     $formatInstruction = $tfCount > 0
-        ? "Produce exactly $total question(s): exactly $mcCount in \"mc\" format (4 options, exactly 1 correct) and exactly $tfCount in \"tf\" format (2 options, \"True\" and \"False\", exactly 1 correct — phrased as a single declarative true/false statement, ideally starting with \"True or False:\". NEVER phrase a tf question as a which/what/who/when/where question, since that can't be sensibly answered with just True or False)."
+        ? "Produce exactly $total question(s): exactly $mcCount in \"mc\" format (4 options, exactly 1 correct) and exactly $tfCount in \"tf\" format (2 options, \"True\" and \"False\", exactly 1 correct — phrased as a single declarative true/false statement, ideally starting with \"True or False:\". NEVER phrase a tf question as a which/what/who/when/where question, since that can't be sensibly answered with just True or False). Do NOT default to True as the correct answer every time — when False is correct, write a plausible but factually wrong statement (swap a number, date, place, name, or attribute; not something absurd)."
         : "Produce exactly $total question(s), ALL in \"mc\" format (4 options each, exactly 1 correct). "
             . "CRITICAL: This category has zero true/false slots — every question MUST be format \"mc\". "
             . "Do NOT use format \"tf\". Do NOT start any question with \"True or False:\". "
@@ -362,6 +373,7 @@ function generateCategoryQuestions(
     $categoryGuidance = buildCategoryGuidance($category);
     $validatorRules = buildValidatorRulesBlock($category);
     $yearDiversityRule = buildYearAnswerDiversityPromptRule($yearAnswerCount);
+    $tfCorrectRule = buildTfCorrectAnswerPromptRule($tfCorrectPreference);
     $difficultyRule = $category === 'General Knowledge'
         ? 'Difficulty: genuinely challenging — average players should get some wrong. For academic GK (science, inventions, civics), avoid the single most famous fact. For pop culture (film, TV, music), well-known classics are fine. Prefer names, places, and numbers over a run of year-only answers when possible.'
         : 'Difficulty: genuinely challenging — average players should get some wrong. Do NOT ask questions whose answer is the single most famous fact about a topic (e.g. capital cities, a country\'s national animal/bird, "the" founding treaty of a nation, the primary language of a country, a famous landmark\'s most basic fact). These are trivially guessable. Ask about specific details, numbers, names, places, or lesser-known angles instead — but only facts you are confident are real and verifiable from standard reference sources, not obscure one-off records you are unsure about.';
@@ -382,6 +394,8 @@ $difficultyRule
 Answer-type variety: across the quiz, prefer a mix of names, places, and numbers — not a run of year-only MC answers. Year options are fine in moderation; do not default every "when" question to four calendar years if a name, place, or other fact works.
 
 $yearDiversityRule
+
+$tfCorrectRule
 
 Never state the correct answer's exact wording anywhere in the question text itself. Also never use the adjective/demonym form when the answer is the country name (e.g. do NOT say "French" in the question if the correct answer is "France").
 
@@ -496,7 +510,7 @@ PROMPT;
         }
 
         $errors = validateCategoryQuestions(
-            $candidate, $category, $mcCount, $tfCount, $usedTopicLabels, $yearAnswerCount
+            $candidate, $category, $mcCount, $tfCount, $usedTopicLabels, $yearAnswerCount, $tfCorrectPreference
         );
         if (!$errors) {
             $batchQuestions = $candidate['questions'] ?? [];
@@ -735,6 +749,35 @@ function countPopCultureQuestions(array $questions): int {
     return $n;
 }
 
+/** True when the marked tf option is True; false when False is marked correct. */
+function tfQuestionCorrectIsTrue(array $q): bool {
+    foreach ($q['options'] ?? [] as $opt) {
+        if (!empty($opt['correct'])) {
+            return strcasecmp(trim($opt['text'] ?? ''), 'true') === 0;
+        }
+    }
+    return true;
+}
+
+/**
+ * Per-category tf guidance — first slot random, second slot opposite for quiz balance.
+ */
+function buildTfCorrectAnswerPromptRule(?string $tfCorrectPreference): string {
+    if ($tfCorrectPreference === 'false') {
+        return <<<'RULE'
+TRUE/FALSE REQUIREMENT: Your tf question MUST have False as the correct answer.
+Write a declarative statement that sounds believable but is factually wrong — swap a number, date, place, name, or attribute. Do NOT write something obviously absurd.
+RULE;
+    }
+    if ($tfCorrectPreference === 'true') {
+        return <<<'RULE'
+TRUE/FALSE REQUIREMENT: Your tf question MUST have True as the correct answer.
+Write a verifiably true factual statement.
+RULE;
+    }
+    return '';
+}
+
 /**
  * Soft/hard year-answer guidance injected into the system prompt for this category call.
  */
@@ -950,7 +993,7 @@ Automatic rejection rules (violating ANY of these fails the whole batch):
 - Superlatives: never use "first", "most", "longest", "record holder", "per capita", or "winning percentage in history". Especially in Sports — the word "first" alone causes rejection.
 - Answer giveaway: distinctive words from the correct option (character names, title words, demonyms) must not appear in the question text or image_query — not just the full phrase.
 - image_query: 2–4 words, no option text, no correct answer hint.
-- tf format: a declarative "True or False: …" statement — never a which/what/who/when question.
+- tf format: a declarative "True or False: …" statement — never a which/what/who/when question. Vary the correct answer — when False is correct, write a plausible but factually wrong claim (wrong number, date, place, or attribute).
 - Geography / History / General Knowledge: zero NZ or Australia content (no cities, landmarks, or teams from NZ/AU).
 - Clichés: no "capital of [country]", no "national animal/bird/symbol", no "longest river in the world", no Sydney Opera House.
 - Evergreen categories: no "recently", "this year", "last year", or the current/previous calendar year in the question.
@@ -1030,6 +1073,11 @@ function buildRetryHintForErrors(
             $hints[] = 'POP CULTURE FIX: Include exactly one film, TV, music, literature, or video game question (global only — no NZ/AU). '
                 . 'The other two questions must NOT be entertainment.';
         }
+    }
+
+    if (preg_match('/must have False as correct|must have True as correct/i', $errorList)) {
+        $hints[] = 'TRUE/FALSE FIX: When False must be correct, write a believable but wrong fact (swap a number, date, place, or name). '
+            . 'When True must be correct, write a verifiably true statement. Mark the matching option as correct.';
     }
 
     if (preg_match('/gives away|image_query/i', $errorList)) {
@@ -1124,7 +1172,7 @@ function buildRetryHintForErrors(
  */
 function validateCategoryQuestions(
     ?array $candidate, string $category, int $mcCount, int $tfCount, array $usedTopicLabels = [],
-    int $yearAnswerCount = 0
+    int $yearAnswerCount = 0, ?string $tfCorrectPreference = null
 ): array {
     $total = $mcCount + $tfCount;
     if (!isset($candidate['questions']) || count($candidate['questions']) !== $total) {
@@ -1149,6 +1197,21 @@ function validateCategoryQuestions(
     }
     if ($actualTf !== $tfCount) {
         $errors[] = "'$category' has $actualTf tf question(s) (expected $tfCount)";
+    }
+
+    if ($tfCount > 0 && $tfCorrectPreference !== null) {
+        foreach ($candidate['questions'] as $i => $q) {
+            if (($q['format'] ?? '') !== 'tf') {
+                continue;
+            }
+            $qNum = $i + 1;
+            $correctIsTrue = tfQuestionCorrectIsTrue($q);
+            if ($tfCorrectPreference === 'false' && $correctIsTrue) {
+                $errors[] = "question $qNum tf must have False as the correct answer — rewrite as a plausible but factually false statement (wrong number, date, place, or attribute)";
+            } elseif ($tfCorrectPreference === 'true' && !$correctIsTrue) {
+                $errors[] = "question $qNum tf must have True as the correct answer — rewrite as a verifiably true factual statement";
+            }
+        }
     }
 
     $batchYearCount = countYearAnswerQuestions($candidate['questions']);
