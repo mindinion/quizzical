@@ -125,6 +125,18 @@ const DUPLICATE_QUIZ_TOPIC_PATTERNS = [
     '/\btreaty of waitangi\b/i'     => 'Treaty of Waitangi',
     '/\bberlin wall\b/i'            => 'Berlin Wall',
     '/\bgreat barrier reef\b/i'     => 'Great Barrier Reef',
+    '/\bharry potter\b/i'           => 'Harry Potter',
+    '/\bhogwarts\b/i'               => 'Harry Potter',
+    '/\bfinding nemo\b/i'           => 'Finding Nemo',
+    '/\bfinding dory\b/i'           => 'Finding Dory',
+];
+
+/** Lazy model defaults — rejected in General Knowledge pop culture slots. */
+const GK_OVERUSED_POP_CULTURE_PATTERNS = [
+    '/\bharry potter\b/i'   => 'Harry Potter',
+    '/\bhogwarts\b/i'       => 'Harry Potter',
+    '/\bfinding nemo\b/i'   => 'Finding Nemo',
+    '/\bfinding dory\b/i'   => 'Finding Dory',
 ];
 
 /** Country/place answer => adjective/demonym forms that give the answer away in question text or image_query. */
@@ -432,7 +444,10 @@ PROMPT;
         $topicsBlock = buildUsedTopicsAvoidBlock($usedTopicLabels);
         $yearBlock = buildYearAnswerAvoidBlock($yearAnswerCount);
         $gkAngleBlock = $category === 'General Knowledge'
-            ? "\n\nToday's suggested pop culture angle for General Knowledge: " . pickGkPopCultureAngle() . '.'
+            ? "\n\nPop culture (exactly ONE of your three questions): suggested angle — "
+                . pickGkPopCultureAngle()
+                . '. The other two questions must be science, inventions, geography facts, or civics — not film/TV/music/games.'
+                . buildGkFranchiseAvoidBlock($avoidQuestions)
             : '';
         $attemptUserPrompt = "Today is $today.$headlineBlock$avoidBlock$topicsBlock$yearBlock$gkAngleBlock\n\nGenerate the question(s) now.";
         if ($retryNote !== '') {
@@ -530,9 +545,17 @@ PROMPT;
             if (preg_match('/year-answer|calendar-year option/i', $errorList)) {
                 $retryNote .= buildYearAnswerAvoidBlock($yearAnswerCount);
             }
-            if (preg_match('/pop culture question/i', $errorList)) {
-                $retryNote .= "\n\nPOP CULTURE FIX: Include at least one film, TV, music, literature, or video game question (global only — no NZ/AU). "
-                    . 'Example: "Which band released the album Abbey Road?" or "In which city is the sitcom Friends primarily set?"';
+            if (preg_match('/pop culture question|exactly one pop culture|overused pop culture topic/i', $errorList)) {
+                if (preg_match('/exactly one pop culture|got \d+\./i', $errorList)) {
+                    $retryNote .= "\n\nPOP CULTURE MIX FIX: General Knowledge needs EXACTLY ONE film/TV/music/literature/game question. "
+                        . 'The other two must be science, inventions, geography facts, or civics — not entertainment.';
+                } elseif (preg_match('/overused pop culture topic/i', $errorList)) {
+                    $retryNote .= "\n\nOVERUSED FRANCHISE FIX: Do not use Harry Potter, Finding Nemo, or Finding Dory. "
+                        . 'Pick a different entertainment topic (e.g. Abbey Road, Friends, classic cinema outside Disney/Pixar).';
+                } else {
+                    $retryNote .= "\n\nPOP CULTURE FIX: Include exactly one film, TV, music, literature, or video game question (global only — no NZ/AU). "
+                        . 'The other two questions must NOT be entertainment.';
+                }
             }
             if (in_array($category, CURRENT_EVENTS_CATEGORIES, true)) {
                 $retryNote .= "\n\nUse a COMPLETELY DIFFERENT news story from the headlines above. "
@@ -664,6 +687,52 @@ function buildUsedTopicsAvoidBlock(array $usedTopicLabels): string {
     }
     $list = implode("\n", array_map(fn($t) => '- ' . $t, $topics));
     return "\n\nTopics already used elsewhere in THIS quiz — do NOT mention these in any question or option:\n$list";
+}
+
+/**
+ * Warns the model away from franchises that dominate test runs and recent quizzes.
+ */
+function buildGkFranchiseAvoidBlock(array $avoidQuestions): string {
+    $labels = ['Harry Potter', 'Finding Nemo'];
+    foreach ($avoidQuestions as $q) {
+        foreach (gkOverusedPopCultureLabelsInText($q) as $label) {
+            $labels[] = $label;
+        }
+    }
+    $labels = array_values(array_unique($labels));
+    $list = implode(', ', $labels);
+    return "\n\nDo NOT use these overused entertainment topics: $list.";
+}
+
+/** @return string[] */
+function gkOverusedPopCultureLabelsInText(string $text): array {
+    $found = [];
+    foreach (GK_OVERUSED_POP_CULTURE_PATTERNS as $pattern => $label) {
+        if (preg_match($pattern, $text)) {
+            $found[] = $label;
+        }
+    }
+    return array_values(array_unique($found));
+}
+
+function questionUsesOverusedGkPopCulture(array $q): ?string {
+    $text = triviaRegionCombinedText($q);
+    foreach (GK_OVERUSED_POP_CULTURE_PATTERNS as $pattern => $label) {
+        if (preg_match($pattern, $text)) {
+            return $label;
+        }
+    }
+    return null;
+}
+
+function countPopCultureQuestions(array $questions): int {
+    $n = 0;
+    foreach ($questions as $q) {
+        if (questionIsPopCulture($q)) {
+            $n++;
+        }
+    }
+    return $n;
 }
 
 /**
@@ -847,8 +916,8 @@ GUIDE;
 Global general knowledge — NOT New Zealand or Australia (no NZ/AU cities, artists, or shows).
 
 Topic mix (3 questions per batch):
-- At least ONE must be pop culture / entertainment: film, television, music, literature, or video games from anywhere except NZ/AU.
-- The other two should cover different domains (science, inventions, geography facts, civics) — do not output three similar academic questions.
+- Exactly ONE must be pop culture / entertainment: film, television, music, literature, or video games from anywhere except NZ/AU.
+- The other TWO must be non-entertainment: science, inventions, geography facts, or civics — not film/TV/music/literature/games.
 
 Pop culture GOOD examples:
 - "Which band released the album Abbey Road?"
@@ -858,6 +927,7 @@ Pop culture GOOD examples:
 Pop culture rules:
 - Use well-documented, classic entertainment facts you are confident about — obscure deep cuts fail fact-check.
 - No NZ or AU films, bands, or TV shows (those belong in regional trivia categories).
+- Do NOT use Harry Potter, Finding Nemo, Finding Dory, or Hogwarts — these are overused defaults; pick a different franchise or artist.
 - Famous entertainment facts are OK here (unlike treaty/history angles where the most famous fact is discouraged).
 - When the correct answer is a film/book/album title, do NOT name characters, bands, or distinctive title words in the question stem (e.g. do not say "Harry" if the answer is Harry Potter and the Philosopher's Stone).
 
@@ -895,7 +965,8 @@ RULES;
     }
 
     if ($category === 'General Knowledge') {
-        $rules .= "\n- General Knowledge: at least one question must be pop culture (film, TV, music, literature, or video games) with no NZ/AU content.";
+        $rules .= "\n- General Knowledge: exactly ONE question must be pop culture (film, TV, music, literature, or video games) with no NZ/AU content; the other two must NOT be entertainment.";
+        $rules .= "\n- General Knowledge: do NOT use Harry Potter, Finding Nemo, Finding Dory, or Hogwarts.";
         $rules .= "\n- General Knowledge: prefer classic, well-documented entertainment facts over obscure deep cuts.";
     }
 
@@ -948,9 +1019,17 @@ function buildRetryHintForErrors(
             . 'Rewrite with names, places, colours, nicknames, or other non-year facts — do not use four calendar years as options.';
     }
 
-    if (preg_match('/pop culture question/i', $errorList)) {
-        $hints[] = 'POP CULTURE FIX: Include at least one film, TV, music, literature, or video game question (global only — no NZ/AU). '
-            . 'Example: "Which band released the album Abbey Road?" or "In which city is the sitcom Friends primarily set?"';
+    if (preg_match('/pop culture question|exactly one pop culture|overused pop culture topic/i', $errorList)) {
+        if (preg_match('/exactly one pop culture|got \d+\./i', $errorList)) {
+            $hints[] = 'POP CULTURE MIX FIX: General Knowledge needs EXACTLY ONE film/TV/music/literature/game question. '
+                . 'The other two must be science, inventions, geography, or civics — not entertainment.';
+        } elseif (preg_match('/overused pop culture topic/i', $errorList)) {
+            $hints[] = 'OVERUSED FRANCHISE FIX: Do not use Harry Potter, Finding Nemo, or Finding Dory — '
+                . 'pick a different entertainment topic (e.g. Abbey Road, Friends, classic cinema outside Disney/Pixar).';
+        } else {
+            $hints[] = 'POP CULTURE FIX: Include exactly one film, TV, music, literature, or video game question (global only — no NZ/AU). '
+                . 'The other two questions must NOT be entertainment.';
+        }
     }
 
     if (preg_match('/gives away|image_query/i', $errorList)) {
@@ -1097,15 +1176,12 @@ function validateCategoryQuestions(
     }
 
     if ($category === 'General Knowledge' && $total >= 3) {
-        $hasPopCulture = false;
-        foreach ($candidate['questions'] as $q) {
-            if (questionIsPopCulture($q)) {
-                $hasPopCulture = true;
-                break;
-            }
-        }
-        if (!$hasPopCulture) {
-            $errors[] = "'General Knowledge' batch must include at least one pop culture question (film, TV, music, literature, or video games) with no NZ/AU content";
+        $popCount = countPopCultureQuestions($candidate['questions']);
+        if ($popCount === 0) {
+            $errors[] = "'General Knowledge' batch must include exactly one pop culture question (film, TV, music, literature, or video games) with no NZ/AU content";
+        } elseif ($popCount > 1) {
+            $errors[] = "'General Knowledge' batch must have exactly one pop culture question — got $popCount. "
+                . 'The other two must be science, inventions, geography facts, or civics (not film/TV/music/games).';
         }
     }
 
@@ -1163,6 +1239,13 @@ function validateOneQuestion(array $q, string $category, int $qNum, array $usedT
     foreach (duplicateTopicsInQuestion($q) as $topic) {
         if (in_array($topic, $usedTopicLabels, true)) {
             $errors[] = "question $qNum repeats topic \"$topic\" already used elsewhere in this quiz";
+        }
+    }
+
+    if ($category === 'General Knowledge') {
+        $overused = questionUsesOverusedGkPopCulture($q);
+        if ($overused !== null) {
+            $errors[] = "question $qNum uses overused pop culture topic ($overused) — pick a different film, show, band, or book";
         }
     }
 
