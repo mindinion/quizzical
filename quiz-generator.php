@@ -450,6 +450,8 @@ PROMPT;
     $lastCandidate = null;
     $bestCandidate = null;
     $bestErrorCount = PHP_INT_MAX;
+    $bestTfPreferenceCandidate = null;
+    $bestTfPreferenceErrorCount = PHP_INT_MAX;
     $maxAttempts = maxAttemptsForCategory($category);
 
     for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
@@ -521,9 +523,17 @@ PROMPT;
         }
         if ($errors) {
             $errorCount = count($errors);
-            if (is_array($candidate) && isset($candidate['questions']) && $errorCount < $bestErrorCount) {
-                $bestErrorCount = $errorCount;
-                $bestCandidate = $candidate;
+            if (is_array($candidate) && isset($candidate['questions'])) {
+                if ($errorCount < $bestErrorCount) {
+                    $bestErrorCount = $errorCount;
+                    $bestCandidate = $candidate;
+                }
+                if ($tfCount > 0 && $tfCorrectPreference !== null && !errorsIncludeTfPreferenceViolation($errors)) {
+                    if ($errorCount < $bestTfPreferenceErrorCount) {
+                        $bestTfPreferenceErrorCount = $errorCount;
+                        $bestTfPreferenceCandidate = $candidate;
+                    }
+                }
             }
 
             $errorList = implode("\n", array_map(fn($e) => '- ' . $e, $errors));
@@ -591,14 +601,23 @@ PROMPT;
     }
 
     if ($result === null) {
-        $fallbackCandidate = ($bestCandidate !== null && $bestErrorCount < PHP_INT_MAX)
-            ? $bestCandidate
-            : $lastCandidate;
+        if ($bestTfPreferenceCandidate !== null && $bestTfPreferenceErrorCount < PHP_INT_MAX) {
+            $fallbackCandidate = $bestTfPreferenceCandidate;
+            $pickLabel = 'best (tf preference met)';
+            $pickErrorCount = $bestTfPreferenceErrorCount;
+        } elseif ($bestCandidate !== null && $bestErrorCount < PHP_INT_MAX) {
+            $fallbackCandidate = $bestCandidate;
+            $pickLabel = 'best';
+            $pickErrorCount = $bestErrorCount;
+        } else {
+            $fallbackCandidate = $lastCandidate;
+            $pickLabel = 'last';
+            $pickErrorCount = null;
+        }
         if ($fallbackCandidate !== null && isset($fallbackCandidate['questions']) && is_array($fallbackCandidate['questions'])) {
-            $pickLabel = ($fallbackCandidate === $bestCandidate && $bestCandidate !== null) ? 'best' : 'last';
             logQuizGenError(
                 "[$category] All $maxAttempts attempts failed validation — accepting $pickLabel attempt"
-                . ($pickLabel === 'best' ? " ($bestErrorCount violation(s))" : '')
+                . ($pickErrorCount !== null ? " ($pickErrorCount violation(s))" : '')
                 . ' (best effort).'
             );
             bumpQuizGenStat('category_cap_fallbacks');
@@ -776,6 +795,16 @@ Write a verifiably true factual statement.
 RULE;
     }
     return '';
+}
+
+/** @param string[] $errors */
+function errorsIncludeTfPreferenceViolation(array $errors): bool {
+    foreach ($errors as $error) {
+        if (preg_match('/must have (False|True) as the correct answer/i', $error)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
