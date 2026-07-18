@@ -49,10 +49,11 @@ $stmt->close();
 // Last 3 days of quizzes (both slots) so we don't repeat a topic that's still
 // fresh even after it's rotated out of the headline window
 $recentQuestions = fetchRecentQuestions($conn, $today, 5);
+$recentTopicLabels = fetchRecentTopicLabels($conn, $today);
 
 cleanupQuizImages($conn);
 
-$questions = generateQuizQuestions($type, $today, $recentQuestions);
+$questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels);
 
 $stats = getQuizGenStats();
 if (($stats['category_cap_fallbacks'] ?? 0) > 0

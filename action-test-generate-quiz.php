@@ -31,6 +31,7 @@ $nztz  = new DateTimeZone('Pacific/Auckland');
 $today = (new DateTime('now', $nztz))->format('Y-m-d');
 
 $recentQuestions = fetchRecentQuestions($conn, $today, 5);
+$recentTopicLabels = fetchRecentTopicLabels($conn, $today);
 
 function emitTestQuizSse(array $payload): void {
     echo 'data: ' . json_encode($payload, JSON_UNESCAPED_UNICODE) . "\n\n";
@@ -57,7 +58,7 @@ if ($stream) {
     emitTestQuizSse(['type' => 'status', 'message' => 'Starting quiz generation…']);
 
     try {
-        $questions = generateQuizQuestions($type, $today, $recentQuestions);
+        $questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels);
         emitTestQuizSse(['type' => 'status', 'message' => 'Fetching preview images…']);
         $questions = attachPreviewImages($questions);
         $log = stopQuizGenLogCapture();
@@ -91,7 +92,7 @@ header('Content-Type: application/json');
 
 startQuizGenLogCapture();
 try {
-    $questions = generateQuizQuestions($type, $today, $recentQuestions);
+    $questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels);
     $questions = attachPreviewImages($questions);
     $log = stopQuizGenLogCapture();
     echo json_encode([

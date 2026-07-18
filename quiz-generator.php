@@ -118,18 +118,36 @@ const SUPERLATIVE_QUESTION_PATTERNS = [
         => 'only-country-in-region superlative — ask a plain verifiable fact instead',
 ];
 
-/** Topic labels already used elsewhere in the same quiz — reject repeats like Versailles in History and GK. */
+/**
+ * Topic labels tracked within a quiz AND across recent quizzes (see fetchRecentTopicLabels).
+ * Add a line whenever a recurring cliché gets spotted in live quizzes.
+ */
 const DUPLICATE_QUIZ_TOPIC_PATTERNS = [
     '/\btreaty of versailles\b/i'  => 'Treaty of Versailles',
-    '/\bmagna carta\b/i'            => 'Magna Carta',
+    '/\btreaty of paris\b/i'        => 'Treaty of Paris',
     '/\btreaty of waitangi\b/i'     => 'Treaty of Waitangi',
+    '/\bkyoto protocol\b/i'         => 'Kyoto Protocol',
+    '/\btreaty of\b/i'              => 'Historical treaty',
+    '/\bmagna carta\b/i'            => 'Magna Carta',
     '/\bberlin wall\b/i'            => 'Berlin Wall',
     '/\bgreat barrier reef\b/i'     => 'Great Barrier Reef',
     '/\bharry potter\b/i'           => 'Harry Potter',
     '/\bhogwarts\b/i'               => 'Harry Potter',
     '/\bfinding nemo\b/i'           => 'Finding Nemo',
     '/\bfinding dory\b/i'           => 'Finding Dory',
+    '/\bsugar glider\b/i'           => 'Sugar glider',
+    '/\bgreenhouse (effect|gas(?:es)?)\b/i' => 'Greenhouse effect',
+    '/\bpetra\b/i'                  => 'Petra',
+    '/\b(in which year|which year).{0,80}\brugby world cup\b/i' => 'Rugby World Cup host year',
+    '/\brugby world cup\b.{0,60}\bheld in\b/i'                 => 'Rugby World Cup host year',
+    '/\b(in which year|which year).{0,80}\b(cricket )?world cup\b.{0,40}\bheld in\b/i' => 'World Cup host year',
+    '/\b(which|what).{0,40}\b(team|club|side|franchise).{0,60}\b(colou?rs?|stripes|jersey)\b/i' => 'Team colours',
+    '/\b(which|what).{0,40}\b(colou?rs?|stripes).{0,40}\b(team|club|AFL|NRL)\b/i'              => 'Team colours',
+    '/\bknown for.{0,40}\b(black and white|red and|blue and|colou?rs?|stripes)\b/i'             => 'Team colours',
 ];
+
+/** Days of quiz history to scan for recurring topic labels (evergreen clichés outlast exact question text). */
+const RECENT_TOPIC_LOOKBACK_DAYS = 14;
 
 /** Lazy model defaults — rejected in General Knowledge pop culture slots. */
 const GK_OVERUSED_POP_CULTURE_PATTERNS = [
@@ -275,15 +293,19 @@ function appendQuizGenLogCapture(string $level, string $msg): void {
  * @param string $quizType 'morning' or 'afternoon' — controls the headline recency window.
  * @param string $today Y-m-d date string used in the prompt.
  * @param string[] $avoidQuestions Question texts to avoid repeating (e.g. recent days' quizzes).
+ * @param string[] $recentTopicLabels Topic labels from recent quizzes (treaties, Petra, etc.).
  */
-function generateQuizQuestions(string $quizType, string $today, array $avoidQuestions = []): array {
+function generateQuizQuestions(string $quizType, string $today, array $avoidQuestions = [], array $recentTopicLabels = []): array {
     resetQuizGenStats();
     logQuizGenInfo('Fetching headlines…');
     $headlinesByRegion = fetchHeadlines($quizType);
     $tfHosts = pickTfHostCategories();
 
     $allQuestions = [];
-    $usedTopicLabels = [];
+    $usedTopicLabels = array_values(array_unique(array_filter($recentTopicLabels)));
+    if ($usedTopicLabels) {
+        logQuizGenInfo('Avoiding recent topics: ' . implode(', ', $usedTopicLabels));
+    }
     $yearAnswerCount = 0;
     $quizTfFirstCorrectIsTrue = null;
     foreach (CATEGORY_TARGETS as $category => $count) {
@@ -468,7 +490,12 @@ PROMPT;
                 . '. The other two questions must be science, inventions, geography facts, or civics — not film/TV/music/games.'
                 . buildGkFranchiseAvoidBlock($avoidQuestions)
             : '';
-        $attemptUserPrompt = "Today is $today.$headlineBlock$avoidBlock$topicsBlock$yearBlock$gkAngleBlock\n\nGenerate the question(s) now.";
+        $sportsAngleBlock = $category === 'Sports'
+            ? "\n\nDomestic league question (required): suggested angle — "
+                . pickSportsDomesticAngle($usedTopicLabels)
+                . '. Prefer this angle over team-colour questions when colours have appeared in recent quizzes.'
+            : '';
+        $attemptUserPrompt = "Today is $today.$headlineBlock$avoidBlock$topicsBlock$yearBlock$gkAngleBlock$sportsAngleBlock\n\nGenerate the question(s) now.";
         if ($retryNote !== '') {
             $attemptUserPrompt .= "\n\nNOTE: $retryNote";
         }
@@ -714,7 +741,7 @@ function buildQuestionAvoidBlock(array $avoidQuestions, array $failedQuestions =
 }
 
 /**
- * Topics (treaties, landmarks, etc.) already used in earlier categories this quiz.
+ * Topics (treaties, landmarks, etc.) already used in recent quizzes or earlier categories this run.
  */
 function buildUsedTopicsAvoidBlock(array $usedTopicLabels): string {
     $topics = array_values(array_unique(array_filter($usedTopicLabels)));
@@ -722,7 +749,7 @@ function buildUsedTopicsAvoidBlock(array $usedTopicLabels): string {
         return '';
     }
     $list = implode("\n", array_map(fn($t) => '- ' . $t, $topics));
-    return "\n\nTopics already used elsewhere in THIS quiz — do NOT mention these in any question or option:\n$list";
+    return "\n\nTopics already used in recent quizzes or elsewhere in THIS quiz — do NOT mention these in any question or option:\n$list";
 }
 
 /**
@@ -848,6 +875,19 @@ function pickGkPopCultureAngle(): string {
     return $angles[array_rand($angles)];
 }
 
+/** Rotates domestic Sports angles — avoids defaulting to team-colour questions every quiz. */
+function pickSportsDomesticAngle(array $usedTopicLabels = []): string {
+    $angles = [
+        'home ground or stadium name',
+        'team nickname or mascot',
+        'city or region the team represents',
+    ];
+    if (!in_array('Team colours', $usedTopicLabels, true)) {
+        $angles[] = 'team colours or playing strip';
+    }
+    return $angles[array_rand($angles)];
+}
+
 /**
  * True when an MC question uses calendar years as its answer options
  * (year stem, year marked correct, or mostly year options).
@@ -957,7 +997,7 @@ function buildCategoryGuidance(string $category): string {
         case 'NZ Trivia':
             return 'General New Zealand trivia — established, verifiable facts that would be true regardless of today\'s news. Do NOT base these on current headlines, even indirectly. Must NOT be about Australia (no Great Barrier Reef, kangaroos, Australian cities, or other AU-only topics). Use widely documented facts only — NOT obscure micro-records (e.g. "first descent" of a specific river, one-off local sporting feats). For year questions, put the year in the answer options, not in the question stem.';
         case 'Australia Trivia':
-            return 'General Australia trivia — established, verifiable facts that would be true regardless of today\'s news. Do NOT base these on current headlines, even indirectly. Must NOT be about New Zealand (no All Blacks, Māori topics, NZ cities, or other NZ-only topics). Avoid the Sydney Opera House, Australia Day, and "national animal/bird" angles. Do NOT name a city or holiday in the question if it is the correct answer (e.g. do not mention "Sydney Festival" if Sydney is an option). For year questions, put the year in the answer options, not in the question stem.';
+            return 'General Australia trivia — established, verifiable facts that would be true regardless of today\'s news. Do NOT base these on current headlines, even indirectly. Must NOT be about New Zealand (no All Blacks, Māori topics, NZ cities, or other NZ-only topics). Avoid the Sydney Opera House, Australia Day, and "national animal/bird" angles — sugar glider questions are overused; pick a different Australian wildlife or culture angle unless sugar glider is not in the recent-topics block. Do NOT name a city or holiday in the question if it is the correct answer (e.g. do not mention "Sydney Festival" if Sydney is an option). For year questions, put the year in the answer options, not in the question stem.';
         case 'Sports':
             return <<<'GUIDE'
 General sports trivia (NZ/Australian teams and leagues are fine) — established, verifiable facts, NOT tied to today's news.
@@ -966,12 +1006,13 @@ Sports has strict automatic rejection rules — follow exactly:
 - The word "first" must NEVER appear in any question (not "first win", "first time", "first World Cup", "first ever", "first to qualify"). Rephrase as a plain event/year question with no "first".
 - For year MC questions: describe the event in the question; put years ONLY in the four options. Do not embed a year in the question stem.
 - No all-time records (most premierships, longest streak, winning percentage, per capita).
-- At least ONE of your two questions MUST be domestic league trivia with NO World Cup, Olympics host, or championship win-year angle:
-  GOOD: "Which AFL club is known for black and white vertical stripes?"
+- At least ONE of your two questions MUST be domestic league trivia with NO World Cup, Olympics host, or championship win-year angle. Rotate angles — do NOT default to team-colour questions every time:
   GOOD: "What is the home ground of the Canterbury Crusaders?"
   GOOD: "Which NRL team plays home games at Suncorp Stadium?"
-- The other question MAY ask "In which year was [tournament] held in [place]?" ONLY if you are certain the place and year match (verify before answering).
-  GOOD: "In which year was the Rugby World Cup held in South Africa?"
+  GOOD: "Which AFL club is nicknamed the Magpies?"
+  GOOD: "Which AFL club is known for black and white vertical stripes?" (only when team colours have not appeared in recent quizzes)
+- The other question should be a plain factual sports question. AVOID "In which year was the Rugby World Cup held in [place]?" — this format is overused across daily quizzes. Prefer domestic league, rules, venues, or non-tournament facts.
+  If you must ask a host-year question, verify place and year match and ensure Rugby World Cup / World Cup host-year is not in the recent-topics block.
   BAD:  "In which year did the All Blacks first win the Rugby World Cup?"
   BAD:  "In which year did Australia win the Cricket World Cup, when the final was against Pakistan?"
 - NEVER ask which year a team WON a World Cup, Grand Final, premiership, or Ashes — these fail fact-check constantly.
@@ -983,9 +1024,9 @@ Sports has strict automatic rejection rules — follow exactly:
 - Do NOT invent obscure team mascots — only well-known colours, nicknames, or stadium facts you are certain about.
 GUIDE;
         case 'Geography':
-            return 'Must be about the rest of the world — NOT New Zealand or Australia. No Great Barrier Reef, Sydney, or other NZ/AU references. No "longest river in the world" (Nile vs Amazon) questions. No Sydney Opera House. Do NOT claim a mountain range "extends across both Europe and Asia" — the Himalayas are Asia-only; the Urals/Caucasus mark the Europe–Asia boundary. For year questions, put the year in the answer options, not in the question stem.';
+            return 'Must be about the rest of the world — NOT New Zealand or Australia. No Great Barrier Reef, Sydney, or other NZ/AU references. No "longest river in the world" (Nile vs Amazon) questions. No Sydney Opera House. Avoid Petra and greenhouse-effect questions if they appear in the recent-topics block — these are overused. Do NOT claim a mountain range "extends across both Europe and Asia" — the Himalayas are Asia-only; the Urals/Caucasus mark the Europe–Asia boundary. For year questions, put the year in the answer options, not in the question stem.';
         case 'History':
-            return 'Must be about the rest of the world — NOT New Zealand or Australia. Use standard names for treaties and events (e.g. "Treaty of Paris", "Congress of Vienna" — never invent names like "Treaty of Vienna"). No "first country to…" superlatives. TF statements must be plain factual claims, not joke premises. For year questions, put the year in the answer options, not in the question stem.';
+            return 'Must be about the rest of the world — NOT New Zealand or Australia. Treaty questions are overused across daily quizzes — prefer battles, inventions, biographies, art, or science history unless no treaty appears in the recent-topics block. When you do ask about a treaty, use standard names (e.g. "Treaty of Paris", "Congress of Vienna" — never invent names like "Treaty of Vienna"). No "first country to…" superlatives. TF statements must be plain factual claims, not joke premises. For year questions, put the year in the answer options, not in the question stem.';
         case 'General Knowledge':
             return <<<'GUIDE'
 Global general knowledge — NOT New Zealand or Australia (no NZ/AU cities, artists, or shows).
@@ -1034,9 +1075,9 @@ RULES;
 
     if ($category === 'Sports') {
         $rules .= "\n- Sports reminder: if you are about to write \"first\", stop and rephrase without it.";
-        $rules .= "\n- Sports tournament hosts: never write \"[country] hosted [World Cup]\" — use \"In which year was [tournament] held in [place]?\" with years in the options only.";
-        $rules .= "\n- Sports win-year: never ask which year a team WON a World Cup/premiership/final — use domestic league colours, stadiums, or host-place year questions instead.";
-        $rules .= "\n- At least one Sports question must be domestic league trivia (AFL/NRL/Super Rugby colours, nickname, or home ground) with no World Cup or win-year angle.";
+        $rules .= "\n- Sports tournament hosts: avoid Rugby World Cup / World Cup host-year questions — they are overused. Prefer domestic league home grounds, nicknames, or venues.";
+        $rules .= "\n- Sports win-year: never ask which year a team WON a World Cup/premiership/final — use domestic league home ground, nickname, or venue questions instead.";
+        $rules .= "\n- At least one Sports question must be domestic league trivia (AFL/NRL/Super Rugby home ground, nickname, city, or colours) with no World Cup or win-year angle. Rotate angles — do not always ask about team colours.";
     }
 
     if ($category === 'General Knowledge') {
@@ -1076,10 +1117,9 @@ function buildRetryHintForErrors(
         if ($category === 'Sports') {
             $hints[] = $preferNonYear
                 ? 'SPORTS REPHRASE REQUIRED: Remove the word "first" from every question. '
-                    . 'Prefer "Which team is known for [colours/nickname]?" or a home-ground question — avoid year options if possible.'
+                    . 'Prefer a home-ground, nickname, or venue question — avoid year options and World Cup host-year questions.'
                 : 'SPORTS REPHRASE REQUIRED: Remove the word "first" from every question. '
-                    . 'Ask "In which year was [event] held in [place]?" or "Which team is known for [colours/nickname]?" '
-                    . 'Example: instead of "first Rugby World Cup win", ask "In which year was the Rugby World Cup held in South Africa?"';
+                    . 'Use a domestic league home ground, nickname, or venue question — do NOT default to Rugby World Cup host-year or team-colour questions.';
         } elseif ($category === 'General Knowledge') {
             $hints[] = 'Remove all "first/most/longest/record" framing. Ask a plain factual MC question — pop culture, science, or invention angles all work.';
         } else {
@@ -1150,16 +1190,16 @@ function buildRetryHintForErrors(
 
     if (preg_match('/win-year|won the.*World Cup|final against|final was contested|banned win-year/i', $errorList)) {
         $hints[] = 'WIN-YEAR FIX: Do NOT ask which year a team won a World Cup or beat someone in a final. '
-            . 'Use AFL/NRL/Super Rugby colours, a home stadium, or a verified "held in [place]?" host-year question instead.';
+            . 'Use AFL/NRL/Super Rugby home ground, nickname, or venue questions instead.';
     }
 
     if (preg_match('/domestic league question/i', $errorList)) {
-        $hints[] = 'DOMESTIC FIX: At least one Sports question must be AFL/NRL/Super Rugby team colours, nickname, or home ground — no World Cup, Olympics, or win-year.';
+        $hints[] = 'DOMESTIC FIX: At least one Sports question must be AFL/NRL/Super Rugby home ground, nickname, city, or colours — no World Cup, Olympics, or win-year. Prefer home ground or nickname over colours.';
     }
 
     if ($category === 'Sports' && $attempt >= 3 && preg_match('/\[fact-check premise\]|World Cup|held in|hosted|Rugby|Cricket/i', $errorList)) {
         $hints[] = 'SPORTS ESCALATION: Abandon World Cup host/win questions for this batch. '
-            . 'Output one domestic league question (colours/nickname/home ground) and one simple non-tournament fact you are 100% certain about.';
+            . 'Output one domestic league question (home ground, nickname, or venue) and one simple non-tournament fact you are 100% certain about.';
     }
 
     if (preg_match('/last-in-region superlative|only-country-in-region/i', $errorList)) {
@@ -1178,7 +1218,7 @@ function buildRetryHintForErrors(
     }
 
     if (preg_match('/repeats topic/i', $errorList)) {
-        $hints[] = 'DUPLICATE TOPIC: This treaty/event was already used elsewhere in the quiz — pick a completely different subject (see blocklist above).';
+        $hints[] = 'DUPLICATE TOPIC: This topic appeared in a recent quiz or elsewhere in this quiz — pick a completely different subject (see blocklist above).';
     }
 
     if (preg_match('/geography extent|Europe and Asia/i', $errorList)) {
@@ -1266,7 +1306,7 @@ function validateCategoryQuestions(
             }
         }
         if (!$hasDomestic) {
-            $errors[] = "'Sports' batch must include at least one domestic league question (AFL/NRL/Super Rugby colours, nickname, or home ground) with no World Cup or win-year angle";
+            $errors[] = "'Sports' batch must include at least one domestic league question (AFL/NRL/Super Rugby home ground, nickname, city, or colours) with no World Cup or win-year angle";
         }
     }
 
@@ -1333,7 +1373,7 @@ function validateOneQuestion(array $q, string $category, int $qNum, array $usedT
 
     foreach (duplicateTopicsInQuestion($q) as $topic) {
         if (in_array($topic, $usedTopicLabels, true)) {
-            $errors[] = "question $qNum repeats topic \"$topic\" already used elsewhere in this quiz";
+            $errors[] = "question $qNum repeats topic \"$topic\" already used in a recent quiz or elsewhere in this quiz";
         }
     }
 
@@ -1590,6 +1630,23 @@ function fetchRecentQuestions(mysqli $conn, string $today, int $lookbackDays = 3
 }
 
 /**
+ * Extracts recurring topic labels from recent quiz questions so generation can
+ * avoid evergreen clichés even when the exact question text differs.
+ *
+ * @return string[]
+ */
+function fetchRecentTopicLabels(mysqli $conn, string $today, ?int $lookbackDays = null): array {
+    $lookbackDays = $lookbackDays ?? RECENT_TOPIC_LOOKBACK_DAYS;
+    $labels = [];
+    foreach (fetchRecentQuestions($conn, $today, $lookbackDays) as $questionText) {
+        foreach (duplicateTopicsInText($questionText) as $label) {
+            $labels[] = $label;
+        }
+    }
+    return array_values(array_unique($labels));
+}
+
+/**
  * Returns headlines keyed by region, e.g. ['NZ' => [...], 'AU' => [...]],
  * each capped independently so neither region can crowd out the other.
  */
@@ -1695,8 +1752,8 @@ function questionIsSportsDomesticLeague(string $question): bool {
     if (preg_match('/\b(AFL|NRL|Super Rugby|A-League|Big Bash|Sheffield Shield|State of Origin|ANZAC Test)\b/i', $question)) {
         return true;
     }
-    if (preg_match('/\b(home ground|home stadium|nicknamed|known for|colours|colors|stripes|jersey)\b/i', $question)
-        && preg_match('/\b(club|team|side|franchise|Crusaders|Waratahs|Blues|Highlanders|Chiefs|All Blacks|Wallabies|Magpies|Tigers|Roosters|Storm|Broncos)\b/i', $question)) {
+    if (preg_match('/\b(home ground|home stadium|nicknamed|known for|colours|colors|stripes|jersey|plays home|based in|represents)\b/i', $question)
+        && preg_match('/\b(club|team|side|franchise|Crusaders|Waratahs|Blues|Highlanders|Chiefs|All Blacks|Wallabies|Magpies|Tigers|Roosters|Storm|Broncos|Swans|Dockers|Demons|Hurricanes)\b/i', $question)) {
         return true;
     }
     return false;

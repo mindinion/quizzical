@@ -17,6 +17,9 @@ function qaRunOnce(int $runNum, string $type, string $today, int $lookback, bool
     $recentQuestions = $lookback > 0
         ? fetchRecentQuestions($conn, $today, $lookback)
         : [];
+    $recentTopicLabels = $lookback > 0
+        ? fetchRecentTopicLabels($conn, $today, max($lookback, RECENT_TOPIC_LOOKBACK_DAYS))
+        : [];
 
     $payload = [
         'ok'   => false,
@@ -28,7 +31,7 @@ function qaRunOnce(int $runNum, string $type, string $today, int $lookback, bool
     ];
 
     try {
-        $questions = generateQuizQuestions($type, $today, $recentQuestions);
+        $questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels);
         if (!$skipImages) {
             $questions = attachPreviewImages($questions);
         }
@@ -39,7 +42,7 @@ function qaRunOnce(int $runNum, string $type, string $today, int $lookback, bool
     } catch (Throwable $e) {
         logQuizGenError('QA run failed: ' . $e->getMessage());
         try {
-            $questions = generateQuizQuestions($type, $today, $recentQuestions);
+            $questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels);
             if (!$skipImages) {
                 $questions = attachPreviewImages($questions);
             }
