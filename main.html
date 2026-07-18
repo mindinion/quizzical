@@ -6,7 +6,7 @@
 
 <script src="jquery.js"></script>
 <script src="cropper.min.js"></script>
-<script src="main.js?id=75"></script>
+<script src="main.js?id=76"></script>
 
 
 
@@ -29,7 +29,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-		<link href="styles-main.css?id=1285" type="text/css" rel="stylesheet" />
+		<link href="styles-main.css?id=1286" type="text/css" rel="stylesheet" />
 		<link href="styles-profile.css?id=23" type="text/css" rel="stylesheet" />
 		<link href="styles-rankings.css?id=14" type="text/css" rel="stylesheet" />
 		<link href="cropper.min.css" type="text/css" rel="stylesheet" />
@@ -224,7 +224,15 @@
 			<button id="TestQuizClose" onclick="closeTestQuiz()">&#x2715;</button>
 		</div>
 		<div id="TestQuizBody">
-			<div id="TestQuizLoading">Generating quiz&#x2026; this calls OpenAI live and can take up to a minute.</div>
+			<div id="TestQuizSetup">
+				<p id="TestQuizSetupIntro">Generate a preview quiz without writing to the database. Each run uses live OpenAI API calls.</p>
+				<label id="TestQuizSkipPhotosLabel">
+					<input type="checkbox" id="TestQuizSkipPhotos">
+					Skip photos (faster — text-only preview)
+				</label>
+				<button type="button" id="TestQuizGenerateBtn" onclick="startTestQuizGeneration()">Generate</button>
+			</div>
+			<div id="TestQuizLoading" style="display:none">Generating quiz&#x2026; this calls OpenAI live and can take up to a minute.</div>
 			<div id="TestQuizError" style="display:none"></div>
 			<div id="TestQuizLog" style="display:none"></div>
 			<div id="TestQuizQuestions"></div>

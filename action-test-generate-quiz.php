@@ -26,6 +26,7 @@ if ($type !== 'morning' && $type !== 'afternoon') {
 }
 
 $stream = isset($_GET['stream']) && $_GET['stream'] === '1';
+$skipImages = isset($_GET['no_images']) && $_GET['no_images'] === '1';
 
 $nztz  = new DateTimeZone('Pacific/Auckland');
 $today = (new DateTime('now', $nztz))->format('Y-m-d');
@@ -59,8 +60,10 @@ if ($stream) {
 
     try {
         $questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels);
-        emitTestQuizSse(['type' => 'status', 'message' => 'Fetching preview images…']);
-        $questions = attachPreviewImages($questions);
+        if (!$skipImages) {
+            emitTestQuizSse(['type' => 'status', 'message' => 'Fetching preview images…']);
+            $questions = attachPreviewImages($questions);
+        }
         $log = stopQuizGenLogCapture();
         emitTestQuizSse([
             'type'      => 'done',
@@ -93,7 +96,9 @@ header('Content-Type: application/json');
 startQuizGenLogCapture();
 try {
     $questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels);
-    $questions = attachPreviewImages($questions);
+    if (!$skipImages) {
+        $questions = attachPreviewImages($questions);
+    }
     $log = stopQuizGenLogCapture();
     echo json_encode([
         'questions' => $questions,

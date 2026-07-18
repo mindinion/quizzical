@@ -1435,33 +1435,61 @@ document.cookie="feedItems=50";
 		testQuizStreamFinished = false;
 
 		$('#TestQuizModal').css('display', 'flex');
+		$('#TestQuizSetup').show();
 		$('#TestQuizLoading').hide();
 		$('#TestQuizError').hide();
+		$('#TestQuizLog').hide().empty();
 		$('#TestQuizQuestions').empty();
+		$('#TestQuizGenerateBtn').prop('disabled', false);
+	}
+
+	function startTestQuizGeneration() {
+		closeTestQuizStream();
+		testQuizStreamFinished = false;
+
+		var skipPhotos = $('#TestQuizSkipPhotos').is(':checked');
+		var url = 'action-test-generate-quiz.php?type=morning&stream=1';
+		if (skipPhotos) {
+			url += '&no_images=1';
+		}
+
+		$('#TestQuizSetup').hide();
+		$('#TestQuizLoading').show();
+		$('#TestQuizError').hide();
+		$('#TestQuizQuestions').empty();
+		$('#TestQuizGenerateBtn').prop('disabled', true);
 		initTestQuizLogPanel();
 
-		testQuizEventSource = new EventSource('action-test-generate-quiz.php?type=morning&stream=1');
+		testQuizEventSource = new EventSource(url);
 		testQuizEventSource.onmessage = function(e) {
 			var msg = JSON.parse(e.data);
 			if (msg.type === 'log') {
+				$('#TestQuizLoading').hide();
 				appendTestQuizLogLine(msg.entry);
 			} else if (msg.type === 'status') {
+				$('#TestQuizLoading').hide();
 				appendTestQuizLogLine({ time: formatTestQuizTime(new Date()), level: 'INFO', message: msg.message });
 			} else if (msg.type === 'done') {
 				testQuizStreamFinished = true;
 				closeTestQuizStream();
-				renderTestQuizLog(msg.log, msg.stats);
+				$('#TestQuizLoading').hide();
+				$('#TestQuizGenerateBtn').prop('disabled', false);
+				renderTestQuizLog(msg.log, msg.stats, skipPhotos);
 				renderTestQuiz(msg.questions);
 			} else if (msg.type === 'error') {
 				testQuizStreamFinished = true;
 				closeTestQuizStream();
-				renderTestQuizLog(msg.log, msg.stats);
+				$('#TestQuizLoading').hide();
+				$('#TestQuizGenerateBtn').prop('disabled', false);
+				renderTestQuizLog(msg.log, msg.stats, skipPhotos);
 				$('#TestQuizError').text(msg.error || 'Generation failed.').show();
 			}
 		};
 		testQuizEventSource.onerror = function() {
 			if (testQuizStreamFinished || !testQuizEventSource) return;
 			closeTestQuizStream();
+			$('#TestQuizLoading').hide();
+			$('#TestQuizGenerateBtn').prop('disabled', false);
 			$('#TestQuizError').text('Connection lost during generation.').show();
 		};
 	}
@@ -1489,12 +1517,14 @@ document.cookie="feedItems=50";
 		if (el) el.scrollTop = el.scrollHeight;
 	}
 
-	function finishTestQuizLog(stats, log) {
+	function finishTestQuizLog(stats, log, skipPhotos) {
 		var retried = stats && stats.categories_retried ? stats.categories_retried : 0;
 		var skipped = stats && stats.fact_check_skips ? stats.fact_check_skips : 0;
 		var images = stats && stats.preview_images_fetched != null ? stats.preview_images_fetched : null;
 		var summary = 'Categories retried: ' + retried + ' · Fact-check skips: ' + skipped;
-		if (images !== null) {
+		if (skipPhotos) {
+			summary += ' · Images: skipped';
+		} else if (images !== null) {
 			summary += ' · Images: ' + images + '/15';
 		}
 		if (!log || !log.length) {
@@ -1503,12 +1533,12 @@ document.cookie="feedItems=50";
 		$('#TestQuizLogSummary').text(summary);
 	}
 
-	function renderTestQuizLog(log, stats) {
+	function renderTestQuizLog(log, stats, skipPhotos) {
 		initTestQuizLogPanel();
 		if (log && log.length) {
 			log.forEach(function(entry) { appendTestQuizLogLine(entry); });
 		}
-		finishTestQuizLog(stats, log);
+		finishTestQuizLog(stats, log, skipPhotos);
 	}
 
 	function closeTestQuiz() {
