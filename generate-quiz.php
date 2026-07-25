@@ -113,7 +113,8 @@ try {
 
         $imageQuery = trim($q['image_query'] ?? '');
         if ($imageQuery !== '') {
-            $imageResult = fetchQuestionImage($imageQuery, $imagesRoot, (string)$questionId);
+            $photoIndex = !empty($q['bank_id']) ? (int)$q['bank_id'] : (int)$pos;
+            $imageResult = fetchQuestionImage($imageQuery, $imagesRoot, (string)$questionId, $photoIndex);
             if ($imageResult) {
                 $relPath = relativeQuizImagePath($imageResult['path']);
                 $attribution = $imageResult['attribution'];

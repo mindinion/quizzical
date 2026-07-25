@@ -56,6 +56,37 @@ const BANK_IMPORT_SKIP_PATTERNS = [
     '/\bopera house\b/i',
 ];
 
+/** Varied Pexels search terms per bank category — one static query always returned the same photo. */
+const BANK_IMAGE_QUERY_POOLS = [
+    'Geography' => [
+        'mountain landscape', 'river valley aerial', 'coastal cliffs ocean', 'desert sand dunes',
+        'tropical island beach', 'waterfall forest', 'rolling green hills', 'canyon rock formation',
+        'lake mountain reflection', 'arctic snow landscape', 'volcanic terrain', 'savanna plains',
+        'glacier ice field', 'coral reef underwater', 'world globe map',
+    ],
+    'History' => [
+        'ancient stone ruins', 'medieval castle exterior', 'museum historical artifacts', 'archaeological excavation site',
+        'classical marble columns', 'old world map parchment', 'historic monument plaza', 'vintage library books',
+        'palace architecture', 'industrial revolution factory', 'war memorial statue', 'temple ancient architecture',
+        'roman amphitheatre', 'historic ship sailing', 'cathedral stained glass',
+    ],
+    'General Knowledge' => [
+        'library reading room', 'science laboratory equipment', 'art gallery paintings', 'orchestra musical instruments',
+        'kitchen ingredients cooking', 'stadium crowd sports', 'starry night sky', 'classroom chalkboard',
+        'farmers market produce', 'modern technology workspace', 'wildlife nature reserve', 'city skyline dusk',
+        'microscope research', 'theatre stage lights', 'chess board strategy',
+    ],
+];
+
+function bankImageQueryForQuestion(string $category, int $bankId): string {
+    $pool = BANK_IMAGE_QUERY_POOLS[$category] ?? [
+        'trivia quiz scene', 'learning education', 'books knowledge', 'curiosity discovery',
+        'puzzle pieces table', 'question mark abstract', 'brain thinking concept', 'compass exploration',
+    ];
+    $idx = abs(crc32($bankId . '|' . $category)) % count($pool);
+    return $pool[$idx];
+}
+
 function bankTableExists(mysqli $conn): bool {
     $r = $conn->query("SHOW TABLES LIKE 'QuizQuestionBank'");
     return $r && $r->num_rows > 0;
@@ -235,11 +266,8 @@ function bankRowToQuizQuestion(array $row, array $options): ?array {
     }
 
     $cat = $row['category'];
-    $imageQuery = match ($cat) {
-        'Geography'         => 'world geography landscape',
-        'History'           => 'historical landmark',
-        default             => 'general knowledge',
-    };
+    $bankId = (int)$row['id'];
+    $imageQuery = bankImageQueryForQuestion($cat, $bankId);
 
     return [
         'question'    => $row['question_text'],
@@ -247,7 +275,7 @@ function bankRowToQuizQuestion(array $row, array $options): ?array {
         'category'    => $cat,
         'image_query' => $imageQuery,
         'options'     => $opts,
-        'bank_id'     => (int)$row['id'],
+        'bank_id'     => $bankId,
         'source'      => $row['source'],
     ];
 }

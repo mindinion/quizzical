@@ -2522,7 +2522,7 @@ function factCheckCategoryQuestions(array &$questions, string $category, array $
 
 // ── Question images (Pexels keyword search) ────────────────────────────────
 
-function fetchQuestionImage(string $imageQuery, string $destDir, string $filenameBase): ?array {
+function fetchQuestionImage(string $imageQuery, string $destDir, string $filenameBase, int $photoIndex = 0): ?array {
     if (!defined('PEXELS_API_KEY') || PEXELS_API_KEY === '') {
         return null;
     }
@@ -2530,7 +2530,7 @@ function fetchQuestionImage(string $imageQuery, string $destDir, string $filenam
     $url = 'https://api.pexels.com/v1/search?' . http_build_query([
         'query'       => $imageQuery,
         'orientation' => 'landscape',
-        'per_page'    => 1,
+        'per_page'    => 15,
     ]);
 
     $ch = curl_init($url);
@@ -2558,11 +2558,12 @@ function fetchQuestionImage(string $imageQuery, string $destDir, string $filenam
         return null;
     }
 
-    $photo = $decoded['photos'][0] ?? null;
-    if (!$photo) {
+    $photos = $decoded['photos'] ?? [];
+    if (!$photos) {
         logQuizGenError("[images] Pexels returned no photos for \"$imageQuery\"");
         return null;
     }
+    $photo = $photos[abs($photoIndex) % count($photos)];
 
     $imageUrl = $photo['src']['large'] ?? $photo['src']['medium'] ?? null;
     if (!$imageUrl) {
@@ -2723,7 +2724,8 @@ function attachPreviewImages(array $questions): array {
             continue;
         }
         logQuizGenInfo("[images] Q$pos: fetching \"$query\"…");
-        $result = fetchQuestionImage($query, $previewDir, (string)$pos);
+        $photoIndex = !empty($q['bank_id']) ? (int)$q['bank_id'] : (int)$pos;
+        $result = fetchQuestionImage($query, $previewDir, (string)$pos, $photoIndex);
         if ($result) {
             $q['image_url'] = relativeQuizImagePath($result['path']);
             $q['image_attribution'] = $result['attribution'];
