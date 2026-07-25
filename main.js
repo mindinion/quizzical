@@ -1255,6 +1255,10 @@ document.cookie="feedItems=50";
 		return cat === 'NZ Current Events' || cat === 'Aussie Current Events';
 	}
 
+	function isBankCategory(cat) {
+		return cat === 'Geography' || cat === 'History' || cat === 'General Knowledge';
+	}
+
 	function buildQuestionMetaHtml(q) {
 		var html = '<span class="ai-quiz-meta-category">' + escapeHtml(q.category) + '</span>';
 		var badges = '';
@@ -1267,6 +1271,8 @@ document.cookie="feedItems=50";
 		}
 		if (isCurrentEventsCategory(q.category)) {
 			badges += '<span class="ai-quiz-badge ai-quiz-badge-news">Today\u2019s news</span>';
+		} else if (isBankCategory(q.category) || q.bank_id) {
+			badges += '<span class="ai-quiz-badge ai-quiz-badge-verified">Verified trivia</span>';
 		}
 		if (badges) {
 			html += '<span class="ai-quiz-meta-badges">' + badges + '</span>';
@@ -1630,7 +1636,8 @@ document.cookie="feedItems=50";
 			html += '<div class="test-quiz-meta">' + buildQuestionMetaHtml({
 				category: q.category,
 				difficulty: q.difficulty,
-				format: q.format
+				format: q.format,
+				bank_id: q.bank_id
 			}) + '</div>';
 			html += '<div class="test-quiz-text">' + (idx + 1) + '. ' + escapeHtml(q.question) + '</div>';
 			if (q.image_url) {

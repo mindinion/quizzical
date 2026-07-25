@@ -1429,6 +1429,11 @@ A {}
 	color: #1565c0;
 }
 
+.ai-quiz-badge-verified {
+	background: #f3e5f5;
+	color: #6a1b9a;
+}
+
 #AIQuizImage {
 	margin: 12px auto 16px;
 	border-radius: 8px;
