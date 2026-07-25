@@ -37,13 +37,25 @@ if (!bankSetupTokenIsValid(is_string($token) ? $token : null)) {
 }
 
 $mode = isset($body['mode']) ? strtolower(trim((string)$body['mode'])) : 'all';
-if (!in_array($mode, ['migrate', 'seed-full', 'seed-incremental', 'all'], true)) {
+$validModes = ['migrate', 'seed-full', 'seed-incremental', 'seed-otqa', 'seed-otdb-full', 'status', 'all'];
+if (!in_array($mode, $validModes, true)) {
     $mode = 'all';
 }
 
 $out = ['ok' => true, 'mode' => $mode, 'steps' => []];
 
 try {
+    if ($mode === 'status') {
+        $out['steps']['status'] = [
+            'tables_exist' => bankTableExists($conn),
+            'totals'       => bankTableExists($conn) ? bankTotalCounts($conn) : [],
+            'health'       => bankTableExists($conn) ? bankPoolHealth($conn) : [],
+        ];
+        $conn->close();
+        echo json_encode($out, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        exit;
+    }
+
     if ($mode === 'migrate' || $mode === 'all') {
         $out['steps']['migrate'] = runQuestionBankMigration($conn);
     }
@@ -58,6 +70,24 @@ try {
         $seedOut['totals'] = bankTotalCounts($conn);
         $seedOut['health'] = bankPoolHealth($conn);
         $out['steps']['seed_full'] = $seedOut;
+    } elseif ($mode === 'seed-otqa') {
+        if (!bankTableExists($conn)) {
+            throw new RuntimeException('QuizQuestionBank table missing — run migrate first');
+        }
+        $out['steps']['seed_otqa'] = [
+            'opentriviaqa' => bankSeedOpenTriviaQa($conn),
+            'totals'       => bankTotalCounts($conn),
+            'health'       => bankPoolHealth($conn),
+        ];
+    } elseif ($mode === 'seed-otdb-full') {
+        if (!bankTableExists($conn)) {
+            throw new RuntimeException('QuizQuestionBank table missing — run migrate first');
+        }
+        $out['steps']['seed_otdb'] = [
+            'opentdb' => bankSeedOpenTdb($conn, true),
+            'totals'  => bankTotalCounts($conn),
+            'health'  => bankPoolHealth($conn),
+        ];
     } elseif ($mode === 'seed-incremental') {
         if (!bankTableExists($conn)) {
             throw new RuntimeException('QuizQuestionBank table missing — run migrate first');
