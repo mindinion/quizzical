@@ -37,7 +37,7 @@ if (!bankSetupTokenIsValid(is_string($token) ? $token : null)) {
 }
 
 $mode = isset($body['mode']) ? strtolower(trim((string)$body['mode'])) : 'all';
-$validModes = ['migrate', 'seed-full', 'seed-incremental', 'seed-otqa', 'seed-otdb-full', 'status', 'all'];
+$validModes = ['migrate', 'seed-full', 'seed-incremental', 'seed-otqa', 'seed-otdb-full', 'repair-otqa', 'status', 'all'];
 if (!in_array($mode, $validModes, true)) {
     $mode = 'all';
 }
@@ -87,6 +87,17 @@ try {
             'opentdb' => bankSeedOpenTdb($conn, true),
             'totals'  => bankTotalCounts($conn),
             'health'  => bankPoolHealth($conn),
+        ];
+    } elseif ($mode === 'repair-otqa') {
+        if (!bankTableExists($conn)) {
+            throw new RuntimeException('QuizQuestionBank table missing — run migrate first');
+        }
+        $out['steps']['repair_otqa'] = bankRepairOpenTriviaQa($conn);
+        $out['steps']['totals'] = bankTotalCounts($conn);
+        $out['steps']['valid_sample'] = [
+            'Geography' => bankCountValidAvailable($conn, 'Geography'),
+            'History' => bankCountValidAvailable($conn, 'History'),
+            'General Knowledge' => bankCountValidAvailable($conn, 'General Knowledge'),
         ];
     } elseif ($mode === 'seed-incremental') {
         if (!bankTableExists($conn)) {

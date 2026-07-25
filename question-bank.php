@@ -88,8 +88,53 @@ function bankOptionKey(string $text): string {
 }
 
 /**
+ * Build four MC options from an explicit answer list (OpenTriviaQA A–D lines).
+ * The ^ line must match one of the choices.
+ *
+ * @param string[] $choiceTexts exactly four choice strings from A–D
+ * @return list<array{text: string, correct: bool}>|null
+ */
+function bankBuildMcOptionsFromChoices(string $correctRaw, array $choiceTexts): ?array {
+    $correct = bankNormalizeOptionText($correctRaw);
+    if ($correct === '') {
+        return null;
+    }
+    $correctKey = bankOptionKey($correct);
+
+    $unique = [];
+    $seen = [];
+    foreach ($choiceTexts as $raw) {
+        $text = bankNormalizeOptionText((string)$raw);
+        if ($text === '') {
+            continue;
+        }
+        $key = bankOptionKey($text);
+        if (isset($seen[$key])) {
+            continue;
+        }
+        $seen[$key] = true;
+        $unique[] = $text;
+    }
+
+    if (count($unique) !== 4 || !isset($seen[$correctKey])) {
+        return null;
+    }
+
+    shuffle($unique);
+    $options = [];
+    foreach ($unique as $text) {
+        $options[] = [
+            'text'    => $text,
+            'correct' => bankOptionKey($text) === $correctKey,
+        ];
+    }
+
+    return $options;
+}
+
+/**
  * Build four unique MC options. Filters duplicate distractors and drops the correct
- * answer if it also appears among wrong options (common in OpenTriviaQA).
+ * answer if it also appears among wrong options (OpenTDB).
  *
  * @param string[] $distractorTexts
  * @return list<array{text: string, correct: bool}>|null
@@ -226,55 +271,133 @@ function selectBankQuestionsForQuiz(mysqli $conn, ?array $targets = null): array
         }
 
         $cooldown = BANK_REUSE_COOLDOWN_DAYS;
-        $fetchLimit = min($need * 3, 50);
-        $stmt = $conn->prepare(
-            "SELECT id, source, category, question_text, format
-             FROM QuizQuestionBank
-             WHERE category = ?
-               AND (last_used_at IS NULL OR last_used_at < DATE_SUB(NOW(), INTERVAL ? DAY))
-             ORDER BY RAND()
-             LIMIT ?"
-        );
-        $stmt->bind_param('sii', $category, $cooldown, $fetchLimit);
-        $stmt->execute();
-        $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
-
         $picked = 0;
-        foreach ($rows as $row) {
-            if ($picked >= $need) {
+        $triedIds = [];
+        $batchSize = 100;
+        $maxBatches = 15;
+
+        for ($batch = 0; $batch < $maxBatches && $picked < $need; $batch++) {
+            $exclude = array_merge($bankIds, $triedIds);
+            $rows = bankFetchCategoryCandidates($conn, $category, $cooldown, $batchSize, $exclude);
+
+            if (!$rows) {
                 break;
             }
-            $bid = (int)$row['id'];
-            if (in_array($bid, $bankIds, true)) {
-                continue;
-            }
-            $optStmt = $conn->prepare(
-                'SELECT position, option_text, is_correct FROM QuizQuestionBankOption WHERE bank_id = ? ORDER BY position'
-            );
-            $optStmt->bind_param('i', $bid);
-            $optStmt->execute();
-            $opts = $optStmt->get_result()->fetch_all(MYSQLI_ASSOC);
-            $optStmt->close();
 
-            $q = bankRowToQuizQuestion($row, $opts);
-            if ($q === null) {
-                continue;
+            foreach ($rows as $row) {
+                if ($picked >= $need) {
+                    break 2;
+                }
+                $bid = (int)$row['id'];
+                if (in_array($bid, $bankIds, true)) {
+                    continue;
+                }
+                $triedIds[] = $bid;
+
+                $optStmt = $conn->prepare(
+                    'SELECT position, option_text, is_correct FROM QuizQuestionBankOption WHERE bank_id = ? ORDER BY position'
+                );
+                $optStmt->bind_param('i', $bid);
+                $optStmt->execute();
+                $opts = $optStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+                $optStmt->close();
+
+                $q = bankRowToQuizQuestion($row, $opts);
+                if ($q === null) {
+                    continue;
+                }
+                $selected[] = $q;
+                $bankIds[] = $bid;
+                $picked++;
             }
-            $selected[] = $q;
-            $bankIds[] = $bid;
-            $picked++;
         }
 
         if ($picked < $need) {
             $avail = bankCountAvailable($conn, $category);
+            $valid = bankCountValidAvailable($conn, $category);
             throw new RuntimeException(
-                "Bank pool short for '$category': need $need, picked $picked ($avail available within cooldown)"
+                "Bank pool short for '$category': need $need, picked $picked "
+                . "($avail rows in cooldown window, ~$valid with four unique options — "
+                . "run repair-otqa if OpenTriviaQA imports look broken)"
             );
         }
     }
 
     return $selected;
+}
+
+/**
+ * @param int[] $excludeIds
+ * @return list<array>
+ */
+function bankFetchCategoryCandidates(
+    mysqli $conn,
+    string $category,
+    int $cooldownDays,
+    int $limit,
+    array $excludeIds = []
+): array {
+    $limit = max(1, min(200, $limit));
+    $sql = "SELECT id, source, category, question_text, format
+            FROM QuizQuestionBank
+            WHERE category = ?
+              AND (last_used_at IS NULL OR last_used_at < DATE_SUB(NOW(), INTERVAL ? DAY))";
+    $types = 'si';
+    $params = [$category, $cooldownDays];
+
+    if ($excludeIds) {
+        $excludeIds = array_map('intval', array_unique($excludeIds));
+        $placeholders = implode(',', array_fill(0, count($excludeIds), '?'));
+        $sql .= " AND id NOT IN ($placeholders)";
+        $types .= str_repeat('i', count($excludeIds));
+        $params = array_merge($params, $excludeIds);
+    }
+
+    $sql .= ' ORDER BY RAND() LIMIT ?';
+    $types .= 'i';
+    $params[] = $limit;
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    return $rows;
+}
+
+/** Rough count of rows that currently sanitize to four unique MC options. */
+function bankCountValidAvailable(mysqli $conn, string $category): int {
+    $cooldown = BANK_REUSE_COOLDOWN_DAYS;
+    $stmt = $conn->prepare(
+        "SELECT b.id
+         FROM QuizQuestionBank b
+         WHERE b.category = ?
+           AND b.format = 'mc'
+           AND (b.last_used_at IS NULL OR b.last_used_at < DATE_SUB(NOW(), INTERVAL ? DAY))
+         LIMIT 500"
+    );
+    $stmt->bind_param('si', $category, $cooldown);
+    $stmt->execute();
+    $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    $valid = 0;
+    foreach ($rows as $row) {
+        $bid = (int)$row['id'];
+        $optStmt = $conn->prepare(
+            'SELECT option_text, is_correct FROM QuizQuestionBankOption WHERE bank_id = ? ORDER BY position'
+        );
+        $optStmt->bind_param('i', $bid);
+        $optStmt->execute();
+        $opts = $optStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $optStmt->close();
+        if (bankSanitizeStoredMcOptions($opts) !== null) {
+            $valid++;
+        }
+    }
+
+    return $valid;
 }
 
 function bankCountAvailable(mysqli $conn, string $category): int {
@@ -492,19 +615,19 @@ function bankParseOpenTriviaQaFile(string $content, string $quizzicalCat): array
         }
 
         $correct = null;
-        $distractors = [];
+        $choices = [];
         foreach (array_slice($lines, 1) as $line) {
             if (str_starts_with($line, '^ ')) {
                 $correct = trim(substr($line, 2));
-            } elseif (preg_match('/^[A-D] /', $line)) {
-                $distractors[] = trim(substr($line, 2));
+            } elseif (preg_match('/^[A-D] (.+)$/', $line, $m)) {
+                $choices[] = trim($m[1]);
             }
         }
-        if ($correct === null) {
+        if ($correct === null || count($choices) < 4) {
             continue;
         }
 
-        $built = bankBuildMcOptions($correct, $distractors);
+        $built = bankBuildMcOptionsFromChoices($correct, array_slice($choices, 0, 4));
         if ($built === null) {
             continue;
         }
@@ -551,6 +674,22 @@ function bankSeedOpenTriviaQa(mysqli $conn): array {
     }
 
     return $added;
+}
+
+/** Delete and re-import OpenTriviaQA rows with the current parser (fixes legacy duplicate options). */
+function bankRepairOpenTriviaQa(mysqli $conn): array {
+    $conn->query(
+        'DELETE o FROM QuizQuestionBankOption o
+         INNER JOIN QuizQuestionBank b ON o.bank_id = b.id
+         WHERE b.source = \'opentriviaqa\''
+    );
+    $conn->query("DELETE FROM QuizQuestionBank WHERE source = 'opentriviaqa'");
+    $deleted = $conn->affected_rows;
+
+    return [
+        'deleted'    => $deleted,
+        'reimported' => bankSeedOpenTriviaQa($conn),
+    ];
 }
 
 function bankTotalCounts(mysqli $conn): array {
