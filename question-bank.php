@@ -79,17 +79,108 @@ function bankDecodeHtml(string $text): string {
     return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 }
 
+function bankNormalizeOptionText(string $text): string {
+    return trim(preg_replace('/\s+/u', ' ', bankDecodeHtml($text)));
+}
+
+function bankOptionKey(string $text): string {
+    return mb_strtolower(bankNormalizeOptionText($text));
+}
+
+/**
+ * Build four unique MC options. Filters duplicate distractors and drops the correct
+ * answer if it also appears among wrong options (common in OpenTriviaQA).
+ *
+ * @param string[] $distractorTexts
+ * @return list<array{text: string, correct: bool}>|null
+ */
+function bankBuildMcOptions(string $correctRaw, array $distractorTexts): ?array {
+    $correct = bankNormalizeOptionText($correctRaw);
+    if ($correct === '') {
+        return null;
+    }
+    $correctKey = bankOptionKey($correct);
+
+    $distractors = [];
+    $seen = [$correctKey => true];
+    foreach ($distractorTexts as $raw) {
+        $text = bankNormalizeOptionText((string)$raw);
+        if ($text === '') {
+            continue;
+        }
+        $key = bankOptionKey($text);
+        if (isset($seen[$key])) {
+            continue;
+        }
+        $seen[$key] = true;
+        $distractors[] = $text;
+    }
+
+    if (count($distractors) < 3) {
+        return null;
+    }
+
+    $all = array_merge([$correct], array_slice($distractors, 0, 3));
+    shuffle($all);
+
+    $options = [];
+    foreach ($all as $text) {
+        $options[] = [
+            'text'    => $text,
+            'correct' => bankOptionKey($text) === $correctKey,
+        ];
+    }
+
+    return $options;
+}
+
+/**
+ * Rebuild MC options loaded from DB, fixing duplicate texts from bad imports.
+ *
+ * @param list<array{option_text: string, is_correct: int|string}> $dbOptions
+ * @return list<array{text: string, correct: bool}>|null
+ */
+function bankSanitizeStoredMcOptions(array $dbOptions): ?array {
+    $correctRaw = null;
+    foreach ($dbOptions as $o) {
+        if ((bool)$o['is_correct']) {
+            $correctRaw = $o['option_text'];
+            break;
+        }
+    }
+    if ($correctRaw === null) {
+        return null;
+    }
+
+    $distractors = [];
+    foreach ($dbOptions as $o) {
+        if (bankOptionKey($o['option_text']) !== bankOptionKey($correctRaw)) {
+            $distractors[] = $o['option_text'];
+        }
+    }
+
+    return bankBuildMcOptions($correctRaw, $distractors);
+}
+
 /**
  * @return array{question: string, format: string, category: string, image_query: string, options: list<array{text: string, correct: bool}>, bank_id?: int, source?: string}|null
  */
 function bankRowToQuizQuestion(array $row, array $options): ?array {
     $format = $row['format'] ?? 'mc';
     $opts = [];
-    foreach ($options as $o) {
-        $opts[] = [
-            'text'    => $o['option_text'],
-            'correct' => (bool)$o['is_correct'],
-        ];
+    if ($format === 'mc') {
+        $built = bankSanitizeStoredMcOptions($options);
+        if ($built === null) {
+            return null;
+        }
+        $opts = $built;
+    } else {
+        foreach ($options as $o) {
+            $opts[] = [
+                'text'    => bankNormalizeOptionText($o['option_text']),
+                'correct' => (bool)$o['is_correct'],
+            ];
+        }
     }
     if ($format === 'mc' && count($opts) !== 4) {
         return null;
@@ -287,14 +378,14 @@ function bankNormaliseOpenTdbResult(array $item, string $category): ?array {
     $options = [];
     if ($format === 'mc') {
         $incorrect = $item['incorrect_answers'] ?? [];
-        if (!is_array($incorrect) || count($incorrect) !== 3) {
+        if (!is_array($incorrect)) {
             return null;
         }
-        $all = array_merge([$correct], array_map(fn($t) => bankDecodeHtml(trim($t)), $incorrect));
-        shuffle($all);
-        foreach ($all as $text) {
-            $options[] = ['text' => $text, 'correct' => strcasecmp($text, $correct) === 0];
+        $built = bankBuildMcOptions($correct, $incorrect);
+        if ($built === null) {
+            return null;
         }
+        $options = $built;
     } else {
         $options = [
             ['text' => 'True', 'correct' => strcasecmp($correct, 'True') === 0],
@@ -409,15 +500,13 @@ function bankParseOpenTriviaQaFile(string $content, string $quizzicalCat): array
                 $distractors[] = trim(substr($line, 2));
             }
         }
-        if ($correct === null || count($distractors) < 3) {
+        if ($correct === null) {
             continue;
         }
 
-        $all = array_merge([$correct], array_slice($distractors, 0, 3));
-        shuffle($all);
-        $options = [];
-        foreach ($all as $text) {
-            $options[] = ['text' => $text, 'correct' => strcasecmp($text, $correct) === 0];
+        $built = bankBuildMcOptions($correct, $distractors);
+        if ($built === null) {
+            continue;
         }
 
         $questions[] = [
@@ -428,7 +517,7 @@ function bankParseOpenTriviaQaFile(string $content, string $quizzicalCat): array
             'format'        => 'mc',
             'difficulty'    => null,
             'attribution'   => 'OpenTriviaQA (CC BY-SA 4.0)',
-            'options'       => $options,
+            'options'       => $built,
         ];
     }
     return $questions;
