@@ -1333,7 +1333,11 @@ document.cookie="feedItems=50";
 
 		var html = '';
 		q.options.forEach(function(opt) {
-			html += '<div class="ai-option" data-optid="' + opt.id + '">' + escapeHtml(opt.text) + '</div>';
+			html += '<div class="ai-option" data-optid="' + opt.id + '">'
+				+ '<div class="ai-option-fill"></div>'
+				+ '<span class="ai-option-text">' + escapeHtml(opt.text) + '</span>'
+				+ '<span class="ai-option-stat"></span>'
+				+ '</div>';
 		});
 		$('#AIQuizOptions').html(html);
 
@@ -1401,12 +1405,12 @@ document.cookie="feedItems=50";
 			}
 			if (showStats) {
 				var pct = statsByOpt[optId] !== undefined ? statsByOpt[optId] : 0;
+				$(this).find('.ai-option-fill').css('width', pct + '%');
 				var $stat = $(this).find('.ai-option-stat');
-				if (!$stat.length) {
-					$stat = $('<span class="ai-option-stat"></span>');
-					$(this).append($stat);
-				}
-				$stat.text(pct + '% picked');
+				$stat.text(pct + '%').show();
+			} else {
+				$(this).find('.ai-option-fill').css('width', '0');
+				$(this).find('.ai-option-stat').hide().text('');
 			}
 		});
 

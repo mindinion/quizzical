@@ -1472,6 +1472,11 @@ A {}
 }
 
 .ai-option {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
 	font-family: verdana, arial;
 	font-size: 14px;
 	color: #333;
@@ -1483,6 +1488,38 @@ A {}
 	transition: background 0.15s, border-color 0.15s;
 	line-height: 1.35;
 	-webkit-tap-highlight-color: transparent;
+	overflow: hidden;
+}
+
+.ai-option-fill {
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 0;
+	background: rgba(80, 70, 50, 0.08);
+	transition: width 0.35s ease;
+	pointer-events: none;
+	z-index: 0;
+}
+
+.ai-option-text {
+	position: relative;
+	z-index: 1;
+	flex: 1;
+	min-width: 0;
+}
+
+.ai-option-stat {
+	position: relative;
+	z-index: 1;
+	flex-shrink: 0;
+	display: none;
+	font-size: 12px;
+	font-weight: bold;
+	color: #666;
+	min-width: 2.5em;
+	text-align: right;
 }
 
 .ai-option:active {
@@ -1496,6 +1533,14 @@ A {}
 	pointer-events: none;
 }
 
+.ai-option-correct .ai-option-fill {
+	background: rgba(76, 175, 80, 0.28);
+}
+
+.ai-option-correct .ai-option-stat {
+	color: #2e7d32;
+}
+
 .ai-option-wrong {
 	background: #fdecea !important;
 	border-color: #e53935 !important;
@@ -1503,17 +1548,25 @@ A {}
 	pointer-events: none;
 }
 
+.ai-option-wrong .ai-option-fill {
+	background: rgba(229, 57, 53, 0.22);
+}
+
+.ai-option-wrong .ai-option-stat {
+	color: #c62828;
+}
+
 .ai-option-neutral {
 	pointer-events: none;
 	opacity: 0.55;
 }
 
-.ai-option-stat {
-	display: block;
-	font-size: 11px;
-	margin-top: 6px;
-	opacity: 0.75;
-	font-weight: normal;
+.ai-option-neutral .ai-option-fill {
+	background: rgba(80, 70, 50, 0.1);
+}
+
+.ai-option-neutral .ai-option-stat {
+	color: #888;
 }
 
 #AIQuizAttribution {
