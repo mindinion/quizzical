@@ -97,13 +97,40 @@ function bankSourceId(string $source, string $questionText): string {
     return hash('sha256', $source . '|' . $norm);
 }
 
-function bankQuestionShouldSkip(string $text): bool {
+function bankQuestionShouldSkip(string $text, ?array $options = null): bool {
     foreach (BANK_IMPORT_SKIP_PATTERNS as $pattern) {
         if (preg_match($pattern, $text)) {
             return true;
         }
     }
+    if (bankIsDubiousInventionCenturyQuestion($text)) {
+        return true;
+    }
+    if ($options !== null && bankHasAllOfTheseAnswer($options)) {
+        return true;
+    }
     return false;
+}
+
+function bankHasAllOfTheseAnswer(array $options): bool {
+    foreach ($options as $opt) {
+        if (!is_array($opt)) {
+            continue;
+        }
+        $text = $opt['text'] ?? $opt['option_text'] ?? '';
+        $correct = !empty($opt['correct']) || !empty($opt['is_correct']);
+        if ($correct && preg_match('/^all of (these|the above)\b/i', bankNormalizeOptionText((string)$text))) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function bankIsDubiousInventionCenturyQuestion(string $text): bool {
+    return (bool) preg_match(
+        '/\b(invented|invention|were invented|was invented)\b/i',
+        $text
+    ) && (bool) preg_match('/\b\d+(st|nd|rd|th)\s+century\b/i', $text);
 }
 
 function bankDecodeHtml(string $text): string {
@@ -264,6 +291,9 @@ function bankRowToQuizQuestion(array $row, array $options): ?array {
     if ($format === 'tf' && count($opts) !== 2) {
         return null;
     }
+    if (bankQuestionShouldSkip($row['question_text'], $opts)) {
+        return null;
+    }
 
     $cat = $row['category'];
     $bankId = (int)$row['id'];
@@ -281,7 +311,74 @@ function bankRowToQuizQuestion(array $row, array $options): ?array {
 }
 
 /**
- * @return list<array> Quiz question objects; throws RuntimeException if any category short.
+ * @param int[] $excludeBankIds
+ * @return list<array>
+ */
+function bankPickQuestionsFromCategory(
+    mysqli $conn,
+    string $category,
+    int $need,
+    array $excludeBankIds = []
+): array {
+    if ($need <= 0) {
+        return [];
+    }
+
+    $cooldown = BANK_REUSE_COOLDOWN_DAYS;
+    $selected = [];
+    $bankIds = array_map('intval', $excludeBankIds);
+    $triedIds = [];
+    $batchSize = 100;
+    $maxBatches = 15;
+
+    for ($batch = 0; $batch < $maxBatches && count($selected) < $need; $batch++) {
+        $exclude = array_values(array_unique(array_merge($bankIds, $triedIds)));
+        $rows = bankFetchCategoryCandidates($conn, $category, $cooldown, $batchSize, $exclude);
+
+        if (!$rows) {
+            break;
+        }
+
+        foreach ($rows as $row) {
+            if (count($selected) >= $need) {
+                break 2;
+            }
+            $bid = (int)$row['id'];
+            if (in_array($bid, $bankIds, true)) {
+                continue;
+            }
+            $triedIds[] = $bid;
+
+            $optStmt = $conn->prepare(
+                'SELECT position, option_text, is_correct FROM QuizQuestionBankOption WHERE bank_id = ? ORDER BY position'
+            );
+            $optStmt->bind_param('i', $bid);
+            $optStmt->execute();
+            $opts = $optStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+            $optStmt->close();
+
+            $q = bankRowToQuizQuestion($row, $opts);
+            if ($q === null) {
+                continue;
+            }
+            $selected[] = $q;
+            $bankIds[] = $bid;
+        }
+    }
+
+    return $selected;
+}
+
+/**
+ * @param int[] $excludeBankIds
+ * @return list<array>
+ */
+function selectGkFallbackQuestions(mysqli $conn, int $count, array $excludeBankIds = []): array {
+    return bankPickQuestionsFromCategory($conn, 'General Knowledge', $count, $excludeBankIds);
+}
+
+/**
+ * @return list<array> Quiz question objects.
  */
 function selectBankQuestionsForQuiz(mysqli $conn, ?array $targets = null): array {
     if (!bankTableExists($conn)) {
@@ -298,56 +395,29 @@ function selectBankQuestionsForQuiz(mysqli $conn, ?array $targets = null): array
             continue;
         }
 
-        $cooldown = BANK_REUSE_COOLDOWN_DAYS;
-        $picked = 0;
-        $triedIds = [];
-        $batchSize = 100;
-        $maxBatches = 15;
-
-        for ($batch = 0; $batch < $maxBatches && $picked < $need; $batch++) {
-            $exclude = array_merge($bankIds, $triedIds);
-            $rows = bankFetchCategoryCandidates($conn, $category, $cooldown, $batchSize, $exclude);
-
-            if (!$rows) {
-                break;
-            }
-
-            foreach ($rows as $row) {
-                if ($picked >= $need) {
-                    break 2;
-                }
-                $bid = (int)$row['id'];
-                if (in_array($bid, $bankIds, true)) {
-                    continue;
-                }
-                $triedIds[] = $bid;
-
-                $optStmt = $conn->prepare(
-                    'SELECT position, option_text, is_correct FROM QuizQuestionBankOption WHERE bank_id = ? ORDER BY position'
-                );
-                $optStmt->bind_param('i', $bid);
-                $optStmt->execute();
-                $opts = $optStmt->get_result()->fetch_all(MYSQLI_ASSOC);
-                $optStmt->close();
-
-                $q = bankRowToQuizQuestion($row, $opts);
-                if ($q === null) {
-                    continue;
-                }
-                $selected[] = $q;
-                $bankIds[] = $bid;
-                $picked++;
-            }
+        $picked = bankPickQuestionsFromCategory($conn, $category, $need, $bankIds);
+        foreach ($picked as $q) {
+            $selected[] = $q;
+            $bankIds[] = (int)$q['bank_id'];
         }
 
-        if ($picked < $need) {
-            $avail = bankCountAvailable($conn, $category);
-            $valid = bankCountValidAvailable($conn, $category);
-            throw new RuntimeException(
-                "Bank pool short for '$category': need $need, picked $picked "
-                . "($avail rows in cooldown window, ~$valid with four unique options — "
-                . "run repair-otqa if OpenTriviaQA imports look broken)"
-            );
+        $shortfall = $need - count($picked);
+        if ($shortfall > 0) {
+            logQuizGenInfo("Bank short for '$category' by $shortfall — using General Knowledge fallback");
+            if (function_exists('bumpQuizGenStat')) {
+                bumpQuizGenStat('gk_fallbacks', $shortfall);
+            }
+            $fill = selectGkFallbackQuestions($conn, $shortfall, $bankIds);
+            if (count($fill) < $shortfall) {
+                throw new RuntimeException(
+                    "Bank pool short for '$category' and insufficient GK fallback "
+                    . '(need ' . $shortfall . ', got ' . count($fill) . ')'
+                );
+            }
+            foreach ($fill as $q) {
+                $selected[] = $q;
+                $bankIds[] = (int)$q['bank_id'];
+            }
         }
     }
 
@@ -544,6 +614,10 @@ function bankNormaliseOpenTdbResult(array $item, string $category): ?array {
         ];
     }
 
+    if (bankQuestionShouldSkip($question, $options)) {
+        return null;
+    }
+
     return [
         'source'        => 'opentdb',
         'source_id'     => bankSourceId('opentdb', $question),
@@ -657,6 +731,9 @@ function bankParseOpenTriviaQaFile(string $content, string $quizzicalCat): array
 
         $built = bankBuildMcOptionsFromChoices($correct, array_slice($choices, 0, 4));
         if ($built === null) {
+            continue;
+        }
+        if (bankQuestionShouldSkip($question, $built)) {
             continue;
         }
 

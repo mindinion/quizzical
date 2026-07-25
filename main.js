@@ -1569,8 +1569,12 @@ document.cookie="feedItems=50";
 	function finishTestQuizLog(stats, log, skipPhotos) {
 		var retried = stats && stats.categories_retried ? stats.categories_retried : 0;
 		var skipped = stats && stats.fact_check_skips ? stats.fact_check_skips : 0;
+		var gkFallback = stats && stats.gk_fallbacks ? stats.gk_fallbacks : 0;
 		var images = stats && stats.preview_images_fetched != null ? stats.preview_images_fetched : null;
 		var summary = 'Categories retried: ' + retried + ' · Fact-check skips: ' + skipped;
+		if (gkFallback > 0) {
+			summary += ' · GK fallbacks: ' + gkFallback;
+		}
 		if (skipPhotos) {
 			summary += ' · Images: skipped';
 		} else if (images !== null) {

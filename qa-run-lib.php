@@ -140,6 +140,9 @@ function buildQuizGenWarnings(array $stats): array {
     if (($stats['category_emergency_fallbacks'] ?? 0) > 0) {
         $warnings[] = 'One or more categories used emergency placeholder questions (API returned no usable output).';
     }
+    if (($stats['gk_fallbacks'] ?? 0) > 0) {
+        $warnings[] = ($stats['gk_fallbacks'] ?? 0) . ' question(s) substituted from the General Knowledge bank (CE or category pool failure).';
+    }
     return $warnings;
 }
 

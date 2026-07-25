@@ -211,7 +211,7 @@ const CURRENT_EVENTS_CATEGORIES = ['NZ Current Events', 'Aussie Current Events']
  */
 const MAX_YEAR_ANSWER_QUESTIONS = 4;
 
-/** @var array{categories_retried: int, fact_check_skips: int, preview_images_fetched: int, category_cap_fallbacks: int, category_emergency_fallbacks: int, answer_corrections: int} */
+/** @var array{categories_retried: int, fact_check_skips: int, preview_images_fetched: int, category_cap_fallbacks: int, category_emergency_fallbacks: int, answer_corrections: int, gk_fallbacks: int} */
 $GLOBALS['quizGenStats'] = [
     'categories_retried'         => 0,
     'fact_check_skips'           => 0,
@@ -219,6 +219,7 @@ $GLOBALS['quizGenStats'] = [
     'category_cap_fallbacks'     => 0,
     'category_emergency_fallbacks' => 0,
     'answer_corrections'         => 0,
+    'gk_fallbacks'               => 0,
 ];
 
 function resetQuizGenStats(): void {
@@ -229,6 +230,7 @@ function resetQuizGenStats(): void {
         'category_cap_fallbacks'     => 0,
         'category_emergency_fallbacks' => 0,
         'answer_corrections'         => 0,
+        'gk_fallbacks'               => 0,
     ];
 }
 
@@ -236,9 +238,9 @@ function getQuizGenStats(): array {
     return $GLOBALS['quizGenStats'];
 }
 
-function bumpQuizGenStat(string $key): void {
+function bumpQuizGenStat(string $key, int $by = 1): void {
     if (isset($GLOBALS['quizGenStats'][$key])) {
-        $GLOBALS['quizGenStats'][$key]++;
+        $GLOBALS['quizGenStats'][$key] += $by;
     }
 }
 
@@ -326,24 +328,39 @@ function generateHybridQuizQuestions(
     $headlinesByRegion['NZ'] = rankHeadlinesForQuiz($headlinesByRegion['NZ'] ?? [], 'NZ');
     $headlinesByRegion['AU'] = rankHeadlinesForQuiz($headlinesByRegion['AU'] ?? [], 'AU');
 
+    $excludedCeHeadlines = fetchSameDayExcludedCeHeadlines($conn, $today, $headlinesByRegion);
+    $headlinesByRegion = excludeCeHeadlinesFromRegions($headlinesByRegion, $excludedCeHeadlines);
+
     $allQuestions = $bankQuestions;
     $usedTopicLabels = array_values(array_unique(array_filter($recentTopicLabels)));
+    $usedBankIds = array_values(array_filter(array_map(
+        fn($q) => isset($q['bank_id']) ? (int)$q['bank_id'] : null,
+        $allQuestions
+    )));
 
     foreach (CE_CATEGORY_TARGETS as $category => $count) {
         logQuizGenInfo("Generating: $category ($count question(s))");
         $avoidForThisCall = array_merge($avoidQuestions, array_column($allQuestions, 'question'));
-        $categoryQuestions = generateCategoryQuestions(
+        $categoryQuestions = generateCeQuestionsOrGkFallback(
+            $conn,
             $category,
             $count,
-            0,
             $headlinesByRegion,
             $today,
             $avoidForThisCall,
             $usedTopicLabels,
-            0,
-            null
+            $usedBankIds
         );
-        validateCeBatch($categoryQuestions, $category, $headlinesByRegion);
+        foreach ($categoryQuestions as $q) {
+            if (!empty($q['bank_id'])) {
+                $usedBankIds[] = (int)$q['bank_id'];
+            }
+        }
+        $region = $category === 'NZ Current Events' ? 'NZ' : 'AU';
+        foreach (ceHeadlinesMatchedByQuestions($categoryQuestions, $headlinesByRegion[$region] ?? []) as $headline) {
+            $excludedCeHeadlines[$region][$headline] = true;
+        }
+        $headlinesByRegion = excludeCeHeadlinesFromRegions($headlinesByRegion, $excludedCeHeadlines);
         $allQuestions = array_merge($allQuestions, $categoryQuestions);
         logQuizGenInfo("Accepted: $category");
     }
@@ -377,8 +394,8 @@ function pickTfHostCategories(): array {
  * small, fixed-count OpenAI call and retry loop. The category label itself is
  * assigned by the caller, not requested from the model, so mislabeling is
  * structurally impossible — only "wrong content for the requested category"
- * remains a risk, which validateOneQuestion() still checks for. When the retry
- * cap is reached, the last model output is accepted (best effort).
+ * remains a risk, which validateOneQuestion() still checks for. On retry cap or API
+ * failure, throws — hybrid assembly substitutes GK bank questions for CE slots.
  */
 function generateCategoryQuestions(
     string $category, int $mcCount, int $tfCount, array $headlinesByRegion, string $today, array $avoidQuestions,
@@ -1741,6 +1758,117 @@ function rankHeadlinesForQuiz(array $headlines, string $region): array {
     $ranked = array_map(fn($h) => $h['title'], $scored);
 
     return array_slice($ranked, 0, 8);
+}
+
+/**
+ * Headlines already used in CE questions today (Morning + Afternoon quizzes).
+ *
+ * @param array{NZ: string[], AU: string[]} $headlinesByRegion
+ * @return array{NZ: array<string, true>, AU: array<string, true>}
+ */
+function fetchSameDayExcludedCeHeadlines(mysqli $conn, string $today, array $headlinesByRegion): array {
+    $excluded = ['NZ' => [], 'AU' => []];
+    $stmt = $conn->prepare(
+        "SELECT q.question_text, q.category FROM AIQuestion q
+         INNER JOIN AIQuiz qz ON qz.id = q.quiz_id
+         WHERE qz.date = ?
+           AND q.category IN ('NZ Current Events', 'Aussie Current Events')"
+    );
+    $stmt->bind_param('s', $today);
+    $stmt->execute();
+    $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    foreach ($rows as $row) {
+        $region = $row['category'] === 'NZ Current Events' ? 'NZ' : 'AU';
+        foreach ($headlinesByRegion[$region] ?? [] as $headline) {
+            if (questionMatchesHeadline($row['question_text'], $headline)) {
+                $excluded[$region][$headline] = true;
+            }
+        }
+    }
+
+    return $excluded;
+}
+
+/**
+ * @param array{NZ: string[], AU: string[]} $headlinesByRegion
+ * @param array{NZ: array<string, true>, AU: array<string, true>} $excludedCeHeadlines
+ * @return array{NZ: string[], AU: string[]}
+ */
+function excludeCeHeadlinesFromRegions(array $headlinesByRegion, array $excludedCeHeadlines): array {
+    foreach (['NZ', 'AU'] as $region) {
+        $excludeSet = $excludedCeHeadlines[$region] ?? [];
+        if (!$excludeSet) {
+            continue;
+        }
+        $headlinesByRegion[$region] = array_values(array_filter(
+            $headlinesByRegion[$region] ?? [],
+            fn($h) => !isset($excludeSet[$h])
+        ));
+    }
+    return $headlinesByRegion;
+}
+
+/** @return string[] */
+function ceHeadlinesMatchedByQuestions(array $questions, array $headlines): array {
+    $matched = [];
+    foreach ($questions as $q) {
+        $text = $q['question'] ?? '';
+        foreach ($headlines as $headline) {
+            if (questionMatchesHeadline($text, $headline)) {
+                $matched[] = $headline;
+            }
+        }
+    }
+    return array_values(array_unique($matched));
+}
+
+/**
+ * Generate CE questions, or substitute GK bank questions on any failure
+ * (retry cap, API error, validation, or fact-check).
+ *
+ * @param int[] $excludeBankIds
+ * @return list<array>
+ */
+function generateCeQuestionsOrGkFallback(
+    mysqli $conn,
+    string $category,
+    int $count,
+    array $headlinesByRegion,
+    string $today,
+    array $avoidQuestions,
+    array $usedTopicLabels,
+    array $excludeBankIds
+): array {
+    try {
+        $questions = generateCategoryQuestions(
+            $category,
+            $count,
+            0,
+            $headlinesByRegion,
+            $today,
+            $avoidQuestions,
+            $usedTopicLabels,
+            0,
+            null
+        );
+        validateCeBatch($questions, $category, $headlinesByRegion);
+        return $questions;
+    } catch (Throwable $e) {
+        logQuizGenError(
+            "[$category] CE generation failed ({$e->getMessage()}) — substituting $count General Knowledge bank question(s)"
+        );
+        bumpQuizGenStat('gk_fallbacks', $count);
+        $fallback = selectGkFallbackQuestions($conn, $count, $excludeBankIds);
+        if (count($fallback) < $count) {
+            throw new RuntimeException(
+                "[$category] CE failed and GK fallback pool insufficient (need $count, got " . count($fallback) . '): '
+                . $e->getMessage()
+            );
+        }
+        return $fallback;
+    }
 }
 
 /**
