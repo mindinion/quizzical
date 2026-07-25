@@ -28,6 +28,7 @@ if ($type !== 'morning' && $type !== 'afternoon') {
 $quizType = ucfirst($type);
 
 require_once __DIR__ . '/dblogin.php';
+require_once __DIR__ . '/ai-quiz-stats.php';
 require_once __DIR__ . '/quiz-generator.php';
 
 $nztz = new DateTimeZone('Pacific/Auckland');
@@ -72,7 +73,12 @@ try {
     $stmt->close();
 
     $hasBankCols = aiQuestionHasBankColumns($conn);
-    if ($hasBankCols) {
+    $hasDifficultyCol = aiQuestionHasColumn($conn, 'difficulty');
+    if ($hasBankCols && $hasDifficultyCol) {
+        $stmtQ = $conn->prepare(
+            "INSERT INTO AIQuestion (quiz_id, position, question_text, category, format, bank_id, source, difficulty) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+        );
+    } elseif ($hasBankCols) {
         $stmtQ = $conn->prepare(
             "INSERT INTO AIQuestion (quiz_id, position, question_text, category, format, bank_id, source) VALUES (?, ?, ?, ?, ?, ?, ?)"
         );
@@ -94,8 +100,11 @@ try {
         $format   = $q['format'];
         $bankId   = !empty($q['bank_id']) ? (int)$q['bank_id'] : null;
         $source   = $q['source'] ?? ($bankId ? 'bank' : 'ai');
+        $difficulty = !empty($q['difficulty']) ? (string)$q['difficulty'] : null;
 
-        if ($hasBankCols) {
+        if ($hasBankCols && $hasDifficultyCol) {
+            $stmtQ->bind_param('iisssiss', $quizId, $pos, $text, $category, $format, $bankId, $source, $difficulty);
+        } elseif ($hasBankCols) {
             $stmtQ->bind_param('iisssis', $quizId, $pos, $text, $category, $format, $bankId, $source);
         } else {
             $stmtQ->bind_param('iisss', $quizId, $pos, $text, $category, $format);
@@ -148,11 +157,6 @@ try {
 
 $conn->close();
 exit(0);
-
-function aiQuestionHasBankColumns(mysqli $conn): bool {
-    $r = $conn->query("SHOW COLUMNS FROM AIQuestion LIKE 'bank_id'");
-    return $r && $r->num_rows > 0;
-}
 
 function notifySuperusersOfFailure(mysqli $conn, string $summary, string $detail): void {
     $result = $conn->query("SELECT email FROM Users WHERE superuser = 1");

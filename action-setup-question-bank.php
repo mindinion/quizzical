@@ -163,7 +163,7 @@ function runQuestionBankMigration(mysqli $conn): array {
     }
 
     $added = [];
-    foreach (['bank_id' => 'int UNSIGNED DEFAULT NULL', 'source' => 'varchar(30) DEFAULT NULL'] as $col => $def) {
+    foreach (['bank_id' => 'int UNSIGNED DEFAULT NULL', 'source' => 'varchar(30) DEFAULT NULL', 'difficulty' => 'varchar(10) DEFAULT NULL'] as $col => $def) {
         $r = $conn->query("SHOW COLUMNS FROM AIQuestion LIKE '$col'");
         if ($r && $r->num_rows > 0) {
             continue;

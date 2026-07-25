@@ -1368,14 +1368,65 @@ A {}
 	flex-direction: column;
 }
 
-#AIQuizCategory {
+#AIQuizMeta,
+.test-quiz-meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 10px;
+}
+
+.ai-quiz-meta-category,
+.test-quiz-meta .ai-quiz-meta-category {
 	font-family: verdana, arial;
 	font-size: 10px;
 	font-weight: bold;
 	text-transform: uppercase;
 	letter-spacing: 0.08em;
 	color: #cc5500;
-	margin-bottom: 10px;
+}
+
+.ai-quiz-meta-badges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.ai-quiz-badge {
+	font-family: verdana, arial;
+	font-size: 9px;
+	font-weight: bold;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	padding: 2px 7px;
+	border-radius: 999px;
+	line-height: 1.4;
+}
+
+.ai-quiz-badge-easy {
+	background: #e8f5e9;
+	color: #2e7d32;
+}
+
+.ai-quiz-badge-medium {
+	background: #fff3e0;
+	color: #e65100;
+}
+
+.ai-quiz-badge-hard {
+	background: #ffebee;
+	color: #c62828;
+}
+
+.ai-quiz-badge-format {
+	background: #eceff1;
+	color: #546e7a;
+}
+
+.ai-quiz-badge-news {
+	background: #e3f2fd;
+	color: #1565c0;
 }
 
 #AIQuizImage {
@@ -1766,13 +1817,7 @@ A {}
 	padding-top: 0;
 }
 
-.test-quiz-category {
-	font-family: verdana, arial;
-	font-size: 10px;
-	font-weight: bold;
-	text-transform: uppercase;
-	letter-spacing: 0.08em;
-	color: #cc5500;
+.test-quiz-meta {
 	margin-bottom: 6px;
 }
 

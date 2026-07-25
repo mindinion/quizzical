@@ -38,10 +38,28 @@ $postedResult = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 $reviewMode = (bool)$postedResult;
 
-// Load all questions
-$stmt = $conn->prepare(
-    "SELECT id, position, question_text, category, format, image_path, image_attribution FROM AIQuestion WHERE quiz_id = ? ORDER BY position"
-);
+// Load all questions (join bank for difficulty on older quizzes without a saved snapshot)
+$hasBankCols = aiQuestionHasBankColumns($conn);
+$hasDifficultyCol = aiQuestionHasColumn($conn, 'difficulty');
+
+if ($hasBankCols && $hasDifficultyCol) {
+    $qSql = "SELECT q.id, q.position, q.question_text, q.category, q.format, q.image_path, q.image_attribution,
+                    q.difficulty AS saved_difficulty, b.difficulty AS bank_difficulty
+             FROM AIQuestion q
+             LEFT JOIN QuizQuestionBank b ON b.id = q.bank_id
+             WHERE q.quiz_id = ? ORDER BY q.position";
+} elseif ($hasBankCols) {
+    $qSql = "SELECT q.id, q.position, q.question_text, q.category, q.format, q.image_path, q.image_attribution,
+                    b.difficulty AS bank_difficulty
+             FROM AIQuestion q
+             LEFT JOIN QuizQuestionBank b ON b.id = q.bank_id
+             WHERE q.quiz_id = ? ORDER BY q.position";
+} else {
+    $qSql = "SELECT id, position, question_text, category, format, image_path, image_attribution
+             FROM AIQuestion WHERE quiz_id = ? ORDER BY position";
+}
+
+$stmt = $conn->prepare($qSql);
 $stmt->bind_param('i', $quizId);
 $stmt->execute();
 $questionsRaw = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -110,6 +128,11 @@ foreach ($questionsRaw as $q) {
     if (!empty($q['image_path'])) {
         $entry['image_url'] = $q['image_path'];
         $entry['image_attribution'] = $q['image_attribution'] ?? '';
+    }
+
+    $difficulty = $q['saved_difficulty'] ?? $q['bank_difficulty'] ?? null;
+    if ($difficulty !== null && $difficulty !== '') {
+        $entry['difficulty'] = $difficulty;
     }
 
     if ($answered) {

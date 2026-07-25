@@ -51,8 +51,9 @@ foreach ($statements as $sql) {
 }
 
 $alterColumns = [
-    'bank_id' => 'ALTER TABLE `AIQuestion` ADD COLUMN `bank_id` int UNSIGNED DEFAULT NULL',
-    'source'  => 'ALTER TABLE `AIQuestion` ADD COLUMN `source` varchar(30) DEFAULT NULL',
+    'bank_id'    => 'ALTER TABLE `AIQuestion` ADD COLUMN `bank_id` int UNSIGNED DEFAULT NULL',
+    'source'     => 'ALTER TABLE `AIQuestion` ADD COLUMN `source` varchar(30) DEFAULT NULL',
+    'difficulty' => 'ALTER TABLE `AIQuestion` ADD COLUMN `difficulty` varchar(10) DEFAULT NULL',
 ];
 
 foreach ($alterColumns as $col => $sql) {

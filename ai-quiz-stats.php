@@ -30,3 +30,13 @@ function aiAnswerOptionStats(mysqli $conn, int $questionId): array {
 
     return ['option_stats' => $stats, 'total_answers' => $total];
 }
+
+function aiQuestionHasColumn(mysqli $conn, string $column): bool {
+    $col = $conn->real_escape_string($column);
+    $r = $conn->query("SHOW COLUMNS FROM AIQuestion LIKE '$col'");
+    return $r && $r->num_rows > 0;
+}
+
+function aiQuestionHasBankColumns(mysqli $conn): bool {
+    return aiQuestionHasColumn($conn, 'bank_id');
+}

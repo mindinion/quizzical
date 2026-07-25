@@ -1251,6 +1251,29 @@ document.cookie="feedItems=50";
 	var aiAnswerPending  = false;
 	var aiReviewMode     = false;
 
+	function isCurrentEventsCategory(cat) {
+		return cat === 'NZ Current Events' || cat === 'Aussie Current Events';
+	}
+
+	function buildQuestionMetaHtml(q) {
+		var html = '<span class="ai-quiz-meta-category">' + escapeHtml(q.category) + '</span>';
+		var badges = '';
+		if (q.difficulty) {
+			var d = String(q.difficulty).toLowerCase();
+			badges += '<span class="ai-quiz-badge ai-quiz-badge-' + d + '">' + escapeHtml(q.difficulty) + '</span>';
+		}
+		if (q.format === 'tf') {
+			badges += '<span class="ai-quiz-badge ai-quiz-badge-format">True / False</span>';
+		}
+		if (isCurrentEventsCategory(q.category)) {
+			badges += '<span class="ai-quiz-badge ai-quiz-badge-news">Today\u2019s news</span>';
+		}
+		if (badges) {
+			html += '<span class="ai-quiz-meta-badges">' + badges + '</span>';
+		}
+		return html;
+	}
+
 	function openAIQuiz(quiz, reviewMode) {
 		$.get('action-get-ai-quiz.php', { quiz_id: quiz.quiz_id }, function(raw) {
 			aiQuizData      = (typeof raw === 'object') ? raw : JSON.parse(raw);
@@ -1289,7 +1312,7 @@ document.cookie="feedItems=50";
 
 		$('#AIQuizProgress').text((idx + 1) + ' / ' + total);
 		$('#AIQuizProgressFill').css('width', ((idx / total) * 100) + '%');
-		$('#AIQuizCategory').text(q.category);
+		$('#AIQuizMeta').html(buildQuestionMetaHtml(q));
 		if (q.image_url) {
 			$('#AIQuizImage').html(
 				'<img src="' + escapeHtml(q.image_url) + '" alt="" loading="lazy" onerror="this.parentNode.style.display=\'none\'">'
@@ -1604,7 +1627,11 @@ document.cookie="feedItems=50";
 		var html = '';
 		questions.forEach(function(q, idx) {
 			html += '<div class="test-quiz-question">';
-			html += '<div class="test-quiz-category">' + escapeHtml(q.category) + '</div>';
+			html += '<div class="test-quiz-meta">' + buildQuestionMetaHtml({
+				category: q.category,
+				difficulty: q.difficulty,
+				format: q.format
+			}) + '</div>';
 			html += '<div class="test-quiz-text">' + (idx + 1) + '. ' + escapeHtml(q.question) + '</div>';
 			if (q.image_url) {
 				html += '<div class="test-quiz-image"><img src="' + escapeHtml(q.image_url) + '" alt="" loading="lazy"></div>';

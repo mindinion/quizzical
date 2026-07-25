@@ -307,6 +307,7 @@ function bankRowToQuizQuestion(array $row, array $options): ?array {
         'options'     => $opts,
         'bank_id'     => $bankId,
         'source'      => $row['source'],
+        'difficulty'  => $row['difficulty'] ?? null,
     ];
 }
 
@@ -436,7 +437,7 @@ function bankFetchCategoryCandidates(
     array $excludeIds = []
 ): array {
     $limit = max(1, min(200, $limit));
-    $sql = "SELECT id, source, category, question_text, format
+    $sql = "SELECT id, source, category, question_text, format, difficulty
             FROM QuizQuestionBank
             WHERE category = ?
               AND (last_used_at IS NULL OR last_used_at < DATE_SUB(NOW(), INTERVAL ? DAY))";
