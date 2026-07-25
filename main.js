@@ -1389,8 +1389,7 @@ document.cookie="feedItems=50";
 		if (optionStats && optionStats.length) {
 			optionStats.forEach(function(s) { statsByOpt[s.option_id] = s.pct; });
 		}
-		var minAnswersForStats = aiReviewMode ? 1 : 3;
-		var showStats = optionStats && optionStats.length && totalAnswers >= minAnswersForStats;
+		var showStats = totalAnswers >= 1;
 		$('#AIQuizOptions .ai-option').each(function() {
 			var optId = parseInt($(this).data('optid'));
 			if (optId === correctId) {
@@ -1400,13 +1399,14 @@ document.cookie="feedItems=50";
 			} else {
 				$(this).addClass('ai-option-neutral');
 			}
-			if (showStats && statsByOpt[optId] !== undefined) {
+			if (showStats) {
+				var pct = statsByOpt[optId] !== undefined ? statsByOpt[optId] : 0;
 				var $stat = $(this).find('.ai-option-stat');
 				if (!$stat.length) {
 					$stat = $('<span class="ai-option-stat"></span>');
 					$(this).append($stat);
 				}
-				$stat.text(statsByOpt[optId] + '% picked');
+				$stat.text(pct + '% picked');
 			}
 		});
 

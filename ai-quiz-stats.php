@@ -13,16 +13,26 @@ function aiAnswerOptionStats(mysqli $conn, int $questionId): array {
     $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 
+    $countsByOption = [];
     $total = 0;
     foreach ($rows as $row) {
-        $total += (int)$row['cnt'];
+        $cnt = (int)$row['cnt'];
+        $countsByOption[(int)$row['chosen_option_id']] = $cnt;
+        $total += $cnt;
     }
 
+    $optStmt = $conn->prepare('SELECT id FROM AIOption WHERE question_id = ? ORDER BY position');
+    $optStmt->bind_param('i', $questionId);
+    $optStmt->execute();
+    $optionRows = $optStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $optStmt->close();
+
     $stats = [];
-    foreach ($rows as $row) {
-        $cnt = (int)$row['cnt'];
+    foreach ($optionRows as $row) {
+        $optId = (int)$row['id'];
+        $cnt = $countsByOption[$optId] ?? 0;
         $stats[] = [
-            'option_id' => (int)$row['chosen_option_id'],
+            'option_id' => $optId,
             'count'     => $cnt,
             'pct'       => $total > 0 ? (int)round($cnt / $total * 100) : 0,
         ];
