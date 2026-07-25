@@ -21,6 +21,7 @@
 
 require_once __DIR__ . '/dblogin.php'; // defines OPENAI_API_KEY
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/question-bank.php';
 
 /** Model for category question generation. gpt-4o is more accurate; gpt-4o-mini is faster/cheaper. */
 const QUIZ_GENERATION_MODEL = 'gpt-4o-mini';
@@ -28,19 +29,16 @@ const QUIZ_GENERATION_MODEL = 'gpt-4o-mini';
 /** Model for fact-check JSON verifiers (premise, answer, distractor). */
 const QUIZ_FACT_CHECK_MODEL = 'gpt-4o-mini';
 
+/** Bank + CE category counts (15 questions total). Bank filled from QuizQuestionBank. */
 const CATEGORY_TARGETS = [
-    'NZ Trivia'              => 2,
-    'Australia Trivia'       => 2,
-    'Sports'                 => 2,
-    'NZ Current Events'      => 1,
-    'Aussie Current Events'  => 1,
-    'Geography'              => 2,
-    'History'                => 2,
-    'General Knowledge'      => 3,
+    'Geography'             => 3,
+    'History'               => 3,
+    'General Knowledge'     => 5,
+    'NZ Current Events'     => 2,
+    'Aussie Current Events' => 2,
 ];
 
 const MAX_ATTEMPTS_PER_CATEGORY = 10;
-const MAX_ATTEMPTS_SPORTS = 15;
 
 const NZ_KEYWORDS = [
     'new zealand', 'nz', 'zealand', 'auckland', 'wellington', 'christchurch', 'dunedin',
@@ -285,69 +283,72 @@ function appendQuizGenLogCapture(string $level, string $msg): void {
 }
 
 /**
- * Generates a full 15-question quiz, one category at a time, and returns the
- * combined array of question objects with positions 1..15 assigned. Questions
- * are shuffled before numbering so presentation order is not fixed by category.
- * When a category exhausts its retry cap, the last generated batch is accepted (best effort).
+ * Generates a full 15-question quiz: bank questions (Geography, History, GK) plus
+ * AI-generated Current Events. Requires QuizQuestionBank to be seeded.
  *
- * @param string $quizType 'morning' or 'afternoon' — controls the headline recency window.
- * @param string $today Y-m-d date string used in the prompt.
- * @param string[] $avoidQuestions Question texts to avoid repeating (e.g. recent days' quizzes).
- * @param string[] $recentTopicLabels Topic labels from recent quizzes (treaties, Petra, etc.).
+ * @param string $quizType 'morning' or 'afternoon'
+ * @param string $today Y-m-d
+ * @param string[] $avoidQuestions Cross-day avoid list (CE generation)
+ * @param string[] $recentTopicLabels Topic labels for CE
+ * @param mysqli|null $conn DB connection for bank selection
  */
-function generateQuizQuestions(string $quizType, string $today, array $avoidQuestions = [], array $recentTopicLabels = []): array {
+function generateQuizQuestions(
+    string $quizType,
+    string $today,
+    array $avoidQuestions = [],
+    array $recentTopicLabels = [],
+    ?mysqli $conn = null
+): array {
+    if ($conn === null || !bankTableExists($conn)) {
+        throw new RuntimeException('Question bank unavailable — run question-bank-migration.sql and seed-question-bank.php --full');
+    }
+    return generateHybridQuizQuestions($conn, $quizType, $today, $avoidQuestions, $recentTopicLabels);
+}
+
+/**
+ * @param string[] $avoidQuestions
+ * @param string[] $recentTopicLabels
+ * @return list<array>
+ */
+function generateHybridQuizQuestions(
+    mysqli $conn,
+    string $quizType,
+    string $today,
+    array $avoidQuestions = [],
+    array $recentTopicLabels = []
+): array {
     resetQuizGenStats();
+    logQuizGenInfo('Selecting bank questions…');
+    $bankQuestions = selectBankQuestionsForQuiz($conn);
+
     logQuizGenInfo('Fetching headlines…');
     $headlinesByRegion = fetchHeadlines($quizType);
-    $tfHosts = pickTfHostCategories();
+    $headlinesByRegion['NZ'] = rankHeadlinesForQuiz($headlinesByRegion['NZ'] ?? [], 'NZ');
+    $headlinesByRegion['AU'] = rankHeadlinesForQuiz($headlinesByRegion['AU'] ?? [], 'AU');
 
-    $allQuestions = [];
+    $allQuestions = $bankQuestions;
     $usedTopicLabels = array_values(array_unique(array_filter($recentTopicLabels)));
-    if ($usedTopicLabels) {
-        logQuizGenInfo('Avoiding recent topics: ' . implode(', ', $usedTopicLabels));
-    }
-    $yearAnswerCount = 0;
-    $quizTfFirstCorrectIsTrue = null;
-    foreach (CATEGORY_TARGETS as $category => $count) {
-        $tfCount = in_array($category, $tfHosts, true) ? 1 : 0;
-        $mcCount = $count - $tfCount;
 
+    foreach (CE_CATEGORY_TARGETS as $category => $count) {
         logQuizGenInfo("Generating: $category ($count question(s))");
-
-        // Include topics already generated earlier in this same quiz, on top of
-        // the cross-day avoid-list, so e.g. Geography and History don't both
-        // reach for the same treaty.
         $avoidForThisCall = array_merge($avoidQuestions, array_column($allQuestions, 'question'));
-
-        $tfCorrectPreference = null;
-        if ($tfCount === 1) {
-            $tfCorrectPreference = $quizTfFirstCorrectIsTrue === null
-                ? (random_int(0, 1) === 0 ? 'true' : 'false')
-                : ($quizTfFirstCorrectIsTrue ? 'false' : 'true');
-        }
-
         $categoryQuestions = generateCategoryQuestions(
-            $category, $mcCount, $tfCount, $headlinesByRegion, $today, $avoidForThisCall,
-            $usedTopicLabels, $yearAnswerCount, $tfCorrectPreference
+            $category,
+            $count,
+            0,
+            $headlinesByRegion,
+            $today,
+            $avoidForThisCall,
+            $usedTopicLabels,
+            0,
+            null
         );
-        foreach ($categoryQuestions as $q) {
-            foreach (duplicateTopicsInQuestion($q) as $topic) {
-                $usedTopicLabels[] = $topic;
-            }
-            if (questionIsYearAnswerQuestion($q)) {
-                $yearAnswerCount++;
-            }
-            if ($quizTfFirstCorrectIsTrue === null && ($q['format'] ?? '') === 'tf') {
-                $quizTfFirstCorrectIsTrue = tfQuestionCorrectIsTrue($q);
-            }
-        }
-        $usedTopicLabels = array_values(array_unique($usedTopicLabels));
+        validateCeBatch($categoryQuestions, $category, $headlinesByRegion);
         $allQuestions = array_merge($allQuestions, $categoryQuestions);
         logQuizGenInfo("Accepted: $category");
     }
 
     shuffle($allQuestions);
-
     foreach ($allQuestions as $i => &$q) {
         $q['position'] = $i + 1;
     }
@@ -356,11 +357,8 @@ function generateQuizQuestions(string $quizType, string $today, array $avoidQues
     return $allQuestions;
 }
 
-/**
- * Sports needs extra retries — World Cup host/year questions often need several reformulations.
- */
 function maxAttemptsForCategory(string $category): int {
-    return $category === 'Sports' ? MAX_ATTEMPTS_SPORTS : MAX_ATTEMPTS_PER_CATEGORY;
+    return MAX_ATTEMPTS_PER_CATEGORY;
 }
 
 /**
@@ -646,18 +644,14 @@ PROMPT;
         }
         if ($fallbackCandidate !== null && isset($fallbackCandidate['questions']) && is_array($fallbackCandidate['questions'])) {
             logQuizGenError(
-                "[$category] All $maxAttempts attempts failed validation — accepting $pickLabel attempt"
-                . ($pickErrorCount !== null ? " ($pickErrorCount violation(s))" : '')
-                . ' (best effort).'
+                "[$category] All $maxAttempts attempts failed validation — no clean batch available."
             );
-            bumpQuizGenStat('category_cap_fallbacks');
-            $result = $fallbackCandidate['questions'];
+            throw new RuntimeException("[$category] generation failed after $maxAttempts attempts");
         } else {
             logQuizGenError(
-                "[$category] All $maxAttempts attempts failed with no model output — using emergency fallback questions."
+                "[$category] All $maxAttempts attempts failed with no model output."
             );
-            bumpQuizGenStat('category_emergency_fallbacks');
-            $result = buildEmergencyCategoryQuestions($category, $mcCount, $tfCount);
+            throw new RuntimeException("[$category] generation failed — no model output");
         }
     }
 
@@ -991,9 +985,9 @@ function questionMatchesHeadline(string $question, string $headline): bool {
 function buildCategoryGuidance(string $category): string {
     switch ($category) {
         case 'NZ Current Events':
-            return 'These questions MUST be based only on the NZ headlines block below — genuinely current, real stories. Must NOT be about Australia. Phrase naturally — do not say "according to recent news" or "as reported today". The marked correct answer must stay close to what the headlines actually say — do not add speculative detail (e.g. "under suspicious circumstances") that headlines do not support. For image_query use generic scene words (e.g. "emergency response") — never repeat an option word like "Flooding" or "Landslide".';
+            return 'These questions MUST be based only on the NZ headlines block below — genuinely current, real stories. Must NOT be about Australia. Prefer nationally significant stories: government policy, major national events, international news affecting NZ — NOT hyper-local town council or single-suburb incidents unless nationally reported (e.g. major disaster). When generating 2 questions, use 2 DIFFERENT headlines/stories. Phrase naturally — do not say "according to recent news". The marked correct answer must stay close to what the headlines actually say. For image_query use generic scene words — never repeat an option word.';
         case 'Aussie Current Events':
-            return 'These questions MUST be based only on the Australian headlines block below — genuinely current, real stories. Must NOT be about New Zealand. Phrase naturally — do not say "according to recent news" or "as reported today". The marked correct answer must stay close to what the headlines actually say — do not add speculative detail that headlines do not support. For image_query use generic scene words — never repeat an option word from the answers.';
+            return 'These questions MUST be based only on the Australian headlines block below — genuinely current, real stories. Must NOT be about New Zealand. Prefer nationally significant stories: federal/state government, major national events, international news affecting Australia — NOT hyper-local town council or single-suburb incidents unless nationally reported. When generating 2 questions, use 2 DIFFERENT headlines/stories. Phrase naturally — do not say "according to recent news". The marked correct answer must stay close to what the headlines actually say. For image_query use generic scene words — never repeat an option word.';
         case 'NZ Trivia':
             return 'General New Zealand trivia — established, verifiable facts that would be true regardless of today\'s news. Do NOT base these on current headlines, even indirectly. Must NOT be about Australia (no Great Barrier Reef, kangaroos, Australian cities, or other AU-only topics). Use widely documented facts only — NOT obscure micro-records (e.g. "first descent" of a specific river, one-off local sporting feats). For year questions, put the year in the answer options, not in the question stem.';
         case 'Australia Trivia':
@@ -1653,12 +1647,14 @@ function fetchRecentTopicLabels(mysqli $conn, string $today, ?int $lookbackDays 
 function fetchHeadlines(string $quizType): array {
     $feedsByRegion = [
         'NZ' => [
-            'https://www.rnz.co.nz/rss/national.rss',
-            'https://news.google.com/rss?hl=en-NZ&gl=NZ&ceid=NZ:en',
+            ['url' => 'https://www.rnz.co.nz/rss/national.rss', 'priority' => 10],
+            ['url' => 'https://www.rnz.co.nz/rss/world.rss', 'priority' => 8],
+            ['url' => 'https://news.google.com/rss?hl=en-NZ&gl=NZ&ceid=NZ:en', 'priority' => 3],
         ],
         'AU' => [
-            'https://www.abc.net.au/news/feed/51120/rss.xml',
-            'https://news.google.com/rss?hl=en-AU&gl=AU&ceid=AU:en',
+            ['url' => 'https://www.abc.net.au/news/feed/51120/rss.xml', 'priority' => 10],
+            ['url' => 'https://www.abc.net.au/news/feed/46082/rss.xml', 'priority' => 8],
+            ['url' => 'https://news.google.com/rss?hl=en-AU&gl=AU&ceid=AU:en', 'priority' => 3],
         ],
     ];
 
@@ -1670,25 +1666,108 @@ function fetchHeadlines(string $quizType): array {
 
     foreach ($feedsByRegion as $region => $feeds) {
         $regionHeadlines = [];
-        foreach ($feeds as $url) {
+        foreach ($feeds as $feed) {
+            $url = is_array($feed) ? $feed['url'] : $feed;
+            $priority = is_array($feed) ? ($feed['priority'] ?? 5) : 5;
             $xml = fetchRss($url);
             if (!$xml) continue;
 
-            // Support both RSS <item> and Atom <entry>
             $items = $xml->channel->item ?? $xml->entry ?? [];
             foreach ($items as $item) {
                 $pubDate = (string)($item->pubDate ?? $item->published ?? '');
                 if ($pubDate && strtotime($pubDate) < $cutoff) continue;
 
                 $title = trim(strip_tags((string)($item->title ?? '')));
-                if ($title) $regionHeadlines[] = $title;
+                if ($title) {
+                    $regionHeadlines[] = ['title' => $title, 'priority' => $priority];
+                }
             }
         }
-        $regionHeadlines = array_values(array_unique($regionHeadlines));
-        $headlinesByRegion[$region] = array_slice($regionHeadlines, 0, $perRegionCap);
+        // Dedupe by title, keep highest priority
+        $byTitle = [];
+        foreach ($regionHeadlines as $h) {
+            $t = $h['title'];
+            if (!isset($byTitle[$t]) || $h['priority'] > $byTitle[$t]['priority']) {
+                $byTitle[$t] = $h;
+            }
+        }
+        $regionHeadlines = array_values($byTitle);
+        $headlinesByRegion[$region] = array_map(
+            fn($h) => $h['title'],
+            array_slice($regionHeadlines, 0, $perRegionCap)
+        );
     }
 
     return $headlinesByRegion;
+}
+
+/**
+ * Rank headlines for CE — national/world stories above hyper-local Google News items.
+ *
+ * @param string[] $headlines
+ * @return string[]
+ */
+function rankHeadlinesForQuiz(array $headlines, string $region): array {
+    if (!$headlines) {
+        return [];
+    }
+
+    $nationalBoost = [
+        'NZ' => ['new zealand', 'nz ', 'government', 'minister', 'parliament', 'budget', 'election', 'national', 'world', 'global', 'international'],
+        'AU' => ['australia', 'australian', 'government', 'minister', 'parliament', 'budget', 'election', 'national', 'world', 'global', 'international', 'federal'],
+    ];
+    $localPenalty = ['local council', 'council vote', 'suburb', 'town hall', 'district council', 'regional council'];
+
+    $boostWords = $nationalBoost[$region] ?? $nationalBoost['NZ'];
+
+    $scored = [];
+    foreach ($headlines as $title) {
+        $lower = mb_strtolower($title);
+        $score = 0;
+        foreach ($boostWords as $w) {
+            if (str_contains($lower, $w)) {
+                $score += 2;
+            }
+        }
+        foreach ($localPenalty as $p) {
+            if (str_contains($lower, $p)) {
+                $score -= 3;
+            }
+        }
+        $scored[] = ['title' => $title, 'score' => $score];
+    }
+
+    usort($scored, fn($a, $b) => $b['score'] <=> $a['score']);
+    $ranked = array_map(fn($h) => $h['title'], $scored);
+
+    return array_slice($ranked, 0, 8);
+}
+
+/**
+ * CE batches must use distinct headlines when count >= 2.
+ *
+ * @param list<array> $questions
+ * @param array{NZ: string[], AU: string[]} $headlinesByRegion
+ */
+function validateCeBatch(array $questions, string $category, array $headlinesByRegion): void {
+    if (count($questions) < 2) {
+        return;
+    }
+    $region = $category === 'NZ Current Events' ? 'NZ' : 'AU';
+    $headlines = $headlinesByRegion[$region] ?? [];
+
+    $matched = [];
+    foreach ($questions as $i => $q) {
+        $text = $q['question'] ?? '';
+        foreach ($headlines as $h) {
+            if (questionMatchesHeadline($text, $h)) {
+                $matched[$i] = $h;
+            }
+        }
+    }
+    if (count($matched) >= 2 && count(array_unique(array_values($matched))) < count($matched)) {
+        throw new RuntimeException("[$category] both questions match the same headline — need 2 different stories");
+    }
 }
 
 function fetchRss(string $url): ?SimpleXMLElement {

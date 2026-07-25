@@ -14,7 +14,7 @@
  */
 
 require_once 'require_auth.php';
-// $userid set by require_auth.php
+require_once __DIR__ . '/ai-quiz-stats.php';
 
 $quizId = isset($_GET['quiz_id']) ? (int)$_GET['quiz_id'] : 0;
 if ($quizId <= 0) { http_response_code(400); echo json_encode(['error' => 'Missing quiz_id']); exit; }
@@ -116,6 +116,9 @@ foreach ($questionsRaw as $q) {
         $entry['chosen_option_id']  = (int)$answers[$qid]['chosen_option_id'];
         $entry['is_correct']        = (bool)$answers[$qid]['is_correct'];
         $entry['correct_option_id'] = (int)$answers[$qid]['correct_option_id'];
+        $stats = aiAnswerOptionStats($conn, $qid);
+        $entry['option_stats']   = $stats['option_stats'];
+        $entry['total_answers']  = $stats['total_answers'];
     }
 
     $questions[] = $entry;

@@ -736,38 +736,74 @@ document.cookie="feedItems=50";
 	function loadBubbles(results) {
 		window.res = results;
 		
-		// First populate each bubble with the preloader
 		results.forEach(function(result) {
 			if (result.result != null && result.poster_id != getCookie("userid"))
 				$('*[data-quizfeed="' + result.postid + '"]').append("<div id=QuizFeedBubble class=Loading><img src = 'ajax-loader.gif' data-loader=bubble data-postid=" + result.postid + " class=Loader></img></div>");
 		});
 		
-		//Now populate each bubble with the data
 		results.forEach(function(result) {
 			if (result.result != null && result.poster_id != getCookie("userid")) {
+				var quizType = result.result.result_type || '';
+				var quizDate = (result.result.result_date || '').split(' ')[0];
+				var isQuizzical = /^Quizzical /i.test(quizType);
 				$.get("action-checkresult.php", 
 					{ 
-						date:result.result.result_date.split(" ")[0],
-						type:result.result.result_type,
-						userid:getCookie("userid")
+						date: quizDate,
+						type: quizType,
+						userid: getCookie("userid")
 					},	
 					function(data, status) { 
-						var score = someText = data.replace(/(\r\n|\n|\r)/gm,"");
+						var score = data.replace(/(\r\n|\n|\r)/gm, "");
 						$('*[data-postid="' + result.postid + '"]').remove();
-						if (score != "failed" ) {
-							var message = "You scored " + score + "/" + result.result.result_max + " in this quiz";
-							$('*[data-quizfeed="' + result.postid + '"]').append("<div id=QuizFeedBubble class=ScreenHide>" + message + "</div>");
+						var message;
+						var extraClass = ' quiz-bubble-clickable';
+						if (score != "failed") {
+							message = "You scored " + score + "/" + result.result.result_max + " in this quiz.<br><span class=\"bubble-action\">Tap to review</span>";
 						} else {
-							var message = "You haven't done this quiz yet";
-							$('*[data-quizfeed="' + result.postid + '"]').append("<div id=QuizFeedBubble class=ScreenHide>" + message + "</div>");
+							message = "You haven't done this quiz yet.<br><span class=\"bubble-action\">Tap to play</span>";
 						}
+						var $bubble = $("<div id=QuizFeedBubble class=\"ScreenHide" + (isQuizzical ? extraClass : "") + "\">" + message + "</div>");
+						if (isQuizzical) {
+							$bubble.attr('data-quiz-type', quizType);
+							$bubble.attr('data-quiz-date', quizDate);
+							$bubble.on('click', function() {
+								openQuizFromFeed($(this).data('quiz-type'), $(this).data('quiz-date'));
+							});
+						}
+						$('*[data-quizfeed="' + result.postid + '"]').append($bubble);
 					}
 				);	
 			}		
-				
 		});
-		
-		
+	}
+
+	function openQuizFromFeed(quizType, quizDate) {
+		if (!quizType || !quizDate) return;
+		var normalised = String(quizType).replace(/^Quizzical\s+/i, '');
+		var match = quizList.find(function(q) {
+			return q.type === normalised && q.date === quizDate;
+		});
+		if (match) {
+			openAIQuiz(match, !!match.done);
+			return;
+		}
+		$.get('action-resolve-ai-quiz.php', { type: quizType, date: quizDate }, function(raw) {
+			var data = (typeof raw === 'object') ? raw : JSON.parse(raw);
+			if (data.error) {
+				alert('Quiz not available — it may be older than 7 days.');
+				return;
+			}
+			var quiz = {
+				quiz_id: data.quiz_id,
+				type: data.type,
+				date: data.date,
+				done: !!data.done,
+				score: data.score,
+				max: data.max,
+				source: 'ai'
+			};
+			openAIQuiz(quiz, quiz.done);
+		});
 	}
 	
 	
@@ -1217,7 +1253,7 @@ document.cookie="feedItems=50";
 
 	function openAIQuiz(quiz, reviewMode) {
 		$.get('action-get-ai-quiz.php', { quiz_id: quiz.quiz_id }, function(raw) {
-			aiQuizData      = JSON.parse(raw);
+			aiQuizData      = (typeof raw === 'object') ? raw : JSON.parse(raw);
 			aiReviewMode    = reviewMode || aiQuizData.review_mode;
 			aiScore         = aiReviewMode && aiQuizData.final_score != null
 				? aiQuizData.final_score
@@ -1274,7 +1310,7 @@ document.cookie="feedItems=50";
 
 		// If already answered (resume or review), show the reveal immediately
 		if (q.answered) {
-			revealAnswer(q.chosen_option_id, q.correct_option_id, q.is_correct, true);
+			revealAnswer(q.chosen_option_id, q.correct_option_id, q.is_correct, true, q.option_stats, q.total_answers);
 			if (aiReviewMode) {
 				$('#AIQuizNext').show().text(aiCurrentIdx >= total - 1 ? 'See score \u2192' : 'Next \u2192');
 			} else if (aiCurrentIdx >= total - 1) {
@@ -1301,7 +1337,7 @@ document.cookie="feedItems=50";
 			var resp = (typeof raw === 'object') ? raw : JSON.parse(raw);
 			console.log('submitAIAnswer resp:', resp);
 			if (resp.correct) aiScore++;
-			revealAnswer(chosenOptionId, resp.correct_option_id, resp.correct, false);
+			revealAnswer(chosenOptionId, resp.correct_option_id, resp.correct, false, resp.option_stats, resp.total_answers);
 
 			if (resp.completed) {
 				setTimeout(showAIScoreScreen, 1200);
@@ -1311,8 +1347,13 @@ document.cookie="feedItems=50";
 		});
 	}
 
-	function revealAnswer(chosenId, correctId, wasCorrect, isResume) {
+	function revealAnswer(chosenId, correctId, wasCorrect, isResume, optionStats, totalAnswers) {
 		$('#AIQuizOptions').off('click', '.ai-option');
+		var statsByOpt = {};
+		if (optionStats && optionStats.length) {
+			optionStats.forEach(function(s) { statsByOpt[s.option_id] = s.pct; });
+		}
+		var showStats = totalAnswers >= 3;
 		$('#AIQuizOptions .ai-option').each(function() {
 			var optId = parseInt($(this).data('optid'));
 			if (optId === correctId) {
@@ -1321,6 +1362,14 @@ document.cookie="feedItems=50";
 				$(this).addClass('ai-option-wrong');
 			} else {
 				$(this).addClass('ai-option-neutral');
+			}
+			if (showStats && statsByOpt[optId] !== undefined) {
+				var $stat = $(this).find('.ai-option-stat');
+				if (!$stat.length) {
+					$stat = $('<span class="ai-option-stat"></span>');
+					$(this).append($stat);
+				}
+				$stat.text(statsByOpt[optId] + '% picked');
 			}
 		});
 
@@ -1996,7 +2045,7 @@ document.cookie="feedItems=50";
 	function showWelcome(force) {
 		var WELCOME_VERSION = 'v6';
 		if (!force && localStorage.getItem('quizzical_welcome') === WELCOME_VERSION) return;
-		$.get('welcome-v5.html', function(html) {
+		$.get('welcome-v6.html', function(html) {
 			$('#WelcomeBody').html(html);
 			$('#WelcomeOverlay').fadeIn(200);
 		});

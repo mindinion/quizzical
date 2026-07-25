@@ -18,6 +18,7 @@
  */
 
 require_once 'require_auth.php';
+require_once __DIR__ . '/ai-quiz-stats.php';
 // $userid set by require_auth.php
 
 $quizId         = isset($_GET['quiz_id'])          ? (int)$_GET['quiz_id']          : 0;
@@ -80,10 +81,13 @@ $existing = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 
 if ($existing) {
+    $stats = aiAnswerOptionStats($conn, $questionId);
     echo json_encode([
         'correct'           => (bool)$existing['is_correct'],
         'correct_option_id' => (int)$existing['correct_option_id'],
         'already_answered'  => true,
+        'option_stats'      => $stats['option_stats'],
+        'total_answers'     => $stats['total_answers'],
     ]);
     exit;
 }
@@ -133,10 +137,14 @@ $answeredCount = (int)$progress['cnt'];
 $score         = (int)$progress['score'];
 $completed     = $answeredCount >= 15;
 
+$stats = aiAnswerOptionStats($conn, $questionId);
+
 echo json_encode([
     'correct'           => $isCorrect,
     'correct_option_id' => $correctOptionId,
     'score'             => $score,
     'answered'          => $answeredCount,
     'completed'         => $completed,
+    'option_stats'      => $stats['option_stats'],
+    'total_answers'     => $stats['total_answers'],
 ]);

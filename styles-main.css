@@ -771,6 +771,16 @@ A {}
 	text-align:center;
 	right:20px;
 }
+#QuizFeedBubble.quiz-bubble-clickable {
+	cursor: pointer;
+}
+#QuizFeedBubble .bubble-action {
+	display: block;
+	font-size: 11px;
+	margin-top: 4px;
+	opacity: 0.9;
+	text-decoration: underline;
+}
 .Loading {
 	background-color:white !important;
 	
@@ -1440,6 +1450,27 @@ A {}
 .ai-option-neutral {
 	pointer-events: none;
 	opacity: 0.55;
+}
+
+.ai-option-stat {
+	display: block;
+	font-size: 11px;
+	margin-top: 6px;
+	opacity: 0.75;
+	font-weight: normal;
+}
+
+#AIQuizAttribution {
+	font-family: verdana, arial;
+	font-size: 10px;
+	color: #999;
+	margin-top: 16px;
+	text-align: center;
+	line-height: 1.4;
+}
+
+#AIQuizAttribution a {
+	color: #888;
 }
 
 #AIQuizFeedback {

@@ -31,7 +31,7 @@ function qaRunOnce(int $runNum, string $type, string $today, int $lookback, bool
     ];
 
     try {
-        $questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels);
+        $questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels, $conn);
         if (!$skipImages) {
             $questions = attachPreviewImages($questions);
         }
@@ -42,7 +42,7 @@ function qaRunOnce(int $runNum, string $type, string $today, int $lookback, bool
     } catch (Throwable $e) {
         logQuizGenError('QA run failed: ' . $e->getMessage());
         try {
-            $questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels);
+            $questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels, $conn);
             if (!$skipImages) {
                 $questions = attachPreviewImages($questions);
             }

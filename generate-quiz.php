@@ -2,10 +2,8 @@
 /**
  * generate-quiz.php
  *
- * CLI-only cron script. Fetches recent news headlines, calls OpenAI to generate
- * 15 quiz questions, and inserts them into AIQuiz / AIQuestion / AIOption.
- * Generation logic lives in quiz-generator.php, shared with the ad hoc
- * admin preview endpoint (action-test-generate-quiz.php), which does not write to the DB.
+ * CLI-only cron script. Assembles 15 questions from QuizQuestionBank (11) plus
+ * AI-generated Current Events (4), and inserts into AIQuiz / AIQuestion / AIOption.
  *
  * Usage:
  *   php generate-quiz.php morning
@@ -27,7 +25,7 @@ if ($type !== 'morning' && $type !== 'afternoon') {
     exit(1);
 }
 
-$quizType = ucfirst($type); // 'Morning' or 'Afternoon'
+$quizType = ucfirst($type);
 
 require_once __DIR__ . '/dblogin.php';
 require_once __DIR__ . '/quiz-generator.php';
@@ -35,7 +33,6 @@ require_once __DIR__ . '/quiz-generator.php';
 $nztz = new DateTimeZone('Pacific/Auckland');
 $today = (new DateTime('now', $nztz))->format('Y-m-d');
 
-// Bail if a quiz already exists for this date + type
 $stmt = $conn->prepare("SELECT id FROM AIQuiz WHERE type = ? AND date = ?");
 $stmt->bind_param('ss', $quizType, $today);
 $stmt->execute();
@@ -46,22 +43,26 @@ if ($stmt->num_rows > 0) {
 }
 $stmt->close();
 
-// Last 3 days of quizzes (both slots) so we don't repeat a topic that's still
-// fresh even after it's rotated out of the headline window
 $recentQuestions = fetchRecentQuestions($conn, $today, 5);
 $recentTopicLabels = fetchRecentTopicLabels($conn, $today);
 
 cleanupQuizImages($conn);
 
-$questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels);
-
-$stats = getQuizGenStats();
-if (($stats['category_cap_fallbacks'] ?? 0) > 0
-    || ($stats['category_emergency_fallbacks'] ?? 0) > 0) {
-    logQuizGenError('Quiz published with best-effort fallbacks — review recommended. Stats: ' . json_encode($stats));
+try {
+    $questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels, $conn);
+} catch (Throwable $e) {
+    logQuizGenError('Quiz generation failed: ' . $e->getMessage());
+    notifySuperusersOfFailure($conn, "$quizType quiz for $today failed to generate", $e->getMessage());
+    exit(1);
 }
 
-// --- Insert into DB ---
+$bankIds = [];
+foreach ($questions as $q) {
+    if (!empty($q['bank_id'])) {
+        $bankIds[] = (int)$q['bank_id'];
+    }
+}
+
 $conn->begin_transaction();
 try {
     $stmt = $conn->prepare("INSERT INTO AIQuiz (type, date) VALUES (?, ?)");
@@ -70,7 +71,16 @@ try {
     $quizId = $conn->insert_id;
     $stmt->close();
 
-    $stmtQ = $conn->prepare("INSERT INTO AIQuestion (quiz_id, position, question_text, category, format) VALUES (?, ?, ?, ?, ?)");
+    $hasBankCols = aiQuestionHasBankColumns($conn);
+    if ($hasBankCols) {
+        $stmtQ = $conn->prepare(
+            "INSERT INTO AIQuestion (quiz_id, position, question_text, category, format, bank_id, source) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        );
+    } else {
+        $stmtQ = $conn->prepare(
+            "INSERT INTO AIQuestion (quiz_id, position, question_text, category, format) VALUES (?, ?, ?, ?, ?)"
+        );
+    }
     $stmtO = $conn->prepare("INSERT INTO AIOption (question_id, position, option_text, is_correct) VALUES (?, ?, ?, ?)");
     $stmtImg = $conn->prepare("UPDATE AIQuestion SET image_path = ?, image_attribution = ? WHERE id = ?");
 
@@ -82,8 +92,14 @@ try {
         $text     = $q['question'];
         $category = $q['category'];
         $format   = $q['format'];
+        $bankId   = !empty($q['bank_id']) ? (int)$q['bank_id'] : null;
+        $source   = $q['source'] ?? ($bankId ? 'bank' : 'ai');
 
-        $stmtQ->bind_param('iisss', $quizId, $pos, $text, $category, $format);
+        if ($hasBankCols) {
+            $stmtQ->bind_param('iisssis', $quizId, $pos, $text, $category, $format, $bankId, $source);
+        } else {
+            $stmtQ->bind_param('iisss', $quizId, $pos, $text, $category, $format);
+        }
         $stmtQ->execute();
         $questionId = $conn->insert_id;
 
@@ -110,6 +126,8 @@ try {
         }
     }
 
+    markBankQuestionsUsed($conn, $bankIds);
+
     $stmtQ->close();
     $stmtO->close();
     $stmtImg->close();
@@ -117,8 +135,8 @@ try {
 
     $stats = getQuizGenStats();
     echo "Generated $quizType quiz (ID $quizId) for $today — " . count($questions) . " questions, $imagesFetched images. "
-        . "Fact-check: {$stats['categories_retried']} categories retried, {$stats['fact_check_skips']} skipped, {$stats['answer_corrections']} answer correction(s). "
-        . "Fallbacks: {$stats['category_cap_fallbacks']} category cap, {$stats['category_emergency_fallbacks']} emergency.\n";
+        . "Bank: " . count($bankIds) . ", CE: " . (count($questions) - count($bankIds)) . ". "
+        . "Fact-check: {$stats['categories_retried']} categories retried.\n";
 
 } catch (Exception $e) {
     $conn->rollback();
@@ -130,13 +148,11 @@ try {
 $conn->close();
 exit(0);
 
-// ---------------------------------------------------------------------------
+function aiQuestionHasBankColumns(mysqli $conn): bool {
+    $r = $conn->query("SHOW COLUMNS FROM AIQuestion LIKE 'bank_id'");
+    return $r && $r->num_rows > 0;
+}
 
-/**
- * A missing quiz slot is otherwise silent — nobody notices until someone opens
- * the app looking for it. Email every superuser so a full generation failure
- * gets seen within minutes instead of discovered later.
- */
 function notifySuperusersOfFailure(mysqli $conn, string $summary, string $detail): void {
     $result = $conn->query("SELECT email FROM Users WHERE superuser = 1");
     if (!$result) return;

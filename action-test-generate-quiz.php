@@ -59,7 +59,7 @@ if ($stream) {
     emitTestQuizSse(['type' => 'status', 'message' => 'Starting quiz generation…']);
 
     try {
-        $questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels);
+        $questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels, $conn);
         if (!$skipImages) {
             emitTestQuizSse(['type' => 'status', 'message' => 'Fetching preview images…']);
             $questions = attachPreviewImages($questions);
@@ -95,7 +95,7 @@ header('Content-Type: application/json');
 
 startQuizGenLogCapture();
 try {
-    $questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels);
+    $questions = generateQuizQuestions($type, $today, $recentQuestions, $recentTopicLabels, $conn);
     if (!$skipImages) {
         $questions = attachPreviewImages($questions);
     }
