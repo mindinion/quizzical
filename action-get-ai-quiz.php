@@ -109,6 +109,23 @@ foreach ($optionsRaw as $o) {
     ];
 }
 
+// In review mode, prefetch correct options so every question can show answers + stats
+$correctByQuestion = [];
+if ($reviewMode) {
+    $stmt = $conn->prepare(
+        "SELECT o.question_id, o.id
+         FROM AIOption o
+         INNER JOIN AIQuestion q ON o.question_id = q.id
+         WHERE q.quiz_id = ? AND o.is_correct = 1"
+    );
+    $stmt->bind_param('i', $quizId);
+    $stmt->execute();
+    foreach ($stmt->get_result()->fetch_all(MYSQLI_ASSOC) as $row) {
+        $correctByQuestion[(int)$row['question_id']] = (int)$row['id'];
+    }
+    $stmt->close();
+}
+
 // Assemble response
 $questions = [];
 foreach ($questionsRaw as $q) {
@@ -139,9 +156,14 @@ foreach ($questionsRaw as $q) {
         $entry['chosen_option_id']  = (int)$answers[$qid]['chosen_option_id'];
         $entry['is_correct']        = (bool)$answers[$qid]['is_correct'];
         $entry['correct_option_id'] = (int)$answers[$qid]['correct_option_id'];
+    } elseif ($reviewMode && isset($correctByQuestion[$qid])) {
+        $entry['correct_option_id'] = $correctByQuestion[$qid];
+    }
+
+    if ($answered || $reviewMode) {
         $stats = aiAnswerOptionStats($conn, $qid);
-        $entry['option_stats']   = $stats['option_stats'];
-        $entry['total_answers']  = $stats['total_answers'];
+        $entry['option_stats']  = $stats['option_stats'];
+        $entry['total_answers'] = $stats['total_answers'];
     }
 
     $questions[] = $entry;

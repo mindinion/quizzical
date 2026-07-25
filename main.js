@@ -1338,8 +1338,15 @@ document.cookie="feedItems=50";
 		$('#AIQuizOptions').html(html);
 
 		// If already answered (resume or review), show the reveal immediately
-		if (q.answered) {
-			revealAnswer(q.chosen_option_id, q.correct_option_id, q.is_correct, true, q.option_stats, q.total_answers);
+		if (q.answered || (aiReviewMode && q.correct_option_id)) {
+			revealAnswer(
+				q.answered ? q.chosen_option_id : null,
+				q.correct_option_id,
+				!!q.is_correct,
+				true,
+				q.option_stats,
+				q.total_answers
+			);
 			if (aiReviewMode) {
 				$('#AIQuizNext').show().text(aiCurrentIdx >= total - 1 ? 'See score \u2192' : 'Next \u2192');
 			} else if (aiCurrentIdx >= total - 1) {
@@ -1382,12 +1389,13 @@ document.cookie="feedItems=50";
 		if (optionStats && optionStats.length) {
 			optionStats.forEach(function(s) { statsByOpt[s.option_id] = s.pct; });
 		}
-		var showStats = totalAnswers >= 3;
+		var minAnswersForStats = aiReviewMode ? 1 : 3;
+		var showStats = optionStats && optionStats.length && totalAnswers >= minAnswersForStats;
 		$('#AIQuizOptions .ai-option').each(function() {
 			var optId = parseInt($(this).data('optid'));
 			if (optId === correctId) {
 				$(this).addClass('ai-option-correct');
-			} else if (optId === chosenId && !wasCorrect) {
+			} else if (chosenId != null && optId === chosenId && !wasCorrect) {
 				$(this).addClass('ai-option-wrong');
 			} else {
 				$(this).addClass('ai-option-neutral');
