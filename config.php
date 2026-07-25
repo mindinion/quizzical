@@ -20,6 +20,11 @@ if (!defined('QA_RUN_TOKEN')) {
     define('QA_RUN_TOKEN', 'qzz_qa_4e8f1a9c2d7b6305');
 }
 
+// One-time bank migration/seed (action-setup-question-bank.php). Not in dblogin.php.
+if (!defined('BANK_SETUP_TOKEN')) {
+    define('BANK_SETUP_TOKEN', 'qzz_bank_setup_7f3a9c2e1d8b6405');
+}
+
 define('MAIL_FROM',      'noreply@quizzical.co.nz');
 define('MAIL_FROM_NAME', 'Quizzical');
 define('SMTP_HOST',      's04ne.syd7.hostingplatform.net.au');

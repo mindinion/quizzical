@@ -30,9 +30,9 @@ if (!is_array($body)) {
 }
 
 $token = $body['token'] ?? ($_SERVER['HTTP_X_QA_TOKEN'] ?? '');
-if (!qaTokenIsValid(is_string($token) ? $token : null)) {
+if (!bankSetupTokenIsValid(is_string($token) ? $token : null)) {
     http_response_code(403);
-    echo json_encode(['error' => 'Forbidden — set QA_RUN_TOKEN in dblogin.php']);
+    echo json_encode(['error' => 'Forbidden']);
     exit;
 }
 
@@ -129,4 +129,14 @@ function runQuestionBankMigration(mysqli $conn): array {
     }
 
     return ['tables' => $tables, 'aiquestion_columns' => $added];
+}
+
+function bankSetupTokenIsValid(?string $token): bool {
+    if (qaTokenIsValid($token)) {
+        return true;
+    }
+    return defined('BANK_SETUP_TOKEN')
+        && BANK_SETUP_TOKEN !== ''
+        && is_string($token)
+        && hash_equals(BANK_SETUP_TOKEN, $token);
 }
