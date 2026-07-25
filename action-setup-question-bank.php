@@ -50,6 +50,11 @@ try {
             'tables_exist' => bankTableExists($conn),
             'totals'       => bankTableExists($conn) ? bankTotalCounts($conn) : [],
             'health'       => bankTableExists($conn) ? bankPoolHealth($conn) : [],
+            'valid_sample' => bankTableExists($conn) ? [
+                'Geography'         => bankCountValidAvailable($conn, 'Geography'),
+                'History'           => bankCountValidAvailable($conn, 'History'),
+                'General Knowledge' => bankCountValidAvailable($conn, 'General Knowledge'),
+            ] : [],
         ];
         $conn->close();
         echo json_encode($out, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
