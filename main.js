@@ -1318,7 +1318,7 @@ document.cookie="feedItems=50";
 
 		$('#AIQuizProgress').text((idx + 1) + ' / ' + total);
 		$('#AIQuizProgressFill').css('width', ((idx / total) * 100) + '%');
-		$('#AIQuizMeta').html(buildQuestionMetaHtml(q));
+		$('#AIQuizQuestionMeta').html(buildQuestionMetaHtml(q));
 		if (q.image_url) {
 			$('#AIQuizImage').html(
 				'<img src="' + escapeHtml(q.image_url) + '" alt="" loading="lazy" onerror="this.parentNode.style.display=\'none\'">'
@@ -1673,6 +1673,7 @@ document.cookie="feedItems=50";
 		$('#ComposerAttachPreview').empty().hide();
 		$('#ComposerFileInput').val('');
 		$('#ComposerAttachBtn').show();
+		updateComposerSubmitVisibility();
 	}
 
 	function clearReplyAttachment(quizFeedId) {
@@ -1681,7 +1682,75 @@ document.cookie="feedItems=50";
 		$('[data-replyattachid="' + quizFeedId + '"]').show();
 	}
 
+	function updateComposerSubmitVisibility() {
+		var hasText = $('#NewCommentTextArea').val().trim().length > 0;
+		var hasAttach = (window.composerAttachments || []).length > 0;
+		$('#NewCommentSubmit').toggle(hasText || hasAttach);
+	}
+
+	function attachmentUploadFilename(file) {
+		var name = (file.name || '').trim();
+		if (/\.(jpe?g|png|gif|pdf|docx?|xlsx?|txt)$/i.test(name)) {
+			return name;
+		}
+		if (file.type === 'image/png') return 'pasted-image.png';
+		if (file.type === 'image/gif') return 'pasted-image.gif';
+		if (file.type && file.type.indexOf('image/') === 0) return 'pasted-image.jpg';
+		return name || 'pasted-file.txt';
+	}
+
+	function filesFromClipboard(dataTransfer) {
+		if (!dataTransfer || !dataTransfer.items) return [];
+		var files = [];
+		for (var i = 0; i < dataTransfer.items.length; i++) {
+			var item = dataTransfer.items[i];
+			if (item.kind !== 'file') continue;
+			var file = item.getAsFile();
+			if (file && file.type.indexOf('image/') === 0) {
+				files.push(file);
+			}
+		}
+		return files;
+	}
+
+	function queueAttachmentUploads(files, opts) {
+		if (!files.length) return;
+		var store = opts.getStore();
+		var remaining = (opts.max || 10) - store.length;
+		if (remaining <= 0) return;
+
+		opts.$preview.show();
+		files.slice(0, remaining).forEach(function(file) {
+			var $spinner = $('<img>').attr({ src: 'ajax-loader.gif', 'class': 'attach-spinner' });
+			var blobUrl = file.type.indexOf('image/') === 0 ? URL.createObjectURL(file) : null;
+			opts.$preview.append($spinner);
+			uploadAttachment(file, function(a) {
+				store.push(a);
+				$spinner.remove();
+				var $item = $('<span>').addClass('attach-preview-item');
+				if (a.file_type === 'image') {
+					$item.append($('<img>').attr({ src: blobUrl || ('action-getattachment.php?id=' + a.id), 'class': 'attach-preview-thumb' }));
+				} else {
+					$item.append($('<span>').addClass('attach-filename').text(a.original_name));
+				}
+				$item.append($('<span>').addClass('attach-remove').html('&times;').on('click', function() {
+					var idx = store.indexOf(a);
+					if (idx > -1) store.splice(idx, 1);
+					if (blobUrl) URL.revokeObjectURL(blobUrl);
+					$item.remove();
+					if (!store.length) opts.$preview.hide();
+					opts.$attachBtn.show();
+					if (opts.onChange) opts.onChange();
+				}));
+				opts.$preview.append($item);
+				if (store.length >= (opts.max || 10)) opts.$attachBtn.hide();
+				if (opts.onChange) opts.onChange();
+			});
+		});
+	}
+
 	function uploadAttachment(file, onSuccess) {
+		var uploadName = attachmentUploadFilename(file);
 		function doUpload(blob, filename) {
 			var fd = new FormData();
 			fd.append('file', blob, filename);
@@ -1703,7 +1772,7 @@ document.cookie="feedItems=50";
 
 		var MAX_PX = 1920;
 		if (file.type.indexOf('image/') !== 0) {
-			doUpload(file, file.name);
+			doUpload(file, uploadName);
 			return;
 		}
 		var img = new Image();
@@ -1712,7 +1781,7 @@ document.cookie="feedItems=50";
 			URL.revokeObjectURL(blobUrl);
 			var w = img.naturalWidth, h = img.naturalHeight;
 			if (w <= MAX_PX && h <= MAX_PX) {
-				doUpload(file, file.name);
+				doUpload(file, uploadName);
 				return;
 			}
 			var scale = MAX_PX / Math.max(w, h);
@@ -1721,7 +1790,7 @@ document.cookie="feedItems=50";
 			canvas.height = Math.round(h * scale);
 			canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
 			canvas.toBlob(function(blob) {
-				doUpload(blob, file.name.replace(/\.[^.]+$/, '.jpg'));
+				doUpload(blob, uploadName.replace(/\.[^.]+$/, '.jpg'));
 			}, 'image/jpeg', 0.85);
 		};
 		img.src = blobUrl;
@@ -1776,33 +1845,11 @@ document.cookie="feedItems=50";
 			if (!files.length) return;
 			$(this).val('');
 			if (!window.composerAttachments) window.composerAttachments = [];
-			var remaining = 10 - window.composerAttachments.length;
-			if (remaining <= 0) return;
-			var $preview = $('#ComposerAttachPreview').show();
-			files.slice(0, remaining).forEach(function(file) {
-				var $spinner = $('<img>').attr({ src: 'ajax-loader.gif', 'class': 'attach-spinner' });
-				var blobUrl = file.type.indexOf('image/') === 0 ? URL.createObjectURL(file) : null;
-				$preview.append($spinner);
-				uploadAttachment(file, function(a) {
-					window.composerAttachments.push(a);
-					$spinner.remove();
-					var $item = $('<span>').addClass('attach-preview-item');
-					if (a.file_type === 'image') {
-						$item.append($('<img>').attr({ src: blobUrl || ('action-getattachment.php?id=' + a.id), 'class': 'attach-preview-thumb' }));
-					} else {
-						$item.append($('<span>').addClass('attach-filename').text(a.original_name));
-					}
-					$item.append($('<span>').addClass('attach-remove').html('&times;').on('click', function() {
-						var idx = window.composerAttachments.indexOf(a);
-						if (idx > -1) window.composerAttachments.splice(idx, 1);
-						if (blobUrl) URL.revokeObjectURL(blobUrl);
-						$item.remove();
-						if (!window.composerAttachments.length) $('#ComposerAttachPreview').hide();
-						$('#ComposerAttachBtn').show();
-					}));
-					$preview.append($item);
-					if (window.composerAttachments.length >= 10) $('#ComposerAttachBtn').hide();
-				});
+			queueAttachmentUploads(files, {
+				getStore: function() { return window.composerAttachments; },
+				$preview: $('#ComposerAttachPreview'),
+				$attachBtn: $('#ComposerAttachBtn'),
+				onChange: updateComposerSubmitVisibility
 			});
 		});
 
@@ -1812,41 +1859,42 @@ document.cookie="feedItems=50";
 			var quizFeedId = $(this).data('replyfileid');
 			if (!files.length) return;
 			$(this).val('');
-			if (!window['replyAttachments_' + quizFeedId]) window['replyAttachments_' + quizFeedId] = [];
-			var remaining = 10 - window['replyAttachments_' + quizFeedId].length;
-			if (remaining <= 0) return;
-			var $preview = $('#ReplyAttachPreview_' + quizFeedId).show();
-			files.slice(0, remaining).forEach(function(file) {
-				var $spinner = $('<img>').attr({ src: 'ajax-loader.gif', 'class': 'attach-spinner' });
-				var blobUrl = file.type.indexOf('image/') === 0 ? URL.createObjectURL(file) : null;
-				$preview.append($spinner);
-				uploadAttachment(file, function(a) {
-					window['replyAttachments_' + quizFeedId].push(a);
-					$spinner.remove();
-					var $item = $('<span>').addClass('attach-preview-item');
-					if (a.file_type === 'image') {
-						$item.append($('<img>').attr({ src: blobUrl || ('action-getattachment.php?id=' + a.id), 'class': 'attach-preview-thumb' }));
-					} else {
-						$item.append($('<span>').addClass('attach-filename').text(a.original_name));
-					}
-					$item.append($('<span>').addClass('attach-remove').html('&times;').on('click', function() {
-						var arr = window['replyAttachments_' + quizFeedId];
-						var idx = arr.indexOf(a);
-						if (idx > -1) arr.splice(idx, 1);
-						if (blobUrl) URL.revokeObjectURL(blobUrl);
-						$item.remove();
-						if (!arr.length) $('#ReplyAttachPreview_' + quizFeedId).hide();
-						$('[data-replyattachid="' + quizFeedId + '"]').show();
-					}));
-					$preview.append($item);
-					if (window['replyAttachments_' + quizFeedId].length >= 10) $('[data-replyattachid="' + quizFeedId + '"]').hide();
-				});
+			var storeKey = 'replyAttachments_' + quizFeedId;
+			if (!window[storeKey]) window[storeKey] = [];
+			queueAttachmentUploads(files, {
+				getStore: function() { return window[storeKey]; },
+				$preview: $('#ReplyAttachPreview_' + quizFeedId),
+				$attachBtn: $('[data-replyattachid="' + quizFeedId + '"]')
 			});
 		});
-		// If a comment is provided, show the submit button (delegated — element is injected dynamically)
-		$(document).on('input', '#NewCommentTextArea', function() {
-			$('#NewCommentSubmit').toggle($(this).val().trim().length > 0);
+
+		// Paste images from clipboard into composer or reply boxes
+		$(document).on('paste', '#NewCommentTextArea, .QuizFeedInfoReplyInput', function(e) {
+			var files = filesFromClipboard(e.originalEvent.clipboardData);
+			if (!files.length) return;
+			e.preventDefault();
+			if ($(this).is('#NewCommentTextArea')) {
+				if (!window.composerAttachments) window.composerAttachments = [];
+				queueAttachmentUploads(files, {
+					getStore: function() { return window.composerAttachments; },
+					$preview: $('#ComposerAttachPreview'),
+					$attachBtn: $('#ComposerAttachBtn'),
+					onChange: updateComposerSubmitVisibility
+				});
+				return;
+			}
+			var quizFeedId = $(this).data('replyboxid');
+			var storeKey = 'replyAttachments_' + quizFeedId;
+			if (!window[storeKey]) window[storeKey] = [];
+			queueAttachmentUploads(files, {
+				getStore: function() { return window[storeKey]; },
+				$preview: $('#ReplyAttachPreview_' + quizFeedId),
+				$attachBtn: $('[data-replyattachid="' + quizFeedId + '"]')
+			});
 		});
+
+		// If a comment is provided, show the submit button (delegated — element is injected dynamically)
+		$(document).on('input', '#NewCommentTextArea', updateComposerSubmitVisibility);
 			
 	}
 	

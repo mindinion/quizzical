@@ -98,12 +98,22 @@ function bankSourceId(string $source, string $questionText): string {
 }
 
 function bankQuestionShouldSkip(string $text, ?array $options = null): bool {
+    $text = bankNormalizeQuestionText($text);
+    if ($text === '') {
+        return true;
+    }
     foreach (BANK_IMPORT_SKIP_PATTERNS as $pattern) {
         if (preg_match($pattern, $text)) {
             return true;
         }
     }
     if (bankIsDubiousInventionCenturyQuestion($text)) {
+        return true;
+    }
+    if (bankQuestionIsNonsenseText($text)) {
+        return true;
+    }
+    if (bankQuestionReferencesMissingQuote($text)) {
         return true;
     }
     if ($options !== null && bankHasAllOfTheseAnswer($options)) {
@@ -134,11 +144,52 @@ function bankIsDubiousInventionCenturyQuestion(string $text): bool {
 }
 
 function bankDecodeHtml(string $text): string {
+    // OpenTDB uses encode=url3986 (%20, %27, …); decode before HTML entities.
+    $text = rawurldecode($text);
     return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+}
+
+function bankNormalizeQuestionText(string $text): string {
+    return trim(preg_replace('/\s+/u', ' ', bankDecodeHtml($text)));
 }
 
 function bankNormalizeOptionText(string $text): string {
     return trim(preg_replace('/\s+/u', ' ', bankDecodeHtml($text)));
+}
+
+/** Corrupted payloads: random letter strings, leftover percent-encoding. */
+function bankQuestionIsNonsenseText(string $text): bool {
+    $trimmed = trim($text);
+    if ($trimmed === '') {
+        return true;
+    }
+    // e.g. "WETYIAFHKLXVNM" — single token of 8+ uppercase letters, no spaces.
+    if (preg_match('/^[A-Z]{8,}$/', $trimmed)) {
+        return true;
+    }
+    // Still contains percent-encoded bytes after decode (double-encoded or malformed).
+    if (preg_match('/%[0-9A-Fa-f]{2}/', $trimmed)) {
+        return true;
+    }
+    return false;
+}
+
+/** Quote-referencing questions that never include the quoted material. */
+function bankQuestionReferencesMissingQuote(string $text): bool {
+    if (preg_match('/["\'\x{201C}\x{201D}\x{2018}\x{2019}]/u', $text)) {
+        return false;
+    }
+    if (preg_match('/\b(who said|who famously said|who once said)\b/i', $text)) {
+        return true;
+    }
+    if (preg_match('/\b(complete|finish|fill in)\b.{0,24}\bquote\b/i', $text)) {
+        return true;
+    }
+    if (preg_match('/\b(this|the|following)\s+quote\b/i', $text)
+        && preg_match('/\b(who|identify|name|author|source)\b/i', $text)) {
+        return true;
+    }
+    return false;
 }
 
 function bankOptionKey(string $text): string {
@@ -291,7 +342,8 @@ function bankRowToQuizQuestion(array $row, array $options): ?array {
     if ($format === 'tf' && count($opts) !== 2) {
         return null;
     }
-    if (bankQuestionShouldSkip($row['question_text'], $opts)) {
+    $questionText = bankNormalizeQuestionText($row['question_text']);
+    if (bankQuestionShouldSkip($questionText, $opts)) {
         return null;
     }
 
@@ -300,7 +352,7 @@ function bankRowToQuizQuestion(array $row, array $options): ?array {
     $imageQuery = bankImageQueryForQuestion($cat, $bankId);
 
     return [
-        'question'    => $row['question_text'],
+        'question'    => $questionText,
         'format'      => $format,
         'category'    => $cat,
         'image_query' => $imageQuery,
@@ -542,7 +594,7 @@ function bankInsertQuestion(mysqli $conn, array $q): bool {
     $source = $q['source'];
     $sourceId = $q['source_id'];
     $category = $q['category'];
-    $text = $q['question_text'];
+    $text = bankNormalizeQuestionText($q['question_text']);
     $format = $q['format'];
     $difficulty = $q['difficulty'] ?? null;
     $attribution = $q['attribution'] ?? null;
@@ -584,7 +636,7 @@ function bankInsertQuestion(mysqli $conn, array $q): bool {
  * @return list<array> normalised question structs ready for bankInsertQuestion
  */
 function bankNormaliseOpenTdbResult(array $item, string $category): ?array {
-    $question = bankDecodeHtml(trim($item['question'] ?? ''));
+    $question = bankNormalizeQuestionText($item['question'] ?? '');
     if ($question === '' || bankQuestionShouldSkip($question)) {
         return null;
     }
@@ -712,7 +764,7 @@ function bankParseOpenTriviaQaFile(string $content, string $quizzicalCat): array
         if (!str_starts_with($questionLine, '#Q ')) {
             continue;
         }
-        $question = trim(substr($questionLine, 3));
+        $question = bankNormalizeQuestionText(substr($questionLine, 3));
         if ($question === '' || bankQuestionShouldSkip($question)) {
             continue;
         }
@@ -796,6 +848,59 @@ function bankRepairOpenTriviaQa(mysqli $conn): array {
         'deleted'    => $deleted,
         'reimported' => bankSeedOpenTriviaQa($conn),
     ];
+}
+
+/** Delete invalid bank rows and fix URL-encoded question text in survivors. */
+function bankRepairQuestionQuality(mysqli $conn): array {
+    $deleted = 0;
+    $updated = 0;
+    $r = $conn->query('SELECT id, question_text, format, category FROM QuizQuestionBank ORDER BY id');
+    if (!$r) {
+        return ['deleted' => 0, 'updated' => 0, 'error' => $conn->error];
+    }
+
+    while ($row = $r->fetch_assoc()) {
+        $id = (int)$row['id'];
+        $normalized = bankNormalizeQuestionText($row['question_text']);
+
+        $optStmt = $conn->prepare(
+            'SELECT option_text, is_correct FROM QuizQuestionBankOption WHERE bank_id = ? ORDER BY position'
+        );
+        $optStmt->bind_param('i', $id);
+        $optStmt->execute();
+        $dbOpts = $optStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $optStmt->close();
+
+        $quizRow = [
+            'question_text' => $normalized,
+            'format'        => $row['format'],
+            'id'            => $id,
+            'category'      => $row['category'],
+            'source'        => '',
+        ];
+        if (bankRowToQuizQuestion($quizRow, $dbOpts) === null) {
+            $delOpts = $conn->prepare('DELETE FROM QuizQuestionBankOption WHERE bank_id = ?');
+            $delOpts->bind_param('i', $id);
+            $delOpts->execute();
+            $delOpts->close();
+            $delQ = $conn->prepare('DELETE FROM QuizQuestionBank WHERE id = ?');
+            $delQ->bind_param('i', $id);
+            $delQ->execute();
+            $delQ->close();
+            $deleted++;
+            continue;
+        }
+
+        if ($normalized !== $row['question_text']) {
+            $upd = $conn->prepare('UPDATE QuizQuestionBank SET question_text = ? WHERE id = ?');
+            $upd->bind_param('si', $normalized, $id);
+            $upd->execute();
+            $upd->close();
+            $updated++;
+        }
+    }
+
+    return ['deleted' => $deleted, 'updated' => $updated];
 }
 
 function bankTotalCounts(mysqli $conn): array {

@@ -37,7 +37,7 @@ if (!bankSetupTokenIsValid(is_string($token) ? $token : null)) {
 }
 
 $mode = isset($body['mode']) ? strtolower(trim((string)$body['mode'])) : 'all';
-$validModes = ['migrate', 'seed-full', 'seed-incremental', 'seed-otqa', 'seed-otdb-full', 'repair-otqa', 'status', 'all'];
+$validModes = ['migrate', 'seed-full', 'seed-incremental', 'seed-otqa', 'seed-otdb-full', 'repair-otqa', 'repair-quality', 'status', 'all'];
 if (!in_array($mode, $validModes, true)) {
     $mode = 'all';
 }
@@ -98,6 +98,17 @@ try {
             throw new RuntimeException('QuizQuestionBank table missing — run migrate first');
         }
         $out['steps']['repair_otqa'] = bankRepairOpenTriviaQa($conn);
+        $out['steps']['totals'] = bankTotalCounts($conn);
+        $out['steps']['valid_sample'] = [
+            'Geography' => bankCountValidAvailable($conn, 'Geography'),
+            'History' => bankCountValidAvailable($conn, 'History'),
+            'General Knowledge' => bankCountValidAvailable($conn, 'General Knowledge'),
+        ];
+    } elseif ($mode === 'repair-quality') {
+        if (!bankTableExists($conn)) {
+            throw new RuntimeException('QuizQuestionBank table missing — run migrate first');
+        }
+        $out['steps']['repair_quality'] = bankRepairQuestionQuality($conn);
         $out['steps']['totals'] = bankTotalCounts($conn);
         $out['steps']['valid_sample'] = [
             'Geography' => bankCountValidAvailable($conn, 'Geography'),

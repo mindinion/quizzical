@@ -1318,7 +1318,7 @@ A {}
 	border-bottom: 1px solid #f0e8d8;
 }
 
-#AIQuizMeta {
+#AIQuizHeaderMeta {
 	display: flex;
 	flex-direction: column;
 	gap: 2px;
@@ -1368,7 +1368,7 @@ A {}
 	flex-direction: column;
 }
 
-#AIQuizMeta,
+.ai-quiz-meta,
 .test-quiz-meta {
 	display: flex;
 	flex-wrap: wrap;
