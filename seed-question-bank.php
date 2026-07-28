@@ -15,6 +15,7 @@ if (php_sapi_name() !== 'cli') {
 }
 
 require_once __DIR__ . '/dblogin.php';
+require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/question-bank.php';
 
 $full = in_array('--full', $argv, true);
@@ -25,41 +26,92 @@ if (!$full && !$incremental) {
 }
 
 if (!bankTableExists($conn)) {
-    fwrite(STDERR, "QuizQuestionBank table missing. Run question-bank-migration.sql first.\n");
+    $msg = "QuizQuestionBank table missing. Run question-bank-migration.sql first.\n";
+    fwrite(STDERR, $msg);
+    notifySeedSuperusers($conn, 'Question bank seed failed', trim($msg), true);
     exit(1);
 }
 
-echo "Seeding question bank (" . ($full ? 'full' : 'incremental') . ")…\n";
+$modeLabel = $full ? 'full' : 'incremental';
+$log = [];
 
-if ($full) {
-    echo "OpenTriviaQA import…\n";
-    $otqa = bankSeedOpenTriviaQa($conn);
-    foreach ($otqa as $cat => $n) {
-        echo "  OpenTriviaQA $cat: +$n\n";
+try {
+    $log[] = "Seeding question bank ($modeLabel)…";
+
+    $otqa = [];
+    if ($full) {
+        $log[] = 'OpenTriviaQA import…';
+        $otqa = bankSeedOpenTriviaQa($conn);
+        foreach ($otqa as $cat => $n) {
+            $log[] = "  OpenTriviaQA $cat: +$n";
+        }
     }
-}
 
-echo "OpenTDB import…\n";
-$otdb = bankSeedOpenTdb($conn, $full);
-foreach ($otdb as $cat => $n) {
-    echo "  OpenTDB $cat: +$n\n";
-}
-
-$counts = bankTotalCounts($conn);
-echo "\nPool totals:\n";
-foreach (BANK_CATEGORY_TARGETS as $cat => $_) {
-    $total = $counts[$cat]['total'] ?? 0;
-    $avail = $counts[$cat]['available'] ?? 0;
-    echo "  $cat: $total total, $avail available (90-day cooldown)\n";
-}
-
-$health = bankPoolHealth($conn);
-foreach ($health as $cat => $h) {
-    $runway = $h['runway_days'];
-    if ($runway < 30) {
-        echo "WARNING: $cat runway only {$runway} days\n";
+    $log[] = 'OpenTDB import…';
+    $otdb = bankSeedOpenTdb($conn, $full);
+    foreach ($otdb as $cat => $n) {
+        $log[] = "  OpenTDB $cat: +$n";
     }
+
+    $counts = bankTotalCounts($conn);
+    $log[] = '';
+    $log[] = 'Pool totals:';
+    foreach (BANK_CATEGORY_TARGETS as $cat => $_) {
+        $total = $counts[$cat]['total'] ?? 0;
+        $avail = $counts[$cat]['available'] ?? 0;
+        $log[] = "  $cat: $total total, $avail available (90-day cooldown)";
+    }
+
+    $health = bankPoolHealth($conn);
+    $warnings = [];
+    foreach ($health as $cat => $h) {
+        $runway = $h['runway_days'];
+        if ($runway < 30) {
+            $warnings[] = "WARNING: $cat runway only {$runway} days";
+        }
+    }
+    foreach ($warnings as $w) {
+        $log[] = $w;
+    }
+
+    $added = 0;
+    foreach ($otdb as $n) {
+        $added += (int)$n;
+    }
+    if ($full) {
+        foreach ($otqa as $n) {
+            $added += (int)$n;
+        }
+    }
+
+    $subject = "Quizzical: question bank $modeLabel seed complete (+$added new)";
+    notifySeedSuperusers($conn, $subject, implode("\n", $log), !empty($warnings));
+} catch (Throwable $e) {
+    $detail = $e->getMessage();
+    $log[] = "ERROR: $detail";
+    echo implode("\n", $log) . "\n";
+    notifySeedSuperusers($conn, "Question bank $modeLabel seed failed", implode("\n", $log), true);
+    $conn->close();
+    exit(1);
 }
+
+foreach ($log as $line) {
+    echo $line . "\n";
+}
+echo "Done.\n";
 
 $conn->close();
-echo "Done.\n";
+exit(0);
+
+function notifySeedSuperusers(mysqli $conn, string $subject, string $body, bool $isFailure): void {
+    $result = $conn->query('SELECT email FROM Users WHERE superuser = 1');
+    if (!$result) {
+        return;
+    }
+    while ($row = $result->fetch_assoc()) {
+        sendMail($conn, $row['email'], $subject, $body, true);
+    }
+    if ($isFailure) {
+        fwrite(STDERR, $body . "\n");
+    }
+}
