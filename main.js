@@ -2141,16 +2141,16 @@ document.cookie="feedItems=50";
 	}
 
 	function showWelcome(force) {
-		var WELCOME_VERSION = 'v7';
+		var WELCOME_VERSION = 'v8';
 		if (!force && localStorage.getItem('quizzical_welcome') === WELCOME_VERSION) return;
-		$.get('welcome-v7.html', function(html) {
+		$.get('welcome-v8.html', function(html) {
 			$('#WelcomeBody').html(html);
 			$('#WelcomeOverlay').fadeIn(200);
 		});
 	}
 
 	function dismissWelcome() {
-		localStorage.setItem('quizzical_welcome', 'v7');
+		localStorage.setItem('quizzical_welcome', 'v8');
 		$('#WelcomeOverlay').fadeOut(200);
 	}
 
