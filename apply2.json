@@ -1,0 +1,782 @@
+{
+    "dry_run": false,
+    "log": [
+        "Results.ai_quiz_id already present.",
+        "Linked 77 result(s) to their quiz."
+    ],
+    "matched_count": 77,
+    "unmatched_count": 0,
+    "matches": [
+        {
+            "result_id": 1847802,
+            "user": 4,
+            "type": "Quizzical Afternoon",
+            "score": 4,
+            "posted": "2026-08-07 18:56:45",
+            "quiz_id": 70,
+            "finished_at": "2026-08-07 16:56:38",
+            "answers": 15
+        },
+        {
+            "result_id": 1847660,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 10,
+            "posted": "2026-07-05 13:33:06",
+            "quiz_id": 3,
+            "finished_at": "2026-07-05 11:32:36",
+            "answers": 15
+        },
+        {
+            "result_id": 1847662,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 11,
+            "posted": "2026-07-06 08:47:44",
+            "quiz_id": 5,
+            "finished_at": "2026-07-06 06:47:35",
+            "answers": 15
+        },
+        {
+            "result_id": 1847664,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 11,
+            "posted": "2026-07-06 16:40:53",
+            "quiz_id": 6,
+            "finished_at": "2026-07-06 14:40:48",
+            "answers": 15
+        },
+        {
+            "result_id": 1847667,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 10,
+            "posted": "2026-07-07 09:30:03",
+            "quiz_id": 7,
+            "finished_at": "2026-07-07 07:29:58",
+            "answers": 15
+        },
+        {
+            "result_id": 1847673,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 9,
+            "posted": "2026-07-08 19:29:11",
+            "quiz_id": 10,
+            "finished_at": "2026-07-08 17:29:08",
+            "answers": 15
+        },
+        {
+            "result_id": 1847675,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 10,
+            "posted": "2026-07-09 09:22:13",
+            "quiz_id": 11,
+            "finished_at": "2026-07-09 07:22:09",
+            "answers": 15
+        },
+        {
+            "result_id": 1847676,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 14,
+            "posted": "2026-07-09 16:39:33",
+            "quiz_id": 12,
+            "finished_at": "2026-07-09 14:39:16",
+            "answers": 15
+        },
+        {
+            "result_id": 1847681,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 6,
+            "posted": "2026-07-10 12:25:24",
+            "quiz_id": 13,
+            "finished_at": "2026-07-10 10:25:13",
+            "answers": 15
+        },
+        {
+            "result_id": 1847682,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 8,
+            "posted": "2026-07-10 18:22:50",
+            "quiz_id": 14,
+            "finished_at": "2026-07-10 16:22:46",
+            "answers": 15
+        },
+        {
+            "result_id": 1847685,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 7,
+            "posted": "2026-07-11 09:57:11",
+            "quiz_id": 15,
+            "finished_at": "2026-07-11 07:56:46",
+            "answers": 15
+        },
+        {
+            "result_id": 1847687,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 9,
+            "posted": "2026-07-11 20:20:10",
+            "quiz_id": 16,
+            "finished_at": "2026-07-11 18:19:58",
+            "answers": 15
+        },
+        {
+            "result_id": 1847688,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 9,
+            "posted": "2026-07-12 09:44:18",
+            "quiz_id": 17,
+            "finished_at": "2026-07-12 07:44:15",
+            "answers": 15
+        },
+        {
+            "result_id": 1847691,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 6,
+            "posted": "2026-07-13 09:32:23",
+            "quiz_id": 19,
+            "finished_at": "2026-07-13 07:32:20",
+            "answers": 15
+        },
+        {
+            "result_id": 1847693,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 7,
+            "posted": "2026-07-13 18:27:35",
+            "quiz_id": 20,
+            "finished_at": "2026-07-13 16:27:32",
+            "answers": 15
+        },
+        {
+            "result_id": 1847697,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 9,
+            "posted": "2026-07-14 09:23:12",
+            "quiz_id": 21,
+            "finished_at": "2026-07-14 07:23:09",
+            "answers": 15
+        },
+        {
+            "result_id": 1847698,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 7,
+            "posted": "2026-07-14 20:04:25",
+            "quiz_id": 22,
+            "finished_at": "2026-07-14 18:04:22",
+            "answers": 15
+        },
+        {
+            "result_id": 1847701,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 4,
+            "posted": "2026-07-15 09:12:01",
+            "quiz_id": 23,
+            "finished_at": "2026-07-15 07:11:55",
+            "answers": 15
+        },
+        {
+            "result_id": 1847705,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 12,
+            "posted": "2026-07-16 09:04:25",
+            "quiz_id": 25,
+            "finished_at": "2026-07-16 07:04:21",
+            "answers": 15
+        },
+        {
+            "result_id": 1847708,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 7,
+            "posted": "2026-07-16 17:42:33",
+            "quiz_id": 26,
+            "finished_at": "2026-07-16 15:42:30",
+            "answers": 15
+        },
+        {
+            "result_id": 1847710,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 3,
+            "posted": "2026-07-17 09:29:19",
+            "quiz_id": 27,
+            "finished_at": "2026-07-17 07:29:11",
+            "answers": 15
+        },
+        {
+            "result_id": 1847712,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 6,
+            "posted": "2026-07-17 16:50:57",
+            "quiz_id": 28,
+            "finished_at": "2026-07-17 14:50:54",
+            "answers": 15
+        },
+        {
+            "result_id": 1847715,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 8,
+            "posted": "2026-07-18 10:04:11",
+            "quiz_id": 29,
+            "finished_at": "2026-07-18 08:04:08",
+            "answers": 15
+        },
+        {
+            "result_id": 1847717,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 4,
+            "posted": "2026-07-18 19:44:21",
+            "quiz_id": 30,
+            "finished_at": "2026-07-18 17:44:18",
+            "answers": 15
+        },
+        {
+            "result_id": 1847719,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 9,
+            "posted": "2026-07-19 16:59:03",
+            "quiz_id": 32,
+            "finished_at": "2026-07-19 14:58:58",
+            "answers": 15
+        },
+        {
+            "result_id": 1847721,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 7,
+            "posted": "2026-07-20 09:36:53",
+            "quiz_id": 33,
+            "finished_at": "2026-07-20 07:36:44",
+            "answers": 15
+        },
+        {
+            "result_id": 1847724,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 11,
+            "posted": "2026-07-20 21:38:22",
+            "quiz_id": 34,
+            "finished_at": "2026-07-20 19:38:19",
+            "answers": 15
+        },
+        {
+            "result_id": 1847725,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 6,
+            "posted": "2026-07-21 09:15:29",
+            "quiz_id": 35,
+            "finished_at": "2026-07-21 07:15:26",
+            "answers": 15
+        },
+        {
+            "result_id": 1847728,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 6,
+            "posted": "2026-07-21 16:14:56",
+            "quiz_id": 36,
+            "finished_at": "2026-07-21 14:14:53",
+            "answers": 15
+        },
+        {
+            "result_id": 1847730,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 7,
+            "posted": "2026-07-22 08:50:51",
+            "quiz_id": 37,
+            "finished_at": "2026-07-22 06:50:48",
+            "answers": 15
+        },
+        {
+            "result_id": 1847733,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 6,
+            "posted": "2026-07-22 17:27:37",
+            "quiz_id": 38,
+            "finished_at": "2026-07-22 15:27:33",
+            "answers": 15
+        },
+        {
+            "result_id": 1847735,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 4,
+            "posted": "2026-07-23 08:55:34",
+            "quiz_id": 39,
+            "finished_at": "2026-07-23 06:55:31",
+            "answers": 15
+        },
+        {
+            "result_id": 1847738,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 7,
+            "posted": "2026-07-23 16:31:37",
+            "quiz_id": 40,
+            "finished_at": "2026-07-23 14:30:00",
+            "answers": 15
+        },
+        {
+            "result_id": 1847739,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 7,
+            "posted": "2026-07-24 09:48:23",
+            "quiz_id": 41,
+            "finished_at": "2026-07-24 07:48:19",
+            "answers": 15
+        },
+        {
+            "result_id": 1847741,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 11,
+            "posted": "2026-07-24 17:39:35",
+            "quiz_id": 42,
+            "finished_at": "2026-07-24 15:39:32",
+            "answers": 15
+        },
+        {
+            "result_id": 1847744,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 11,
+            "posted": "2026-07-25 10:01:31",
+            "quiz_id": 43,
+            "finished_at": "2026-07-25 08:01:28",
+            "answers": 15
+        },
+        {
+            "result_id": 1847745,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 8,
+            "posted": "2026-07-25 16:25:11",
+            "quiz_id": 44,
+            "finished_at": "2026-07-25 14:25:08",
+            "answers": 15
+        },
+        {
+            "result_id": 1847748,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 5,
+            "posted": "2026-07-26 09:32:39",
+            "quiz_id": 45,
+            "finished_at": "2026-07-26 07:32:36",
+            "answers": 15
+        },
+        {
+            "result_id": 1847749,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 5,
+            "posted": "2026-07-26 16:03:44",
+            "quiz_id": 46,
+            "finished_at": "2026-07-26 14:03:41",
+            "answers": 15
+        },
+        {
+            "result_id": 1847752,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 5,
+            "posted": "2026-07-27 09:31:44",
+            "quiz_id": 47,
+            "finished_at": "2026-07-27 07:31:40",
+            "answers": 15
+        },
+        {
+            "result_id": 1847753,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 6,
+            "posted": "2026-07-27 16:24:43",
+            "quiz_id": 48,
+            "finished_at": "2026-07-27 14:24:03",
+            "answers": 15
+        },
+        {
+            "result_id": 1847756,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 4,
+            "posted": "2026-07-28 09:03:24",
+            "quiz_id": 49,
+            "finished_at": "2026-07-28 07:03:05",
+            "answers": 15
+        },
+        {
+            "result_id": 1847758,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 5,
+            "posted": "2026-07-28 18:06:20",
+            "quiz_id": 50,
+            "finished_at": "2026-07-28 16:06:17",
+            "answers": 15
+        },
+        {
+            "result_id": 1847762,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 5,
+            "posted": "2026-07-29 09:22:48",
+            "quiz_id": 51,
+            "finished_at": "2026-07-29 07:22:45",
+            "answers": 15
+        },
+        {
+            "result_id": 1847763,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 6,
+            "posted": "2026-07-29 17:31:52",
+            "quiz_id": 52,
+            "finished_at": "2026-07-29 15:31:45",
+            "answers": 15
+        },
+        {
+            "result_id": 1847766,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 3,
+            "posted": "2026-07-30 09:01:29",
+            "quiz_id": 53,
+            "finished_at": "2026-07-30 07:01:25",
+            "answers": 15
+        },
+        {
+            "result_id": 1847769,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 5,
+            "posted": "2026-07-30 20:10:33",
+            "quiz_id": 54,
+            "finished_at": "2026-07-30 18:10:29",
+            "answers": 15
+        },
+        {
+            "result_id": 1847772,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 3,
+            "posted": "2026-07-31 09:50:32",
+            "quiz_id": 55,
+            "finished_at": "2026-07-31 07:50:29",
+            "answers": 15
+        },
+        {
+            "result_id": 1847773,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 9,
+            "posted": "2026-07-31 17:00:00",
+            "quiz_id": 56,
+            "finished_at": "2026-07-31 14:59:50",
+            "answers": 15
+        },
+        {
+            "result_id": 1847775,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 8,
+            "posted": "2026-08-01 09:58:32",
+            "quiz_id": 57,
+            "finished_at": "2026-08-01 07:58:28",
+            "answers": 15
+        },
+        {
+            "result_id": 1847778,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 4,
+            "posted": "2026-08-02 09:57:23",
+            "quiz_id": 59,
+            "finished_at": "2026-08-02 07:57:19",
+            "answers": 15
+        },
+        {
+            "result_id": 1847780,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 9,
+            "posted": "2026-08-02 16:14:28",
+            "quiz_id": 60,
+            "finished_at": "2026-08-02 14:14:25",
+            "answers": 15
+        },
+        {
+            "result_id": 1847782,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 9,
+            "posted": "2026-08-03 09:17:51",
+            "quiz_id": 61,
+            "finished_at": "2026-08-03 07:17:49",
+            "answers": 15
+        },
+        {
+            "result_id": 1847783,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 4,
+            "posted": "2026-08-03 15:17:31",
+            "quiz_id": 62,
+            "finished_at": "2026-08-03 13:17:28",
+            "answers": 15
+        },
+        {
+            "result_id": 1847787,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 4,
+            "posted": "2026-08-04 09:02:40",
+            "quiz_id": 63,
+            "finished_at": "2026-08-04 07:02:37",
+            "answers": 15
+        },
+        {
+            "result_id": 1847788,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 6,
+            "posted": "2026-08-04 17:11:54",
+            "quiz_id": 64,
+            "finished_at": "2026-08-04 15:11:51",
+            "answers": 15
+        },
+        {
+            "result_id": 1847795,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 5,
+            "posted": "2026-08-06 09:30:33",
+            "quiz_id": 67,
+            "finished_at": "2026-08-06 07:30:30",
+            "answers": 15
+        },
+        {
+            "result_id": 1847796,
+            "user": 7,
+            "type": "Quizzical Afternoon",
+            "score": 1,
+            "posted": "2026-08-06 16:43:13",
+            "quiz_id": 68,
+            "finished_at": "2026-08-06 14:43:09",
+            "answers": 15
+        },
+        {
+            "result_id": 1847799,
+            "user": 7,
+            "type": "Quizzical Morning",
+            "score": 6,
+            "posted": "2026-08-07 09:25:54",
+            "quiz_id": 69,
+            "finished_at": "2026-08-07 07:25:51",
+            "answers": 15
+        },
+        {
+            "result_id": 1847666,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 9,
+            "posted": "2026-07-06 18:08:53",
+            "quiz_id": 5,
+            "finished_at": "2026-07-06 18:08:42",
+            "answers": 15
+        },
+        {
+            "result_id": 1847669,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 10,
+            "posted": "2026-07-07 18:07:21",
+            "quiz_id": 7,
+            "finished_at": "2026-07-07 18:07:15",
+            "answers": 15
+        },
+        {
+            "result_id": 1847674,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 9,
+            "posted": "2026-07-08 18:26:19",
+            "quiz_id": 9,
+            "finished_at": "2026-07-08 18:25:31",
+            "answers": 15
+        },
+        {
+            "result_id": 1847679,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 9,
+            "posted": "2026-07-09 19:36:29",
+            "quiz_id": 11,
+            "finished_at": "2026-07-09 19:36:26",
+            "answers": 15
+        },
+        {
+            "result_id": 1847695,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 9,
+            "posted": "2026-07-13 18:07:22",
+            "quiz_id": 19,
+            "finished_at": "2026-07-13 18:07:18",
+            "answers": 15
+        },
+        {
+            "result_id": 1847699,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 5,
+            "posted": "2026-07-14 18:13:01",
+            "quiz_id": 21,
+            "finished_at": "2026-07-14 18:12:58",
+            "answers": 15
+        },
+        {
+            "result_id": 1847704,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 8,
+            "posted": "2026-07-15 20:02:34",
+            "quiz_id": 23,
+            "finished_at": "2026-07-15 20:02:30",
+            "answers": 15
+        },
+        {
+            "result_id": 1847709,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 10,
+            "posted": "2026-07-16 19:48:43",
+            "quiz_id": 25,
+            "finished_at": "2026-07-16 19:48:40",
+            "answers": 15
+        },
+        {
+            "result_id": 1847723,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 8,
+            "posted": "2026-07-20 17:52:06",
+            "quiz_id": 33,
+            "finished_at": "2026-07-20 17:52:03",
+            "answers": 15
+        },
+        {
+            "result_id": 1847729,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 8,
+            "posted": "2026-07-21 18:08:10",
+            "quiz_id": 35,
+            "finished_at": "2026-07-21 18:08:06",
+            "answers": 15
+        },
+        {
+            "result_id": 1847734,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 7,
+            "posted": "2026-07-22 18:02:23",
+            "quiz_id": 37,
+            "finished_at": "2026-07-22 18:02:19",
+            "answers": 15
+        },
+        {
+            "result_id": 1847755,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 7,
+            "posted": "2026-07-27 18:21:12",
+            "quiz_id": 47,
+            "finished_at": "2026-07-27 18:21:08",
+            "answers": 15
+        },
+        {
+            "result_id": 1847760,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 4,
+            "posted": "2026-07-28 18:05:31",
+            "quiz_id": 49,
+            "finished_at": "2026-07-28 18:05:06",
+            "answers": 15
+        },
+        {
+            "result_id": 1847765,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 6,
+            "posted": "2026-07-29 18:47:00",
+            "quiz_id": 51,
+            "finished_at": "2026-07-29 18:46:56",
+            "answers": 15
+        },
+        {
+            "result_id": 1847768,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 6,
+            "posted": "2026-07-30 18:05:56",
+            "quiz_id": 53,
+            "finished_at": "2026-07-30 18:05:52",
+            "answers": 15
+        },
+        {
+            "result_id": 1847786,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 8,
+            "posted": "2026-08-03 18:15:01",
+            "quiz_id": 61,
+            "finished_at": "2026-08-03 18:14:57",
+            "answers": 15
+        },
+        {
+            "result_id": 1847789,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 3,
+            "posted": "2026-08-04 18:12:15",
+            "quiz_id": 63,
+            "finished_at": "2026-08-04 18:11:46",
+            "answers": 15
+        },
+        {
+            "result_id": 1847794,
+            "user": 9,
+            "type": "Quizzical Morning",
+            "score": 6,
+            "posted": "2026-08-05 18:06:46",
+            "quiz_id": 65,
+            "finished_at": "2026-08-05 18:06:43",
+            "answers": 15
+        }
+    ],
+    "unmatched": []
+}

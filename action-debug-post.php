@@ -87,6 +87,8 @@ if ($quizId > 0) {
             'rows'  => $res2 ? $res2->num_rows : null,
         ];
 
+        $out['would_infer_quiz_id'] = aiInferQuizIdForResult($conn, $uid, $type);
+
         // Answer state for this quiz
         $a = $conn->query(
             "SELECT COUNT(*) AS answers, SUM(is_correct) AS score FROM AIAnswer WHERE user_id = $uid AND quiz_id = $quizId"
