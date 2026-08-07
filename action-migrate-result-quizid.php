@@ -51,11 +51,15 @@ if (!$hasColumn && $dryRun) {
 //    Results.date was written in the user's, so the two need aligning before comparison.
 $serverTz = new DateTimeZone(date_default_timezone_get());
 $finished = [];
+// Only fully answered quizzes are candidates — a result cannot have come from a quiz
+// the user never finished, since the score screen is only reached at the last question.
 $q = $conn->query(
-    "SELECT a.user_id, a.quiz_id, z.type, MAX(a.answered_at) AS finished_at, COUNT(*) AS answers
+    "SELECT a.user_id, a.quiz_id, z.type, MAX(a.answered_at) AS finished_at, COUNT(*) AS answers,
+            (SELECT COUNT(*) FROM AIQuestion q WHERE q.quiz_id = a.quiz_id) AS question_count
      FROM AIAnswer a
      INNER JOIN AIQuiz z ON z.id = a.quiz_id
-     GROUP BY a.user_id, a.quiz_id, z.type"
+     GROUP BY a.user_id, a.quiz_id, z.type
+     HAVING answers >= question_count AND question_count > 0"
 );
 while ($q && $row = $q->fetch_assoc()) {
     $finished[(int)$row['user_id']][] = [
@@ -81,9 +85,12 @@ $timezones = [];
 $tzq = $conn->query("SELECT id, timezone FROM Users");
 while ($tzq && $row = $tzq->fetch_assoc()) { $timezones[(int)$row['id']] = $row['timezone']; }
 
-// A post follows its last answer within seconds; allow slack for clock drift and for
-// someone who finished, closed the wizard, and posted a little later.
-const POST_SLACK_SECONDS = 6 * 3600;
+// Posting was the only way off the score screen, so historically a result follows its
+// last answer within seconds. Allow a little slack for clock drift, and a wide but
+// same-session window after finishing, so a result is never attached to a quiz the user
+// happened to complete days earlier.
+const CLOCK_SLACK_SECONDS = 600;
+const MAX_POST_DELAY_SECONDS = 12 * 3600;
 
 $claimed = [];
 $matches = [];
@@ -111,7 +118,8 @@ foreach ($results as $row) {
         $dt->setTimezone($userTz);
         $candTime = strtotime($dt->format('Y-m-d H:i:s'));
 
-        if ($candTime > $postedAt + POST_SLACK_SECONDS) continue;
+        if ($candTime > $postedAt + CLOCK_SLACK_SECONDS) continue;
+        if ($candTime < $postedAt - MAX_POST_DELAY_SECONDS) continue;
         if ($bestTime === null || $candTime > $bestTime) {
             $bestTime = $candTime;
             $best = $cand;
