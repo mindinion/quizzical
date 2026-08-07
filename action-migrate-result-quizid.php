@@ -30,18 +30,18 @@ if (!qaTokenIsValid(is_string($token) ? $token : null)) {
 $dryRun = !empty($_REQUEST['dry']);
 $log = [];
 
-// 1. Schema
-if (!resultsHasAiQuizId($conn)) {
-    if ($dryRun) {
-        $log[] = 'Would add Results.ai_quiz_id (column missing).';
-        echo json_encode(['dry_run' => true, 'log' => $log, 'matches' => []], JSON_PRETTY_PRINT);
-        exit;
-    }
+// 1. Schema. A dry run reports the matches it would make without touching the table,
+//    treating every Quizzical result as unlinked since that is the state on first run.
+$hasColumn = resultsHasAiQuizId($conn);
+if (!$hasColumn && $dryRun) {
+    $log[] = 'Results.ai_quiz_id missing — would be added.';
+} elseif (!$hasColumn) {
     if (!$conn->query("ALTER TABLE `Results` ADD COLUMN `ai_quiz_id` int UNSIGNED DEFAULT NULL")) {
         echo json_encode(['error' => 'Failed to add column: ' . $conn->error]);
         exit;
     }
     $conn->query("ALTER TABLE `Results` ADD KEY `user_ai_quiz` (`user`, `ai_quiz_id`)");
+    $hasColumn = true;
     $log[] = 'Added Results.ai_quiz_id.';
 } else {
     $log[] = 'Results.ai_quiz_id already present.';
@@ -68,9 +68,10 @@ while ($q && $row = $q->fetch_assoc()) {
 
 // 3. Unlinked Quizzical results, oldest first
 $results = [];
+$unlinkedOnly = $hasColumn ? 'ai_quiz_id IS NULL AND' : '';
 $q = $conn->query(
     "SELECT id, user, type, score, max, date FROM Results
-     WHERE ai_quiz_id IS NULL AND status = 'active'
+     WHERE $unlinkedOnly status = 'active'
        AND type IN ('Quizzical Morning', 'Quizzical Afternoon')
      ORDER BY user, date ASC"
 );
