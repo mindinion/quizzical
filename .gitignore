@@ -1,2 +1,5 @@
 dblogin.php
 *.sql
+
+# Scratch output from curl-driven diagnostics and migration runs
+/*.json
