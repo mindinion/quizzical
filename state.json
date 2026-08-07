@@ -1,0 +1,563 @@
+{
+    "user": {
+        "id": "4",
+        "email": "widdakay@gmail.com",
+        "timezone": "NZ"
+    },
+    "server_now": "2026-08-07 16:25:52",
+    "nz_now": "2026-08-07 18:25:52",
+    "quizzes": [
+        {
+            "id": "69",
+            "type": "Morning",
+            "date": "2026-08-07",
+            "linked_result": "5\/15 posted 2026-08-07 12:28:10",
+            "question_count": "15",
+            "my_answers": "15",
+            "my_score": "5",
+            "last_answer_at": "2026-08-07 10:28:08"
+        },
+        {
+            "id": "70",
+            "type": "Afternoon",
+            "date": "2026-08-07",
+            "linked_result": null,
+            "question_count": "15",
+            "my_answers": "13",
+            "my_score": "4",
+            "last_answer_at": "2026-08-07 12:42:45"
+        },
+        {
+            "id": "67",
+            "type": "Morning",
+            "date": "2026-08-06",
+            "linked_result": "9\/15 posted 2026-08-06 17:38:21",
+            "question_count": "15",
+            "my_answers": "15",
+            "my_score": "9",
+            "last_answer_at": "2026-08-06 15:38:19"
+        },
+        {
+            "id": "68",
+            "type": "Afternoon",
+            "date": "2026-08-06",
+            "linked_result": "5\/15 posted 2026-08-06 17:41:14",
+            "question_count": "15",
+            "my_answers": "15",
+            "my_score": "5",
+            "last_answer_at": "2026-08-06 15:41:12"
+        },
+        {
+            "id": "65",
+            "type": "Morning",
+            "date": "2026-08-05",
+            "linked_result": null,
+            "question_count": "15",
+            "my_answers": "0",
+            "my_score": null,
+            "last_answer_at": null
+        },
+        {
+            "id": "66",
+            "type": "Afternoon",
+            "date": "2026-08-05",
+            "linked_result": null,
+            "question_count": "15",
+            "my_answers": "0",
+            "my_score": null,
+            "last_answer_at": null
+        },
+        {
+            "id": "63",
+            "type": "Morning",
+            "date": "2026-08-04",
+            "linked_result": "4\/15 posted 2026-08-05 06:56:43",
+            "question_count": "15",
+            "my_answers": "15",
+            "my_score": "4",
+            "last_answer_at": "2026-08-05 04:56:41"
+        },
+        {
+            "id": "64",
+            "type": "Afternoon",
+            "date": "2026-08-04",
+            "linked_result": "4\/15 posted 2026-08-05 08:07:51",
+            "question_count": "15",
+            "my_answers": "15",
+            "my_score": "4",
+            "last_answer_at": "2026-08-05 06:07:48"
+        },
+        {
+            "id": "61",
+            "type": "Morning",
+            "date": "2026-08-03",
+            "linked_result": "3\/15 posted 2026-08-03 18:45:11",
+            "question_count": "15",
+            "my_answers": "15",
+            "my_score": "3",
+            "last_answer_at": "2026-08-03 16:45:09"
+        },
+        {
+            "id": "62",
+            "type": "Afternoon",
+            "date": "2026-08-03",
+            "linked_result": "6\/15 posted 2026-08-03 18:47:57",
+            "question_count": "15",
+            "my_answers": "15",
+            "my_score": "6",
+            "last_answer_at": "2026-08-03 16:47:55"
+        },
+        {
+            "id": "59",
+            "type": "Morning",
+            "date": "2026-08-02",
+            "linked_result": "4\/15 posted 2026-08-02 10:55:30",
+            "question_count": "15",
+            "my_answers": "15",
+            "my_score": "4",
+            "last_answer_at": "2026-08-02 08:55:29"
+        },
+        {
+            "id": "60",
+            "type": "Afternoon",
+            "date": "2026-08-02",
+            "linked_result": "7\/15 posted 2026-08-02 18:11:59",
+            "question_count": "15",
+            "my_answers": "15",
+            "my_score": "7",
+            "last_answer_at": "2026-08-02 16:11:57"
+        },
+        {
+            "id": "57",
+            "type": "Morning",
+            "date": "2026-08-01",
+            "linked_result": "2\/15 posted 2026-08-01 11:11:24",
+            "question_count": "15",
+            "my_answers": "15",
+            "my_score": "2",
+            "last_answer_at": "2026-08-01 09:11:22"
+        },
+        {
+            "id": "58",
+            "type": "Afternoon",
+            "date": "2026-08-01",
+            "linked_result": "6\/15 posted 2026-08-01 17:18:37",
+            "question_count": "15",
+            "my_answers": "15",
+            "my_score": "6",
+            "last_answer_at": "2026-08-01 15:18:35"
+        }
+    ],
+    "results": [
+        {
+            "id": "1847800",
+            "type": "Quizzical Morning",
+            "score": "5",
+            "max": "15",
+            "date": "2026-08-07 12:28:10",
+            "status": "active"
+        },
+        {
+            "id": "1847798",
+            "type": "Quizzical Afternoon",
+            "score": "5",
+            "max": "15",
+            "date": "2026-08-06 17:41:14",
+            "status": "active"
+        },
+        {
+            "id": "1847797",
+            "type": "Quizzical Morning",
+            "score": "9",
+            "max": "15",
+            "date": "2026-08-06 17:38:21",
+            "status": "active"
+        },
+        {
+            "id": "1847791",
+            "type": "Quizzical Afternoon",
+            "score": "4",
+            "max": "15",
+            "date": "2026-08-05 08:07:51",
+            "status": "active"
+        },
+        {
+            "id": "1847790",
+            "type": "Quizzical Morning",
+            "score": "4",
+            "max": "15",
+            "date": "2026-08-05 06:56:43",
+            "status": "active"
+        },
+        {
+            "id": "1847785",
+            "type": "Quizzical Afternoon",
+            "score": "6",
+            "max": "15",
+            "date": "2026-08-03 18:47:57",
+            "status": "active"
+        },
+        {
+            "id": "1847784",
+            "type": "Quizzical Morning",
+            "score": "3",
+            "max": "15",
+            "date": "2026-08-03 18:45:11",
+            "status": "active"
+        },
+        {
+            "id": "1847781",
+            "type": "Quizzical Afternoon",
+            "score": "7",
+            "max": "15",
+            "date": "2026-08-02 18:11:59",
+            "status": "active"
+        },
+        {
+            "id": "1847779",
+            "type": "Quizzical Morning",
+            "score": "4",
+            "max": "15",
+            "date": "2026-08-02 10:55:30",
+            "status": "active"
+        },
+        {
+            "id": "1847777",
+            "type": "Quizzical Afternoon",
+            "score": "6",
+            "max": "15",
+            "date": "2026-08-01 17:18:37",
+            "status": "active"
+        },
+        {
+            "id": "1847776",
+            "type": "Quizzical Morning",
+            "score": "2",
+            "max": "15",
+            "date": "2026-08-01 11:11:24",
+            "status": "active"
+        }
+    ],
+    "answer_groups": [
+        {
+            "quiz_id": "70",
+            "answers": "13",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-08-07 12:39:17",
+            "last_at": "2026-08-07 12:42:45"
+        },
+        {
+            "quiz_id": "69",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-08-07 09:36:20",
+            "last_at": "2026-08-07 10:28:08"
+        },
+        {
+            "quiz_id": "68",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-08-06 15:38:51",
+            "last_at": "2026-08-06 15:41:12"
+        },
+        {
+            "quiz_id": "67",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-08-06 15:36:25",
+            "last_at": "2026-08-06 15:38:19"
+        },
+        {
+            "quiz_id": "64",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-08-05 06:06:25",
+            "last_at": "2026-08-05 06:07:48"
+        },
+        {
+            "quiz_id": "63",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-08-05 04:55:18",
+            "last_at": "2026-08-05 04:56:41"
+        },
+        {
+            "quiz_id": "62",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-08-03 16:45:58",
+            "last_at": "2026-08-03 16:47:55"
+        },
+        {
+            "quiz_id": "61",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-08-03 16:43:01",
+            "last_at": "2026-08-03 16:45:09"
+        },
+        {
+            "quiz_id": "60",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-08-02 16:09:03",
+            "last_at": "2026-08-02 16:11:57"
+        },
+        {
+            "quiz_id": "59",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-08-02 08:53:41",
+            "last_at": "2026-08-02 08:55:29"
+        },
+        {
+            "quiz_id": "58",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-08-01 15:17:11",
+            "last_at": "2026-08-01 15:18:35"
+        },
+        {
+            "quiz_id": "57",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-08-01 09:09:52",
+            "last_at": "2026-08-01 09:11:22"
+        },
+        {
+            "quiz_id": "56",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-31 18:51:50",
+            "last_at": "2026-07-31 18:54:32"
+        },
+        {
+            "quiz_id": "55",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-31 06:36:38",
+            "last_at": "2026-07-31 06:38:12"
+        },
+        {
+            "quiz_id": "54",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-30 18:24:26",
+            "last_at": "2026-07-30 18:55:47"
+        },
+        {
+            "quiz_id": "53",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-30 16:29:56",
+            "last_at": "2026-07-30 16:32:09"
+        },
+        {
+            "quiz_id": "52",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-29 16:39:42",
+            "last_at": "2026-07-29 16:42:06"
+        },
+        {
+            "quiz_id": "51",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-29 06:35:27",
+            "last_at": "2026-07-29 06:37:34"
+        },
+        {
+            "quiz_id": "50",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-28 17:41:59",
+            "last_at": "2026-07-28 17:43:33"
+        },
+        {
+            "quiz_id": "49",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-28 10:02:23",
+            "last_at": "2026-07-28 10:04:32"
+        },
+        {
+            "quiz_id": "48",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-27 15:39:57",
+            "last_at": "2026-07-27 15:43:58"
+        },
+        {
+            "quiz_id": "47",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-27 06:59:46",
+            "last_at": "2026-07-27 07:01:26"
+        },
+        {
+            "quiz_id": "46",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-26 15:54:17",
+            "last_at": "2026-07-26 15:56:18"
+        },
+        {
+            "quiz_id": "45",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-26 07:06:03",
+            "last_at": "2026-07-26 07:08:25"
+        },
+        {
+            "quiz_id": "44",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-25 15:28:30",
+            "last_at": "2026-07-25 15:30:23"
+        },
+        {
+            "quiz_id": "43",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-25 07:40:33",
+            "last_at": "2026-07-25 07:42:07"
+        },
+        {
+            "quiz_id": "42",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-24 19:27:31",
+            "last_at": "2026-07-24 19:29:58"
+        },
+        {
+            "quiz_id": "41",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-24 09:51:50",
+            "last_at": "2026-07-24 09:53:20"
+        },
+        {
+            "quiz_id": "40",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-23 13:16:42",
+            "last_at": "2026-07-23 13:19:01"
+        },
+        {
+            "quiz_id": "39",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-23 13:15:06",
+            "last_at": "2026-07-23 13:16:29"
+        },
+        {
+            "quiz_id": "38",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-22 13:01:02",
+            "last_at": "2026-07-22 13:02:37"
+        },
+        {
+            "quiz_id": "37",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-22 09:05:42",
+            "last_at": "2026-07-22 09:07:32"
+        },
+        {
+            "quiz_id": "36",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-21 13:39:33",
+            "last_at": "2026-07-21 13:41:27"
+        },
+        {
+            "quiz_id": "35",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-21 13:36:30",
+            "last_at": "2026-07-21 13:38:08"
+        },
+        {
+            "quiz_id": "34",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-20 13:11:55",
+            "last_at": "2026-07-20 13:13:38"
+        },
+        {
+            "quiz_id": "33",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-20 07:31:25",
+            "last_at": "2026-07-20 07:32:52"
+        },
+        {
+            "quiz_id": "32",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-19 13:41:35",
+            "last_at": "2026-07-19 13:43:37"
+        },
+        {
+            "quiz_id": "31",
+            "answers": "14",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-19 13:38:49",
+            "last_at": "2026-07-19 13:40:45"
+        },
+        {
+            "quiz_id": "30",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-18 16:29:28",
+            "last_at": "2026-07-18 16:31:17"
+        },
+        {
+            "quiz_id": "29",
+            "answers": "15",
+            "orphan_questions": "0",
+            "mismatched_quiz": "0",
+            "first_at": "2026-07-18 07:26:16",
+            "last_at": "2026-07-18 07:28:29"
+        }
+    ]
+}

@@ -79,4 +79,27 @@ $a = $conn->query(
 );
 while ($a && $row = $a->fetch_assoc()) { $out['answer_groups'][] = $row; }
 
+// Smoke-test the rewritten feed join and the quiz-list scope query actually execute.
+$out['selftest'] = [];
+$feedProbe = $conn->query(
+    "SELECT Results.ai_quiz_id AS result_quiz_id, DATE_FORMAT(AIQuiz.date, '%Y-%m-%d') AS result_quiz_date,
+            QuizFeed.id AS post_id, Results.id AS result_id
+     FROM QuizFeed
+       INNER JOIN Users AS Poster ON (QuizFeed.user_id = Poster.id)
+       INNER JOIN Memberships ON (Memberships.user_id = Poster.id)
+       LEFT JOIN Results ON (QuizFeed.result_id = Results.id)
+       LEFT JOIN AIQuiz ON (AIQuiz.id = Results.ai_quiz_id)
+     WHERE QuizFeed.status = 'active' AND Results.id IS NOT NULL
+     ORDER BY QuizFeed.timestamp DESC LIMIT 3"
+);
+$out['selftest']['feed_join'] = $feedProbe ? $feedProbe->fetch_all(MYSQLI_ASSOC) : ('ERROR: ' . $conn->error);
+
+$listProbe = $conn->query(
+    "SELECT ai_quiz_id, REPLACE(type, 'Quizzical ', '') AS base_type, DATE_FORMAT(date, '%Y-%m-%d') AS date, score, max
+     FROM Results
+     WHERE user = $uid AND status = 'active' AND type IN ('Quizzical Morning', 'Quizzical Afternoon')
+     AND (ai_quiz_id IN (63,64,65,66) OR (ai_quiz_id IS NULL AND date >= DATE_SUB(CURDATE(), INTERVAL 8 DAY)))"
+);
+$out['selftest']['quiz_list_scope'] = $listProbe ? $listProbe->fetch_all(MYSQLI_ASSOC) : ('ERROR: ' . $conn->error);
+
 echo json_encode($out, JSON_PRETTY_PRINT);
