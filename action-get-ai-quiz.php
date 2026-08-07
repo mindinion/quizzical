@@ -30,9 +30,9 @@ if (!$quiz) { http_response_code(404); echo json_encode(['error' => 'Quiz not fo
 
 $resultType = 'Quizzical ' . $quiz['type'];
 $stmt = $conn->prepare(
-    "SELECT score, max FROM Results WHERE user = ? AND status = 'active' AND type = ? AND date = ? LIMIT 1"
+    "SELECT score, max FROM Results WHERE user = ? AND status = 'active' AND " . aiResultMatchSql($conn) . " LIMIT 1"
 );
-$stmt->bind_param('iss', $userid, $resultType, $quiz['date']);
+$stmt->bind_param('iiss', $userid, $quizId, $resultType, $quiz['date']);
 $stmt->execute();
 $postedResult = $stmt->get_result()->fetch_assoc();
 $stmt->close();
@@ -109,9 +109,15 @@ foreach ($optionsRaw as $o) {
     ];
 }
 
-// In review mode, prefetch correct options so every question can show answers + stats
+// Prefetch correct options so every question can show answers + stats. Safe once the
+// user has answered everything, even if they have not posted the result yet — there is
+// nothing left to give away, and it lets them review instead of being stuck on the score.
+$answeredCount = count($answers);
+$questionTotal = count($questionsRaw);
+$revealAll = $reviewMode || ($questionTotal > 0 && $answeredCount >= $questionTotal);
+
 $correctByQuestion = [];
-if ($reviewMode) {
+if ($revealAll) {
     $stmt = $conn->prepare(
         "SELECT o.question_id, o.id
          FROM AIOption o
@@ -156,11 +162,11 @@ foreach ($questionsRaw as $q) {
         $entry['chosen_option_id']  = (int)$answers[$qid]['chosen_option_id'];
         $entry['is_correct']        = (bool)$answers[$qid]['is_correct'];
         $entry['correct_option_id'] = (int)$answers[$qid]['correct_option_id'];
-    } elseif ($reviewMode && isset($correctByQuestion[$qid])) {
+    } elseif ($revealAll && isset($correctByQuestion[$qid])) {
         $entry['correct_option_id'] = $correctByQuestion[$qid];
     }
 
-    if ($answered || $reviewMode) {
+    if ($answered || $revealAll) {
         $stats = aiAnswerOptionStats($conn, $qid);
         $entry['option_stats']  = $stats['option_stats'];
         $entry['total_answers'] = $stats['total_answers'];
@@ -169,8 +175,7 @@ foreach ($questionsRaw as $q) {
     $questions[] = $entry;
 }
 
-$answeredCount = count($answers);
-$totalScore    = array_sum(array_column($answersRaw, 'is_correct'));
+$totalScore = array_sum(array_column($answersRaw, 'is_correct'));
 
 echo json_encode([
     'quiz_id'        => (int)$quiz['id'],
@@ -179,8 +184,10 @@ echo json_encode([
     'questions'      => $questions,
     'answered_count' => $answeredCount,
     'score_so_far'   => $totalScore,
-    'completed'      => $answeredCount >= 15,
+    'completed'      => $questionTotal > 0 && $answeredCount >= $questionTotal,
+    'can_review'     => $revealAll,
+    'posted'         => $reviewMode,
     'review_mode'    => $reviewMode,
     'final_score'    => $postedResult ? (int)$postedResult['score'] : null,
-    'final_max'      => $postedResult ? (int)$postedResult['max'] : 15,
+    'final_max'      => $postedResult ? (int)$postedResult['max'] : ($questionTotal ?: 15),
 ]);

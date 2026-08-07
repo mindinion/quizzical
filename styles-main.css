@@ -1691,6 +1691,18 @@ A {}
 	cursor: pointer;
 }
 
+#AIQuizReviewBtn {
+	flex: 2;
+	height: 44px;
+	background: #f5f0e8;
+	border: 1px solid #e0d5c5;
+	border-radius: 8px;
+	font-family: verdana, arial;
+	font-size: 13px;
+	color: #cc5500;
+	cursor: pointer;
+}
+
 #AIQuizPostBtn {
 	flex: 2;
 	height: 44px;

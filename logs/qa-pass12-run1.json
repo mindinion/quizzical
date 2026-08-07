@@ -1,0 +1,604 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-10",
+        "stamp": "20260710-224550",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": true,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-10",
+            "log": [
+                {
+                    "time": "2026-07-10 20:45:50",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-10 20:45:51",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:45:56",
+                    "level": "ERROR",
+                    "message": "[NZ Trivia] Attempt 1: 3 violation(s):\n- question 1 (category 'NZ Trivia') has no New Zealand topic — NZ Trivia must mention NZ places, people, or culture\n- question 2 (\"What is the capital city of Bhutan, known for its unique architecture and stunning landscapes?\") matches banned pattern: capital-of-a-country cliché — pick a different, less obvious question\n- question 2 (category 'NZ Trivia') has no New Zealand topic — NZ Trivia must mention NZ places, people, or culture"
+                },
+                {
+                    "time": "2026-07-10 20:46:01",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 1 [fact-check]: corrected marked answer from \"Hawke's Bay\" to \"Otago\""
+                },
+                {
+                    "time": "2026-07-10 20:46:05",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-10 20:46:05",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:46:07",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 1: 1 violation(s):\n- question 1 image_query gives away the correct answer — \"Healesville Sanctuary\" is hinted in image_query \"wildlife sanctuary Australia\""
+                },
+                {
+                    "time": "2026-07-10 20:46:17",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-10 20:46:17",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:46:19",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 1: 1 violation(s):\n- question 1 gives away its own answer — correct answer \"Gold Coast Titans\" is hinted in the question text (\"Which NRL team is known for their blue, gold, and white colours?\")"
+                },
+                {
+                    "time": "2026-07-10 20:46:30",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 20:46:30",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 2: 1 violation(s):\n- question 2 [fact-check premise]: question text rejected — The home ground is known as Sydney Football Stadium, not Allianz Stadium."
+                },
+                {
+                    "time": "2026-07-10 20:46:40",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 20:46:40",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-10 20:46:41",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-10 20:46:41",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:46:44",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-10 20:46:44",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:46:48",
+                    "level": "ERROR",
+                    "message": "[Aussie Current Events] Attempt 1: 1 violation(s):\n- expected 1 question(s) for 'Aussie Current Events', got: {\"questions\":[{\"question\":\"The family of which missing woman is reportedly fearing the worst as investigations continue?\",\"format\":\"mc\",\"image_query\":\"concerned family members\",\"options\":[{\"text\":\"Toowoomba woman\",\"correct\":true},{\"text\":\"Brisbane woman\",\"correct\":false},{\"text\":\"Gold Coast woman\",\"correct\":false},{\"text\":\"Cairns woman\",\"correct\":false}]},{\"question\":\"In an alarming incident, pedestrians were described as 'lucky to be alive' after what happened on a highway?\",\"format\":\"mc\",\"image_query\":\"highway accident scene\",\"options\":[{\"text\":\"A truck lost its load\",\"correct\":true},{\"text\":\"A car overturned\",\"correct\":false},{\"text\":\"A bus collided with a fence\",\"correct\":false},{\"text\":\"A cyclist was hit\",\"correct\":false}]},{\"question\":\"Which Australian player has been sidelined due to an ankle injury during a match against the Kangaroos?\",\"format\":\"mc\",\"image_query\":\"sports injury scene\",\"options\":[{\"text\":\"Magpies star\",\"correct\":true},{\"text\":\"Crows player\",\"correct\":false},{\"text\":\"Tigers player\",\"correct\":false},{\"text\":\"Falcons player\",\"correct\":false}]}]}"
+                },
+                {
+                    "time": "2026-07-10 20:46:50",
+                    "level": "ERROR",
+                    "message": "[Aussie Current Events] Attempt 2: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Huntsman spider\" is hinted in the question text (\"A recent study has indicated that which species is recognized as the fastest spider on record in Australia?\")\n- question 1 image_query gives away the correct answer — \"Huntsman spider\" is hinted in image_query \"spider in nature\""
+                },
+                {
+                    "time": "2026-07-10 20:46:52",
+                    "level": "ERROR",
+                    "message": "[Aussie Current Events] Attempt 3: 1 violation(s):\n- question 1 gives away its own answer — correct answer \"Melbourne Child Care Commission\" is hinted in the question text (\"Which Australian regulatory body recently closed a number of family day care residences in a major city?\")"
+                },
+                {
+                    "time": "2026-07-10 20:46:54",
+                    "level": "ERROR",
+                    "message": "[Aussie Current Events] Attempt 4: 1 violation(s):\n- question 1 gives away its own answer — correct answer \"Corruption probe into government officials\" is hinted in the question text (\"Which recent event involved a significant probe by a corruption watchdog that ended with a disappointing outcome?\")"
+                },
+                {
+                    "time": "2026-07-10 20:46:57",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-10 20:46:57",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:46:59",
+                    "level": "ERROR",
+                    "message": "[Geography] Attempt 1: 1 violation(s):\n- question 1 (\"Which of the following countries experienced a significant earthquake in January 2010, impacting its capital city of Port-au-Prince?\") matches banned pattern: capital-of-a-country cliché — pick a different, less obvious question"
+                },
+                {
+                    "time": "2026-07-10 20:47:09",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-10 20:47:09",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:47:11",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 1: 2 violation(s):\n- question 2 gives away its own answer — correct answer \"Moscow Peace Treaty\" is hinted in the question text (\"Which treaty, signed in 1939, officially ended the war between the Soviet Union and Finland, following the Winter War?\")\n- question 2 image_query gives away the correct answer — \"Moscow Peace Treaty\" is hinted in image_query \"historic peace treaty\""
+                },
+                {
+                    "time": "2026-07-10 20:47:14",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 2: 1 violation(s):\n- question 1 image_query gives away the correct answer — \"Treaty of Paris\" is hinted in image_query \"historic treaty signing\""
+                },
+                {
+                    "time": "2026-07-10 20:47:18",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 3: 1 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Paris\" is hinted in the question text (\"Which treaty, signed in 1783, officially ended the American Revolutionary War?\")"
+                },
+                {
+                    "time": "2026-07-10 20:47:21",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 4: 1 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Paris\" is hinted in the question text (\"Which treaty officially concluded the war between the United States and Britain, marking the recognition of American independence?\")"
+                },
+                {
+                    "time": "2026-07-10 20:47:23",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 5: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Paris\" is hinted in the question text (\"Which treaty, signed in 1783, formally recognized the independence of the United States from Great Britain?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Paris\" is hinted in image_query \"historical treaty document\""
+                },
+                {
+                    "time": "2026-07-10 20:47:25",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 6: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Greenville\" is hinted in the question text (\"Which treaty, signed in 1791, marked the end of the Northwest Indian War and facilitated the exchange of lands between Native American tribes and the United States?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Greenville\" is hinted in image_query \"historical treaty signing\""
+                },
+                {
+                    "time": "2026-07-10 20:47:28",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 7: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Guadalupe Hidalgo\" is hinted in the question text (\"Which treaty, signed in 1848, officially ended the Mexican-American War?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Guadalupe Hidalgo\" is hinted in image_query \"historic treaty document\""
+                },
+                {
+                    "time": "2026-07-10 20:47:31",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 8: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Paris\" is hinted in the question text (\"Which treaty, signed in 1783, formally recognized the independence of the United States?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Paris\" is hinted in image_query \"historic treaty signing\""
+                },
+                {
+                    "time": "2026-07-10 20:47:41",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-10 20:47:41",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:47:46",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 1: 2 violation(s):\n- question 2 gives away its own answer — correct answer \"Amazon River\" is hinted in the question text (\"What is the name of the longest river in South America, flowing through several countries including Peru and Brazil?\")\n- question 2 image_query gives away the correct answer — \"Amazon River\" is hinted in image_query \"South America river map\""
+                },
+                {
+                    "time": "2026-07-10 20:47:49",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 2: 2 violation(s):\n- question 3 (\"True or False: The Great Barrier Reef is the largest coral reef system in the world, located off the coast of Australia.\") matches superlative pattern: largest-on-earth superlative — ask a plain factual question without record claims\n- question 3 (category 'General Knowledge') is NZ\/AU-specific (matched \"australia\") — this category must be global content"
+                },
+                {
+                    "time": "2026-07-10 20:48:02",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 20:48:02",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-10 20:48:03",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                }
+            ],
+            "stats": {
+                "categories_retried": 7,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 0,
+                "category_cap_fallbacks": 0,
+                "category_emergency_fallbacks": 0,
+                "answer_corrections": 1
+            },
+            "questions": [
+                {
+                    "question": "Which of the following New Zealand wine regions is particularly renowned for producing high-quality Pinot Noir?",
+                    "format": "mc",
+                    "image_query": "New Zealand vineyard",
+                    "options": [
+                        {
+                            "text": "Canterbury",
+                            "correct": false
+                        },
+                        {
+                            "text": "Hawke's Bay",
+                            "correct": false
+                        },
+                        {
+                            "text": "Marlborough",
+                            "correct": false
+                        },
+                        {
+                            "text": "Otago",
+                            "correct": true
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1
+                },
+                {
+                    "question": "In which year did New Zealand officially adopt the Māori Language Act, promoting the use of the Māori language in educational and public services?",
+                    "format": "mc",
+                    "image_query": "Māori language",
+                    "options": [
+                        {
+                            "text": "1987",
+                            "correct": true
+                        },
+                        {
+                            "text": "1975",
+                            "correct": false
+                        },
+                        {
+                            "text": "1990",
+                            "correct": false
+                        },
+                        {
+                            "text": "2001",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2
+                },
+                {
+                    "question": "Which of the following species is notable for its ability to climb trees and is often a subject of wildlife conservation efforts in Australia?",
+                    "format": "mc",
+                    "image_query": "Australian wildlife conservation",
+                    "options": [
+                        {
+                            "text": "Green tree frog",
+                            "correct": false
+                        },
+                        {
+                            "text": "Koala",
+                            "correct": true
+                        },
+                        {
+                            "text": "Coral reef fish",
+                            "correct": false
+                        },
+                        {
+                            "text": "Dingo",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3
+                },
+                {
+                    "question": "Which historical figure is known for leading the charge in establishing Australia as a penal colony in the early 1800s?",
+                    "format": "mc",
+                    "image_query": "early Australian history",
+                    "options": [
+                        {
+                            "text": "Captain James Cook",
+                            "correct": false
+                        },
+                        {
+                            "text": "Governor Arthur Phillip",
+                            "correct": true
+                        },
+                        {
+                            "text": "Sir Joseph Banks",
+                            "correct": false
+                        },
+                        {
+                            "text": "Anthony John O'Donnell",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4
+                },
+                {
+                    "question": "Which NRL team is known for their distinctive green and white colours?",
+                    "format": "mc",
+                    "image_query": "NRL team jersey",
+                    "options": [
+                        {
+                            "text": "Canberra Raiders",
+                            "correct": true
+                        },
+                        {
+                            "text": "Melbourne Storm",
+                            "correct": false
+                        },
+                        {
+                            "text": "Sydney Roosters",
+                            "correct": false
+                        },
+                        {
+                            "text": "Gold Coast Titans",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5
+                },
+                {
+                    "question": "True or False: The home ground of the Auckland Blues is known as Eden Park.",
+                    "format": "tf",
+                    "image_query": "rugby stadium",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6
+                },
+                {
+                    "question": "What recent weather event led to the declaration of a state of emergency in a New Zealand location?",
+                    "format": "mc",
+                    "image_query": "flood damage assessment",
+                    "options": [
+                        {
+                            "text": "Severe windstorm",
+                            "correct": false
+                        },
+                        {
+                            "text": "Flooding",
+                            "correct": true
+                        },
+                        {
+                            "text": "Earthquake",
+                            "correct": false
+                        },
+                        {
+                            "text": "Drought",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7
+                },
+                {
+                    "question": "Which of the following Australian sporting teams is determined to break their losing streak?",
+                    "format": "mc",
+                    "image_query": "rugby players in action",
+                    "options": [
+                        {
+                            "text": "Parramatta Eels",
+                            "correct": false
+                        },
+                        {
+                            "text": "Wallabies",
+                            "correct": true
+                        },
+                        {
+                            "text": "Richmond Tigers",
+                            "correct": false
+                        },
+                        {
+                            "text": "Adelaide Crows",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8
+                },
+                {
+                    "question": "Which of the following regions is home to the largest concentration of ancient rock paintings in Africa?",
+                    "format": "mc",
+                    "image_query": "ancient rock paintings",
+                    "options": [
+                        {
+                            "text": "Tassili n'Ajjer, Algeria",
+                            "correct": true
+                        },
+                        {
+                            "text": "Serengeti, Tanzania",
+                            "correct": false
+                        },
+                        {
+                            "text": "Sahara Desert, Egypt",
+                            "correct": false
+                        },
+                        {
+                            "text": "Okavango Delta, Botswana",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9
+                },
+                {
+                    "question": "Which country is known for its unique tradition of the 'Day of the Dead' celebration, honoring deceased loved ones with colorful altars and offerings?",
+                    "format": "mc",
+                    "image_query": "Day of the Dead celebration",
+                    "options": [
+                        {
+                            "text": "Mexico",
+                            "correct": true
+                        },
+                        {
+                            "text": "Peru",
+                            "correct": false
+                        },
+                        {
+                            "text": "Brazil",
+                            "correct": false
+                        },
+                        {
+                            "text": "Colombia",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10
+                },
+                {
+                    "question": "The Treaty of Trianon, which defined the borders of Hungary after World War I, was signed in which of the following years?",
+                    "format": "mc",
+                    "image_query": "historic document signing",
+                    "options": [
+                        {
+                            "text": "1920",
+                            "correct": true
+                        },
+                        {
+                            "text": "1919",
+                            "correct": false
+                        },
+                        {
+                            "text": "1918",
+                            "correct": false
+                        },
+                        {
+                            "text": "1921",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11
+                },
+                {
+                    "question": "Which of the following treaties officially ended the Thirty Years' War in Europe?",
+                    "format": "mc",
+                    "image_query": "historic peace agreement",
+                    "options": [
+                        {
+                            "text": "Treaty of Westphalia",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Utrecht",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Aix-la-Chapelle",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12
+                },
+                {
+                    "question": "Which video game franchise features a character named Master Chief, who is a supersoldier fighting against an alien alliance known as the Covenant?",
+                    "format": "mc",
+                    "image_query": "video game character",
+                    "options": [
+                        {
+                            "text": "Halo",
+                            "correct": true
+                        },
+                        {
+                            "text": "Call of Duty",
+                            "correct": false
+                        },
+                        {
+                            "text": "Gears of War",
+                            "correct": false
+                        },
+                        {
+                            "text": "Battlefield",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13
+                },
+                {
+                    "question": "Which element, essential for life, has the chemical symbol 'O' and is the second most abundant component of the Earth's atmosphere?",
+                    "format": "mc",
+                    "image_query": "chemical element",
+                    "options": [
+                        {
+                            "text": "Oxygen",
+                            "correct": true
+                        },
+                        {
+                            "text": "Hydrogen",
+                            "correct": false
+                        },
+                        {
+                            "text": "Nitrogen",
+                            "correct": false
+                        },
+                        {
+                            "text": "Carbon",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14
+                },
+                {
+                    "question": "True or False: The Amazon River is known to flow through several countries, including Brazil and Peru, before emptying into the Atlantic Ocean.",
+                    "format": "tf",
+                    "image_query": "Amazon River",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15
+                }
+            ],
+            "warnings": [],
+            "saved_to": "logs\/qa\/20260710-224550-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260710-224550-summary.json"
+}

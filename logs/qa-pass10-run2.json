@@ -1,0 +1,576 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-10",
+        "stamp": "20260710-004958",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": true,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-10",
+            "log": [
+                {
+                    "time": "2026-07-09 22:49:58",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 22:50:00",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:50:08",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 22:50:08",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:50:18",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 22:50:18",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:50:24",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:50:25",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:50:26",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 1: 1 violation(s):\n- question 2 [fact-check]: marked answer \"2008\" rejected — The Rugby World Cup was not held in 2008; the correct year is 2007."
+                },
+                {
+                    "time": "2026-07-09 22:50:32",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 2: 1 violation(s):\n- 'Sports' batch must include at least one domestic league question (AFL\/NRL\/Super Rugby colours, nickname, or home ground) with no World Cup or win-year angle"
+                },
+                {
+                    "time": "2026-07-09 22:50:39",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:50:40",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:50:41",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 22:50:41",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:50:46",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 22:50:46",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:50:48",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 22:50:48",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:50:52",
+                    "level": "ERROR",
+                    "message": "[Geography] Attempt 1: 2 violation(s):\n- question 2 image_query gives away the correct answer — \"Gothic\" is hinted in image_query \"Gothic cathedral architecture\"\n- question 2 image_query repeats option text \"Gothic\""
+                },
+                {
+                    "time": "2026-07-09 22:51:02",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 22:51:02",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:51:09",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:51:10",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:51:10",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 22:51:10",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:51:24",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:51:24",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:51:25",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 22:51:25",
+                    "level": "INFO",
+                    "message": "[final-gate] Verifying all 15 questions with fresh sources…"
+                },
+                {
+                    "time": "2026-07-09 22:51:41",
+                    "level": "INFO",
+                    "message": "[final-gate] question 6 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:51:42",
+                    "level": "INFO",
+                    "message": "[final-gate] question 6 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:51:52",
+                    "level": "INFO",
+                    "message": "[final-gate] question 12 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:51:53",
+                    "level": "INFO",
+                    "message": "[final-gate] question 12 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:51:59",
+                    "level": "INFO",
+                    "message": "[final-gate] question 15 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:52:00",
+                    "level": "INFO",
+                    "message": "[final-gate] question 15 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:52:01",
+                    "level": "INFO",
+                    "message": "[final-gate] All 15 questions passed — OK to publish"
+                }
+            ],
+            "stats": {
+                "categories_retried": 2,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 0,
+                "final_gate_quiz_attempts": 1,
+                "final_gate_rejections": 0,
+                "category_cap_fallbacks": 0,
+                "final_gate_cap_fallbacks": 0,
+                "category_emergency_fallbacks": 0
+            },
+            "questions": [
+                {
+                    "question": "In which year was the first New Zealand national park, Tongariro National Park, established?",
+                    "format": "mc",
+                    "image_query": "mountains national park",
+                    "options": [
+                        {
+                            "text": "1887",
+                            "correct": true
+                        },
+                        {
+                            "text": "1900",
+                            "correct": false
+                        },
+                        {
+                            "text": "1895",
+                            "correct": false
+                        },
+                        {
+                            "text": "1855",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1
+                },
+                {
+                    "question": "In which year did the New Zealand government first introduce a national superannuation scheme?",
+                    "format": "mc",
+                    "image_query": "retirement planning policy",
+                    "options": [
+                        {
+                            "text": "1976",
+                            "correct": true
+                        },
+                        {
+                            "text": "1985",
+                            "correct": false
+                        },
+                        {
+                            "text": "1968",
+                            "correct": false
+                        },
+                        {
+                            "text": "1970",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2
+                },
+                {
+                    "question": "Which Australian state is known for its unique geological formations, including the Pinnacles and Wave Rock?",
+                    "format": "mc",
+                    "image_query": "Pinnacles geological formations",
+                    "options": [
+                        {
+                            "text": "Western Australia",
+                            "correct": true
+                        },
+                        {
+                            "text": "South Australia",
+                            "correct": false
+                        },
+                        {
+                            "text": "New South Wales",
+                            "correct": false
+                        },
+                        {
+                            "text": "Queensland",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3
+                },
+                {
+                    "question": "Which Australian animal is known for its ability to glide between trees using a membrane that stretches from its wrists to its ankles?",
+                    "format": "mc",
+                    "image_query": "gliding Australian animal",
+                    "options": [
+                        {
+                            "text": "Sugar Glider",
+                            "correct": true
+                        },
+                        {
+                            "text": "Flying Fox",
+                            "correct": false
+                        },
+                        {
+                            "text": "Wallaby",
+                            "correct": false
+                        },
+                        {
+                            "text": "Kookaburra",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4
+                },
+                {
+                    "question": "Which NRL team is known for their blue and gold colors?",
+                    "format": "mc",
+                    "image_query": "NRL team colors",
+                    "options": [
+                        {
+                            "text": "Canberra Raiders",
+                            "correct": false
+                        },
+                        {
+                            "text": "Parramatta Eels",
+                            "correct": true
+                        },
+                        {
+                            "text": "Sydney Roosters",
+                            "correct": false
+                        },
+                        {
+                            "text": "Melbourne Storm",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5
+                },
+                {
+                    "question": "In which year was the Rugby World Cup held in England?",
+                    "format": "mc",
+                    "image_query": "Rugby World Cup England",
+                    "options": [
+                        {
+                            "text": "2015",
+                            "correct": true
+                        },
+                        {
+                            "text": "2011",
+                            "correct": false
+                        },
+                        {
+                            "text": "2019",
+                            "correct": false
+                        },
+                        {
+                            "text": "2007",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6
+                },
+                {
+                    "question": "What recent declaration was made due to severe weather conditions affecting a specific region in New Zealand?",
+                    "format": "mc",
+                    "image_query": "state of emergency",
+                    "options": [
+                        {
+                            "text": "Evacuation orders for Wellington",
+                            "correct": false
+                        },
+                        {
+                            "text": "State of emergency for Wairoa",
+                            "correct": true
+                        },
+                        {
+                            "text": "Flood warnings for Auckland",
+                            "correct": false
+                        },
+                        {
+                            "text": "Travel restrictions for Christchurch",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7
+                },
+                {
+                    "question": "Three corrections officers have been stood down following a review into what incident?",
+                    "format": "mc",
+                    "image_query": "courtroom scene",
+                    "options": [
+                        {
+                            "text": "A prison riot",
+                            "correct": false
+                        },
+                        {
+                            "text": "A prisoner escape",
+                            "correct": true
+                        },
+                        {
+                            "text": "A violent protest",
+                            "correct": false
+                        },
+                        {
+                            "text": "A contraband smuggling case",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8
+                },
+                {
+                    "question": "Which of the following countries is known for its vibrant festival celebrating the sun, known as Inti Raymi?",
+                    "format": "mc",
+                    "image_query": "Andean festival celebration",
+                    "options": [
+                        {
+                            "text": "Brazil",
+                            "correct": false
+                        },
+                        {
+                            "text": "Peru",
+                            "correct": true
+                        },
+                        {
+                            "text": "Mexico",
+                            "correct": false
+                        },
+                        {
+                            "text": "Argentina",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9
+                },
+                {
+                    "question": "Which architectural style is characterized by features such as ribbed vaults and flying buttresses, commonly used in medieval European churches?",
+                    "format": "mc",
+                    "image_query": "medieval cathedral interior",
+                    "options": [
+                        {
+                            "text": "Renaissance",
+                            "correct": false
+                        },
+                        {
+                            "text": "Baroque",
+                            "correct": false
+                        },
+                        {
+                            "text": "Gothic",
+                            "correct": true
+                        },
+                        {
+                            "text": "Neoclassical",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10
+                },
+                {
+                    "question": "Which of the following treaties ended the First Opium War between the United Kingdom and the Qing Dynasty of China?",
+                    "format": "mc",
+                    "image_query": "historic treaty signing",
+                    "options": [
+                        {
+                            "text": "Treaty of Nanking",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Versailles",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Tordesillas",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11
+                },
+                {
+                    "question": "True or False: The signing of the Treaty of Utrecht in 1713 marked the end of the War of the Spanish Succession.",
+                    "format": "tf",
+                    "image_query": "historic treaty document",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12
+                },
+                {
+                    "question": "The Treaty of Paris, which formally ended the American Revolutionary War, was signed in which year?",
+                    "format": "mc",
+                    "image_query": "old parchment treaty",
+                    "options": [
+                        {
+                            "text": "1783",
+                            "correct": true
+                        },
+                        {
+                            "text": "1791",
+                            "correct": false
+                        },
+                        {
+                            "text": "1776",
+                            "correct": false
+                        },
+                        {
+                            "text": "1801",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13
+                },
+                {
+                    "question": "The Louvre Museum, which is the world’s largest art museum, is located in which city?",
+                    "format": "mc",
+                    "image_query": "famous art museum",
+                    "options": [
+                        {
+                            "text": "Paris",
+                            "correct": true
+                        },
+                        {
+                            "text": "Rome",
+                            "correct": false
+                        },
+                        {
+                            "text": "London",
+                            "correct": false
+                        },
+                        {
+                            "text": "Madrid",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14
+                },
+                {
+                    "question": "True or False: The Magna Carta was signed in 1215 and established the principle that everyone is subject to the law, including the king.",
+                    "format": "tf",
+                    "image_query": "historical document",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15
+                }
+            ],
+            "warnings": [],
+            "saved_to": "logs\/qa\/20260710-004958-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260710-004958-summary.json"
+}

@@ -1,0 +1,690 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-09",
+        "stamp": "20260709-231920",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-09",
+            "log": [
+                {
+                    "time": "2026-07-09 21:19:20",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 21:19:20",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:19:29",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:19:29",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:19:37",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 1: 1 violation(s):\n- question 1 [fact-check]: marked answer \"South Australia\" rejected — The Great Victoria Desert, which is Australia's largest desert, spans both Western Australia and South Australia, indicating that Western Australia is also significant for its deserts."
+                },
+                {
+                    "time": "2026-07-09 21:19:46",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:19:46",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:19:53",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:19:54",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:19:55",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 21:19:55",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:19:57",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:19:57",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:19:59",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:19:59",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:20:07",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 21:20:07",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:20:14",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:20:15",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:20:15",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 21:20:15",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:20:18",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 1: 3 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz\n- question 2 image_query gives away the correct answer — \"1989\" is hinted in image_query \"Berlin Wall 1989\"\n- question 2 image_query repeats option text \"1989\""
+                },
+                {
+                    "time": "2026-07-09 21:20:31",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 21:20:31",
+                    "level": "INFO",
+                    "message": "[images] Q1: fetching \"historic mosque architecture\"…"
+                },
+                {
+                    "time": "2026-07-09 21:20:32",
+                    "level": "INFO",
+                    "message": "[images] Q1: saved"
+                },
+                {
+                    "time": "2026-07-09 21:20:32",
+                    "level": "INFO",
+                    "message": "[images] Q2: fetching \"historical independence declaration\"…"
+                },
+                {
+                    "time": "2026-07-09 21:20:33",
+                    "level": "INFO",
+                    "message": "[images] Q2: saved"
+                },
+                {
+                    "time": "2026-07-09 21:20:33",
+                    "level": "INFO",
+                    "message": "[images] Q3: fetching \"wine production vineyard\"…"
+                },
+                {
+                    "time": "2026-07-09 21:20:33",
+                    "level": "INFO",
+                    "message": "[images] Q3: saved"
+                },
+                {
+                    "time": "2026-07-09 21:20:33",
+                    "level": "INFO",
+                    "message": "[images] Q4: fetching \"coastal rock formations\"…"
+                },
+                {
+                    "time": "2026-07-09 21:20:35",
+                    "level": "INFO",
+                    "message": "[images] Q4: saved"
+                },
+                {
+                    "time": "2026-07-09 21:20:35",
+                    "level": "INFO",
+                    "message": "[images] Q5: fetching \"Rugby World Cup trophy\"…"
+                },
+                {
+                    "time": "2026-07-09 21:20:35",
+                    "level": "INFO",
+                    "message": "[images] Q5: saved"
+                },
+                {
+                    "time": "2026-07-09 21:20:35",
+                    "level": "INFO",
+                    "message": "[images] Q6: fetching \"tennis court at Australian Open\"…"
+                },
+                {
+                    "time": "2026-07-09 21:20:35",
+                    "level": "INFO",
+                    "message": "[images] Q6: saved"
+                },
+                {
+                    "time": "2026-07-09 21:20:35",
+                    "level": "INFO",
+                    "message": "[images] Q7: fetching \"emergency response\"…"
+                },
+                {
+                    "time": "2026-07-09 21:20:35",
+                    "level": "INFO",
+                    "message": "[images] Q7: saved"
+                },
+                {
+                    "time": "2026-07-09 21:20:35",
+                    "level": "INFO",
+                    "message": "[images] Q8: fetching \"prison guards in action\"…"
+                },
+                {
+                    "time": "2026-07-09 21:20:36",
+                    "level": "INFO",
+                    "message": "[images] Q8: saved"
+                },
+                {
+                    "time": "2026-07-09 21:20:36",
+                    "level": "INFO",
+                    "message": "[images] Q9: fetching \"Great Wall historical\"…"
+                },
+                {
+                    "time": "2026-07-09 21:20:37",
+                    "level": "INFO",
+                    "message": "[images] Q9: saved"
+                },
+                {
+                    "time": "2026-07-09 21:20:37",
+                    "level": "INFO",
+                    "message": "[images] Q10: fetching \"Bhutan happiness\"…"
+                },
+                {
+                    "time": "2026-07-09 21:20:38",
+                    "level": "INFO",
+                    "message": "[images] Q10: saved"
+                },
+                {
+                    "time": "2026-07-09 21:20:38",
+                    "level": "INFO",
+                    "message": "[images] Q11: fetching \"historic treaty signing\"…"
+                },
+                {
+                    "time": "2026-07-09 21:20:38",
+                    "level": "INFO",
+                    "message": "[images] Q11: saved"
+                },
+                {
+                    "time": "2026-07-09 21:20:38",
+                    "level": "INFO",
+                    "message": "[images] Q12: fetching \"historical document signing\"…"
+                },
+                {
+                    "time": "2026-07-09 21:20:38",
+                    "level": "INFO",
+                    "message": "[images] Q12: saved"
+                },
+                {
+                    "time": "2026-07-09 21:20:38",
+                    "level": "INFO",
+                    "message": "[images] Q13: fetching \"flags of Europe\"…"
+                },
+                {
+                    "time": "2026-07-09 21:20:39",
+                    "level": "INFO",
+                    "message": "[images] Q13: saved"
+                },
+                {
+                    "time": "2026-07-09 21:20:39",
+                    "level": "INFO",
+                    "message": "[images] Q14: fetching \"falling wall\"…"
+                },
+                {
+                    "time": "2026-07-09 21:20:40",
+                    "level": "INFO",
+                    "message": "[images] Q14: saved"
+                },
+                {
+                    "time": "2026-07-09 21:20:40",
+                    "level": "INFO",
+                    "message": "[images] Q15: fetching \"Renaissance painting\"…"
+                },
+                {
+                    "time": "2026-07-09 21:20:40",
+                    "level": "INFO",
+                    "message": "[images] Q15: saved"
+                },
+                {
+                    "time": "2026-07-09 21:20:40",
+                    "level": "INFO",
+                    "message": "[images] Preview images: 15\/15 saved"
+                }
+            ],
+            "stats": {
+                "categories_retried": 2,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 15
+            },
+            "questions": [
+                {
+                    "question": "Which of the following cities is home to the iconic Blue Mosque?",
+                    "format": "mc",
+                    "image_query": "historic mosque architecture",
+                    "options": [
+                        {
+                            "text": "Cairo",
+                            "correct": false
+                        },
+                        {
+                            "text": "Istanbul",
+                            "correct": true
+                        },
+                        {
+                            "text": "Tehran",
+                            "correct": false
+                        },
+                        {
+                            "text": "Damascus",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83ff942466.73983382\/1.jpg",
+                    "image_attribution": "Photo by Mehmet Turgut  Kirkgoz on Pexels"
+                },
+                {
+                    "question": "In which year did the United States declare its independence from Great Britain?",
+                    "format": "mc",
+                    "image_query": "historical independence declaration",
+                    "options": [
+                        {
+                            "text": "1776",
+                            "correct": true
+                        },
+                        {
+                            "text": "1783",
+                            "correct": false
+                        },
+                        {
+                            "text": "1791",
+                            "correct": false
+                        },
+                        {
+                            "text": "1789",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83ff942466.73983382\/2.jpg",
+                    "image_attribution": "Photo by Tara Winstead on Pexels"
+                },
+                {
+                    "question": "Which of the following Australian states is known for producing the majority of the country’s wine?",
+                    "format": "mc",
+                    "image_query": "wine production vineyard",
+                    "options": [
+                        {
+                            "text": "Victoria",
+                            "correct": true
+                        },
+                        {
+                            "text": "Tasmania",
+                            "correct": false
+                        },
+                        {
+                            "text": "Queensland",
+                            "correct": false
+                        },
+                        {
+                            "text": "Northern Territory",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83ff942466.73983382\/3.jpg",
+                    "image_attribution": "Photo by Wolfgang Weiser on Pexels"
+                },
+                {
+                    "question": "Which Australian landmark is famous for its unique geological formations known as the Twelve Apostles?",
+                    "format": "mc",
+                    "image_query": "coastal rock formations",
+                    "options": [
+                        {
+                            "text": "Great Ocean Road",
+                            "correct": true
+                        },
+                        {
+                            "text": "Barrier Reef",
+                            "correct": false
+                        },
+                        {
+                            "text": "Uluru",
+                            "correct": false
+                        },
+                        {
+                            "text": "Blue Mountains",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83ff942466.73983382\/4.jpg",
+                    "image_attribution": "Photo by Asher Safaei on Pexels"
+                },
+                {
+                    "question": "In which year was the Rugby World Cup held in Australia, where England emerged victorious in the final?",
+                    "format": "mc",
+                    "image_query": "Rugby World Cup trophy",
+                    "options": [
+                        {
+                            "text": "2003",
+                            "correct": true
+                        },
+                        {
+                            "text": "2001",
+                            "correct": false
+                        },
+                        {
+                            "text": "2007",
+                            "correct": false
+                        },
+                        {
+                            "text": "1999",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83ff942466.73983382\/5.jpg",
+                    "image_attribution": "Photo by César O'neill on Pexels"
+                },
+                {
+                    "question": "True or False: The Australian Open is one of the four Grand Slam tennis tournaments held each year.",
+                    "format": "tf",
+                    "image_query": "tennis court at Australian Open",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83ff942466.73983382\/6.jpg",
+                    "image_attribution": "Photo by Claire Jasmine on Pexels"
+                },
+                {
+                    "question": "Emergency services responded to a recent landslip near a petrol station in which area of New Zealand?",
+                    "format": "mc",
+                    "image_query": "emergency response",
+                    "options": [
+                        {
+                            "text": "Hutt Valley",
+                            "correct": true
+                        },
+                        {
+                            "text": "Wellington Region",
+                            "correct": false
+                        },
+                        {
+                            "text": "Manaia",
+                            "correct": false
+                        },
+                        {
+                            "text": "Northland",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83ff942466.73983382\/7.jpg",
+                    "image_attribution": "Photo by RDNE Stock project on Pexels"
+                },
+                {
+                    "question": "Three corrections officers in the Northern Territory have been placed on paid leave following an incident involving what?",
+                    "format": "mc",
+                    "image_query": "prison guards in action",
+                    "options": [
+                        {
+                            "text": "A riot within the prison",
+                            "correct": false
+                        },
+                        {
+                            "text": "An inmate escape",
+                            "correct": true
+                        },
+                        {
+                            "text": "Misconduct allegations",
+                            "correct": false
+                        },
+                        {
+                            "text": "Faulty surveillance equipment",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83ff942466.73983382\/8.jpg",
+                    "image_attribution": "Photo by Ron Lach on Pexels"
+                },
+                {
+                    "question": "The Great Wall of China was primarily built to protect against invasions from which group?",
+                    "format": "mc",
+                    "image_query": "Great Wall historical",
+                    "options": [
+                        {
+                            "text": "The Mongols",
+                            "correct": true
+                        },
+                        {
+                            "text": "The Japanese Samurai",
+                            "correct": false
+                        },
+                        {
+                            "text": "The Qing Dynasty",
+                            "correct": false
+                        },
+                        {
+                            "text": "The Manchu Warriors",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83ff942466.73983382\/9.jpg",
+                    "image_attribution": "Photo by Tom Fisk on Pexels"
+                },
+                {
+                    "question": "The country of Bhutan is known for measuring its success using which unique indicator?",
+                    "format": "mc",
+                    "image_query": "Bhutan happiness",
+                    "options": [
+                        {
+                            "text": "Gross Domestic Product",
+                            "correct": false
+                        },
+                        {
+                            "text": "Gross National Happiness",
+                            "correct": true
+                        },
+                        {
+                            "text": "Economic Stability Index",
+                            "correct": false
+                        },
+                        {
+                            "text": "Cultural Satisfaction Measures",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83ff942466.73983382\/10.jpg",
+                    "image_attribution": "Photo by Gaurav Bagdi on Pexels"
+                },
+                {
+                    "question": "Which treaty marked the end of the American Revolutionary War and recognized American independence in 1783?",
+                    "format": "mc",
+                    "image_query": "historic treaty signing",
+                    "options": [
+                        {
+                            "text": "Treaty of Versailles",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Ghent",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Tordesillas",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83ff942466.73983382\/11.jpg",
+                    "image_attribution": "Photo by Manousos Kampanellis on Pexels"
+                },
+                {
+                    "question": "True or False: The Magna Carta was initially signed by King John of England in 1215 to limit the powers of the monarchy and establish certain legal rights.",
+                    "format": "tf",
+                    "image_query": "historical document signing",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83ff942466.73983382\/12.jpg",
+                    "image_attribution": "Photo by Graziele Rosa on Pexels"
+                },
+                {
+                    "question": "Which international agreement established the European Union, aiming to foster economic cooperation among member states?",
+                    "format": "mc",
+                    "image_query": "flags of Europe",
+                    "options": [
+                        {
+                            "text": "Maastricht Treaty",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": false
+                        },
+                        {
+                            "text": "Lisbon Treaty",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Rome",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83ff942466.73983382\/13.jpg",
+                    "image_attribution": "Photo by Samuel Sweet on Pexels"
+                },
+                {
+                    "question": "Which of the following events is noted for symbolizing the end of the Cold War and the reunification of Germany?",
+                    "format": "mc",
+                    "image_query": "falling wall",
+                    "options": [
+                        {
+                            "text": "Dissolution of the Soviet Union",
+                            "correct": false
+                        },
+                        {
+                            "text": "Fall of the Berlin Wall",
+                            "correct": true
+                        },
+                        {
+                            "text": "End of Apartheid",
+                            "correct": false
+                        },
+                        {
+                            "text": "Cuban Missile Crisis",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83ff942466.73983382\/14.jpg",
+                    "image_attribution": "Photo by Marcos  Felipe on Pexels"
+                },
+                {
+                    "question": "Which renowned artist is celebrated for his work 'The Birth of Venus', showcasing the goddess emerging from the sea?",
+                    "format": "mc",
+                    "image_query": "Renaissance painting",
+                    "options": [
+                        {
+                            "text": "Michelangelo",
+                            "correct": false
+                        },
+                        {
+                            "text": "Raphael",
+                            "correct": false
+                        },
+                        {
+                            "text": "Sandro Botticelli",
+                            "correct": true
+                        },
+                        {
+                            "text": "Leonardo da Vinci",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83ff942466.73983382\/15.jpg",
+                    "image_attribution": "Photo by Magda Ehlers on Pexels"
+                }
+            ],
+            "saved_to": "logs\/qa\/20260709-231920-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260709-231920-summary.json"
+}

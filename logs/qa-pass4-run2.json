@@ -1,0 +1,715 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-09",
+        "stamp": "20260709-231725",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-09",
+            "log": [
+                {
+                    "time": "2026-07-09 21:17:25",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 21:17:26",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:17:34",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:17:35",
+                    "level": "ERROR",
+                    "message": "[NZ Trivia] Attempt 1: 1 violation(s):\n- question 2 [fact-check premise]: question text rejected — Māori culture does not trace its origins to the indigenous peoples of the Americas."
+                },
+                {
+                    "time": "2026-07-09 21:17:40",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:17:41",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:17:42",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:17:42",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:17:50",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:17:51",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:17:51",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:17:51",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:18:00",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 1: 1 violation(s):\n- question 1 [fact-check]: marked answer \"1999\" rejected — The All Blacks won their second Rugby World Cup title in 2011, not 1999."
+                },
+                {
+                    "time": "2026-07-09 21:18:02",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 2: 1 violation(s):\n- question 1 (\"In which year did the New Zealand men’s national rugby team, known as the All Blacks, win their first Rugby World Cup title?\") matches superlative pattern: first-at-tournament superlative — ask about a specific year or edition instead"
+                },
+                {
+                    "time": "2026-07-09 21:18:09",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 3: 1 violation(s):\n- question 1 [fact-check]: marked answer \"2011\" rejected — The Rugby World Cup was held in New Zealand and Australia in 1987, not 2011."
+                },
+                {
+                    "time": "2026-07-09 21:18:22",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 21:18:22",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:18:25",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:18:25",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:18:28",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:18:28",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:18:38",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 21:18:38",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:18:46",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 21:18:46",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:18:51",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:18:52",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:19:02",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 21:19:02",
+                    "level": "INFO",
+                    "message": "[images] Q1: fetching \"environment protection legislation\"…"
+                },
+                {
+                    "time": "2026-07-09 21:19:02",
+                    "level": "INFO",
+                    "message": "[images] Q1: saved"
+                },
+                {
+                    "time": "2026-07-09 21:19:02",
+                    "level": "INFO",
+                    "message": "[images] Q2: fetching \"Māori culture and traditions\"…"
+                },
+                {
+                    "time": "2026-07-09 21:19:03",
+                    "level": "INFO",
+                    "message": "[images] Q2: saved"
+                },
+                {
+                    "time": "2026-07-09 21:19:03",
+                    "level": "INFO",
+                    "message": "[images] Q3: fetching \"native Australian animals\"…"
+                },
+                {
+                    "time": "2026-07-09 21:19:04",
+                    "level": "INFO",
+                    "message": "[images] Q3: saved"
+                },
+                {
+                    "time": "2026-07-09 21:19:04",
+                    "level": "INFO",
+                    "message": "[images] Q4: fetching \"coral reef underwater\"…"
+                },
+                {
+                    "time": "2026-07-09 21:19:04",
+                    "level": "INFO",
+                    "message": "[images] Q4: saved"
+                },
+                {
+                    "time": "2026-07-09 21:19:04",
+                    "level": "INFO",
+                    "message": "[images] Q5: fetching \"Rugby World Cup final\"…"
+                },
+                {
+                    "time": "2026-07-09 21:19:04",
+                    "level": "INFO",
+                    "message": "[images] Q5: saved"
+                },
+                {
+                    "time": "2026-07-09 21:19:04",
+                    "level": "INFO",
+                    "message": "[images] Q6: fetching \"Adelaide football team\"…"
+                },
+                {
+                    "time": "2026-07-09 21:19:05",
+                    "level": "INFO",
+                    "message": "[images] Q6: saved"
+                },
+                {
+                    "time": "2026-07-09 21:19:05",
+                    "level": "INFO",
+                    "message": "[images] Q7: fetching \"emergency response landslide\"…"
+                },
+                {
+                    "time": "2026-07-09 21:19:05",
+                    "level": "INFO",
+                    "message": "[images] Q7: saved"
+                },
+                {
+                    "time": "2026-07-09 21:19:05",
+                    "level": "INFO",
+                    "message": "[images] Q8: fetching \"pop singer memorial\"…"
+                },
+                {
+                    "time": "2026-07-09 21:19:06",
+                    "level": "INFO",
+                    "message": "[images] Q8: saved"
+                },
+                {
+                    "time": "2026-07-09 21:19:06",
+                    "level": "INFO",
+                    "message": "[images] Q9: fetching \"Machu Picchu ruins\"…"
+                },
+                {
+                    "time": "2026-07-09 21:19:06",
+                    "level": "INFO",
+                    "message": "[images] Q9: saved"
+                },
+                {
+                    "time": "2026-07-09 21:19:06",
+                    "level": "INFO",
+                    "message": "[images] Q10: fetching \"festival of tomatoes\"…"
+                },
+                {
+                    "time": "2026-07-09 21:19:07",
+                    "level": "INFO",
+                    "message": "[images] Q10: saved"
+                },
+                {
+                    "time": "2026-07-09 21:19:07",
+                    "level": "INFO",
+                    "message": "[images] Q11: fetching \"Treaty of Versailles document\"…"
+                },
+                {
+                    "time": "2026-07-09 21:19:07",
+                    "level": "INFO",
+                    "message": "[images] Q11: saved"
+                },
+                {
+                    "time": "2026-07-09 21:19:07",
+                    "level": "INFO",
+                    "message": "[images] Q12: fetching \"ancient Roman architecture\"…"
+                },
+                {
+                    "time": "2026-07-09 21:19:07",
+                    "level": "INFO",
+                    "message": "[images] Q12: saved"
+                },
+                {
+                    "time": "2026-07-09 21:19:07",
+                    "level": "INFO",
+                    "message": "[images] Q13: fetching \"historical war documents\"…"
+                },
+                {
+                    "time": "2026-07-09 21:19:08",
+                    "level": "INFO",
+                    "message": "[images] Q13: saved"
+                },
+                {
+                    "time": "2026-07-09 21:19:08",
+                    "level": "INFO",
+                    "message": "[images] Q14: fetching \"historic legal document\"…"
+                },
+                {
+                    "time": "2026-07-09 21:19:09",
+                    "level": "INFO",
+                    "message": "[images] Q14: saved"
+                },
+                {
+                    "time": "2026-07-09 21:19:09",
+                    "level": "INFO",
+                    "message": "[images] Q15: fetching \"ancient civilization artifacts\"…"
+                },
+                {
+                    "time": "2026-07-09 21:19:09",
+                    "level": "INFO",
+                    "message": "[images] Q15: saved"
+                },
+                {
+                    "time": "2026-07-09 21:19:09",
+                    "level": "INFO",
+                    "message": "[images] Preview images: 15\/15 saved"
+                }
+            ],
+            "stats": {
+                "categories_retried": 2,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 15
+            },
+            "questions": [
+                {
+                    "question": "In which year did the New Zealand government introduce the first comprehensive legislation focused on environmental protection?",
+                    "format": "mc",
+                    "image_query": "environment protection legislation",
+                    "options": [
+                        {
+                            "text": "1972",
+                            "correct": false
+                        },
+                        {
+                            "text": "1986",
+                            "correct": true
+                        },
+                        {
+                            "text": "1990",
+                            "correct": false
+                        },
+                        {
+                            "text": "2001",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83a60bd024.60592006\/1.jpg",
+                    "image_attribution": "Photo by Anna Shvets on Pexels"
+                },
+                {
+                    "question": "True or False: Māori culture is primarily derived from the indigenous cultures of Polynesia.",
+                    "format": "tf",
+                    "image_query": "Māori culture and traditions",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83a60bd024.60592006\/2.jpg",
+                    "image_attribution": "Photo by terence b on Pexels"
+                },
+                {
+                    "question": "Which of the following Australian animals is classified as a marsupial?",
+                    "format": "mc",
+                    "image_query": "native Australian animals",
+                    "options": [
+                        {
+                            "text": "Koala",
+                            "correct": true
+                        },
+                        {
+                            "text": "Dingo",
+                            "correct": false
+                        },
+                        {
+                            "text": "Penguin",
+                            "correct": false
+                        },
+                        {
+                            "text": "Crocodile",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83a60bd024.60592006\/3.jpg",
+                    "image_attribution": "Photo by Anthony's images on Pexels"
+                },
+                {
+                    "question": "True or False: The Great Barrier Reef is considered one of the Seven Natural Wonders of the World.",
+                    "format": "tf",
+                    "image_query": "coral reef underwater",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83a60bd024.60592006\/4.jpg",
+                    "image_attribution": "Photo by Francesco Ungaro on Pexels"
+                },
+                {
+                    "question": "In which year did the Rugby World Cup take place in South Africa, where the final was held at Ellis Park Stadium?",
+                    "format": "mc",
+                    "image_query": "Rugby World Cup final",
+                    "options": [
+                        {
+                            "text": "1995",
+                            "correct": true
+                        },
+                        {
+                            "text": "1999",
+                            "correct": false
+                        },
+                        {
+                            "text": "2003",
+                            "correct": false
+                        },
+                        {
+                            "text": "2007",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83a60bd024.60592006\/5.jpg",
+                    "image_attribution": "Photo by Travel with  Lenses on Pexels"
+                },
+                {
+                    "question": "Which Australian Rules Football team plays at the Adelaide Oval and is known by the nickname 'The Power'?",
+                    "format": "mc",
+                    "image_query": "Adelaide football team",
+                    "options": [
+                        {
+                            "text": "Adelaide Crows",
+                            "correct": false
+                        },
+                        {
+                            "text": "Port Adelaide Power",
+                            "correct": true
+                        },
+                        {
+                            "text": "West Coast Eagles",
+                            "correct": false
+                        },
+                        {
+                            "text": "Fremantle Dockers",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83a60bd024.60592006\/6.jpg",
+                    "image_attribution": "Photo by Franco Monsalvo on Pexels"
+                },
+                {
+                    "question": "Emergency services responded to a landslip near a petrol station in which region of New Zealand?",
+                    "format": "mc",
+                    "image_query": "emergency response landslide",
+                    "options": [
+                        {
+                            "text": "Hutt Valley",
+                            "correct": true
+                        },
+                        {
+                            "text": "Waikato",
+                            "correct": false
+                        },
+                        {
+                            "text": "Bay of Plenty",
+                            "correct": false
+                        },
+                        {
+                            "text": "Dunedin",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83a60bd024.60592006\/7.jpg",
+                    "image_attribution": "Photo by Franklin Peña Gutierrez on Pexels"
+                },
+                {
+                    "question": "Recent reports indicate that a certain pop singer has recently passed away at the age of 75. Who was she?",
+                    "format": "mc",
+                    "image_query": "pop singer memorial",
+                    "options": [
+                        {
+                            "text": "Bonnie Tyler",
+                            "correct": true
+                        },
+                        {
+                            "text": "Shirley Bassey",
+                            "correct": false
+                        },
+                        {
+                            "text": "Celine Dion",
+                            "correct": false
+                        },
+                        {
+                            "text": "Diana Ross",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83a60bd024.60592006\/8.jpg",
+                    "image_attribution": "Photo by Big Bag Films on Pexels"
+                },
+                {
+                    "question": "Which country is home to the ancient city of Machu Picchu, known for its Incan ruins?",
+                    "format": "mc",
+                    "image_query": "Machu Picchu ruins",
+                    "options": [
+                        {
+                            "text": "Brazil",
+                            "correct": false
+                        },
+                        {
+                            "text": "Peru",
+                            "correct": true
+                        },
+                        {
+                            "text": "Chile",
+                            "correct": false
+                        },
+                        {
+                            "text": "Bolivia",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83a60bd024.60592006\/9.jpg",
+                    "image_attribution": "Photo by Laura Rudi on Pexels"
+                },
+                {
+                    "question": "Which of the following countries has a popular festival known as the La Tomatina, where participants throw tomatoes at each other?",
+                    "format": "mc",
+                    "image_query": "festival of tomatoes",
+                    "options": [
+                        {
+                            "text": "Spain",
+                            "correct": true
+                        },
+                        {
+                            "text": "Italy",
+                            "correct": false
+                        },
+                        {
+                            "text": "France",
+                            "correct": false
+                        },
+                        {
+                            "text": "Portugal",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83a60bd024.60592006\/10.jpg",
+                    "image_attribution": "Photo by Vidal Balielo Jr. on Pexels"
+                },
+                {
+                    "question": "In which year was the Treaty of Versailles signed, officially ending World War I?",
+                    "format": "mc",
+                    "image_query": "Treaty of Versailles document",
+                    "options": [
+                        {
+                            "text": "1919",
+                            "correct": true
+                        },
+                        {
+                            "text": "1921",
+                            "correct": false
+                        },
+                        {
+                            "text": "1918",
+                            "correct": false
+                        },
+                        {
+                            "text": "1923",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83a60bd024.60592006\/11.jpg",
+                    "image_attribution": "Photo by Carl-Emil Jørgensen on Pexels"
+                },
+                {
+                    "question": "Which of the following empires is known for its remarkable architectural achievements, including the construction of the Colosseum?",
+                    "format": "mc",
+                    "image_query": "ancient Roman architecture",
+                    "options": [
+                        {
+                            "text": "The Roman Empire",
+                            "correct": true
+                        },
+                        {
+                            "text": "The Byzantine Empire",
+                            "correct": false
+                        },
+                        {
+                            "text": "The Ottoman Empire",
+                            "correct": false
+                        },
+                        {
+                            "text": "The Persian Empire",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83a60bd024.60592006\/12.jpg",
+                    "image_attribution": "Photo by C1 Superstar on Pexels"
+                },
+                {
+                    "question": "The War of 1812 was fought between the United States and which other country?",
+                    "format": "mc",
+                    "image_query": "historical war documents",
+                    "options": [
+                        {
+                            "text": "Great Britain",
+                            "correct": true
+                        },
+                        {
+                            "text": "France",
+                            "correct": false
+                        },
+                        {
+                            "text": "Spain",
+                            "correct": false
+                        },
+                        {
+                            "text": "The Netherlands",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83a60bd024.60592006\/13.jpg",
+                    "image_attribution": "Photo by Павел Гавриков on Pexels"
+                },
+                {
+                    "question": "Which document, signed in 1628, aimed to limit the powers of the English king and protect the rights of citizens?",
+                    "format": "mc",
+                    "image_query": "historic legal document",
+                    "options": [
+                        {
+                            "text": "Petition of Right",
+                            "correct": true
+                        },
+                        {
+                            "text": "Magna Carta",
+                            "correct": false
+                        },
+                        {
+                            "text": "Bill of Rights",
+                            "correct": false
+                        },
+                        {
+                            "text": "Act of Settlement",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83a60bd024.60592006\/14.jpg",
+                    "image_attribution": "Photo by Markus Spiske on Pexels"
+                },
+                {
+                    "question": "Which ancient civilization is recognized for its contributions to mathematics and astronomy, notably the concept of the zero?",
+                    "format": "mc",
+                    "image_query": "ancient civilization artifacts",
+                    "options": [
+                        {
+                            "text": "Mayan",
+                            "correct": true
+                        },
+                        {
+                            "text": "Egyptian",
+                            "correct": false
+                        },
+                        {
+                            "text": "Greek",
+                            "correct": false
+                        },
+                        {
+                            "text": "Sumerian",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f83a60bd024.60592006\/15.jpg",
+                    "image_attribution": "Photo by Berna on Pexels"
+                }
+            ],
+            "saved_to": "logs\/qa\/20260709-231725-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260709-231725-summary.json"
+}

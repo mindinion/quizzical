@@ -1,0 +1,661 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-10",
+        "stamp": "20260710-231056",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": true,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-10",
+            "log": [
+                {
+                    "time": "2026-07-10 21:10:56",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-10 21:10:57",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 21:10:59",
+                    "level": "ERROR",
+                    "message": "[NZ Trivia] Attempt 1: 4 violation(s):\n- question 1 (category 'NZ Trivia') has no New Zealand topic — NZ Trivia must mention NZ places, people, or culture\n- question 2 (\"True or False: The Amazon River is the longest river in the world, flowing through several countries in South America.\") matches banned pattern: disputed fact (Nile vs Amazon) treated as settled — pick a different, less obvious question\n- question 2 (category 'NZ Trivia') has no New Zealand topic — NZ Trivia must mention NZ places, people, or culture\n- question 2 tf must have True as the correct answer — rewrite as a verifiably true factual statement"
+                },
+                {
+                    "time": "2026-07-10 21:11:06",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 21:11:07",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-10 21:11:07",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-10 21:11:07",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 21:11:10",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 1: 2 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-10 21:11:13",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 2: 3 violation(s):\n- question 1 gives away its own answer — correct answer \"The Commonwealth Constitution Act\" is hinted in the question text (\"Which of the following articles describes a significant historical legal document enacted in Australia that allowed for the incorporation of the Australian Constitution?\")\n- question 2 gives away its own answer — correct answer \"The Dreamtime Festival\" is hinted in the question text (\"Which festival, celebrated in Australia, is known for showcasing Aboriginal culture through music, art, and storytelling?\")\n- question 2 image_query gives away the correct answer — \"The Dreamtime Festival\" is hinted in image_query \"Aboriginal cultural festival\""
+                },
+                {
+                    "time": "2026-07-10 21:11:15",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 3: 2 violation(s):\n- question 2 gives away its own answer — correct answer \"The Indigenous Cultural Festival\" is hinted in the question text (\"Which annual event in Australia is dedicated to celebrating the stories, culture, and traditions of Indigenous peoples through various art forms?\")\n- question 2 image_query gives away the correct answer — \"The Indigenous Cultural Festival\" is hinted in image_query \"cultural celebration\""
+                },
+                {
+                    "time": "2026-07-10 21:11:23",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-10 21:11:23",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 21:11:29",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 21:11:30",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-10 21:11:31",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-10 21:11:31",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-10 21:11:34",
+                    "level": "ERROR",
+                    "message": "[NZ Current Events] Attempt 1: 1 violation(s):\n- question 1 gives away its own answer — correct answer \"Flooding from river banks bursting\" is hinted in the question text (\"What recent event led to the flooding and evacuation of homes in Wairoa?\")"
+                },
+                {
+                    "time": "2026-07-10 21:11:40",
+                    "level": "INFO",
+                    "message": "[NZ Current Events] question 1 [fact-check]: corrected marked answer from \"A jet boat hitting rocks\" to \"A helicopter crash during tourism flights\""
+                },
+                {
+                    "time": "2026-07-10 21:11:40",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-10 21:11:40",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-10 21:11:41",
+                    "level": "ERROR",
+                    "message": "[Aussie Current Events] Attempt 1: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"The collision caused a significant traffic delay\" is hinted in the question text (\"Which of the following describes the outcome of a recent collision involving a player and a pedestrian?\")\n- question 1 image_query gives away the correct answer — \"The collision caused a significant traffic delay\" is hinted in image_query \"traffic accident scene\""
+                },
+                {
+                    "time": "2026-07-10 21:11:44",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-10 21:11:44",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 21:11:53",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-10 21:11:53",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 21:11:56",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 1: 1 violation(s):\n- question 2 tf must have False as the correct answer — rewrite as a plausible but factually false statement (wrong number, date, place, or attribute)"
+                },
+                {
+                    "time": "2026-07-10 21:11:58",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 2: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Westphalia\" is hinted in the question text (\"Which treaty, signed in 1648, ended the Thirty Years' War and significantly altered the political landscape of Europe?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Westphalia\" is hinted in image_query \"Thirty Years' War treaty\""
+                },
+                {
+                    "time": "2026-07-10 21:12:01",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 3: 3 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Versailles\" is hinted in the question text (\"Which treaty, signed in 1919, officially ended World War I and established new borders in Europe?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Versailles\" is hinted in image_query \"historical peace treaty\"\n- question 2 tf must have False as the correct answer — rewrite as a plausible but factually false statement (wrong number, date, place, or attribute)"
+                },
+                {
+                    "time": "2026-07-10 21:12:03",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 4: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Vienna\" is hinted in the question text (\"Which treaty, signed in 1815, aimed to restore the balance of power in Europe after the Napoleonic Wars?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Vienna\" is hinted in image_query \"historic treaty signing\""
+                },
+                {
+                    "time": "2026-07-10 21:12:07",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 21:12:08",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-10 21:12:12",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 21:12:13",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 5: 2 violation(s):\n- question 1 [fact-check distractor]: The marked answer 'Congress of Vienna' is contradicted by snippets stating 'Treaty of Vienna was signed in 1815.'\n- question 2 [fact-check premise]: question text rejected — The Code of Hammurabi was established in ancient Mesopotamia, not ancient Greece."
+                },
+                {
+                    "time": "2026-07-10 21:12:15",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 6: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Paris\" is hinted in the question text (\"Which treaty, signed in 1783, formally ended the American Revolutionary War?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Paris\" is hinted in image_query \"treaty signing painting\""
+                },
+                {
+                    "time": "2026-07-10 21:12:18",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 7: 1 violation(s):\n- question 1 image_query gives away the correct answer — \"Treaty of Ghent\" is hinted in image_query \"historic treaty signing\""
+                },
+                {
+                    "time": "2026-07-10 21:12:20",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 8: 2 violation(s):\n- question 1 image_query gives away the correct answer — \"Treaty of Ghent\" is hinted in image_query \"historic treaty document\"\n- question 2 (category 'History') uses recency language — this category must be evergreen, not current events"
+                },
+                {
+                    "time": "2026-07-10 21:12:23",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 9: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Ghent\" is hinted in the question text (\"Which treaty, signed in 1814, ended the War of 1812 between the United States and Great Britain?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Ghent\" is hinted in image_query \"historic treaty document\""
+                },
+                {
+                    "time": "2026-07-10 21:12:25",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 10: 1 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Ghent\" is hinted in the question text (\"Which treaty, signed in 1814, officially ended the conflict between the United States and Great Britain known as the War of 1812?\")"
+                },
+                {
+                    "time": "2026-07-10 21:12:25",
+                    "level": "ERROR",
+                    "message": "[History] All 10 attempts failed validation — accepting best attempt (1 violation(s)) (best effort)."
+                },
+                {
+                    "time": "2026-07-10 21:12:25",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-10 21:12:25",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-10 21:12:29",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 1: 4 violation(s):\n- question 1 gives away its own answer — correct answer \"The Great Gatsby\" is hinted in the question text (\"Which novel by F. Scott Fitzgerald tells the story of the mysterious millionaire Jay Gatsby and his obsession with the beautiful Daisy Buchanan?\")\n- question 2 image_query gives away the correct answer — \"Photosynthesis\" is hinted in image_query \"photosynthesis diagram\"\n- question 2 image_query repeats option text \"Photosynthesis\"\n- question 3 image_query gives away the correct answer — \"Pacific Ocean\" is hinted in image_query \"ocean trench\""
+                },
+                {
+                    "time": "2026-07-10 21:12:33",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 2: 2 violation(s):\n- question 3 gives away its own answer — correct answer \"Pacific Ocean\" is hinted in the question text (\"Which ocean is home to the deepest part of the world's oceans, known as the Challenger Deep?\")\n- question 3 image_query gives away the correct answer — \"Pacific Ocean\" is hinted in image_query \"deep ocean scene\""
+                },
+                {
+                    "time": "2026-07-10 21:12:37",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 3: 4 violation(s):\n- question 2 image_query gives away the correct answer — \"Telephone\" is hinted in image_query \"historical telephone\"\n- question 2 image_query repeats option text \"Telephone\"\n- question 3 (\"Which continent is home to the world's largest desert, the Antarctic Desert?\") matches superlative pattern: world's-largest superlative — ask a plain factual question without record claims\n- question 3 gives away its own answer — correct answer \"Antarctica\" is hinted in the question text (\"Which continent is home to the world's largest desert, the Antarctic Desert?\")"
+                },
+                {
+                    "time": "2026-07-10 21:12:41",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 4: 2 violation(s):\n- question 3 gives away its own answer — correct answer \"Atlantic Ocean\" is hinted in the question text (\"Which ocean is bordered by the continents of North America, South America, Europe, and Africa?\")\n- question 3 image_query gives away the correct answer — \"Atlantic Ocean\" is hinted in image_query \"world ocean map\""
+                },
+                {
+                    "time": "2026-07-10 21:12:56",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 5: 1 violation(s):\n- question 3 [fact-check distractor]: Marked answer 'North America' is incorrect; wrong option 'Asia' is correct according to snippet."
+                },
+                {
+                    "time": "2026-07-10 21:12:59",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 6: 3 violation(s):\n- question 1 gives away its own answer — correct answer \"Friends\" is hinted in the question text (\"In which television series does a group of friends navigate life and love in New York City while often gathering at a coffee shop?\")\n- question 2 image_query gives away the correct answer — \"Atmosphere\" is hinted in image_query \"Earth's atmosphere\"\n- question 2 image_query repeats option text \"Atmosphere\""
+                },
+                {
+                    "time": "2026-07-10 21:13:03",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 7: 3 violation(s):\n- question 2 gives away its own answer — correct answer \"Stratosphere\" is hinted in the question text (\"Which atmospheric layer is directly above the troposphere and extends to about 50 kilometers above the Earth’s surface?\")\n- question 2 image_query gives away the correct answer — \"Stratosphere\" is hinted in image_query \"layers of the atmosphere\"\n- question 3 (\"Which country is the largest in the world by land area, covering approximately 17 million square kilometers?\") matches superlative pattern: largest-on-earth superlative — ask a plain factual question without record claims"
+                },
+                {
+                    "time": "2026-07-10 21:13:06",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 8: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Back to the Future\" is hinted in the question text (\"Which film features a character named Marty McFly who travels back in time using a DeLorean?\")\n- question 3 image_query gives away the correct answer — \"Africa\" is hinted in image_query \"african landscape\""
+                },
+                {
+                    "time": "2026-07-10 21:13:09",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 9: 1 violation(s):\n- question 1 gives away its own answer — correct answer \"The Legend of Zelda\" is hinted in the question text (\"Which video game series features a character named Link who embarks on quests to rescue Princess Zelda?\")"
+                },
+                {
+                    "time": "2026-07-10 21:13:13",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 10: 3 violation(s):\n- question 2 image_query gives away the correct answer — \"Diffusion\" is hinted in image_query \"diffusion process\"\n- question 2 image_query repeats option text \"Diffusion\"\n- question 3 (\"Which country has the largest number of active volcanoes, with many located along the Pacific Ring of Fire?\") matches superlative pattern: largest\/most superlative with obscure counting metric"
+                },
+                {
+                    "time": "2026-07-10 21:13:13",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] All 10 attempts failed validation — accepting best attempt (1 violation(s)) (best effort)."
+                },
+                {
+                    "time": "2026-07-10 21:13:13",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                }
+            ],
+            "stats": {
+                "categories_retried": 4,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 0,
+                "category_cap_fallbacks": 2,
+                "category_emergency_fallbacks": 0,
+                "answer_corrections": 1
+            },
+            "questions": [
+                {
+                    "question": "Which of the following is a traditional Māori cultural practice involving the performance of songs and dances?",
+                    "format": "mc",
+                    "image_query": "Māori cultural performance",
+                    "options": [
+                        {
+                            "text": "Haka",
+                            "correct": true
+                        },
+                        {
+                            "text": "Waiata",
+                            "correct": false
+                        },
+                        {
+                            "text": "Poi",
+                            "correct": false
+                        },
+                        {
+                            "text": "Kapahaka",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1
+                },
+                {
+                    "question": "True or False: New Zealand is home to a type of tree known as the Kauri, which can live for over a thousand years.",
+                    "format": "tf",
+                    "image_query": "Kauri tree",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2
+                },
+                {
+                    "question": "Which of the following is a popular Australian event that celebrates the contributions of Indigenous culture through various artistic expressions?",
+                    "format": "mc",
+                    "image_query": "Indigenous artwork display",
+                    "options": [
+                        {
+                            "text": "The National Indigenous Music Awards",
+                            "correct": false
+                        },
+                        {
+                            "text": "The Dreaming Festival",
+                            "correct": true
+                        },
+                        {
+                            "text": "The Sydney Festival",
+                            "correct": false
+                        },
+                        {
+                            "text": "The Australian Arts Festival",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3
+                },
+                {
+                    "question": "Which Australian state is known for being the largest producer of wine in the country?",
+                    "format": "mc",
+                    "image_query": "vineyard landscape",
+                    "options": [
+                        {
+                            "text": "Western Australia",
+                            "correct": false
+                        },
+                        {
+                            "text": "South Australia",
+                            "correct": true
+                        },
+                        {
+                            "text": "Victoria",
+                            "correct": false
+                        },
+                        {
+                            "text": "New South Wales",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4
+                },
+                {
+                    "question": "Which NRL team is associated with the blue and gold colours?",
+                    "format": "mc",
+                    "image_query": "NRL team colours",
+                    "options": [
+                        {
+                            "text": "Canterbury Bulldogs",
+                            "correct": false
+                        },
+                        {
+                            "text": "Parramatta Eels",
+                            "correct": true
+                        },
+                        {
+                            "text": "North Queensland Cowboys",
+                            "correct": false
+                        },
+                        {
+                            "text": "Sydney Roosters",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5
+                },
+                {
+                    "question": "In which year was the Rugby World Cup held in England?",
+                    "format": "mc",
+                    "image_query": "Rugby World Cup England",
+                    "options": [
+                        {
+                            "text": "1991",
+                            "correct": false
+                        },
+                        {
+                            "text": "2015",
+                            "correct": true
+                        },
+                        {
+                            "text": "2003",
+                            "correct": false
+                        },
+                        {
+                            "text": "2007",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6
+                },
+                {
+                    "question": "What recent event caused injuries to five individuals near Queenstown?",
+                    "format": "mc",
+                    "image_query": "river jet adventure",
+                    "options": [
+                        {
+                            "text": "A bus accident on a highway",
+                            "correct": false
+                        },
+                        {
+                            "text": "A helicopter crash during tourism flights",
+                            "correct": true
+                        },
+                        {
+                            "text": "An airboat collision with a barrier",
+                            "correct": false
+                        },
+                        {
+                            "text": "A jet boat hitting rocks",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7
+                },
+                {
+                    "question": "Which of the following events recently led to the closure of daycare facilities in a major Australian city?",
+                    "format": "mc",
+                    "image_query": "family daycare center",
+                    "options": [
+                        {
+                            "text": "A safety concern about food allergies",
+                            "correct": false
+                        },
+                        {
+                            "text": "Regulatory compliance issues",
+                            "correct": true
+                        },
+                        {
+                            "text": "A protest from local parents",
+                            "correct": false
+                        },
+                        {
+                            "text": "A summer heat wave affecting operations",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8
+                },
+                {
+                    "question": "Which of the following mountain ranges runs through both France and Spain?",
+                    "format": "mc",
+                    "image_query": "mountain range France Spain",
+                    "options": [
+                        {
+                            "text": "Himalayas",
+                            "correct": false
+                        },
+                        {
+                            "text": "Pyrenees",
+                            "correct": true
+                        },
+                        {
+                            "text": "Andes",
+                            "correct": false
+                        },
+                        {
+                            "text": "Alps",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9
+                },
+                {
+                    "question": "In which year was the Berlin Wall constructed, marking the beginning of a division in Germany?",
+                    "format": "mc",
+                    "image_query": "Berlin Wall construction",
+                    "options": [
+                        {
+                            "text": "1955",
+                            "correct": false
+                        },
+                        {
+                            "text": "1961",
+                            "correct": true
+                        },
+                        {
+                            "text": "1970",
+                            "correct": false
+                        },
+                        {
+                            "text": "1980",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10
+                },
+                {
+                    "question": "Which treaty, signed in 1899, marked the beginning of international arbitration as a means to resolve conflicts between nations?",
+                    "format": "mc",
+                    "image_query": "international arbitration treaty",
+                    "options": [
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": false
+                        },
+                        {
+                            "text": "Hague Convention",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Versailles",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Ghent",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11
+                },
+                {
+                    "question": "True or False: The Treaty of Trianon was signed in 1920 and resulted in significant territorial losses for Hungary after World War I.",
+                    "format": "tf",
+                    "image_query": "Treaty of Trianon",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12
+                },
+                {
+                    "question": "Which novel by Ray Bradbury depicts a future society where books are banned and 'firemen' burn any that are found?",
+                    "format": "mc",
+                    "image_query": "book burning",
+                    "options": [
+                        {
+                            "text": "The Giver",
+                            "correct": false
+                        },
+                        {
+                            "text": "Fahrenheit 451",
+                            "correct": true
+                        },
+                        {
+                            "text": "Brave New World",
+                            "correct": false
+                        },
+                        {
+                            "text": "1984",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13
+                },
+                {
+                    "question": "What scientific principle describes the force that keeps planets in orbit around the sun?",
+                    "format": "mc",
+                    "image_query": "solar system illustration",
+                    "options": [
+                        {
+                            "text": "Electromagnetism",
+                            "correct": false
+                        },
+                        {
+                            "text": "Gravity",
+                            "correct": true
+                        },
+                        {
+                            "text": "Inertia",
+                            "correct": false
+                        },
+                        {
+                            "text": "Centrifugal force",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14
+                },
+                {
+                    "question": "Which continent is known for having the longest coastline of any continent on Earth?",
+                    "format": "mc",
+                    "image_query": "coastline landscape",
+                    "options": [
+                        {
+                            "text": "Asia",
+                            "correct": false
+                        },
+                        {
+                            "text": "North America",
+                            "correct": true
+                        },
+                        {
+                            "text": "Africa",
+                            "correct": false
+                        },
+                        {
+                            "text": "Australia",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15
+                }
+            ],
+            "warnings": [
+                "One or more categories accepted the last attempt after validation retries were exhausted."
+            ],
+            "saved_to": "logs\/qa\/20260710-231056-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260710-231056-summary.json"
+}

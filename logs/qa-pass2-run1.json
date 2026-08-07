@@ -1,0 +1,725 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-09",
+        "stamp": "20260709-225212",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-09",
+            "log": [
+                {
+                    "time": "2026-07-09 20:52:12",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 20:52:12",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:52:24",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 20:52:24",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:52:36",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 20:52:36",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:52:44",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:52:45",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:52:46",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 1: 1 violation(s):\n- question 1 [fact-check]: marked answer \"2002\" rejected — The Black Ferns won their first Rugby World Cup title in 1998, not 2002."
+                },
+                {
+                    "time": "2026-07-09 20:52:52",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:52:53",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:52:54",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 2: 1 violation(s):\n- question 1 [fact-check distractor]: wrong option '2002' is correct; Black Ferns won their first Rugby World Cup in 1998."
+                },
+                {
+                    "time": "2026-07-09 20:53:03",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:53:04",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:53:05",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 3: 1 violation(s):\n- question 1 [fact-check]: marked answer \"2003\" rejected — The All Blacks won the Rugby World Cup in 1987, 2011, and 2015, but there is no mention of them winning in 2003."
+                },
+                {
+                    "time": "2026-07-09 20:53:11",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:53:12",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:53:13",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 20:53:13",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:53:17",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 20:53:17",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:53:20",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 20:53:20",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:53:28",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 20:53:28",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:53:37",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 20:53:37",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:53:54",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:53:55",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:53:56",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 20:53:56",
+                    "level": "INFO",
+                    "message": "[images] Q1: fetching \"wedding celebration\"…"
+                },
+                {
+                    "time": "2026-07-09 20:53:56",
+                    "level": "INFO",
+                    "message": "[images] Q1: saved"
+                },
+                {
+                    "time": "2026-07-09 20:53:56",
+                    "level": "INFO",
+                    "message": "[images] Q2: fetching \"historical treaty signing\"…"
+                },
+                {
+                    "time": "2026-07-09 20:53:56",
+                    "level": "INFO",
+                    "message": "[images] Q2: saved"
+                },
+                {
+                    "time": "2026-07-09 20:53:56",
+                    "level": "INFO",
+                    "message": "[images] Q3: fetching \"coral reef system\"…"
+                },
+                {
+                    "time": "2026-07-09 20:53:57",
+                    "level": "INFO",
+                    "message": "[images] Q3: saved"
+                },
+                {
+                    "time": "2026-07-09 20:53:57",
+                    "level": "INFO",
+                    "message": "[images] Q4: fetching \"flying marsupial\"…"
+                },
+                {
+                    "time": "2026-07-09 20:53:58",
+                    "level": "INFO",
+                    "message": "[images] Q4: saved"
+                },
+                {
+                    "time": "2026-07-09 20:53:58",
+                    "level": "INFO",
+                    "message": "[images] Q5: fetching \"Rugby World Cup trophy\"…"
+                },
+                {
+                    "time": "2026-07-09 20:53:58",
+                    "level": "INFO",
+                    "message": "[images] Q5: saved"
+                },
+                {
+                    "time": "2026-07-09 20:53:58",
+                    "level": "INFO",
+                    "message": "[images] Q6: fetching \"Australian rugby team jersey\"…"
+                },
+                {
+                    "time": "2026-07-09 20:53:58",
+                    "level": "INFO",
+                    "message": "[images] Q6: saved"
+                },
+                {
+                    "time": "2026-07-09 20:53:58",
+                    "level": "INFO",
+                    "message": "[images] Q7: fetching \"flooding evacuation preparation\"…"
+                },
+                {
+                    "time": "2026-07-09 20:53:59",
+                    "level": "INFO",
+                    "message": "[images] Q7: saved"
+                },
+                {
+                    "time": "2026-07-09 20:53:59",
+                    "level": "INFO",
+                    "message": "[images] Q8: fetching \"prison escape incident\"…"
+                },
+                {
+                    "time": "2026-07-09 20:54:00",
+                    "level": "INFO",
+                    "message": "[images] Q8: saved"
+                },
+                {
+                    "time": "2026-07-09 20:54:00",
+                    "level": "INFO",
+                    "message": "[images] Q9: fetching \"Maya pyramid ruins\"…"
+                },
+                {
+                    "time": "2026-07-09 20:54:01",
+                    "level": "INFO",
+                    "message": "[images] Q9: saved"
+                },
+                {
+                    "time": "2026-07-09 20:54:01",
+                    "level": "INFO",
+                    "message": "[images] Q10: fetching \"historic European city\"…"
+                },
+                {
+                    "time": "2026-07-09 20:54:02",
+                    "level": "INFO",
+                    "message": "[images] Q10: saved"
+                },
+                {
+                    "time": "2026-07-09 20:54:02",
+                    "level": "INFO",
+                    "message": "[images] Q11: fetching \"historic treaty signing\"…"
+                },
+                {
+                    "time": "2026-07-09 20:54:02",
+                    "level": "INFO",
+                    "message": "[images] Q11: saved"
+                },
+                {
+                    "time": "2026-07-09 20:54:02",
+                    "level": "INFO",
+                    "message": "[images] Q12: fetching \"historical battle site\"…"
+                },
+                {
+                    "time": "2026-07-09 20:54:03",
+                    "level": "INFO",
+                    "message": "[images] Q12: saved"
+                },
+                {
+                    "time": "2026-07-09 20:54:03",
+                    "level": "INFO",
+                    "message": "[images] Q13: fetching \"historic peace treaties\"…"
+                },
+                {
+                    "time": "2026-07-09 20:54:05",
+                    "level": "INFO",
+                    "message": "[images] Q13: saved"
+                },
+                {
+                    "time": "2026-07-09 20:54:05",
+                    "level": "INFO",
+                    "message": "[images] Q14: fetching \"Andean ancient ruins\"…"
+                },
+                {
+                    "time": "2026-07-09 20:54:06",
+                    "level": "INFO",
+                    "message": "[images] Q14: saved"
+                },
+                {
+                    "time": "2026-07-09 20:54:06",
+                    "level": "INFO",
+                    "message": "[images] Q15: fetching \"historical conference\"…"
+                },
+                {
+                    "time": "2026-07-09 20:54:07",
+                    "level": "INFO",
+                    "message": "[images] Q15: saved"
+                },
+                {
+                    "time": "2026-07-09 20:54:07",
+                    "level": "INFO",
+                    "message": "[images] Preview images: 15\/15 saved"
+                }
+            ],
+            "stats": {
+                "categories_retried": 1,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 15
+            },
+            "questions": [
+                {
+                    "question": "Which year did New Zealand legalize same-sex marriage?",
+                    "format": "mc",
+                    "image_query": "wedding celebration",
+                    "options": [
+                        {
+                            "text": "2010",
+                            "correct": false
+                        },
+                        {
+                            "text": "2013",
+                            "correct": true
+                        },
+                        {
+                            "text": "2015",
+                            "correct": false
+                        },
+                        {
+                            "text": "2017",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7dc459ebd4.18515429\/1.jpg",
+                    "image_attribution": "Photo by Shesunze Shamaye on Pexels"
+                },
+                {
+                    "question": "Which year did New Zealand sign the Treaty of Waitangi, an important document in its history?",
+                    "format": "mc",
+                    "image_query": "historical treaty signing",
+                    "options": [
+                        {
+                            "text": "1840",
+                            "correct": true
+                        },
+                        {
+                            "text": "1839",
+                            "correct": false
+                        },
+                        {
+                            "text": "1842",
+                            "correct": false
+                        },
+                        {
+                            "text": "1845",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7dc459ebd4.18515429\/2.jpg",
+                    "image_attribution": "Photo by Erik Mclean on Pexels"
+                },
+                {
+                    "question": "The largest coral reef system in the world is located off the coast of which continent?",
+                    "format": "mc",
+                    "image_query": "coral reef system",
+                    "options": [
+                        {
+                            "text": "Africa",
+                            "correct": false
+                        },
+                        {
+                            "text": "Australia",
+                            "correct": true
+                        },
+                        {
+                            "text": "Asia",
+                            "correct": false
+                        },
+                        {
+                            "text": "South America",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7dc459ebd4.18515429\/3.jpg",
+                    "image_attribution": "Photo by Nothing Ahead on Pexels"
+                },
+                {
+                    "question": "Which Australian animal is known for its unique ability to glide through the air using a membrane that stretches between its limbs?",
+                    "format": "mc",
+                    "image_query": "flying marsupial",
+                    "options": [
+                        {
+                            "text": "Koala",
+                            "correct": false
+                        },
+                        {
+                            "text": "Sugar Glider",
+                            "correct": true
+                        },
+                        {
+                            "text": "Wallaby",
+                            "correct": false
+                        },
+                        {
+                            "text": "Dingo",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7dc459ebd4.18515429\/4.jpg",
+                    "image_attribution": "Photo by Martynas Linge on Pexels"
+                },
+                {
+                    "question": "In which year did New Zealand's national rugby team, the All Blacks, win their Rugby World Cup title while hosting the tournament?",
+                    "format": "mc",
+                    "image_query": "Rugby World Cup trophy",
+                    "options": [
+                        {
+                            "text": "1995",
+                            "correct": false
+                        },
+                        {
+                            "text": "1987",
+                            "correct": true
+                        },
+                        {
+                            "text": "2007",
+                            "correct": false
+                        },
+                        {
+                            "text": "2011",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7dc459ebd4.18515429\/5.jpg",
+                    "image_attribution": "Photo by César O'neill on Pexels"
+                },
+                {
+                    "question": "True or False: The Australian national rugby league team is known as the Kangaroos.",
+                    "format": "tf",
+                    "image_query": "Australian rugby team jersey",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7dc459ebd4.18515429\/6.jpg",
+                    "image_attribution": "Photo by Hassan  Omar Wamwayi on Pexels"
+                },
+                {
+                    "question": "What recent weather-related issue has prompted warnings for residents in a specific area of New Zealand to prepare for evacuation?",
+                    "format": "mc",
+                    "image_query": "flooding evacuation preparation",
+                    "options": [
+                        {
+                            "text": "Severe drought in Wairoa",
+                            "correct": false
+                        },
+                        {
+                            "text": "Flooding in Wairoa",
+                            "correct": true
+                        },
+                        {
+                            "text": "Wildfires in Martinborough",
+                            "correct": false
+                        },
+                        {
+                            "text": "Landslide near Hutt Valley",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7dc459ebd4.18515429\/7.jpg",
+                    "image_attribution": "Photo by Juan Moccagatta on Pexels"
+                },
+                {
+                    "question": "Three corrections officers in which Australian territory were recently stood down due to a prison escape incident?",
+                    "format": "mc",
+                    "image_query": "prison escape incident",
+                    "options": [
+                        {
+                            "text": "Northern Territory",
+                            "correct": true
+                        },
+                        {
+                            "text": "Western Australia",
+                            "correct": false
+                        },
+                        {
+                            "text": "Victoria",
+                            "correct": false
+                        },
+                        {
+                            "text": "South Australia",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7dc459ebd4.18515429\/8.jpg",
+                    "image_attribution": "Photo by Ron Lach on Pexels"
+                },
+                {
+                    "question": "Which country is known for the historical site of Chichen Itza, a prominent city of the Maya civilization?",
+                    "format": "mc",
+                    "image_query": "Maya pyramid ruins",
+                    "options": [
+                        {
+                            "text": "Mexico",
+                            "correct": true
+                        },
+                        {
+                            "text": "Guatemala",
+                            "correct": false
+                        },
+                        {
+                            "text": "Honduras",
+                            "correct": false
+                        },
+                        {
+                            "text": "Costa Rica",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7dc459ebd4.18515429\/9.jpg",
+                    "image_attribution": "Photo by Ollie Craig on Pexels"
+                },
+                {
+                    "question": "Which city is often referred to as the birthplace of the Renaissance due to its remarkable contributions to art and culture during that period?",
+                    "format": "mc",
+                    "image_query": "historic European city",
+                    "options": [
+                        {
+                            "text": "Florence",
+                            "correct": true
+                        },
+                        {
+                            "text": "Venice",
+                            "correct": false
+                        },
+                        {
+                            "text": "Paris",
+                            "correct": false
+                        },
+                        {
+                            "text": "Rome",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7dc459ebd4.18515429\/10.jpg",
+                    "image_attribution": "Photo by Merve Şahin on Pexels"
+                },
+                {
+                    "question": "In which year did the Treaty of Versailles formally end World War I?",
+                    "format": "mc",
+                    "image_query": "historic treaty signing",
+                    "options": [
+                        {
+                            "text": "1919",
+                            "correct": true
+                        },
+                        {
+                            "text": "1920",
+                            "correct": false
+                        },
+                        {
+                            "text": "1918",
+                            "correct": false
+                        },
+                        {
+                            "text": "1921",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7dc459ebd4.18515429\/11.jpg",
+                    "image_attribution": "Photo by Manousos Kampanellis on Pexels"
+                },
+                {
+                    "question": "Which of the following battles was a significant turning point in the American Civil War?",
+                    "format": "mc",
+                    "image_query": "historical battle site",
+                    "options": [
+                        {
+                            "text": "Battle of Gettysburg",
+                            "correct": true
+                        },
+                        {
+                            "text": "Battle of Antietam",
+                            "correct": false
+                        },
+                        {
+                            "text": "Battle of Bunker Hill",
+                            "correct": false
+                        },
+                        {
+                            "text": "Battle of Bull Run",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7dc459ebd4.18515429\/12.jpg",
+                    "image_attribution": "Photo by Jay Brand on Pexels"
+                },
+                {
+                    "question": "Which of the following treaties formally ended World War I?",
+                    "format": "mc",
+                    "image_query": "historic peace treaties",
+                    "options": [
+                        {
+                            "text": "Treaty of Versailles",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Ghent",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Paris 1783",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7dc459ebd4.18515429\/13.jpg",
+                    "image_attribution": "Photo by Gu Bra on Pexels"
+                },
+                {
+                    "question": "Which ancient civilization is known for building the impressive Machu Picchu in the Andes Mountains?",
+                    "format": "mc",
+                    "image_query": "Andean ancient ruins",
+                    "options": [
+                        {
+                            "text": "Aztec",
+                            "correct": false
+                        },
+                        {
+                            "text": "Inca",
+                            "correct": true
+                        },
+                        {
+                            "text": "Maya",
+                            "correct": false
+                        },
+                        {
+                            "text": "Olmec",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7dc459ebd4.18515429\/14.jpg",
+                    "image_attribution": "Photo by Marco Alhelm on Pexels"
+                },
+                {
+                    "question": "True or False: The Berlin Conference of 1884-1885 led to the partitioning of Africa among European powers without any African representation.",
+                    "format": "tf",
+                    "image_query": "historical conference",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7dc459ebd4.18515429\/15.jpg",
+                    "image_attribution": "Photo by photomood_55 on Pexels"
+                }
+            ],
+            "saved_to": "logs\/qa\/20260709-225212-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260709-225212-summary.json"
+}

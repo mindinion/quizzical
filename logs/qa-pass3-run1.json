@@ -1,0 +1,740 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-09",
+        "stamp": "20260709-230140",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-09",
+            "log": [
+                {
+                    "time": "2026-07-09 21:01:40",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 21:01:41",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:01:48",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:01:48",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:01:50",
+                    "level": "ERROR",
+                    "message": "[NZ Trivia] Attempt 1: 2 violation(s):\n- question 1 [fact-check]: marked answer \"1985\" rejected — The Waitangi Tribunal was established in 1975, not 1985.\n- question 2 [fact-check distractor]: wrong option '1902' is correct; snippets do not mention 1949 as the adoption year."
+                },
+                {
+                    "time": "2026-07-09 21:01:55",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:01:56",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:01:57",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:01:57",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:02:04",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:02:07",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:02:07",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:02:07",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:02:13",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:02:14",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 1: 2 violation(s):\n- question 1 [fact-check distractor]: wrong option '2007' is correct; Rugby World Cup was held in 2007 according to snippet 1.\n- question 2 [fact-check premise]: question text rejected — The Australian Open is not played on grass courts; Wimbledon is the only Grand Slam tournament played on grass."
+                },
+                {
+                    "time": "2026-07-09 21:02:19",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:02:20",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:02:22",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 2: 1 violation(s):\n- question 1 [fact-check]: marked answer \"2019\" rejected — The Rugby World Cup final between South Africa and England was held in 2023, not 2019."
+                },
+                {
+                    "time": "2026-07-09 21:02:27",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:02:28",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:02:29",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 21:02:29",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:02:32",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:02:32",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:02:34",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:02:34",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:02:42",
+                    "level": "ERROR",
+                    "message": "[Geography] Attempt 1: 1 violation(s):\n- question 2 [fact-check distractor]: Marked answer 'Lithuania' is incorrect; 'Latvia' is the last country to adopt the Euro."
+                },
+                {
+                    "time": "2026-07-09 21:02:50",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 21:02:50",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:02:59",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 21:02:59",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:03:03",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 1: 1 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 21:03:15",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 21:03:15",
+                    "level": "INFO",
+                    "message": "[images] Q1: fetching \"maori treaty claims\"…"
+                },
+                {
+                    "time": "2026-07-09 21:03:17",
+                    "level": "INFO",
+                    "message": "[images] Q1: saved"
+                },
+                {
+                    "time": "2026-07-09 21:03:17",
+                    "level": "INFO",
+                    "message": "[images] Q2: fetching \"national flag adoption\"…"
+                },
+                {
+                    "time": "2026-07-09 21:03:17",
+                    "level": "INFO",
+                    "message": "[images] Q2: saved"
+                },
+                {
+                    "time": "2026-07-09 21:03:17",
+                    "level": "INFO",
+                    "message": "[images] Q3: fetching \"swimming marsupial\"…"
+                },
+                {
+                    "time": "2026-07-09 21:03:19",
+                    "level": "INFO",
+                    "message": "[images] Q3: saved"
+                },
+                {
+                    "time": "2026-07-09 21:03:19",
+                    "level": "INFO",
+                    "message": "[images] Q4: fetching \"coral reef underwater\"…"
+                },
+                {
+                    "time": "2026-07-09 21:03:19",
+                    "level": "INFO",
+                    "message": "[images] Q4: saved"
+                },
+                {
+                    "time": "2026-07-09 21:03:19",
+                    "level": "INFO",
+                    "message": "[images] Q5: fetching \"Rugby World Cup trophy\"…"
+                },
+                {
+                    "time": "2026-07-09 21:03:19",
+                    "level": "INFO",
+                    "message": "[images] Q5: saved"
+                },
+                {
+                    "time": "2026-07-09 21:03:19",
+                    "level": "INFO",
+                    "message": "[images] Q6: fetching \"Sydney Cricket Ground\"…"
+                },
+                {
+                    "time": "2026-07-09 21:03:20",
+                    "level": "INFO",
+                    "message": "[images] Q6: saved"
+                },
+                {
+                    "time": "2026-07-09 21:03:20",
+                    "level": "INFO",
+                    "message": "[images] Q7: fetching \"flood assessment damage\"…"
+                },
+                {
+                    "time": "2026-07-09 21:03:21",
+                    "level": "INFO",
+                    "message": "[images] Q7: saved"
+                },
+                {
+                    "time": "2026-07-09 21:03:21",
+                    "level": "INFO",
+                    "message": "[images] Q8: fetching \"prison officers standing down\"…"
+                },
+                {
+                    "time": "2026-07-09 21:03:21",
+                    "level": "INFO",
+                    "message": "[images] Q8: saved"
+                },
+                {
+                    "time": "2026-07-09 21:03:21",
+                    "level": "INFO",
+                    "message": "[images] Q9: fetching \"canals in city\"…"
+                },
+                {
+                    "time": "2026-07-09 21:03:23",
+                    "level": "INFO",
+                    "message": "[images] Q9: saved"
+                },
+                {
+                    "time": "2026-07-09 21:03:23",
+                    "level": "INFO",
+                    "message": "[images] Q10: fetching \"euro currency\"…"
+                },
+                {
+                    "time": "2026-07-09 21:03:24",
+                    "level": "INFO",
+                    "message": "[images] Q10: saved"
+                },
+                {
+                    "time": "2026-07-09 21:03:24",
+                    "level": "INFO",
+                    "message": "[images] Q11: fetching \"historic treaty signing\"…"
+                },
+                {
+                    "time": "2026-07-09 21:03:24",
+                    "level": "INFO",
+                    "message": "[images] Q11: saved"
+                },
+                {
+                    "time": "2026-07-09 21:03:24",
+                    "level": "INFO",
+                    "message": "[images] Q12: fetching \"stock market crash\"…"
+                },
+                {
+                    "time": "2026-07-09 21:03:25",
+                    "level": "INFO",
+                    "message": "[images] Q12: saved"
+                },
+                {
+                    "time": "2026-07-09 21:03:25",
+                    "level": "INFO",
+                    "message": "[images] Q13: fetching \"historical map of Africa\"…"
+                },
+                {
+                    "time": "2026-07-09 21:03:25",
+                    "level": "INFO",
+                    "message": "[images] Q13: saved"
+                },
+                {
+                    "time": "2026-07-09 21:03:25",
+                    "level": "INFO",
+                    "message": "[images] Q14: fetching \"historical documents\"…"
+                },
+                {
+                    "time": "2026-07-09 21:03:26",
+                    "level": "INFO",
+                    "message": "[images] Q14: saved"
+                },
+                {
+                    "time": "2026-07-09 21:03:26",
+                    "level": "INFO",
+                    "message": "[images] Q15: fetching \"ancient city ruins\"…"
+                },
+                {
+                    "time": "2026-07-09 21:03:27",
+                    "level": "INFO",
+                    "message": "[images] Q15: saved"
+                },
+                {
+                    "time": "2026-07-09 21:03:27",
+                    "level": "INFO",
+                    "message": "[images] Preview images: 15\/15 saved"
+                }
+            ],
+            "stats": {
+                "categories_retried": 4,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 15
+            },
+            "questions": [
+                {
+                    "question": "In which year was the Waitangi Tribunal established to address claims by Māori regarding breaches of the Treaty of Waitangi?",
+                    "format": "mc",
+                    "image_query": "maori treaty claims",
+                    "options": [
+                        {
+                            "text": "1975",
+                            "correct": true
+                        },
+                        {
+                            "text": "1985",
+                            "correct": false
+                        },
+                        {
+                            "text": "1990",
+                            "correct": false
+                        },
+                        {
+                            "text": "1965",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7ff3a7c050.42452280\/1.jpg",
+                    "image_attribution": "Photo by Robert  Stokoe on Pexels"
+                },
+                {
+                    "question": "In which year did New Zealand adopt its current national flag, which features the Union Jack and the Southern Cross constellation?",
+                    "format": "mc",
+                    "image_query": "national flag adoption",
+                    "options": [
+                        {
+                            "text": "1902",
+                            "correct": true
+                        },
+                        {
+                            "text": "1949",
+                            "correct": false
+                        },
+                        {
+                            "text": "1934",
+                            "correct": false
+                        },
+                        {
+                            "text": "1960",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7ff3a7c050.42452280\/2.jpg",
+                    "image_attribution": "Photo by Dmitry Sidorov on Pexels"
+                },
+                {
+                    "question": "Which Australian animal is known for its ability to swim long distances and is often mistaken for a terrestrial marsupial?",
+                    "format": "mc",
+                    "image_query": "swimming marsupial",
+                    "options": [
+                        {
+                            "text": "Platypus",
+                            "correct": true
+                        },
+                        {
+                            "text": "Koala",
+                            "correct": false
+                        },
+                        {
+                            "text": "Wallaby",
+                            "correct": false
+                        },
+                        {
+                            "text": "Dingo",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7ff3a7c050.42452280\/3.jpg",
+                    "image_attribution": "Photo by TheOther Kev on Pexels"
+                },
+                {
+                    "question": "True or False: The Great Barrier Reef is home to thousands of marine species and is the largest coral reef system in the world.",
+                    "format": "tf",
+                    "image_query": "coral reef underwater",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7ff3a7c050.42452280\/4.jpg",
+                    "image_attribution": "Photo by Francesco Ungaro on Pexels"
+                },
+                {
+                    "question": "In which year was the Rugby World Cup held in Japan, where South Africa triumphed over England in the final?",
+                    "format": "mc",
+                    "image_query": "Rugby World Cup trophy",
+                    "options": [
+                        {
+                            "text": "2017",
+                            "correct": false
+                        },
+                        {
+                            "text": "2019",
+                            "correct": true
+                        },
+                        {
+                            "text": "2021",
+                            "correct": false
+                        },
+                        {
+                            "text": "2015",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7ff3a7c050.42452280\/5.jpg",
+                    "image_attribution": "Photo by César O'neill on Pexels"
+                },
+                {
+                    "question": "True or False: The Sydney Cricket Ground has hosted over 100 Test matches since its establishment in the 19th century.",
+                    "format": "tf",
+                    "image_query": "Sydney Cricket Ground",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7ff3a7c050.42452280\/6.jpg",
+                    "image_attribution": "Photo by Rising Studio 07 on Pexels"
+                },
+                {
+                    "question": "Residents and businesses in which part of New Zealand are currently assessing the damage caused by flooding?",
+                    "format": "mc",
+                    "image_query": "flood assessment damage",
+                    "options": [
+                        {
+                            "text": "South Island",
+                            "correct": true
+                        },
+                        {
+                            "text": "North Island",
+                            "correct": false
+                        },
+                        {
+                            "text": "Wellington Region",
+                            "correct": false
+                        },
+                        {
+                            "text": "Bay of Plenty",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7ff3a7c050.42452280\/7.jpg",
+                    "image_attribution": "Photo by Franklin Peña Gutierrez on Pexels"
+                },
+                {
+                    "question": "Three corrections officers from the Northern Territory were recently stood down due to an incident involving which of the following?",
+                    "format": "mc",
+                    "image_query": "prison officers standing down",
+                    "options": [
+                        {
+                            "text": "A prison escape",
+                            "correct": true
+                        },
+                        {
+                            "text": "Misconduct allegations",
+                            "correct": false
+                        },
+                        {
+                            "text": "Staffing shortages",
+                            "correct": false
+                        },
+                        {
+                            "text": "Facility renovations",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7ff3a7c050.42452280\/8.jpg",
+                    "image_attribution": "Photo by RDNE Stock project on Pexels"
+                },
+                {
+                    "question": "Which city is known for its elaborate system of canals that serve as the main transportation routes?",
+                    "format": "mc",
+                    "image_query": "canals in city",
+                    "options": [
+                        {
+                            "text": "Copenhagen",
+                            "correct": false
+                        },
+                        {
+                            "text": "Amsterdam",
+                            "correct": true
+                        },
+                        {
+                            "text": "Venice",
+                            "correct": false
+                        },
+                        {
+                            "text": "Bruges",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7ff3a7c050.42452280\/9.jpg",
+                    "image_attribution": "Photo by Ozan Tabakoğlu on Pexels"
+                },
+                {
+                    "question": "In which year did the last country officially adopt the Euro as its currency?",
+                    "format": "mc",
+                    "image_query": "euro currency",
+                    "options": [
+                        {
+                            "text": "2012",
+                            "correct": false
+                        },
+                        {
+                            "text": "2015",
+                            "correct": false
+                        },
+                        {
+                            "text": "2016",
+                            "correct": true
+                        },
+                        {
+                            "text": "2014",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7ff3a7c050.42452280\/10.jpg",
+                    "image_attribution": "Photo by Ibrahim Boran on Pexels"
+                },
+                {
+                    "question": "In which year did the signing of the Treaty of Versailles take place, officially ending World War I?",
+                    "format": "mc",
+                    "image_query": "historic treaty signing",
+                    "options": [
+                        {
+                            "text": "1918",
+                            "correct": false
+                        },
+                        {
+                            "text": "1919",
+                            "correct": true
+                        },
+                        {
+                            "text": "1920",
+                            "correct": false
+                        },
+                        {
+                            "text": "1921",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7ff3a7c050.42452280\/11.jpg",
+                    "image_attribution": "Photo by Manousos Kampanellis on Pexels"
+                },
+                {
+                    "question": "Which of the following events is associated with the beginning of the Great Depression in the United States?",
+                    "format": "mc",
+                    "image_query": "stock market crash",
+                    "options": [
+                        {
+                            "text": "Stock Market Crash of 1929",
+                            "correct": true
+                        },
+                        {
+                            "text": "Wall Street Crash of 1930",
+                            "correct": false
+                        },
+                        {
+                            "text": "Black Tuesday of 1928",
+                            "correct": false
+                        },
+                        {
+                            "text": "Great Recession of 1933",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7ff3a7c050.42452280\/12.jpg",
+                    "image_attribution": "Photo by Leeloo The First on Pexels"
+                },
+                {
+                    "question": "In which year was the Berlin Conference, which laid the groundwork for the colonization of Africa?",
+                    "format": "mc",
+                    "image_query": "historical map of Africa",
+                    "options": [
+                        {
+                            "text": "1884",
+                            "correct": true
+                        },
+                        {
+                            "text": "1890",
+                            "correct": false
+                        },
+                        {
+                            "text": "1875",
+                            "correct": false
+                        },
+                        {
+                            "text": "1900",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7ff3a7c050.42452280\/13.jpg",
+                    "image_attribution": "Photo by UMA media on Pexels"
+                },
+                {
+                    "question": "Which document, signed in 1215, is often cited as a cornerstone of modern democracy by limiting the power of the king?",
+                    "format": "mc",
+                    "image_query": "historical documents",
+                    "options": [
+                        {
+                            "text": "Magna Carta",
+                            "correct": true
+                        },
+                        {
+                            "text": "Bill of Rights",
+                            "correct": false
+                        },
+                        {
+                            "text": "Declaration of Independence",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7ff3a7c050.42452280\/14.jpg",
+                    "image_attribution": "Photo by Donatello Trisolino on Pexels"
+                },
+                {
+                    "question": "Which ancient city's ruins are often associated with significant contributions to mathematics and astronomy and is located near modern-day Iraq?",
+                    "format": "mc",
+                    "image_query": "ancient city ruins",
+                    "options": [
+                        {
+                            "text": "Babylon",
+                            "correct": true
+                        },
+                        {
+                            "text": "Athens",
+                            "correct": false
+                        },
+                        {
+                            "text": "Carthage",
+                            "correct": false
+                        },
+                        {
+                            "text": "Alexandria",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7ff3a7c050.42452280\/15.jpg",
+                    "image_attribution": "Photo by Ayşegül  Aytören on Pexels"
+                }
+            ],
+            "saved_to": "logs\/qa\/20260709-230140-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260709-230140-summary.json"
+}

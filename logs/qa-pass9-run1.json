@@ -1,0 +1,858 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-10",
+        "stamp": "20260710-002632",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-10",
+            "log": [
+                {
+                    "time": "2026-07-09 22:26:32",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 22:26:35",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:26:43",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 22:26:43",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:26:51",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:26:52",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:26:53",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 22:26:53",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:26:55",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 1: 2 violation(s):\n- question 1 image_query gives away the correct answer — \"Adelaide Oval\" is hinted in image_query \"Adelaide Oval football\"\n- question 1 image_query repeats option text \"Adelaide Oval\""
+                },
+                {
+                    "time": "2026-07-09 22:27:00",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:27:01",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:27:03",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 2: 2 violation(s):\n- question 1 [fact-check]: marked answer \"Marvel Stadium\" rejected — The home ground of the St Kilda Football Club is Moorabbin Oval, not Marvel Stadium.\n- question 2 [fact-check distractor]: marked answer '1999' is contradicted by snippets stating the Rugby World Cup was held in '1999' in Wales, but '1991' is also a wrong option that is not mentioned in the snippets."
+                },
+                {
+                    "time": "2026-07-09 22:27:10",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:27:11",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:27:12",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 22:27:12",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:27:15",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 22:27:15",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:27:17",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 22:27:17",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:27:20",
+                    "level": "ERROR",
+                    "message": "[Geography] Attempt 1: 1 violation(s):\n- question 1 gives away its own answer — correct answer \"True\" is hinted in the question text (\"The city of Istanbul spans two continents. True or False: Half of Istanbul is located in Europe and the other half in Asia.\")"
+                },
+                {
+                    "time": "2026-07-09 22:27:27",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 22:27:27",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:27:29",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 1: 1 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 22:27:36",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 2: 1 violation(s):\n- question 2 [fact-check]: marked answer \"Treaty of Troyes\" rejected — The Treaty of Troyes is not mentioned as concluding the Hundred Years' War; the snippets do not support it as the correct answer."
+                },
+                {
+                    "time": "2026-07-09 22:27:38",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 3: 2 violation(s):\n- question 2 image_query gives away the correct answer — \"1215\" is hinted in image_query \"historical document 1215\"\n- question 2 image_query repeats option text \"1215\""
+                },
+                {
+                    "time": "2026-07-09 22:27:46",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 22:27:46",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:27:48",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 1: 1 violation(s):\n- question 2 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 22:27:51",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 2: 1 violation(s):\n- question 3 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 22:27:54",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 3: 2 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz\n- question 2 image_query gives away the correct answer — \"Japan\" is hinted in image_query \"Japanese industrial revolution\""
+                },
+                {
+                    "time": "2026-07-09 22:27:56",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 4: 1 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 22:28:01",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:28:02",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:28:08",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:28:09",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 5: 1 violation(s):\n- question 3 [fact-check premise]: question text rejected — The Great Wall of China was built over centuries, with significant construction phases preceding the Ming Dynasty."
+                },
+                {
+                    "time": "2026-07-09 22:28:12",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 6: 3 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz\n- question 2 gives away its own answer — correct answer \"United States\" is hinted in the question text (\"Which country formally annexed Hawaii in 1898, leading to its eventual statehood in the United States?\")\n- question 3 repeats topic \"Magna Carta\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 22:28:15",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 7: 1 violation(s):\n- question 3 (category 'General Knowledge') uses recency language — this category must be evergreen, not current events"
+                },
+                {
+                    "time": "2026-07-09 22:28:22",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 8: 1 violation(s):\n- question 1 (category 'General Knowledge') uses recency language — this category must be evergreen, not current events"
+                },
+                {
+                    "time": "2026-07-09 22:28:25",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 9: 1 violation(s):\n- question 3 repeats topic \"Magna Carta\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 22:28:28",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 10: 1 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 22:28:28",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] All 10 attempts failed validation — accepting last attempt (best effort)."
+                },
+                {
+                    "time": "2026-07-09 22:28:28",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 22:28:28",
+                    "level": "INFO",
+                    "message": "[final-gate] Verifying all 15 questions with fresh sources…"
+                },
+                {
+                    "time": "2026-07-09 22:28:37",
+                    "level": "INFO",
+                    "message": "[final-gate] question 4 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:28:37",
+                    "level": "INFO",
+                    "message": "[final-gate] question 4 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:28:41",
+                    "level": "INFO",
+                    "message": "[final-gate] question 6 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:28:41",
+                    "level": "INFO",
+                    "message": "[final-gate] question 6 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:28:55",
+                    "level": "INFO",
+                    "message": "[final-gate] question 13 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:28:56",
+                    "level": "INFO",
+                    "message": "[final-gate] question 13 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:28:59",
+                    "level": "INFO",
+                    "message": "[final-gate] question 14 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:29:00",
+                    "level": "INFO",
+                    "message": "[final-gate] question 14 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:29:03",
+                    "level": "INFO",
+                    "message": "[final-gate] question 15 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:29:04",
+                    "level": "INFO",
+                    "message": "[final-gate] question 15 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:29:04",
+                    "level": "INFO",
+                    "message": "[final-gate] All 15 questions passed — OK to publish"
+                },
+                {
+                    "time": "2026-07-09 22:29:04",
+                    "level": "INFO",
+                    "message": "[images] Q1: fetching \"New Zealand national park\"…"
+                },
+                {
+                    "time": "2026-07-09 22:29:04",
+                    "level": "INFO",
+                    "message": "[images] Q1: saved"
+                },
+                {
+                    "time": "2026-07-09 22:29:04",
+                    "level": "INFO",
+                    "message": "[images] Q2: fetching \"signing treaty history\"…"
+                },
+                {
+                    "time": "2026-07-09 22:29:05",
+                    "level": "INFO",
+                    "message": "[images] Q2: saved"
+                },
+                {
+                    "time": "2026-07-09 22:29:05",
+                    "level": "INFO",
+                    "message": "[images] Q3: fetching \"gliding marsupial\"…"
+                },
+                {
+                    "time": "2026-07-09 22:29:05",
+                    "level": "INFO",
+                    "message": "[images] Q3: saved"
+                },
+                {
+                    "time": "2026-07-09 22:29:05",
+                    "level": "INFO",
+                    "message": "[images] Q4: fetching \"great barrier reef\"…"
+                },
+                {
+                    "time": "2026-07-09 22:29:05",
+                    "level": "INFO",
+                    "message": "[images] Q4: saved"
+                },
+                {
+                    "time": "2026-07-09 22:29:05",
+                    "level": "INFO",
+                    "message": "[images] Q5: fetching \"AFL stadium crowd\"…"
+                },
+                {
+                    "time": "2026-07-09 22:29:06",
+                    "level": "INFO",
+                    "message": "[images] Q5: saved"
+                },
+                {
+                    "time": "2026-07-09 22:29:06",
+                    "level": "INFO",
+                    "message": "[images] Q6: fetching \"Rugby World Cup trophy\"…"
+                },
+                {
+                    "time": "2026-07-09 22:29:06",
+                    "level": "INFO",
+                    "message": "[images] Q6: saved"
+                },
+                {
+                    "time": "2026-07-09 22:29:06",
+                    "level": "INFO",
+                    "message": "[images] Q7: fetching \"flooding emergency response\"…"
+                },
+                {
+                    "time": "2026-07-09 22:29:06",
+                    "level": "INFO",
+                    "message": "[images] Q7: saved"
+                },
+                {
+                    "time": "2026-07-09 22:29:06",
+                    "level": "INFO",
+                    "message": "[images] Q8: fetching \"prison officers standing down\"…"
+                },
+                {
+                    "time": "2026-07-09 22:29:06",
+                    "level": "INFO",
+                    "message": "[images] Q8: saved"
+                },
+                {
+                    "time": "2026-07-09 22:29:06",
+                    "level": "INFO",
+                    "message": "[images] Q9: fetching \"mountain range\"…"
+                },
+                {
+                    "time": "2026-07-09 22:29:07",
+                    "level": "INFO",
+                    "message": "[images] Q9: saved"
+                },
+                {
+                    "time": "2026-07-09 22:29:07",
+                    "level": "INFO",
+                    "message": "[images] Q10: fetching \"Neuschwanstein Castle\"…"
+                },
+                {
+                    "time": "2026-07-09 22:29:08",
+                    "level": "INFO",
+                    "message": "[images] Q10: saved"
+                },
+                {
+                    "time": "2026-07-09 22:29:08",
+                    "level": "INFO",
+                    "message": "[images] Q11: fetching \"historical treaty document\"…"
+                },
+                {
+                    "time": "2026-07-09 22:29:09",
+                    "level": "INFO",
+                    "message": "[images] Q11: saved"
+                },
+                {
+                    "time": "2026-07-09 22:29:09",
+                    "level": "INFO",
+                    "message": "[images] Q12: fetching \"medieval document signing\"…"
+                },
+                {
+                    "time": "2026-07-09 22:29:10",
+                    "level": "INFO",
+                    "message": "[images] Q12: saved"
+                },
+                {
+                    "time": "2026-07-09 22:29:10",
+                    "level": "INFO",
+                    "message": "[images] Q13: fetching \"historic diplomatic agreement\"…"
+                },
+                {
+                    "time": "2026-07-09 22:29:10",
+                    "level": "INFO",
+                    "message": "[images] Q13: saved"
+                },
+                {
+                    "time": "2026-07-09 22:29:10",
+                    "level": "INFO",
+                    "message": "[images] Q14: fetching \"historical document on freedom\"…"
+                },
+                {
+                    "time": "2026-07-09 22:29:11",
+                    "level": "INFO",
+                    "message": "[images] Q14: saved"
+                },
+                {
+                    "time": "2026-07-09 22:29:11",
+                    "level": "INFO",
+                    "message": "[images] Q15: fetching \"historical peace treaty\"…"
+                },
+                {
+                    "time": "2026-07-09 22:29:11",
+                    "level": "INFO",
+                    "message": "[images] Q15: saved"
+                },
+                {
+                    "time": "2026-07-09 22:29:11",
+                    "level": "INFO",
+                    "message": "[images] Preview images: 15\/15 saved"
+                }
+            ],
+            "stats": {
+                "categories_retried": 3,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 15,
+                "final_gate_quiz_attempts": 1,
+                "final_gate_rejections": 0,
+                "category_cap_fallbacks": 1,
+                "final_gate_cap_fallbacks": 0,
+                "category_emergency_fallbacks": 0
+            },
+            "questions": [
+                {
+                    "question": "In which year did the New Zealand government establish the Department of Conservation, which is responsible for managing national parks and conservation areas?",
+                    "format": "mc",
+                    "image_query": "New Zealand national park",
+                    "options": [
+                        {
+                            "text": "1987",
+                            "correct": true
+                        },
+                        {
+                            "text": "1990",
+                            "correct": false
+                        },
+                        {
+                            "text": "1985",
+                            "correct": false
+                        },
+                        {
+                            "text": "1989",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f9410be9640.99323366\/1.jpg",
+                    "image_attribution": "Photo by Tyler Lastovich on Pexels"
+                },
+                {
+                    "question": "Which of the following events marked the signing of a significant treaty between Māori chiefs and the British Crown in New Zealand history?",
+                    "format": "mc",
+                    "image_query": "signing treaty history",
+                    "options": [
+                        {
+                            "text": "Treaty of Waitangi",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Versailles",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Ghent",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f9410be9640.99323366\/2.jpg",
+                    "image_attribution": "Photo by Boris Hamer on Pexels"
+                },
+                {
+                    "question": "Which Australian animal is renowned for its ability to glide through the air, using a membrane stretching between its limbs?",
+                    "format": "mc",
+                    "image_query": "gliding marsupial",
+                    "options": [
+                        {
+                            "text": "Sugar glider",
+                            "correct": true
+                        },
+                        {
+                            "text": "Koala bear",
+                            "correct": false
+                        },
+                        {
+                            "text": "Quokka",
+                            "correct": false
+                        },
+                        {
+                            "text": "Bandicoot",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f9410be9640.99323366\/3.jpg",
+                    "image_attribution": "Photo by Tabitha Favor on Pexels"
+                },
+                {
+                    "question": "True or False: The Great Barrier Reef is considered the largest living structure on Earth and can be seen from outer space.",
+                    "format": "tf",
+                    "image_query": "great barrier reef",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f9410be9640.99323366\/4.jpg",
+                    "image_attribution": "Photo by Francesco Ungaro on Pexels"
+                },
+                {
+                    "question": "Which AFL club plays its home games at Moorabbin Oval?",
+                    "format": "mc",
+                    "image_query": "AFL stadium crowd",
+                    "options": [
+                        {
+                            "text": "St Kilda Football Club",
+                            "correct": true
+                        },
+                        {
+                            "text": "Collingwood Football Club",
+                            "correct": false
+                        },
+                        {
+                            "text": "Essendon Football Club",
+                            "correct": false
+                        },
+                        {
+                            "text": "Richmond Football Club",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f9410be9640.99323366\/5.jpg",
+                    "image_attribution": "Photo by Bridgid Johnston on Pexels"
+                },
+                {
+                    "question": "In which year was the Rugby World Cup held in South Africa?",
+                    "format": "mc",
+                    "image_query": "Rugby World Cup trophy",
+                    "options": [
+                        {
+                            "text": "1995",
+                            "correct": true
+                        },
+                        {
+                            "text": "1991",
+                            "correct": false
+                        },
+                        {
+                            "text": "1999",
+                            "correct": false
+                        },
+                        {
+                            "text": "2003",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f9410be9640.99323366\/6.jpg",
+                    "image_attribution": "Photo by César O'neill on Pexels"
+                },
+                {
+                    "question": "A state of emergency has been declared in which New Zealand location due to flooding?",
+                    "format": "mc",
+                    "image_query": "flooding emergency response",
+                    "options": [
+                        {
+                            "text": "Wairoa",
+                            "correct": true
+                        },
+                        {
+                            "text": "Dunedin",
+                            "correct": false
+                        },
+                        {
+                            "text": "Kaikōura",
+                            "correct": false
+                        },
+                        {
+                            "text": "Martinborough",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f9410be9640.99323366\/7.jpg",
+                    "image_attribution": "Photo by Juan Moccagatta on Pexels"
+                },
+                {
+                    "question": "Three officers were stood down as a review was launched into what incident involving prisoners?",
+                    "format": "mc",
+                    "image_query": "prison officers standing down",
+                    "options": [
+                        {
+                            "text": "A prison escape",
+                            "correct": true
+                        },
+                        {
+                            "text": "A riot in court",
+                            "correct": false
+                        },
+                        {
+                            "text": "A drug smuggling case",
+                            "correct": false
+                        },
+                        {
+                            "text": "A fire incident in jail",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f9410be9640.99323366\/8.jpg",
+                    "image_attribution": "Photo by RDNE Stock project on Pexels"
+                },
+                {
+                    "question": "Which of the following mountain ranges extends across both Europe and Asia?",
+                    "format": "mc",
+                    "image_query": "mountain range",
+                    "options": [
+                        {
+                            "text": "Andes",
+                            "correct": false
+                        },
+                        {
+                            "text": "Himalayas",
+                            "correct": true
+                        },
+                        {
+                            "text": "Appalachians",
+                            "correct": false
+                        },
+                        {
+                            "text": "Rockies",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f9410be9640.99323366\/9.jpg",
+                    "image_attribution": "Photo by Balazs Simon on Pexels"
+                },
+                {
+                    "question": "In which year did the construction of the famous Neuschwanstein Castle in Germany begin?",
+                    "format": "mc",
+                    "image_query": "Neuschwanstein Castle",
+                    "options": [
+                        {
+                            "text": "1869",
+                            "correct": false
+                        },
+                        {
+                            "text": "1868",
+                            "correct": true
+                        },
+                        {
+                            "text": "1875",
+                            "correct": false
+                        },
+                        {
+                            "text": "1883",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f9410be9640.99323366\/10.jpg",
+                    "image_attribution": "Photo by Gildo Cancelli on Pexels"
+                },
+                {
+                    "question": "Which treaty, signed in 1763, ended the Seven Years' War and marked a significant shift in colonial power dynamics?",
+                    "format": "mc",
+                    "image_query": "historical treaty document",
+                    "options": [
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Utrecht",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Tordesillas",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Amiens",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f9410be9640.99323366\/11.jpg",
+                    "image_attribution": "Photo by Donatello Trisolino on Pexels"
+                },
+                {
+                    "question": "In which year was the Magna Carta, a foundational document for constitutional governance, signed?",
+                    "format": "mc",
+                    "image_query": "medieval document signing",
+                    "options": [
+                        {
+                            "text": "1215",
+                            "correct": true
+                        },
+                        {
+                            "text": "1300",
+                            "correct": false
+                        },
+                        {
+                            "text": "1492",
+                            "correct": false
+                        },
+                        {
+                            "text": "1400",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f9410be9640.99323366\/12.jpg",
+                    "image_attribution": "Photo by Matthias Zomer on Pexels"
+                },
+                {
+                    "question": "Which treaty, signed in 1848, ended the Mexican-American War and resulted in significant territorial gains for the United States?",
+                    "format": "mc",
+                    "image_query": "historic diplomatic agreement",
+                    "options": [
+                        {
+                            "text": "Treaty of Guadalupe Hidalgo",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Versailles",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Tordesillas",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f9410be9640.99323366\/13.jpg",
+                    "image_attribution": "Photo by Werner Pfennig on Pexels"
+                },
+                {
+                    "question": "What significant legislative act, passed in 1863, declared the freedom of all slaves in Confederate-held territory in the United States?",
+                    "format": "mc",
+                    "image_query": "historical document on freedom",
+                    "options": [
+                        {
+                            "text": "Homestead Act",
+                            "correct": false
+                        },
+                        {
+                            "text": "Civil Rights Act",
+                            "correct": false
+                        },
+                        {
+                            "text": "Emancipation Proclamation",
+                            "correct": true
+                        },
+                        {
+                            "text": "Voting Rights Act",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f9410be9640.99323366\/14.jpg",
+                    "image_attribution": "Photo by Donatello Trisolino on Pexels"
+                },
+                {
+                    "question": "True or False: The Treaty of Paris, signed in 1783, officially ended the American Revolutionary War and recognized American independence from Britain.",
+                    "format": "tf",
+                    "image_query": "historical peace treaty",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f9410be9640.99323366\/15.jpg",
+                    "image_attribution": "Photo by Beate Vogl on Pexels"
+                }
+            ],
+            "warnings": [
+                "One or more categories accepted the last attempt after validation retries were exhausted."
+            ],
+            "saved_to": "logs\/qa\/20260710-002632-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260710-002632-summary.json"
+}

@@ -1,0 +1,812 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-09",
+        "stamp": "20260709-234051",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-09",
+            "log": [
+                {
+                    "time": "2026-07-09 21:40:51",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 21:40:53",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:41:01",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:41:01",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:41:02",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:41:02",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:41:11",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:41:12",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 1: 1 violation(s):\n- question 2 [fact-check premise]: question text rejected — The Great Barrier Reef is located in the Coral Sea, not the Indian Ocean."
+                },
+                {
+                    "time": "2026-07-09 21:41:14",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 2: 1 violation(s):\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:41:20",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:41:21",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:41:22",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:41:22",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:41:27",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:41:28",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:41:29",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 1: 1 violation(s):\n- question 1 [fact-check]: marked answer \"1999\" rejected — Australia hosted the Rugby World Cup in 2003, not 1999."
+                },
+                {
+                    "time": "2026-07-09 21:41:33",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 2: 1 violation(s):\n- question 2 image_query repeats option text \"Cricket\""
+                },
+                {
+                    "time": "2026-07-09 21:41:40",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 21:41:40",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:41:42",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:41:42",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:41:44",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:41:44",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:41:56",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 21:41:56",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:41:59",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:42:03",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 1: 1 violation(s):\n- question 1 [fact-check premise]: question text rejected — The treaty aimed to resolve territorial disputes between the United States and Spain in 1819 is not mentioned; the snippets focus on treaties with Britain and do not support the claim."
+                },
+                {
+                    "time": "2026-07-09 21:42:07",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:42:11",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 2: 1 violation(s):\n- question 1 [fact-check premise]: question text rejected — The War of 1812 officially ended on February 17, 1815, not in 1814."
+                },
+                {
+                    "time": "2026-07-09 21:42:15",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:42:16",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:42:20",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 3: 1 violation(s):\n- question 1 [fact-check distractor]: Wrong option 'Treaty of Paris' is the treaty that ended the Revolutionary War, not the War of 1812."
+                },
+                {
+                    "time": "2026-07-09 21:42:24",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:42:25",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:42:30",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 21:42:30",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:42:33",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 1: 1 violation(s):\n- question 1 (\"Which country was the first to grant full women's suffrage in 1917, allowing women the right to vote in national elections?\") matches superlative pattern: first-to-do-something superlative — embeds disputed \"first\" claims"
+                },
+                {
+                    "time": "2026-07-09 21:42:36",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 2: 1 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 21:42:48",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 21:42:48",
+                    "level": "INFO",
+                    "message": "[final-gate] Verifying all 15 questions with fresh sources…"
+                },
+                {
+                    "time": "2026-07-09 21:42:53",
+                    "level": "INFO",
+                    "message": "[final-gate] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:42:54",
+                    "level": "INFO",
+                    "message": "[final-gate] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:42:58",
+                    "level": "INFO",
+                    "message": "[final-gate] question 4 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:42:59",
+                    "level": "INFO",
+                    "message": "[final-gate] question 4 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:43:13",
+                    "level": "INFO",
+                    "message": "[final-gate] question 11 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:43:13",
+                    "level": "INFO",
+                    "message": "[final-gate] question 11 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:43:26",
+                    "level": "INFO",
+                    "message": "[final-gate] All 15 questions passed — OK to publish"
+                },
+                {
+                    "time": "2026-07-09 21:43:26",
+                    "level": "INFO",
+                    "message": "[images] Q1: fetching \"Māori cultural festival\"…"
+                },
+                {
+                    "time": "2026-07-09 21:43:27",
+                    "level": "INFO",
+                    "message": "[images] Q1: saved"
+                },
+                {
+                    "time": "2026-07-09 21:43:27",
+                    "level": "INFO",
+                    "message": "[images] Q2: fetching \"traditional Māori waka\"…"
+                },
+                {
+                    "time": "2026-07-09 21:43:28",
+                    "level": "INFO",
+                    "message": "[images] Q2: saved"
+                },
+                {
+                    "time": "2026-07-09 21:43:28",
+                    "level": "INFO",
+                    "message": "[images] Q3: fetching \"wine regions Australia\"…"
+                },
+                {
+                    "time": "2026-07-09 21:43:28",
+                    "level": "INFO",
+                    "message": "[images] Q3: saved"
+                },
+                {
+                    "time": "2026-07-09 21:43:28",
+                    "level": "INFO",
+                    "message": "[images] Q4: fetching \"golden wattle flower\"…"
+                },
+                {
+                    "time": "2026-07-09 21:43:30",
+                    "level": "INFO",
+                    "message": "[images] Q4: saved"
+                },
+                {
+                    "time": "2026-07-09 21:43:30",
+                    "level": "INFO",
+                    "message": "[images] Q5: fetching \"cricket match stadium\"…"
+                },
+                {
+                    "time": "2026-07-09 21:43:30",
+                    "level": "INFO",
+                    "message": "[images] Q5: saved"
+                },
+                {
+                    "time": "2026-07-09 21:43:30",
+                    "level": "INFO",
+                    "message": "[images] Q6: fetching \"australian football game\"…"
+                },
+                {
+                    "time": "2026-07-09 21:43:31",
+                    "level": "INFO",
+                    "message": "[images] Q6: saved"
+                },
+                {
+                    "time": "2026-07-09 21:43:31",
+                    "level": "INFO",
+                    "message": "[images] Q7: fetching \"evacuated residential area\"…"
+                },
+                {
+                    "time": "2026-07-09 21:43:31",
+                    "level": "INFO",
+                    "message": "[images] Q7: saved"
+                },
+                {
+                    "time": "2026-07-09 21:43:31",
+                    "level": "INFO",
+                    "message": "[images] Q8: fetching \"prisoners in custody\"…"
+                },
+                {
+                    "time": "2026-07-09 21:43:32",
+                    "level": "INFO",
+                    "message": "[images] Q8: saved"
+                },
+                {
+                    "time": "2026-07-09 21:43:32",
+                    "level": "INFO",
+                    "message": "[images] Q9: fetching \"Marrakech market scene\"…"
+                },
+                {
+                    "time": "2026-07-09 21:43:33",
+                    "level": "INFO",
+                    "message": "[images] Q9: saved"
+                },
+                {
+                    "time": "2026-07-09 21:43:33",
+                    "level": "INFO",
+                    "message": "[images] Q10: fetching \"Bhutan mountain landscape\"…"
+                },
+                {
+                    "time": "2026-07-09 21:43:34",
+                    "level": "INFO",
+                    "message": "[images] Q10: saved"
+                },
+                {
+                    "time": "2026-07-09 21:43:34",
+                    "level": "INFO",
+                    "message": "[images] Q11: fetching \"historical treaty signing\"…"
+                },
+                {
+                    "time": "2026-07-09 21:43:34",
+                    "level": "INFO",
+                    "message": "[images] Q11: saved"
+                },
+                {
+                    "time": "2026-07-09 21:43:34",
+                    "level": "INFO",
+                    "message": "[images] Q12: fetching \"United Nations headquarters\"…"
+                },
+                {
+                    "time": "2026-07-09 21:43:35",
+                    "level": "INFO",
+                    "message": "[images] Q12: saved"
+                },
+                {
+                    "time": "2026-07-09 21:43:35",
+                    "level": "INFO",
+                    "message": "[images] Q13: fetching \"ancient civilization hieroglyphs\"…"
+                },
+                {
+                    "time": "2026-07-09 21:43:35",
+                    "level": "INFO",
+                    "message": "[images] Q13: saved"
+                },
+                {
+                    "time": "2026-07-09 21:43:35",
+                    "level": "INFO",
+                    "message": "[images] Q14: fetching \"Mount Everest climb\"…"
+                },
+                {
+                    "time": "2026-07-09 21:43:36",
+                    "level": "INFO",
+                    "message": "[images] Q14: saved"
+                },
+                {
+                    "time": "2026-07-09 21:43:36",
+                    "level": "INFO",
+                    "message": "[images] Q15: fetching \"European history treaty\"…"
+                },
+                {
+                    "time": "2026-07-09 21:43:37",
+                    "level": "INFO",
+                    "message": "[images] Q15: saved"
+                },
+                {
+                    "time": "2026-07-09 21:43:37",
+                    "level": "INFO",
+                    "message": "[images] Preview images: 15\/15 saved"
+                }
+            ],
+            "stats": {
+                "categories_retried": 4,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 15,
+                "final_gate_quiz_attempts": 1,
+                "final_gate_rejections": 0
+            },
+            "questions": [
+                {
+                    "question": "Which of the following is a widely recognized annual event held in New Zealand that celebrates the culture and heritage of Māori people?",
+                    "format": "mc",
+                    "image_query": "Māori cultural festival",
+                    "options": [
+                        {
+                            "text": "Waiata Festival",
+                            "correct": false
+                        },
+                        {
+                            "text": "Māori Heritage Festival",
+                            "correct": false
+                        },
+                        {
+                            "text": "Te Matatini",
+                            "correct": true
+                        },
+                        {
+                            "text": "Māori Arts Celebration",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f895e827d40.63331212\/1.jpg",
+                    "image_attribution": "Photo by Señoreyto Antonio on Pexels"
+                },
+                {
+                    "question": "True or False: The indigenous Māori people originally arrived in New Zealand from Polynesia by way of large canoes known as waka.",
+                    "format": "tf",
+                    "image_query": "traditional Māori waka",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f895e827d40.63331212\/2.jpg",
+                    "image_attribution": "Photo by Calvin _Cowakces on Pexels"
+                },
+                {
+                    "question": "Which of the following Australian states is known for its famous wine regions, including Barossa Valley and McLaren Vale?",
+                    "format": "mc",
+                    "image_query": "wine regions Australia",
+                    "options": [
+                        {
+                            "text": "Victoria",
+                            "correct": false
+                        },
+                        {
+                            "text": "South Australia",
+                            "correct": true
+                        },
+                        {
+                            "text": "Western Australia",
+                            "correct": false
+                        },
+                        {
+                            "text": "Queensland",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f895e827d40.63331212\/3.jpg",
+                    "image_attribution": "Photo by Allen Cullen on Pexels"
+                },
+                {
+                    "question": "True or False: The national flower of Australia is the golden wattle.",
+                    "format": "tf",
+                    "image_query": "golden wattle flower",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f895e827d40.63331212\/4.jpg",
+                    "image_attribution": "Photo by Oscar Rockr on Pexels"
+                },
+                {
+                    "question": "In which year did New Zealand host the ICC Cricket World Cup, which featured matches played across the country?",
+                    "format": "mc",
+                    "image_query": "cricket match stadium",
+                    "options": [
+                        {
+                            "text": "2011",
+                            "correct": true
+                        },
+                        {
+                            "text": "2007",
+                            "correct": false
+                        },
+                        {
+                            "text": "1999",
+                            "correct": false
+                        },
+                        {
+                            "text": "2015",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f895e827d40.63331212\/5.jpg",
+                    "image_attribution": "Photo by Shlok on Pexels"
+                },
+                {
+                    "question": "What is the name of the Australian football league known for its unique rules and high-scoring matches?",
+                    "format": "mc",
+                    "image_query": "australian football game",
+                    "options": [
+                        {
+                            "text": "AFL",
+                            "correct": true
+                        },
+                        {
+                            "text": "NRL",
+                            "correct": false
+                        },
+                        {
+                            "text": "A-League",
+                            "correct": false
+                        },
+                        {
+                            "text": "Super Rugby",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f895e827d40.63331212\/6.jpg",
+                    "image_attribution": "Photo by Franco Monsalvo on Pexels"
+                },
+                {
+                    "question": "Which of the following regions in New Zealand has recently experienced significant flooding, prompting emergency alerts for residents?",
+                    "format": "mc",
+                    "image_query": "evacuated residential area",
+                    "options": [
+                        {
+                            "text": "Wairoa",
+                            "correct": true
+                        },
+                        {
+                            "text": "Tauranga",
+                            "correct": false
+                        },
+                        {
+                            "text": "Dunedin",
+                            "correct": false
+                        },
+                        {
+                            "text": "Martinborough",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f895e827d40.63331212\/7.jpg",
+                    "image_attribution": "Photo by Pok Rie on Pexels"
+                },
+                {
+                    "question": "Three corrections officers were stood down due to a review launched into what incident?",
+                    "format": "mc",
+                    "image_query": "prisoners in custody",
+                    "options": [
+                        {
+                            "text": "A prisoner escape",
+                            "correct": true
+                        },
+                        {
+                            "text": "A prison riot",
+                            "correct": false
+                        },
+                        {
+                            "text": "An inmate overdose",
+                            "correct": false
+                        },
+                        {
+                            "text": "A staff misconduct case",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f895e827d40.63331212\/8.jpg",
+                    "image_attribution": "Photo by Ron Lach on Pexels"
+                },
+                {
+                    "question": "The city of Marrakech, known for its vibrant markets and historical significance, is located in which country?",
+                    "format": "mc",
+                    "image_query": "Marrakech market scene",
+                    "options": [
+                        {
+                            "text": "Morocco",
+                            "correct": true
+                        },
+                        {
+                            "text": "Egypt",
+                            "correct": false
+                        },
+                        {
+                            "text": "Tunisia",
+                            "correct": false
+                        },
+                        {
+                            "text": "Algeria",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f895e827d40.63331212\/9.jpg",
+                    "image_attribution": "Photo by Fabnel LDN on Pexels"
+                },
+                {
+                    "question": "The country of Bhutan is famous for measuring its success based on what unique metric?",
+                    "format": "mc",
+                    "image_query": "Bhutan mountain landscape",
+                    "options": [
+                        {
+                            "text": "Gross National Happiness",
+                            "correct": true
+                        },
+                        {
+                            "text": "Economic Growth Rate",
+                            "correct": false
+                        },
+                        {
+                            "text": "Sustainable Agriculture Index",
+                            "correct": false
+                        },
+                        {
+                            "text": "Natural Resource Wealth",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f895e827d40.63331212\/10.jpg",
+                    "image_attribution": "Photo by Karen W Lim on Pexels"
+                },
+                {
+                    "question": "Which treaty concluded the War of 1812 between the United States and Great Britain?",
+                    "format": "mc",
+                    "image_query": "historical treaty signing",
+                    "options": [
+                        {
+                            "text": "Treaty of Ghent",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Versailles",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Tordesillas",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f895e827d40.63331212\/11.jpg",
+                    "image_attribution": "Photo by Erik Mclean on Pexels"
+                },
+                {
+                    "question": "In which year was the United Nations established after World War II?",
+                    "format": "mc",
+                    "image_query": "United Nations headquarters",
+                    "options": [
+                        {
+                            "text": "1945",
+                            "correct": true
+                        },
+                        {
+                            "text": "1948",
+                            "correct": false
+                        },
+                        {
+                            "text": "1950",
+                            "correct": false
+                        },
+                        {
+                            "text": "1960",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f895e827d40.63331212\/12.jpg",
+                    "image_attribution": "Photo by Xabi Oregi on Pexels"
+                },
+                {
+                    "question": "Which ancient civilization is known for its extensive use of hieroglyphs and major advancements in mathematics and engineering?",
+                    "format": "mc",
+                    "image_query": "ancient civilization hieroglyphs",
+                    "options": [
+                        {
+                            "text": "Egyptian",
+                            "correct": true
+                        },
+                        {
+                            "text": "Minoan",
+                            "correct": false
+                        },
+                        {
+                            "text": "Sumerian",
+                            "correct": false
+                        },
+                        {
+                            "text": "Indus Valley",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f895e827d40.63331212\/13.jpg",
+                    "image_attribution": "Photo by Alejandro Quintanar on Pexels"
+                },
+                {
+                    "question": "In which year did the first successful ascent of Mount Everest take place?",
+                    "format": "mc",
+                    "image_query": "Mount Everest climb",
+                    "options": [
+                        {
+                            "text": "1953",
+                            "correct": true
+                        },
+                        {
+                            "text": "1960",
+                            "correct": false
+                        },
+                        {
+                            "text": "1945",
+                            "correct": false
+                        },
+                        {
+                            "text": "1972",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f895e827d40.63331212\/14.jpg",
+                    "image_attribution": "Photo by Prabin Sunar on Pexels"
+                },
+                {
+                    "question": "Which treaty ended the Thirty Years' War in 1648, significantly altering the political landscape of Europe?",
+                    "format": "mc",
+                    "image_query": "European history treaty",
+                    "options": [
+                        {
+                            "text": "Treaty of Westphalia",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Utrecht",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Tordesillas",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f895e827d40.63331212\/15.jpg",
+                    "image_attribution": "Photo by Marta Branco on Pexels"
+                }
+            ],
+            "saved_to": "logs\/qa\/20260709-234051-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260709-234051-summary.json"
+}

@@ -1,0 +1,641 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-10",
+        "stamp": "20260710-225006",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": true,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-10",
+            "log": [
+                {
+                    "time": "2026-07-10 20:50:06",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-10 20:50:06",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:50:09",
+                    "level": "ERROR",
+                    "message": "[NZ Trivia] Attempt 1: 2 violation(s):\n- question 1 (category 'NZ Trivia') has no New Zealand topic — NZ Trivia must mention NZ places, people, or culture\n- question 2 (category 'NZ Trivia') has no New Zealand topic — NZ Trivia must mention NZ places, people, or culture"
+                },
+                {
+                    "time": "2026-07-10 20:50:19",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-10 20:50:19",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:50:22",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 1: 1 violation(s):\n- question 2 (\"True or False: The Great Barrier Reef is the world's largest coral reef system, stretching over 2,300 kilometers along the coast of Australia.\") matches superlative pattern: world's-largest superlative — ask a plain factual question without record claims"
+                },
+                {
+                    "time": "2026-07-10 20:50:24",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 2: 1 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-10 20:50:26",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 3: 1 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-10 20:50:28",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 4: 2 violation(s):\n- question 2 (\"True or False: The Australian continent is home to the largest coral reef system in the world.\") matches superlative pattern: largest-on-earth superlative — ask a plain factual question without record claims\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-10 20:50:30",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 5: 1 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-10 20:50:33",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 6: 1 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-10 20:50:35",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 7: 3 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture\n- question 2 (\"True or False: The Australian continent is home to the world's largest sand island, Fraser Island.\") matches superlative pattern: world's-largest superlative — ask a plain factual question without record claims\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-10 20:50:42",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 20:50:42",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-10 20:50:43",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-10 20:50:43",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:50:51",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 20:50:52",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-10 20:50:53",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-10 20:50:53",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:50:57",
+                    "level": "ERROR",
+                    "message": "[NZ Current Events] Attempt 1: 1 violation(s):\n- expected 1 question(s) for 'NZ Current Events', got: {\"questions\":[{\"question\":\"What event caused significant injuries to five people in New Zealand recently?\",\"format\":\"mc\",\"image_query\":\"racing jet boats\",\"options\":[{\"text\":\"Shotover Jet crash\",\"correct\":true},{\"text\":\"Fatal car accident\",\"correct\":false},{\"text\":\"Helicopter emergency response\",\"correct\":false},{\"text\":\"Riverbank collapse\",\"correct\":false}]},{\"question\":\"What warning was issued recently for parts of Marlborough Sounds?\",\"format\":\"mc\",\"image_query\":\"shellfish contamination\",\"options\":[{\"text\":\"High wind advisory\",\"correct\":false},{\"text\":\"Shellfish biotoxin warning\",\"correct\":true},{\"text\":\"Severe weather alert\",\"correct\":false},{\"text\":\"Coastal flooding warning\",\"correct\":false}]},{\"question\":\"What is the central theme of Matariki's message delivered for the Pacific?\",\"format\":\"mc\",\"image_query\":\"community gathering\",\"options\":[{\"text\":\"Unity and support\",\"correct\":true},{\"text\":\"Cultural heritage preservation\",\"correct\":false},{\"text\":\"Environmental protection initiatives\",\"correct\":false},{\"text\":\"Economic collaboration\",\"correct\":false}]}]}"
+                },
+                {
+                    "time": "2026-07-10 20:51:00",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-10 20:51:00",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:51:02",
+                    "level": "ERROR",
+                    "message": "[Aussie Current Events] Attempt 1: 1 violation(s):\n- expected 1 question(s) for 'Aussie Current Events', got: {\"questions\":[{\"question\":\"The family of which missing woman now fears the worst in Toowoomba?\",\"format\":\"mc\",\"image_query\":\"sad family reunion\",\"options\":[{\"text\":\"Jasmine Hartin\",\"correct\":false},{\"text\":\"Sarah McLachlan\",\"correct\":false},{\"text\":\"Emma Mullen\",\"correct\":true},{\"text\":\"Rebecca Smith\",\"correct\":false}]},{\"question\":\"In a recent football clash, which player from the Magpies faced an ankle injury?\",\"format\":\"mc\",\"image_query\":\"football player injured\",\"options\":[{\"text\":\"Jack Crisp\",\"correct\":false},{\"text\":\"Jordan De Goey\",\"correct\":true},{\"text\":\"Ben Reid\",\"correct\":false},{\"text\":\"Trent Cotchin\",\"correct\":false}]}]}"
+                },
+                {
+                    "time": "2026-07-10 20:51:05",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-10 20:51:05",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:51:18",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-10 20:51:18",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:51:20",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 1: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Paris\" is hinted in the question text (\"Which treaty, signed in 1763, ended the Seven Years' War between Great Britain, France, and Spain?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Paris\" is hinted in image_query \"historic treaty signed\""
+                },
+                {
+                    "time": "2026-07-10 20:51:25",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 20:51:26",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-10 20:51:29",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 20:51:31",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 2: 2 violation(s):\n- question 1 [fact-check]: marked answer \"Treaty of Appomattox\" rejected — The Treaty of Appomattox is not mentioned in the snippets, and there is no evidence supporting it as the correct answer.\n- question 2 [fact-check premise]: question text rejected — The Hundred Years' War lasted 116 years, not exactly 100 years."
+                },
+                {
+                    "time": "2026-07-10 20:51:33",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 3: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Ghent\" is hinted in the question text (\"Which treaty concluded hostilities between the United States and Great Britain in 1814, officially ending the War of 1812?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Ghent\" is hinted in image_query \"historic treaty document\""
+                },
+                {
+                    "time": "2026-07-10 20:51:34",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 4: 1 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Paris (1856)\" is hinted in the question text (\"Which treaty, signed in 1856, ended the Crimean War and aimed to restore peace in Europe?\")"
+                },
+                {
+                    "time": "2026-07-10 20:51:37",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 5: 3 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Riga\" is hinted in the question text (\"Which treaty, signed in 1921, established the boundaries for a newly independent Poland after World War I?\")\n- question 1 (category 'History') uses recency language — this category must be evergreen, not current events\n- question 1 image_query gives away the correct answer — \"Treaty of Riga\" is hinted in image_query \"historic treaty signing\""
+                },
+                {
+                    "time": "2026-07-10 20:51:39",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 6: 1 violation(s):\n- question 1 image_query gives away the correct answer — \"Treaty of Riga\" is hinted in image_query \"historic treaty document\""
+                },
+                {
+                    "time": "2026-07-10 20:51:41",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 7: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Riga\" is hinted in the question text (\"Which treaty, signed in 1921, established the borders of Poland following World War I?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Riga\" is hinted in image_query \"historic treaty signing\""
+                },
+                {
+                    "time": "2026-07-10 20:51:43",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 8: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Warsaw\" is hinted in the question text (\"Which treaty, signed in 1920, aimed to establish peace between the Russian Soviet Federative Socialist Republic and Poland?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Warsaw\" is hinted in image_query \"historic treaty signing\""
+                },
+                {
+                    "time": "2026-07-10 20:51:46",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 20:51:47",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-10 20:51:51",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 20:51:52",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-10 20:51:53",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 9: 1 violation(s):\n- question 1 [fact-check distractor]: Marked answer 'Congress of Vienna' is incorrect; wrong option 'Treaty of Vienna' is supported by snippets."
+                },
+                {
+                    "time": "2026-07-10 20:51:55",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 10: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Westphalia\" is hinted in the question text (\"Which treaty was signed in 1648 to end the Thirty Years' War in Europe?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Westphalia\" is hinted in image_query \"historic treaty document\""
+                },
+                {
+                    "time": "2026-07-10 20:51:55",
+                    "level": "ERROR",
+                    "message": "[History] All 10 attempts failed validation — accepting best attempt (1 violation(s)) (best effort)."
+                },
+                {
+                    "time": "2026-07-10 20:51:55",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-10 20:51:55",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:52:09",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                }
+            ],
+            "stats": {
+                "categories_retried": 4,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 0,
+                "category_cap_fallbacks": 1,
+                "category_emergency_fallbacks": 0,
+                "answer_corrections": 0
+            },
+            "questions": [
+                {
+                    "question": "Which of the following is a traditional Māori festival celebrated in New Zealand, showcasing cultural performances and community gatherings?",
+                    "format": "mc",
+                    "image_query": "Māori cultural festival",
+                    "options": [
+                        {
+                            "text": "Matariki",
+                            "correct": true
+                        },
+                        {
+                            "text": "Hogmanay",
+                            "correct": false
+                        },
+                        {
+                            "text": "Diwali",
+                            "correct": false
+                        },
+                        {
+                            "text": "Carnival",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1
+                },
+                {
+                    "question": "Which New Zealand city is renowned for its significant role in the film industry and is famously known as the 'Wellywood'?",
+                    "format": "mc",
+                    "image_query": "film industry city",
+                    "options": [
+                        {
+                            "text": "Auckland",
+                            "correct": false
+                        },
+                        {
+                            "text": "Wellington",
+                            "correct": true
+                        },
+                        {
+                            "text": "Christchurch",
+                            "correct": false
+                        },
+                        {
+                            "text": "Dunedin",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2
+                },
+                {
+                    "question": "In which year did Australia officially become a federation, uniting its six colonies?",
+                    "format": "mc",
+                    "image_query": "Australian flag",
+                    "options": [
+                        {
+                            "text": "1901",
+                            "correct": true
+                        },
+                        {
+                            "text": "1890",
+                            "correct": false
+                        },
+                        {
+                            "text": "1910",
+                            "correct": false
+                        },
+                        {
+                            "text": "1920",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3
+                },
+                {
+                    "question": "True or False: Australia is known for its unique marsupials, including species like kangaroos and koalas.",
+                    "format": "tf",
+                    "image_query": "kangaroo and koala",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4
+                },
+                {
+                    "question": "Which NRL team is known for its blue and yellow colors?",
+                    "format": "mc",
+                    "image_query": "NRL team colors",
+                    "options": [
+                        {
+                            "text": "Canberra Raiders",
+                            "correct": false
+                        },
+                        {
+                            "text": "Cronulla Sharks",
+                            "correct": false
+                        },
+                        {
+                            "text": "Parramatta Eels",
+                            "correct": true
+                        },
+                        {
+                            "text": "Melbourne Storm",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5
+                },
+                {
+                    "question": "In which year was the Rugby World Cup held in New Zealand?",
+                    "format": "mc",
+                    "image_query": "Rugby World Cup NZ",
+                    "options": [
+                        {
+                            "text": "2011",
+                            "correct": true
+                        },
+                        {
+                            "text": "2007",
+                            "correct": false
+                        },
+                        {
+                            "text": "2015",
+                            "correct": false
+                        },
+                        {
+                            "text": "2003",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6
+                },
+                {
+                    "question": "What recent event led to the declaration of a state of emergency in a New Zealand location due to significant weather issues?",
+                    "format": "mc",
+                    "image_query": "flooded streets",
+                    "options": [
+                        {
+                            "text": "Heavy snowfall",
+                            "correct": false
+                        },
+                        {
+                            "text": "Severe flooding",
+                            "correct": true
+                        },
+                        {
+                            "text": "Tornado warnings",
+                            "correct": false
+                        },
+                        {
+                            "text": "Landslide risk",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7
+                },
+                {
+                    "question": "A pedestrian incident involving a truck has left individuals in a precarious situation on a highway. What was notably said about their condition?",
+                    "format": "mc",
+                    "image_query": "highway accident scene",
+                    "options": [
+                        {
+                            "text": "They are in stable condition.",
+                            "correct": false
+                        },
+                        {
+                            "text": "They are recovering at home.",
+                            "correct": false
+                        },
+                        {
+                            "text": "They are lucky to be alive.",
+                            "correct": true
+                        },
+                        {
+                            "text": "They sustained minor injuries only.",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8
+                },
+                {
+                    "question": "Which country features a city that is known for its famous canals, often referred to as the \"Venice of the North\"?",
+                    "format": "mc",
+                    "image_query": "canals in Europe",
+                    "options": [
+                        {
+                            "text": "Amsterdam",
+                            "correct": true
+                        },
+                        {
+                            "text": "Copenhagen",
+                            "correct": false
+                        },
+                        {
+                            "text": "Oslo",
+                            "correct": false
+                        },
+                        {
+                            "text": "Stockholm",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9
+                },
+                {
+                    "question": "Which of the following countries is renowned for its festival where participants celebrate the arrival of spring with the custom of throwing colored powders at one another?",
+                    "format": "mc",
+                    "image_query": "color festival celebration",
+                    "options": [
+                        {
+                            "text": "India",
+                            "correct": true
+                        },
+                        {
+                            "text": "Brazil",
+                            "correct": false
+                        },
+                        {
+                            "text": "Mexico",
+                            "correct": false
+                        },
+                        {
+                            "text": "Thailand",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10
+                },
+                {
+                    "question": "Which treaty, signed in 1856, ended the Crimean War and aimed to restore peace in Europe?",
+                    "format": "mc",
+                    "image_query": "historic negotiation scene",
+                    "options": [
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Tilsit",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Paris (1856)",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Ghent",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11
+                },
+                {
+                    "question": "True or False: The Treaty of Versailles was signed in 1919 and officially ended World War I.",
+                    "format": "tf",
+                    "image_query": "historic treaty signing",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12
+                },
+                {
+                    "question": "Which film features the iconic line, \"Here's looking at you, kid\"?",
+                    "format": "mc",
+                    "image_query": "classic film scene",
+                    "options": [
+                        {
+                            "text": "Casablanca",
+                            "correct": true
+                        },
+                        {
+                            "text": "Gone with the Wind",
+                            "correct": false
+                        },
+                        {
+                            "text": "Citizen Kane",
+                            "correct": false
+                        },
+                        {
+                            "text": "The Maltese Falcon",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13
+                },
+                {
+                    "question": "What is the chemical symbol for the element with the atomic number 79?",
+                    "format": "mc",
+                    "image_query": "chemical elements",
+                    "options": [
+                        {
+                            "text": "Au",
+                            "correct": true
+                        },
+                        {
+                            "text": "Ag",
+                            "correct": false
+                        },
+                        {
+                            "text": "Pb",
+                            "correct": false
+                        },
+                        {
+                            "text": "Fe",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14
+                },
+                {
+                    "question": "Which country contains the majority of the Amazon Rainforest?",
+                    "format": "mc",
+                    "image_query": "lush rainforest",
+                    "options": [
+                        {
+                            "text": "Brazil",
+                            "correct": true
+                        },
+                        {
+                            "text": "Peru",
+                            "correct": false
+                        },
+                        {
+                            "text": "Colombia",
+                            "correct": false
+                        },
+                        {
+                            "text": "Venezuela",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15
+                }
+            ],
+            "warnings": [
+                "One or more categories accepted the last attempt after validation retries were exhausted."
+            ],
+            "saved_to": "logs\/qa\/20260710-225006-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260710-225006-summary.json"
+}

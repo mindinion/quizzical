@@ -8,6 +8,7 @@
  */
 
 require_once 'require_auth.php';
+require_once __DIR__ . '/ai-quiz-stats.php';
 
 $type = isset($_GET['type']) ? trim($_GET['type']) : '';
 $date = isset($_GET['date']) ? trim($_GET['date']) : '';
@@ -36,9 +37,9 @@ $quizId = (int)$row['id'];
 $done = false;
 $resultType = 'Quizzical ' . $type;
 $stmt = $conn->prepare(
-    "SELECT score, max FROM Results WHERE user = ? AND status = 'active' AND type = ? AND DATE(date) = ? LIMIT 1"
+    "SELECT score, max FROM Results WHERE user = ? AND status = 'active' AND " . aiResultMatchSql($conn) . " LIMIT 1"
 );
-$stmt->bind_param('iss', $userid, $resultType, $date);
+$stmt->bind_param('iiss', $userid, $quizId, $resultType, $date);
 $stmt->execute();
 $res = $stmt->get_result()->fetch_assoc();
 $stmt->close();

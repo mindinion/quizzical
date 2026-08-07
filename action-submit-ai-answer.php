@@ -57,9 +57,9 @@ if (!$quizRow) {
 
 $resultType = 'Quizzical ' . $quizRow['type'];
 $stmt = $conn->prepare(
-    "SELECT id FROM Results WHERE user = ? AND status = 'active' AND type = ? AND date = ? LIMIT 1"
+    "SELECT id FROM Results WHERE user = ? AND status = 'active' AND " . aiResultMatchSql($conn) . " LIMIT 1"
 );
-$stmt->bind_param('iss', $userid, $resultType, $quizRow['date']);
+$stmt->bind_param('iiss', $userid, $quizId, $resultType, $quizRow['date']);
 $stmt->execute();
 if ($stmt->get_result()->num_rows > 0) {
     http_response_code(403);

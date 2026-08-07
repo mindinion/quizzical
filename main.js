@@ -505,10 +505,11 @@ document.cookie="feedItems=50";
 			// Grab the result data (if applicable)
 			if (result.result != null) {
 				var resultId = result.result.resultid;
-				var date = result.result.result_date;
 				var score = result.result.result_score;
 				var max = result.result.result_max;
 				var type = result.result.result_type;
+				// Name the quiz by its own date, not the day the poster got round to it
+				var date = result.result.result_quiz_date || result.result.result_date;
 			}
 	
 			// Create the main quizitem DOM
@@ -744,12 +745,16 @@ document.cookie="feedItems=50";
 		results.forEach(function(result) {
 			if (result.result != null && result.poster_id != getCookie("userid")) {
 				var quizType = result.result.result_type || '';
-				var quizDate = (result.result.result_date || '').split(' ')[0];
+				var quizId = result.result.result_quiz_id || 0;
+				// The quiz's own date, falling back to the posting date for posts made
+				// before results were linked to their quiz.
+				var quizDate = result.result.result_quiz_date || (result.result.result_date || '').split(' ')[0];
 				var isQuizzical = /^Quizzical /i.test(quizType);
 				$.get("action-checkresult.php", 
 					{ 
 						date: quizDate,
 						type: quizType,
+						quiz_id: quizId,
 						userid: getCookie("userid")
 					},	
 					function(data, status) { 
@@ -766,8 +771,9 @@ document.cookie="feedItems=50";
 						if (isQuizzical) {
 							$bubble.attr('data-quiz-type', quizType);
 							$bubble.attr('data-quiz-date', quizDate);
+							$bubble.attr('data-quiz-id', quizId);
 							$bubble.on('click', function() {
-								openQuizFromFeed($(this).data('quiz-type'), $(this).data('quiz-date'));
+								openQuizFromFeed($(this).data('quiz-type'), $(this).data('quiz-date'), $(this).data('quiz-id'));
 							});
 						}
 						$('*[data-quizfeed="' + result.postid + '"]').append($bubble);
@@ -777,14 +783,18 @@ document.cookie="feedItems=50";
 		});
 	}
 
-	function openQuizFromFeed(quizType, quizDate) {
+	function openQuizFromFeed(quizType, quizDate, quizId) {
+		if (quizId) {
+			openAIQuiz({ quiz_id: quizId });
+			return;
+		}
 		if (!quizType || !quizDate) return;
 		var normalised = String(quizType).replace(/^Quizzical\s+/i, '');
 		var match = quizList.find(function(q) {
 			return q.type === normalised && q.date === quizDate;
 		});
 		if (match) {
-			openAIQuiz(match, !!match.done);
+			openAIQuiz(match);
 			return;
 		}
 		$.get('action-resolve-ai-quiz.php', { type: quizType, date: quizDate }, function(raw) {
@@ -793,16 +803,7 @@ document.cookie="feedItems=50";
 				alert('Quiz not available — it may be older than 7 days.');
 				return;
 			}
-			var quiz = {
-				quiz_id: data.quiz_id,
-				type: data.type,
-				date: data.date,
-				done: !!data.done,
-				score: data.score,
-				max: data.max,
-				source: 'ai'
-			};
-			openAIQuiz(quiz, quiz.done);
+			openAIQuiz({ quiz_id: data.quiz_id });
 		});
 	}
 	
@@ -1182,7 +1183,7 @@ document.cookie="feedItems=50";
 		var quiz = findQuizToTake();
 		if (!quiz) return;
 		selectedQuiz = quiz;
-		openAIQuiz(quiz, false);
+		openAIQuiz(quiz);
 	}
 
 	function loadQuizList() {
@@ -1240,7 +1241,7 @@ document.cookie="feedItems=50";
 		if (idx === '' || idx === null) return;
 		selectedQuiz = quizList[parseInt(idx)];
 		if (!selectedQuiz) return;
-		openAIQuiz(selectedQuiz, selectedQuiz.done);
+		openAIQuiz(selectedQuiz);
 	}
 
 	// ── AI Quiz Wizard ──────────────────────────────────────────────────────
@@ -1249,6 +1250,9 @@ document.cookie="feedItems=50";
 	var aiCurrentIdx     = 0;
 	var aiScore          = 0;
 	var aiAnswerPending  = false;
+	// aiPosted = a result for this quiz is already on the feed; aiReviewMode = currently
+	// walking the questions read-only, which is also allowed before posting.
+	var aiPosted         = false;
 	var aiReviewMode     = false;
 
 	function isCurrentEventsCategory(cat) {
@@ -1280,18 +1284,19 @@ document.cookie="feedItems=50";
 		return html;
 	}
 
-	function openAIQuiz(quiz, reviewMode) {
+	function openAIQuiz(quiz) {
 		$.get('action-get-ai-quiz.php', { quiz_id: quiz.quiz_id }, function(raw) {
 			aiQuizData      = (typeof raw === 'object') ? raw : JSON.parse(raw);
-			aiReviewMode    = reviewMode || aiQuizData.review_mode;
-			aiScore         = aiReviewMode && aiQuizData.final_score != null
+			aiPosted        = !!aiQuizData.posted;
+			aiReviewMode    = aiPosted;
+			aiScore         = aiPosted && aiQuizData.final_score != null
 				? aiQuizData.final_score
 				: (aiQuizData.score_so_far || 0);
 			aiAnswerPending = false;
 
-			var labelPrefix = aiReviewMode ? 'Review: ' : '';
-			var label = labelPrefix + aiQuizData.type + ' \u2013 ' + formatQuizDate(aiQuizData.date);
-			$('#AIQuizTitle').text(label);
+			var total = aiQuizData.questions.length;
+			setAIQuizTitle();
+			$('#AIQuizComment').val('');
 			$('#AIQuizBody').show();
 			$('#AIQuizScoreScreen').hide();
 			$('#AIQuizNext').hide().text('Next \u2192');
@@ -1303,13 +1308,28 @@ document.cookie="feedItems=50";
 				renderAIQuestion(0);
 			} else {
 				aiCurrentIdx = aiQuizData.answered_count || 0;
-				if (aiCurrentIdx >= 15) {
+				if (total > 0 && aiCurrentIdx >= total) {
 					showAIScoreScreen();
 				} else {
 					renderAIQuestion(aiCurrentIdx);
 				}
 			}
 		});
+	}
+
+	function setAIQuizTitle() {
+		var prefix = aiReviewMode ? 'Review: ' : '';
+		$('#AIQuizTitle').text(prefix + aiQuizData.type + ' \u2013 ' + formatQuizDate(aiQuizData.date));
+	}
+
+	function startAIReview() {
+		if (!aiQuizData || !aiQuizData.can_review) return;
+		aiReviewMode = true;
+		aiCurrentIdx = 0;
+		setAIQuizTitle();
+		$('#AIQuizScoreScreen').hide();
+		$('#AIQuizBody').show();
+		renderAIQuestion(0);
 	}
 
 	function renderAIQuestion(idx) {
@@ -1444,12 +1464,13 @@ document.cookie="feedItems=50";
 
 	function showAIScoreScreen() {
 		$('#AIQuizBody').hide();
-		var maxScore = aiQuizData.final_max || 15;
+		var maxScore = aiQuizData.final_max || aiQuizData.questions.length || 15;
 		var pct = Math.round((aiScore / maxScore) * 100);
-		$('#AIQuizScoreHeading').text(aiReviewMode ? 'Your score' : 'Quiz complete!');
+		$('#AIQuizScoreHeading').text(aiPosted ? 'Your score' : 'Quiz complete!');
 		$('#AIQuizScoreDisplay').text(aiScore + ' / ' + maxScore);
-		$('#AIQuizComment').val('').toggle(!aiReviewMode);
-		$('#AIQuizPostBtn').prop('disabled', false).text('Post to Feed').toggle(!aiReviewMode);
+		$('#AIQuizComment').toggle(!aiPosted);
+		$('#AIQuizPostBtn').prop('disabled', false).text('Post to Feed').toggle(!aiPosted);
+		$('#AIQuizReviewBtn').toggle(!!aiQuizData.can_review);
 		$('#AIQuizSkipPost').text('Close').show();
 		$('#AIQuizScoreScreen').show();
 		$('#AIQuizProgressFill').css('width', '100%');
@@ -1465,12 +1486,18 @@ document.cookie="feedItems=50";
 		$.get('action-newresult.php', {
 			type:       quizType,
 			score:      aiScore,
-			questions:  15,
+			questions:  aiQuizData.questions.length || 15,
 			dateOption: 'today',
+			quiz_id:    aiQuizData.quiz_id,
 			comment:    comment
 		}, function(raw) {
 			var resp = null;
 			try { resp = JSON.parse(raw); } catch(e) {}
+			if (resp && resp.error) {
+				alert(resp.message || 'That result could not be posted.');
+				$('#AIQuizPostBtn').prop('disabled', false).text('Post to Feed');
+				return;
+			}
 			if (resp && resp.post_id > 0) {
 				closeAIQuiz();
 				downloadResults(1);
@@ -1490,12 +1517,14 @@ document.cookie="feedItems=50";
 		$('#AIQuizModal').hide();
 		$('#AIQuizBody').show();
 		$('#AIQuizScoreScreen').hide();
+		$('#AIQuizReviewBtn').hide();
 		$('#AIQuizOptions').off('click', '.ai-option');
 		$('#AIQuizNext').hide().text('Next \u2192');
 		$('#TabBar').show();
 		aiQuizData      = null;
 		aiCurrentIdx    = 0;
 		aiScore         = 0;
+		aiPosted        = false;
 		aiAnswerPending = false;
 		aiReviewMode    = false;
 		selectedQuiz    = null;

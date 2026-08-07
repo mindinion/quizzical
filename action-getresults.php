@@ -18,11 +18,23 @@
 	ini_set('error_reporting', E_STRICT);
 
 	require_once 'require_auth.php';
+	require_once __DIR__ . '/ai-quiz-stats.php';
 
 	if (isset($_GET['groupid'])) $groupid = sanitizeString($_GET['groupid']);
 	$offset = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;
 
+	// The quiz a result came from, where it is known. result_date is when it was posted,
+	// so it cannot be used to name or open the quiz itself.
+	if (resultsHasAiQuizId($conn)) {
+		$quizSelect = "Results.ai_quiz_id AS result_quiz_id, DATE_FORMAT(AIQuiz.date, '%Y-%m-%d') AS result_quiz_date,";
+		$quizJoin   = "LEFT JOIN AIQuiz ON (AIQuiz.id = Results.ai_quiz_id)";
+	} else {
+		$quizSelect = "NULL AS result_quiz_id, NULL AS result_quiz_date,";
+		$quizJoin   = "";
+	}
+
 	$q = "SELECT
+		$quizSelect
 		QuizFeed.id AS post_id,
 		Results.id AS result_id,
 		Poster.pic_filename AS poster_filename,
@@ -63,6 +75,7 @@
 		INNER JOIN Users AS Poster ON (QuizFeed.user_id = Poster.id)
 		INNER JOIN Memberships ON (Memberships.user_id = Poster.id)
 		LEFT JOIN Results ON (QuizFeed.result_id = Results.id)
+		$quizJoin
 		LEFT JOIN Comment ON (QuizFeed.id = Comment.quizfeed_id AND (Comment.status IS NULL OR Comment.status = 'active'))
 		LEFT JOIN Users AS Commenter ON (Comment.user_id = Commenter.id)
 		LEFT JOIN Digs As CommentDigs ON (Comment.id = CommentDigs.commentid) AND (CommentDigs.status IS NULL or CommentDigs.status = 'active')
@@ -104,6 +117,8 @@
 		public $result_score = "";
 		public $result_max = "";
 		public $result_type = "";
+		public $result_quiz_id = null;
+		public $result_quiz_date = null;
 	}
 
 	class Comment {
@@ -176,6 +191,8 @@
 						$newResult->result_score = $row['result_score'];
 						$newResult->result_max = $row['result_max'];
 						$newResult->result_type = $row['result_type'];
+						$newResult->result_quiz_id = $row['result_quiz_id'] !== null ? (int)$row['result_quiz_id'] : null;
+						$newResult->result_quiz_date = $row['result_quiz_date'];
 						$results[$lastPost]->result = $newResult;
 					}
 				}

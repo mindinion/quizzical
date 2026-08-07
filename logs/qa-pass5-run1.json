@@ -1,0 +1,165 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-09",
+        "stamp": "20260709-232242",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 0,
+        "failed": 1
+    },
+    "runs": [
+        {
+            "ok": false,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-09",
+            "log": [
+                {
+                    "time": "2026-07-09 21:22:42",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 21:22:44",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:22:46",
+                    "level": "ERROR",
+                    "message": "[NZ Trivia] Attempt 1: 1 violation(s):\n- question 2 (\"What year was the first successful ascent of Mount Cook, New Zealand's highest peak?\") matches superlative pattern: first-ascent superlative — ask a plain year question with the year in the options only"
+                },
+                {
+                    "time": "2026-07-09 21:22:54",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:22:54",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:22:56",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 1: 1 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:23:05",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:23:06",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:23:07",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 2: 1 violation(s):\n- question 1 [fact-check distractor]: Wrong option 'Bison' is not native to Australia, contradicting the marked answer."
+                },
+                {
+                    "time": "2026-07-09 21:23:10",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 3: 1 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:23:18",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:23:19",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:23:20",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:23:20",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:23:27",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 1: 2 violation(s):\n- question 1 [fact-check]: marked answer \"2003\" rejected — The Australian national rugby team won the Rugby World Cup in 1999, not 2003.\n- question 2 [fact-check]: marked answer \"Melbourne\" rejected — Melbourne is not known for navy blue and gold colors; it is actually known for its red and blue colors."
+                },
+                {
+                    "time": "2026-07-09 21:23:33",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 2: 1 violation(s):\n- question 1 [fact-check distractor]: wrong option '2003' is correct; Australia won the Rugby World Cup in 1999 and 2003."
+                },
+                {
+                    "time": "2026-07-09 21:23:41",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 3: 2 violation(s):\n- question 1 [fact-check]: marked answer \"1999\" rejected — The Australian national rugby team won the Rugby World Cup in 1991 and 1999, not in 1999 alone.\n- question 2 [fact-check distractor]: wrong option '1995' is correct; snippets indicate New Zealand qualified for the inaugural FIFA Women's World Cup in 1991."
+                },
+                {
+                    "time": "2026-07-09 21:23:48",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 4: 1 violation(s):\n- question 1 [fact-check]: marked answer \"1995\" rejected — The Australian national rugby team won the Rugby World Cup in 1991 and 1999, not 1995."
+                },
+                {
+                    "time": "2026-07-09 21:23:57",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 5: 1 violation(s):\n- question 1 [fact-check]: marked answer \"1999\" rejected — Australia won the Rugby World Cup in 1999, but the final was against France, not England."
+                },
+                {
+                    "time": "2026-07-09 21:24:06",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 6: 2 violation(s):\n- question 1 [fact-check]: marked answer \"1991\" rejected — The All Blacks won the Rugby World Cup in 1995, not 1991.\n- question 2 [fact-check distractor]: Wrong option '1999' is correct; snippets state Australia won the Cricket World Cup in 1999."
+                },
+                {
+                    "time": "2026-07-09 21:24:12",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 7: 2 violation(s):\n- question 1 [fact-check]: marked answer \"1995\" rejected — The All Blacks won the Rugby World Cup in 1987, 2011, and 2015, but there is no mention of their 1995 victory in the snippets.\n- question 2 [fact-check]: marked answer \"1996\" rejected — Australia won the Cricket World Cup in 1999, 2003, and 2007, but not in 1996."
+                },
+                {
+                    "time": "2026-07-09 21:24:17",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 8: 2 violation(s):\n- question 1 [fact-check]: marked answer \"1995\" rejected — The All Blacks won the Rugby World Cup in 1987, 2011, and 2015, but there is no mention of them winning in 1995.\n- question 2 [fact-check]: marked answer \"1999\" rejected — Australia won the Cricket World Cup in 1999, but they did not defeat the West Indies in the final; they defeated Pakistan."
+                },
+                {
+                    "time": "2026-07-09 21:24:23",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:24:24",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 9: 1 violation(s):\n- question 2 [fact-check premise]: question text rejected — The snippets indicate that Australia defeated New Zealand in the final of the ICC Cricket World Cup held in 1996, which contradicts the question's implication."
+                },
+                {
+                    "time": "2026-07-09 21:24:29",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:24:30",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 10: 2 violation(s):\n- question 1 [fact-check]: marked answer \"2019\" rejected — The All Blacks won the Rugby World Cup in 2011 and 2015, but there is no mention of them winning in 2019.\n- question 2 [fact-check premise]: question text rejected — The snippets indicate that Australia defeated New Zealand in the final of the ICC Cricket World Cup held in 2003, which contradicts the question's implication."
+                },
+                {
+                    "time": "2026-07-09 21:24:30",
+                    "level": "ERROR",
+                    "message": "[Sports] All 10 attempts failed validation — giving up."
+                }
+            ],
+            "stats": {
+                "categories_retried": 2,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 0
+            },
+            "error": "Failed to generate 'Sports' after 10 attempts — check logs\/generate-quiz.log",
+            "saved_to": "logs\/qa\/20260709-232242-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260709-232242-summary.json"
+}

@@ -1,0 +1,822 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-09",
+        "stamp": "20260709-235522",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-09",
+            "log": [
+                {
+                    "time": "2026-07-09 21:55:22",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 21:55:25",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:55:32",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:55:32",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:55:34",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:55:34",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:55:36",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 1: 3 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture\n- question 2 (\"True or False: The Australian continent is home to the world's largest coral reef system, which is a major biodiversity hotspot.\") matches superlative pattern: world's-largest superlative — ask a plain factual question without record claims\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:55:37",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 2: 2 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:55:49",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:55:49",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:55:50",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:55:50",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:55:53",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:55:58",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 1: 1 violation(s):\n- question 1 [fact-check premise]: question text rejected — The Rugby World Cup in 2003 was hosted by Australia, not England."
+                },
+                {
+                    "time": "2026-07-09 21:56:01",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:56:01",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:56:05",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 2: 1 violation(s):\n- question 2 [fact-check]: marked answer \"1999\" rejected — Australia won the Cricket World Cup in 1999, but the snippets do not confirm they also won the Ashes that year."
+                },
+                {
+                    "time": "2026-07-09 21:56:08",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:56:09",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:56:13",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 21:56:13",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:56:19",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:56:19",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:56:22",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:56:22",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:56:29",
+                    "level": "INFO",
+                    "message": "[Geography] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:56:30",
+                    "level": "INFO",
+                    "message": "[Geography] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:56:30",
+                    "level": "ERROR",
+                    "message": "[Geography] Attempt 1: 1 violation(s):\n- question 1 [fact-check]: marked answer \"Netherlands\" rejected — The Netherlands is not known for significant annual flooding due to low elevation; this is more characteristic of Bangladesh."
+                },
+                {
+                    "time": "2026-07-09 21:56:37",
+                    "level": "INFO",
+                    "message": "[Geography] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:56:38",
+                    "level": "INFO",
+                    "message": "[Geography] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:56:39",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 21:56:39",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:56:49",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 21:56:49",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:56:52",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 1: 2 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz\n- question 2 (\"Which of the following cities was the capital of the Byzantine Empire?\") matches banned pattern: capital-of-a-country cliché — pick a different, less obvious question"
+                },
+                {
+                    "time": "2026-07-09 21:56:55",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 2: 1 violation(s):\n- question 1 (category 'General Knowledge') uses recency language — this category must be evergreen, not current events"
+                },
+                {
+                    "time": "2026-07-09 21:56:58",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 3: 2 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz\n- question 3 gives away its own answer — correct answer \"Hanging Gardens\" is hinted in the question text (\"Which of the following ancient wonders was located in the city of Babylon and is often attributed to the Hanging Gardens?\")"
+                },
+                {
+                    "time": "2026-07-09 21:57:01",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 4: 1 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 21:57:15",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 21:57:15",
+                    "level": "INFO",
+                    "message": "[final-gate] Verifying all 15 questions with fresh sources…"
+                },
+                {
+                    "time": "2026-07-09 21:57:19",
+                    "level": "INFO",
+                    "message": "[final-gate] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:57:20",
+                    "level": "INFO",
+                    "message": "[final-gate] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:57:27",
+                    "level": "INFO",
+                    "message": "[final-gate] question 4 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:57:28",
+                    "level": "INFO",
+                    "message": "[final-gate] question 4 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:57:30",
+                    "level": "INFO",
+                    "message": "[final-gate] question 5 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:57:31",
+                    "level": "INFO",
+                    "message": "[final-gate] question 5 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:57:39",
+                    "level": "INFO",
+                    "message": "[final-gate] question 10 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:57:40",
+                    "level": "INFO",
+                    "message": "[final-gate] question 10 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:57:52",
+                    "level": "INFO",
+                    "message": "[final-gate] All 15 questions passed — OK to publish"
+                },
+                {
+                    "time": "2026-07-09 21:57:52",
+                    "level": "INFO",
+                    "message": "[images] Q1: fetching \"renewable energy production\"…"
+                },
+                {
+                    "time": "2026-07-09 21:57:53",
+                    "level": "INFO",
+                    "message": "[images] Q1: saved"
+                },
+                {
+                    "time": "2026-07-09 21:57:53",
+                    "level": "INFO",
+                    "message": "[images] Q2: fetching \"historical events 1953\"…"
+                },
+                {
+                    "time": "2026-07-09 21:57:54",
+                    "level": "INFO",
+                    "message": "[images] Q2: saved"
+                },
+                {
+                    "time": "2026-07-09 21:57:54",
+                    "level": "INFO",
+                    "message": "[images] Q3: fetching \"gliding marsupial\"…"
+                },
+                {
+                    "time": "2026-07-09 21:57:54",
+                    "level": "INFO",
+                    "message": "[images] Q3: saved"
+                },
+                {
+                    "time": "2026-07-09 21:57:54",
+                    "level": "INFO",
+                    "message": "[images] Q4: fetching \"kangaroo in Australia\"…"
+                },
+                {
+                    "time": "2026-07-09 21:57:54",
+                    "level": "INFO",
+                    "message": "[images] Q4: saved"
+                },
+                {
+                    "time": "2026-07-09 21:57:54",
+                    "level": "INFO",
+                    "message": "[images] Q5: fetching \"Rugby World Cup final\"…"
+                },
+                {
+                    "time": "2026-07-09 21:57:55",
+                    "level": "INFO",
+                    "message": "[images] Q5: saved"
+                },
+                {
+                    "time": "2026-07-09 21:57:55",
+                    "level": "INFO",
+                    "message": "[images] Q6: fetching \"Cricket World Cup final\"…"
+                },
+                {
+                    "time": "2026-07-09 21:57:55",
+                    "level": "INFO",
+                    "message": "[images] Q6: saved"
+                },
+                {
+                    "time": "2026-07-09 21:57:55",
+                    "level": "INFO",
+                    "message": "[images] Q7: fetching \"emergency alert flooding\"…"
+                },
+                {
+                    "time": "2026-07-09 21:57:56",
+                    "level": "INFO",
+                    "message": "[images] Q7: saved"
+                },
+                {
+                    "time": "2026-07-09 21:57:56",
+                    "level": "INFO",
+                    "message": "[images] Q8: fetching \"prison building\"…"
+                },
+                {
+                    "time": "2026-07-09 21:57:56",
+                    "level": "INFO",
+                    "message": "[images] Q8: saved"
+                },
+                {
+                    "time": "2026-07-09 21:57:56",
+                    "level": "INFO",
+                    "message": "[images] Q9: fetching \"city flooding\"…"
+                },
+                {
+                    "time": "2026-07-09 21:57:57",
+                    "level": "INFO",
+                    "message": "[images] Q9: saved"
+                },
+                {
+                    "time": "2026-07-09 21:57:57",
+                    "level": "INFO",
+                    "message": "[images] Q10: fetching \"Venice canals\"…"
+                },
+                {
+                    "time": "2026-07-09 21:57:57",
+                    "level": "INFO",
+                    "message": "[images] Q10: saved"
+                },
+                {
+                    "time": "2026-07-09 21:57:57",
+                    "level": "INFO",
+                    "message": "[images] Q11: fetching \"historical peace treaty\"…"
+                },
+                {
+                    "time": "2026-07-09 21:57:58",
+                    "level": "INFO",
+                    "message": "[images] Q11: saved"
+                },
+                {
+                    "time": "2026-07-09 21:57:58",
+                    "level": "INFO",
+                    "message": "[images] Q12: fetching \"women's rights movement\"…"
+                },
+                {
+                    "time": "2026-07-09 21:57:59",
+                    "level": "INFO",
+                    "message": "[images] Q12: saved"
+                },
+                {
+                    "time": "2026-07-09 21:57:59",
+                    "level": "INFO",
+                    "message": "[images] Q13: fetching \"European country prison\"…"
+                },
+                {
+                    "time": "2026-07-09 21:57:59",
+                    "level": "INFO",
+                    "message": "[images] Q13: saved"
+                },
+                {
+                    "time": "2026-07-09 21:57:59",
+                    "level": "INFO",
+                    "message": "[images] Q14: fetching \"abstract art painting\"…"
+                },
+                {
+                    "time": "2026-07-09 21:58:00",
+                    "level": "INFO",
+                    "message": "[images] Q14: saved"
+                },
+                {
+                    "time": "2026-07-09 21:58:00",
+                    "level": "INFO",
+                    "message": "[images] Q15: fetching \"colorful carnival parade\"…"
+                },
+                {
+                    "time": "2026-07-09 21:58:01",
+                    "level": "INFO",
+                    "message": "[images] Q15: saved"
+                },
+                {
+                    "time": "2026-07-09 21:58:01",
+                    "level": "INFO",
+                    "message": "[images] Preview images: 15\/15 saved"
+                }
+            ],
+            "stats": {
+                "categories_retried": 4,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 15,
+                "final_gate_quiz_attempts": 1,
+                "final_gate_rejections": 0
+            },
+            "questions": [
+                {
+                    "question": "New Zealand is known for being a leader in renewable energy, particularly in which area of energy production?",
+                    "format": "mc",
+                    "image_query": "renewable energy production",
+                    "options": [
+                        {
+                            "text": "Wind energy",
+                            "correct": true
+                        },
+                        {
+                            "text": "Coal energy",
+                            "correct": false
+                        },
+                        {
+                            "text": "Natural gas",
+                            "correct": false
+                        },
+                        {
+                            "text": "Nuclear energy",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8cc0bfe3a2.32335318\/1.jpg",
+                    "image_attribution": "Photo by Pixabay on Pexels"
+                },
+                {
+                    "question": "Which of the following historical events took place in New Zealand in the year 1953?",
+                    "format": "mc",
+                    "image_query": "historical events 1953",
+                    "options": [
+                        {
+                            "text": "The first ascent of Mount Cook",
+                            "correct": false
+                        },
+                        {
+                            "text": "The establishment of the New Zealand Broadcasting Corporation",
+                            "correct": true
+                        },
+                        {
+                            "text": "The signing of the Treaty of Waitangi",
+                            "correct": false
+                        },
+                        {
+                            "text": "The first Rugby World Cup held in New Zealand",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8cc0bfe3a2.32335318\/2.jpg",
+                    "image_attribution": "Photo by Sai Kiran Anagani on Pexels"
+                },
+                {
+                    "question": "Which of the following Australian animals is known for its ability to glide between trees using a membrane of skin extending from its wrists to its ankles?",
+                    "format": "mc",
+                    "image_query": "gliding marsupial",
+                    "options": [
+                        {
+                            "text": "Sugar glider",
+                            "correct": true
+                        },
+                        {
+                            "text": "Kangaroo",
+                            "correct": false
+                        },
+                        {
+                            "text": "Koala",
+                            "correct": false
+                        },
+                        {
+                            "text": "Possum",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8cc0bfe3a2.32335318\/3.jpg",
+                    "image_attribution": "Photo by Tabitha Favor on Pexels"
+                },
+                {
+                    "question": "True or False: The kangaroo is a marsupial that can be found in every state of Australia.",
+                    "format": "tf",
+                    "image_query": "kangaroo in Australia",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8cc0bfe3a2.32335318\/4.jpg",
+                    "image_attribution": "Photo by Line Knipst on Pexels"
+                },
+                {
+                    "question": "In which year was the Rugby World Cup held in South Africa, when the final featured the All Blacks and the Springboks?",
+                    "format": "mc",
+                    "image_query": "Rugby World Cup final",
+                    "options": [
+                        {
+                            "text": "1995",
+                            "correct": true
+                        },
+                        {
+                            "text": "1999",
+                            "correct": false
+                        },
+                        {
+                            "text": "1991",
+                            "correct": false
+                        },
+                        {
+                            "text": "2003",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8cc0bfe3a2.32335318\/5.jpg",
+                    "image_attribution": "Photo by Travel with  Lenses on Pexels"
+                },
+                {
+                    "question": "In which year did the Australian cricket team win the Cricket World Cup, when the final was contested against Pakistan?",
+                    "format": "mc",
+                    "image_query": "Cricket World Cup final",
+                    "options": [
+                        {
+                            "text": "1996",
+                            "correct": true
+                        },
+                        {
+                            "text": "2003",
+                            "correct": false
+                        },
+                        {
+                            "text": "1999",
+                            "correct": false
+                        },
+                        {
+                            "text": "1992",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8cc0bfe3a2.32335318\/6.jpg",
+                    "image_attribution": "Photo by Arsal Point on Pexels"
+                },
+                {
+                    "question": "What recent weather-related event prompted an emergency alert for residents in a certain New Zealand region?",
+                    "format": "mc",
+                    "image_query": "emergency alert flooding",
+                    "options": [
+                        {
+                            "text": "Earthquake in Wellington",
+                            "correct": false
+                        },
+                        {
+                            "text": "Flooding in Wairoa",
+                            "correct": true
+                        },
+                        {
+                            "text": "Snowstorm in Christchurch",
+                            "correct": false
+                        },
+                        {
+                            "text": "Heatwave in Auckland",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8cc0bfe3a2.32335318\/7.jpg",
+                    "image_attribution": "Photo by Magda Ehlers on Pexels"
+                },
+                {
+                    "question": "Three corrections officers have been stood down due to a review into which serious incident?",
+                    "format": "mc",
+                    "image_query": "prison building",
+                    "options": [
+                        {
+                            "text": "Prisoner escape",
+                            "correct": true
+                        },
+                        {
+                            "text": "Judicial misconduct",
+                            "correct": false
+                        },
+                        {
+                            "text": "Inmate riot",
+                            "correct": false
+                        },
+                        {
+                            "text": "Drug smuggling operation",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8cc0bfe3a2.32335318\/8.jpg",
+                    "image_attribution": "Photo by Héctor Berganza on Pexels"
+                },
+                {
+                    "question": "Which of the following countries is known for being partially submerged and experiences significant annual flooding due to its elevation?",
+                    "format": "mc",
+                    "image_query": "city flooding",
+                    "options": [
+                        {
+                            "text": "Netherlands",
+                            "correct": false
+                        },
+                        {
+                            "text": "Bangladesh",
+                            "correct": true
+                        },
+                        {
+                            "text": "Mexico",
+                            "correct": false
+                        },
+                        {
+                            "text": "Italy",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8cc0bfe3a2.32335318\/9.jpg",
+                    "image_attribution": "Photo by Connor Scott McManus on Pexels"
+                },
+                {
+                    "question": "True or False: The city of Venice is built on a series of islands and is famous for its canals and gondola rides.",
+                    "format": "tf",
+                    "image_query": "Venice canals",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8cc0bfe3a2.32335318\/10.jpg",
+                    "image_attribution": "Photo by Vladimir Srajber on Pexels"
+                },
+                {
+                    "question": "Which treaty ended the First World War and imposed heavy reparations on Germany?",
+                    "format": "mc",
+                    "image_query": "historical peace treaty",
+                    "options": [
+                        {
+                            "text": "Treaty of Versailles",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Trianon",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Brest-Litovsk",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Saint-Germain",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8cc0bfe3a2.32335318\/11.jpg",
+                    "image_attribution": "Photo by Beate Vogl on Pexels"
+                },
+                {
+                    "question": "In which year did the United States grant women the right to vote through the 19th Amendment?",
+                    "format": "mc",
+                    "image_query": "women's rights movement",
+                    "options": [
+                        {
+                            "text": "1920",
+                            "correct": true
+                        },
+                        {
+                            "text": "1910",
+                            "correct": false
+                        },
+                        {
+                            "text": "1918",
+                            "correct": false
+                        },
+                        {
+                            "text": "1925",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8cc0bfe3a2.32335318\/12.jpg",
+                    "image_attribution": "Photo by www.kaboompics.com on Pexels"
+                },
+                {
+                    "question": "Which of the following countries was the last in Europe to abolish the death penalty for all crimes?",
+                    "format": "mc",
+                    "image_query": "European country prison",
+                    "options": [
+                        {
+                            "text": "Latvia",
+                            "correct": false
+                        },
+                        {
+                            "text": "Lithuania",
+                            "correct": false
+                        },
+                        {
+                            "text": "Bulgaria",
+                            "correct": true
+                        },
+                        {
+                            "text": "Slovakia",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8cc0bfe3a2.32335318\/13.jpg",
+                    "image_attribution": "Photo by Bence Szemerey on Pexels"
+                },
+                {
+                    "question": "In which year did the famous artist Pablo Picasso create his groundbreaking painting \"Les Demoiselles d'Avignon\"?",
+                    "format": "mc",
+                    "image_query": "abstract art painting",
+                    "options": [
+                        {
+                            "text": "1907",
+                            "correct": true
+                        },
+                        {
+                            "text": "1910",
+                            "correct": false
+                        },
+                        {
+                            "text": "1905",
+                            "correct": false
+                        },
+                        {
+                            "text": "1915",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8cc0bfe3a2.32335318\/14.jpg",
+                    "image_attribution": "Photo by Steve A Johnson on Pexels"
+                },
+                {
+                    "question": "Which of the following cities is known for hosting the famous annual carnival featuring elaborate parades and costumes?",
+                    "format": "mc",
+                    "image_query": "colorful carnival parade",
+                    "options": [
+                        {
+                            "text": "Venice",
+                            "correct": true
+                        },
+                        {
+                            "text": "Nice",
+                            "correct": false
+                        },
+                        {
+                            "text": "Rio de Janeiro",
+                            "correct": false
+                        },
+                        {
+                            "text": "Munich",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8cc0bfe3a2.32335318\/15.jpg",
+                    "image_attribution": "Photo by Olavi Anttila on Pexels"
+                }
+            ],
+            "saved_to": "logs\/qa\/20260709-235522-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260709-235522-summary.json"
+}

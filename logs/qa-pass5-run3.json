@@ -1,0 +1,740 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-09",
+        "stamp": "20260709-232628",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-09",
+            "log": [
+                {
+                    "time": "2026-07-09 21:26:28",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 21:26:28",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:26:38",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:26:38",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:26:41",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 1: 1 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:26:43",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 2: 2 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:26:45",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 3: 4 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture\n- question 1 image_query gives away the correct answer — \"Kangaroo\" is hinted in image_query \"hopping kangaroo\"\n- question 1 image_query repeats option text \"Kangaroo\"\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:26:47",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 4: 2 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture\n- question 2 (\"True or False: Australia is home to the world's largest coral reef system, often regarded as one of its most significant natural landmarks.\") matches superlative pattern: world's-largest superlative — ask a plain factual question without record claims"
+                },
+                {
+                    "time": "2026-07-09 21:26:50",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 5: 1 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:26:52",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 6: 4 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture\n- question 1 image_query gives away the correct answer — \"Kangaroo\" is hinted in image_query \"kangaroo pouch\"\n- question 1 image_query repeats option text \"Kangaroo\"\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:26:58",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:26:59",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:27:00",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:27:00",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:27:06",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:27:07",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:27:08",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 21:27:08",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:27:11",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:27:11",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:27:13",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:27:13",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:27:21",
+                    "level": "INFO",
+                    "message": "[Geography] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:27:22",
+                    "level": "INFO",
+                    "message": "[Geography] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:27:24",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 21:27:24",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:27:35",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 1: 1 violation(s):\n- question 1 [fact-check distractor]: wrong option '1918' is in the list, but the Treaty of Versailles was signed in 1919, contradicting the marked answer."
+                },
+                {
+                    "time": "2026-07-09 21:27:39",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:27:39",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:27:48",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 21:27:48",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:27:51",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 1: 1 violation(s):\n- question 3 (category 'General Knowledge') uses recency language — this category must be evergreen, not current events"
+                },
+                {
+                    "time": "2026-07-09 21:28:02",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 21:28:02",
+                    "level": "INFO",
+                    "message": "[images] Q1: fetching \"historic university building\"…"
+                },
+                {
+                    "time": "2026-07-09 21:28:02",
+                    "level": "INFO",
+                    "message": "[images] Q1: saved"
+                },
+                {
+                    "time": "2026-07-09 21:28:02",
+                    "level": "INFO",
+                    "message": "[images] Q2: fetching \"classroom setting\"…"
+                },
+                {
+                    "time": "2026-07-09 21:28:03",
+                    "level": "INFO",
+                    "message": "[images] Q2: saved"
+                },
+                {
+                    "time": "2026-07-09 21:28:03",
+                    "level": "INFO",
+                    "message": "[images] Q3: fetching \"Australian wildlife\"…"
+                },
+                {
+                    "time": "2026-07-09 21:28:03",
+                    "level": "INFO",
+                    "message": "[images] Q3: saved"
+                },
+                {
+                    "time": "2026-07-09 21:28:03",
+                    "level": "INFO",
+                    "message": "[images] Q4: fetching \"arid landscape\"…"
+                },
+                {
+                    "time": "2026-07-09 21:28:04",
+                    "level": "INFO",
+                    "message": "[images] Q4: saved"
+                },
+                {
+                    "time": "2026-07-09 21:28:04",
+                    "level": "INFO",
+                    "message": "[images] Q5: fetching \"Rugby World Cup trophy\"…"
+                },
+                {
+                    "time": "2026-07-09 21:28:04",
+                    "level": "INFO",
+                    "message": "[images] Q5: saved"
+                },
+                {
+                    "time": "2026-07-09 21:28:04",
+                    "level": "INFO",
+                    "message": "[images] Q6: fetching \"Melbourne Cricket Ground\"…"
+                },
+                {
+                    "time": "2026-07-09 21:28:05",
+                    "level": "INFO",
+                    "message": "[images] Q6: saved"
+                },
+                {
+                    "time": "2026-07-09 21:28:05",
+                    "level": "INFO",
+                    "message": "[images] Q7: fetching \"flood waters rising\"…"
+                },
+                {
+                    "time": "2026-07-09 21:28:05",
+                    "level": "INFO",
+                    "message": "[images] Q7: saved"
+                },
+                {
+                    "time": "2026-07-09 21:28:05",
+                    "level": "INFO",
+                    "message": "[images] Q8: fetching \"corrections facility\"…"
+                },
+                {
+                    "time": "2026-07-09 21:28:06",
+                    "level": "INFO",
+                    "message": "[images] Q8: saved"
+                },
+                {
+                    "time": "2026-07-09 21:28:06",
+                    "level": "INFO",
+                    "message": "[images] Q9: fetching \"Sagrada Familia architecture\"…"
+                },
+                {
+                    "time": "2026-07-09 21:28:07",
+                    "level": "INFO",
+                    "message": "[images] Q9: saved"
+                },
+                {
+                    "time": "2026-07-09 21:28:07",
+                    "level": "INFO",
+                    "message": "[images] Q10: fetching \"ancient writing tablet\"…"
+                },
+                {
+                    "time": "2026-07-09 21:28:07",
+                    "level": "INFO",
+                    "message": "[images] Q10: saved"
+                },
+                {
+                    "time": "2026-07-09 21:28:07",
+                    "level": "INFO",
+                    "message": "[images] Q11: fetching \"historic treaty document\"…"
+                },
+                {
+                    "time": "2026-07-09 21:28:07",
+                    "level": "INFO",
+                    "message": "[images] Q11: saved"
+                },
+                {
+                    "time": "2026-07-09 21:28:07",
+                    "level": "INFO",
+                    "message": "[images] Q12: fetching \"stock market crash\"…"
+                },
+                {
+                    "time": "2026-07-09 21:28:08",
+                    "level": "INFO",
+                    "message": "[images] Q12: saved"
+                },
+                {
+                    "time": "2026-07-09 21:28:08",
+                    "level": "INFO",
+                    "message": "[images] Q13: fetching \"Peace treaty signing\"…"
+                },
+                {
+                    "time": "2026-07-09 21:28:08",
+                    "level": "INFO",
+                    "message": "[images] Q13: saved"
+                },
+                {
+                    "time": "2026-07-09 21:28:08",
+                    "level": "INFO",
+                    "message": "[images] Q14: fetching \"Berlin Wall\"…"
+                },
+                {
+                    "time": "2026-07-09 21:28:09",
+                    "level": "INFO",
+                    "message": "[images] Q14: saved"
+                },
+                {
+                    "time": "2026-07-09 21:28:09",
+                    "level": "INFO",
+                    "message": "[images] Q15: fetching \"Ancient trade route\"…"
+                },
+                {
+                    "time": "2026-07-09 21:28:10",
+                    "level": "INFO",
+                    "message": "[images] Q15: saved"
+                },
+                {
+                    "time": "2026-07-09 21:28:10",
+                    "level": "INFO",
+                    "message": "[images] Preview images: 15\/15 saved"
+                }
+            ],
+            "stats": {
+                "categories_retried": 3,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 15
+            },
+            "questions": [
+                {
+                    "question": "Which year saw the establishment of the University of Otago, New Zealand's first university?",
+                    "format": "mc",
+                    "image_query": "historic university building",
+                    "options": [
+                        {
+                            "text": "1869",
+                            "correct": true
+                        },
+                        {
+                            "text": "1876",
+                            "correct": false
+                        },
+                        {
+                            "text": "1882",
+                            "correct": false
+                        },
+                        {
+                            "text": "1890",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f85c22733d9.34445533\/1.jpg",
+                    "image_attribution": "Photo by Shvets Anna on Pexels"
+                },
+                {
+                    "question": "In which year did the New Zealand Parliament pass the Education Act, which made schooling free and compulsory for children?",
+                    "format": "mc",
+                    "image_query": "classroom setting",
+                    "options": [
+                        {
+                            "text": "1877",
+                            "correct": true
+                        },
+                        {
+                            "text": "1883",
+                            "correct": false
+                        },
+                        {
+                            "text": "1892",
+                            "correct": false
+                        },
+                        {
+                            "text": "1900",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f85c22733d9.34445533\/2.jpg",
+                    "image_attribution": "Photo by Deane Bayas on Pexels"
+                },
+                {
+                    "question": "Which of the following marsupials is native to Australia and is known for its unique hopping motion?",
+                    "format": "mc",
+                    "image_query": "Australian wildlife",
+                    "options": [
+                        {
+                            "text": "Dingo",
+                            "correct": false
+                        },
+                        {
+                            "text": "Kangaroo",
+                            "correct": true
+                        },
+                        {
+                            "text": "Tasmanian Devil",
+                            "correct": false
+                        },
+                        {
+                            "text": "Wallaby",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f85c22733d9.34445533\/3.jpg",
+                    "image_attribution": "Photo by Gu Bra on Pexels"
+                },
+                {
+                    "question": "True or False: The outback is a term commonly used to describe Australia's remote and arid interior regions.",
+                    "format": "tf",
+                    "image_query": "arid landscape",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f85c22733d9.34445533\/4.jpg",
+                    "image_attribution": "Photo by Luis Quintero on Pexels"
+                },
+                {
+                    "question": "In which year was the Rugby World Cup held in New Zealand?",
+                    "format": "mc",
+                    "image_query": "Rugby World Cup trophy",
+                    "options": [
+                        {
+                            "text": "2011",
+                            "correct": true
+                        },
+                        {
+                            "text": "2007",
+                            "correct": false
+                        },
+                        {
+                            "text": "2015",
+                            "correct": false
+                        },
+                        {
+                            "text": "2003",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f85c22733d9.34445533\/5.jpg",
+                    "image_attribution": "Photo by César O'neill on Pexels"
+                },
+                {
+                    "question": "True or False: The Melbourne Cricket Ground is one of the largest stadiums in the world, with a seating capacity of over 100,000.",
+                    "format": "tf",
+                    "image_query": "Melbourne Cricket Ground",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f85c22733d9.34445533\/6.jpg",
+                    "image_attribution": "Photo by Kushie In Vietnam on Pexels"
+                },
+                {
+                    "question": "Wairoa residents received an emergency alert due to what recent natural event?",
+                    "format": "mc",
+                    "image_query": "flood waters rising",
+                    "options": [
+                        {
+                            "text": "Tornadoes damaging homes",
+                            "correct": false
+                        },
+                        {
+                            "text": "Flooding concerns and response",
+                            "correct": true
+                        },
+                        {
+                            "text": "Landslides affecting power lines",
+                            "correct": false
+                        },
+                        {
+                            "text": "Severe drought impacting agriculture",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f85c22733d9.34445533\/7.jpg",
+                    "image_attribution": "Photo by Serge Lavoie on Pexels"
+                },
+                {
+                    "question": "Three corrections officers have recently been stood down with pay due to an incident involving an escape in which Australian territory?",
+                    "format": "mc",
+                    "image_query": "corrections facility",
+                    "options": [
+                        {
+                            "text": "Northern Territory",
+                            "correct": true
+                        },
+                        {
+                            "text": "Western Australia",
+                            "correct": false
+                        },
+                        {
+                            "text": "Victoria",
+                            "correct": false
+                        },
+                        {
+                            "text": "South Australia",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f85c22733d9.34445533\/8.jpg",
+                    "image_attribution": "Photo by RDNE Stock project on Pexels"
+                },
+                {
+                    "question": "In which year did the construction of the iconic Sagrada Família basilica in Barcelona, Spain, begin?",
+                    "format": "mc",
+                    "image_query": "Sagrada Familia architecture",
+                    "options": [
+                        {
+                            "text": "1882",
+                            "correct": true
+                        },
+                        {
+                            "text": "1890",
+                            "correct": false
+                        },
+                        {
+                            "text": "1914",
+                            "correct": false
+                        },
+                        {
+                            "text": "1925",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f85c22733d9.34445533\/9.jpg",
+                    "image_attribution": "Photo by Diana Nguyen on Pexels"
+                },
+                {
+                    "question": "Which ancient civilization is credited with establishing the first known system of writing, which emerged around 3200 BC?",
+                    "format": "mc",
+                    "image_query": "ancient writing tablet",
+                    "options": [
+                        {
+                            "text": "Indus Valley Civilization",
+                            "correct": false
+                        },
+                        {
+                            "text": "Sumerians",
+                            "correct": true
+                        },
+                        {
+                            "text": "Phoenicians",
+                            "correct": false
+                        },
+                        {
+                            "text": "Mesoamerican cultures",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f85c22733d9.34445533\/10.jpg",
+                    "image_attribution": "Photo by Yannick on Pexels"
+                },
+                {
+                    "question": "In which year was the Treaty of Ghent signed, ending the War of 1812 between the United States and Great Britain?",
+                    "format": "mc",
+                    "image_query": "historic treaty document",
+                    "options": [
+                        {
+                            "text": "1814",
+                            "correct": true
+                        },
+                        {
+                            "text": "1812",
+                            "correct": false
+                        },
+                        {
+                            "text": "1816",
+                            "correct": false
+                        },
+                        {
+                            "text": "1820",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f85c22733d9.34445533\/11.jpg",
+                    "image_attribution": "Photo by Donatello Trisolino on Pexels"
+                },
+                {
+                    "question": "In which year did the stock market crash that triggered the Great Depression occur?",
+                    "format": "mc",
+                    "image_query": "stock market crash",
+                    "options": [
+                        {
+                            "text": "1929",
+                            "correct": true
+                        },
+                        {
+                            "text": "1930",
+                            "correct": false
+                        },
+                        {
+                            "text": "1932",
+                            "correct": false
+                        },
+                        {
+                            "text": "1935",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f85c22733d9.34445533\/12.jpg",
+                    "image_attribution": "Photo by Leeloo The First on Pexels"
+                },
+                {
+                    "question": "The Treaty of Versailles marked the end of which major conflict?",
+                    "format": "mc",
+                    "image_query": "Peace treaty signing",
+                    "options": [
+                        {
+                            "text": "World War I",
+                            "correct": true
+                        },
+                        {
+                            "text": "World War II",
+                            "correct": false
+                        },
+                        {
+                            "text": "The Cold War",
+                            "correct": false
+                        },
+                        {
+                            "text": "The Crimean War",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f85c22733d9.34445533\/13.jpg",
+                    "image_attribution": "Photo by Mathias Reding on Pexels"
+                },
+                {
+                    "question": "In which year was the Berlin Wall officially opened, leading to the reunification of Germany?",
+                    "format": "mc",
+                    "image_query": "Berlin Wall",
+                    "options": [
+                        {
+                            "text": "1987",
+                            "correct": false
+                        },
+                        {
+                            "text": "1989",
+                            "correct": true
+                        },
+                        {
+                            "text": "1991",
+                            "correct": false
+                        },
+                        {
+                            "text": "1985",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f85c22733d9.34445533\/14.jpg",
+                    "image_attribution": "Photo by Korkut Mamet on Pexels"
+                },
+                {
+                    "question": "What is the name of the ancient trade route that connected the East and West, notably facilitating the exchange of silk and spices?",
+                    "format": "mc",
+                    "image_query": "Ancient trade route",
+                    "options": [
+                        {
+                            "text": "Incense Route",
+                            "correct": false
+                        },
+                        {
+                            "text": "Silk Road",
+                            "correct": true
+                        },
+                        {
+                            "text": "Copper Road",
+                            "correct": false
+                        },
+                        {
+                            "text": "Spices Route",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f85c22733d9.34445533\/15.jpg",
+                    "image_attribution": "Photo by Noureddine Belfethi on Pexels"
+                }
+            ],
+            "saved_to": "logs\/qa\/20260709-232628-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260709-232628-summary.json"
+}

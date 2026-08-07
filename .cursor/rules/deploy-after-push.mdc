@@ -1,0 +1,20 @@
+---
+description: Always deploy Quizzical to production after pushing to master
+alwaysApply: true
+---
+
+# Quizzical deploy after push
+
+After every `git push` to `master` for this project, **always deploy** — do not wait for the user to ask.
+
+Run immediately after a successful push:
+
+```bash
+curl.exe -sk -X POST "https://110.232.143.170/~quizzica/deploy.php" -H "Content-Type: application/json" -d "{\"ref\":\"refs/heads/master\"}"
+```
+
+On Windows PowerShell use `curl.exe` (not `curl`, which aliases to Invoke-WebRequest).
+
+Confirm deploy output shows the expected commit hash. Tell the user deploy completed and mention any cache-buster IDs they need to hard-refresh (`main.js?id=…`, `styles-main.css?id=…`).
+
+Secrets live in gitignored `dblogin.php` — deploy does not overwrite that file.

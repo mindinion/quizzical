@@ -41,6 +41,32 @@ function aiAnswerOptionStats(mysqli $conn, int $questionId): array {
     return ['option_stats' => $stats, 'total_answers' => $total];
 }
 
+/**
+ * Results.ai_quiz_id links a posted result to the AIQuiz it came from. Without it the
+ * app can only guess from the posting timestamp, which misattributes any quiz played
+ * on a later day than its own date. Added by result-ai-quiz-id-migration.sql.
+ */
+function resultsHasAiQuizId(mysqli $conn): bool {
+    static $has = null;
+    if ($has === null) {
+        $r = $conn->query("SHOW COLUMNS FROM Results LIKE 'ai_quiz_id'");
+        $has = $r && $r->num_rows > 0;
+    }
+    return $has;
+}
+
+/**
+ * SQL fragment matching the logged-in user's posted result for one AI quiz.
+ * Prefers the explicit link and falls back to the old type + date guess for rows
+ * predating the migration. Placeholders: ai_quiz_id, type, date.
+ */
+function aiResultMatchSql(mysqli $conn): string {
+    if (resultsHasAiQuizId($conn)) {
+        return "(ai_quiz_id = ? OR (ai_quiz_id IS NULL AND type = ? AND DATE(date) = ?))";
+    }
+    return "(? IS NOT NULL AND type = ? AND DATE(date) = ?)";
+}
+
 function aiQuestionHasColumn(mysqli $conn, string $column): bool {
     $col = $conn->real_escape_string($column);
     $r = $conn->query("SHOW COLUMNS FROM AIQuestion LIKE '$col'");

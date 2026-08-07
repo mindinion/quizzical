@@ -1,0 +1,745 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-09",
+        "stamp": "20260709-231010",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-09",
+            "log": [
+                {
+                    "time": "2026-07-09 21:10:10",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 21:10:11",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:10:20",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:10:20",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:10:23",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 1: 2 violation(s):\n- question 1 image_query gives away the correct answer — \"Kangaroo\" is hinted in image_query \"kangaroo in nature\"\n- question 1 image_query repeats option text \"Kangaroo\""
+                },
+                {
+                    "time": "2026-07-09 21:10:32",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:10:32",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:10:39",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:10:40",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:10:42",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 1: 1 violation(s):\n- question 1 [fact-check]: marked answer \"2011\" rejected — The All Blacks won their second Rugby World Cup title in 2011, not in 1995."
+                },
+                {
+                    "time": "2026-07-09 21:10:52",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 2: 1 violation(s):\n- question 2 [fact-check]: marked answer \"1999\" rejected — Australia won the ICC Cricket World Cup in 1996, defeating Sri Lanka in the final, not in 1999."
+                },
+                {
+                    "time": "2026-07-09 21:11:00",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 3: 1 violation(s):\n- question 1 [fact-check]: marked answer \"1996\" rejected — Australia won the Cricket World Cup in 1987, 1999, 2003, 2007, 2015, and 2023, but not in 1996."
+                },
+                {
+                    "time": "2026-07-09 21:11:06",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:11:06",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:11:08",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 4: 1 violation(s):\n- question 1 [fact-check]: marked answer \"1987\" rejected — Australia won the ICC Cricket World Cup for the first time in 1987, not in 1983."
+                },
+                {
+                    "time": "2026-07-09 21:11:15",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 21:11:15",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:11:18",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:11:18",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:11:20",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:11:20",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:11:22",
+                    "level": "ERROR",
+                    "message": "[Geography] Attempt 1: 2 violation(s):\n- question 1 image_query gives away the correct answer — \"Pisa\" is hinted in image_query \"Leaning Tower of Pisa\"\n- question 1 image_query repeats option text \"Pisa\""
+                },
+                {
+                    "time": "2026-07-09 21:11:30",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 21:11:30",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:11:39",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:11:40",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:11:41",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 21:11:41",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:11:44",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 1: 1 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 21:11:47",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 2: 1 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 21:11:50",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 3: 1 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 21:12:02",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:12:03",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:12:04",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 21:12:04",
+                    "level": "INFO",
+                    "message": "[images] Q1: fetching \"old television broadcasting\"…"
+                },
+                {
+                    "time": "2026-07-09 21:12:04",
+                    "level": "INFO",
+                    "message": "[images] Q1: saved"
+                },
+                {
+                    "time": "2026-07-09 21:12:04",
+                    "level": "INFO",
+                    "message": "[images] Q2: fetching \"beautiful beach New Zealand\"…"
+                },
+                {
+                    "time": "2026-07-09 21:12:05",
+                    "level": "INFO",
+                    "message": "[images] Q2: saved"
+                },
+                {
+                    "time": "2026-07-09 21:12:05",
+                    "level": "INFO",
+                    "message": "[images] Q3: fetching \"australian wildlife\"…"
+                },
+                {
+                    "time": "2026-07-09 21:12:06",
+                    "level": "INFO",
+                    "message": "[images] Q3: saved"
+                },
+                {
+                    "time": "2026-07-09 21:12:06",
+                    "level": "INFO",
+                    "message": "[images] Q4: fetching \"historic parliament building\"…"
+                },
+                {
+                    "time": "2026-07-09 21:12:06",
+                    "level": "INFO",
+                    "message": "[images] Q4: saved"
+                },
+                {
+                    "time": "2026-07-09 21:12:06",
+                    "level": "INFO",
+                    "message": "[images] Q5: fetching \"cricket world cup trophy\"…"
+                },
+                {
+                    "time": "2026-07-09 21:12:07",
+                    "level": "INFO",
+                    "message": "[images] Q5: saved"
+                },
+                {
+                    "time": "2026-07-09 21:12:07",
+                    "level": "INFO",
+                    "message": "[images] Q6: fetching \"rugby world cup stadium\"…"
+                },
+                {
+                    "time": "2026-07-09 21:12:07",
+                    "level": "INFO",
+                    "message": "[images] Q6: saved"
+                },
+                {
+                    "time": "2026-07-09 21:12:07",
+                    "level": "INFO",
+                    "message": "[images] Q7: fetching \"flooding emergency response\"…"
+                },
+                {
+                    "time": "2026-07-09 21:12:08",
+                    "level": "INFO",
+                    "message": "[images] Q7: saved"
+                },
+                {
+                    "time": "2026-07-09 21:12:08",
+                    "level": "INFO",
+                    "message": "[images] Q8: fetching \"missile test launch\"…"
+                },
+                {
+                    "time": "2026-07-09 21:12:08",
+                    "level": "INFO",
+                    "message": "[images] Q8: saved"
+                },
+                {
+                    "time": "2026-07-09 21:12:08",
+                    "level": "INFO",
+                    "message": "[images] Q9: fetching \"historic architecture\"…"
+                },
+                {
+                    "time": "2026-07-09 21:12:09",
+                    "level": "INFO",
+                    "message": "[images] Q9: saved"
+                },
+                {
+                    "time": "2026-07-09 21:12:09",
+                    "level": "INFO",
+                    "message": "[images] Q10: fetching \"winter festival ice sculptures\"…"
+                },
+                {
+                    "time": "2026-07-09 21:12:09",
+                    "level": "INFO",
+                    "message": "[images] Q10: saved"
+                },
+                {
+                    "time": "2026-07-09 21:12:09",
+                    "level": "INFO",
+                    "message": "[images] Q11: fetching \"historical treaty signing\"…"
+                },
+                {
+                    "time": "2026-07-09 21:12:10",
+                    "level": "INFO",
+                    "message": "[images] Q11: saved"
+                },
+                {
+                    "time": "2026-07-09 21:12:10",
+                    "level": "INFO",
+                    "message": "[images] Q12: fetching \"Suez Canal ships\"…"
+                },
+                {
+                    "time": "2026-07-09 21:12:10",
+                    "level": "INFO",
+                    "message": "[images] Q12: saved"
+                },
+                {
+                    "time": "2026-07-09 21:12:10",
+                    "level": "INFO",
+                    "message": "[images] Q13: fetching \"historic constitution document\"…"
+                },
+                {
+                    "time": "2026-07-09 21:12:10",
+                    "level": "INFO",
+                    "message": "[images] Q13: saved"
+                },
+                {
+                    "time": "2026-07-09 21:12:10",
+                    "level": "INFO",
+                    "message": "[images] Q14: fetching \"ancient amphitheater\"…"
+                },
+                {
+                    "time": "2026-07-09 21:12:12",
+                    "level": "INFO",
+                    "message": "[images] Q14: saved"
+                },
+                {
+                    "time": "2026-07-09 21:12:12",
+                    "level": "INFO",
+                    "message": "[images] Q15: fetching \"historic document signing\"…"
+                },
+                {
+                    "time": "2026-07-09 21:12:12",
+                    "level": "INFO",
+                    "message": "[images] Q15: saved"
+                },
+                {
+                    "time": "2026-07-09 21:12:12",
+                    "level": "INFO",
+                    "message": "[images] Preview images: 15\/15 saved"
+                }
+            ],
+            "stats": {
+                "categories_retried": 4,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 15
+            },
+            "questions": [
+                {
+                    "question": "In which year did the first New Zealand television station begin broadcasting?",
+                    "format": "mc",
+                    "image_query": "old television broadcasting",
+                    "options": [
+                        {
+                            "text": "1960",
+                            "correct": true
+                        },
+                        {
+                            "text": "1955",
+                            "correct": false
+                        },
+                        {
+                            "text": "1965",
+                            "correct": false
+                        },
+                        {
+                            "text": "1970",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f82041f4597.20916721\/1.jpg",
+                    "image_attribution": "Photo by Marshal Yung on Pexels"
+                },
+                {
+                    "question": "Which of the following is a well-known beach located on the North Island of New Zealand?",
+                    "format": "mc",
+                    "image_query": "beautiful beach New Zealand",
+                    "options": [
+                        {
+                            "text": "Kaikoura",
+                            "correct": false
+                        },
+                        {
+                            "text": "Mount Maunganui",
+                            "correct": true
+                        },
+                        {
+                            "text": "Invercargill",
+                            "correct": false
+                        },
+                        {
+                            "text": "Wellington",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f82041f4597.20916721\/2.jpg",
+                    "image_attribution": "Photo by Anastasia Yudin on Pexels"
+                },
+                {
+                    "question": "Which Australian animal is known for its unique method of locomotion by hopping?",
+                    "format": "mc",
+                    "image_query": "australian wildlife",
+                    "options": [
+                        {
+                            "text": "Dingo",
+                            "correct": false
+                        },
+                        {
+                            "text": "Kangaroo",
+                            "correct": true
+                        },
+                        {
+                            "text": "Wallaby",
+                            "correct": false
+                        },
+                        {
+                            "text": "Pademelon",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f82041f4597.20916721\/3.jpg",
+                    "image_attribution": "Photo by Gu Bra on Pexels"
+                },
+                {
+                    "question": "In which year did Australia formally become a federation, uniting the separate colonies under a common government?",
+                    "format": "mc",
+                    "image_query": "historic parliament building",
+                    "options": [
+                        {
+                            "text": "1898",
+                            "correct": false
+                        },
+                        {
+                            "text": "1901",
+                            "correct": true
+                        },
+                        {
+                            "text": "1905",
+                            "correct": false
+                        },
+                        {
+                            "text": "1920",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f82041f4597.20916721\/4.jpg",
+                    "image_attribution": "Photo by Pixabay on Pexels"
+                },
+                {
+                    "question": "In which year did the Australian cricket team win their first ICC Cricket World Cup, defeating England in the final?",
+                    "format": "mc",
+                    "image_query": "cricket world cup trophy",
+                    "options": [
+                        {
+                            "text": "1987",
+                            "correct": true
+                        },
+                        {
+                            "text": "1990",
+                            "correct": false
+                        },
+                        {
+                            "text": "1985",
+                            "correct": false
+                        },
+                        {
+                            "text": "1996",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f82041f4597.20916721\/5.jpg",
+                    "image_attribution": "Photo by RDNE Stock project on Pexels"
+                },
+                {
+                    "question": "In which year did the Rugby World Cup take place in New Zealand, hosting matches in various cities?",
+                    "format": "mc",
+                    "image_query": "rugby world cup stadium",
+                    "options": [
+                        {
+                            "text": "2011",
+                            "correct": true
+                        },
+                        {
+                            "text": "2015",
+                            "correct": false
+                        },
+                        {
+                            "text": "2007",
+                            "correct": false
+                        },
+                        {
+                            "text": "1999",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f82041f4597.20916721\/6.jpg",
+                    "image_attribution": "Photo by Travel with  Lenses on Pexels"
+                },
+                {
+                    "question": "Residents in which New Zealand town are being advised to prepare for evacuation due to recent flooding?",
+                    "format": "mc",
+                    "image_query": "flooding emergency response",
+                    "options": [
+                        {
+                            "text": "Wairoa",
+                            "correct": true
+                        },
+                        {
+                            "text": "Kaikōura",
+                            "correct": false
+                        },
+                        {
+                            "text": "Dunedin",
+                            "correct": false
+                        },
+                        {
+                            "text": "Martinborough",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f82041f4597.20916721\/7.jpg",
+                    "image_attribution": "Photo by Juan Moccagatta on Pexels"
+                },
+                {
+                    "question": "The footage of an interceptor missile test recently showcased in the Australian outback highlights advancements in what type of technology?",
+                    "format": "mc",
+                    "image_query": "missile test launch",
+                    "options": [
+                        {
+                            "text": "Agricultural innovation",
+                            "correct": false
+                        },
+                        {
+                            "text": "Military defense systems",
+                            "correct": true
+                        },
+                        {
+                            "text": "Aerospace engineering",
+                            "correct": false
+                        },
+                        {
+                            "text": "Renewable energy solutions",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f82041f4597.20916721\/8.jpg",
+                    "image_attribution": "Photo by Aseem Borkar on Pexels"
+                },
+                {
+                    "question": "Which Italian city is famous for its historic tower known for its unintended tilt?",
+                    "format": "mc",
+                    "image_query": "historic architecture",
+                    "options": [
+                        {
+                            "text": "Florence",
+                            "correct": false
+                        },
+                        {
+                            "text": "Pisa",
+                            "correct": true
+                        },
+                        {
+                            "text": "Venice",
+                            "correct": false
+                        },
+                        {
+                            "text": "Rome",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f82041f4597.20916721\/9.jpg",
+                    "image_attribution": "Photo by Picography on Pexels"
+                },
+                {
+                    "question": "Which of the following countries is known for its unique festival where participants create intricate ice sculptures each winter?",
+                    "format": "mc",
+                    "image_query": "winter festival ice sculptures",
+                    "options": [
+                        {
+                            "text": "Sweden",
+                            "correct": false
+                        },
+                        {
+                            "text": "Finland",
+                            "correct": false
+                        },
+                        {
+                            "text": "Japan",
+                            "correct": true
+                        },
+                        {
+                            "text": "Norway",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f82041f4597.20916721\/10.jpg",
+                    "image_attribution": "Photo by Chait Goli on Pexels"
+                },
+                {
+                    "question": "Which treaty marked the end of the American Revolutionary War and recognized American independence?",
+                    "format": "mc",
+                    "image_query": "historical treaty signing",
+                    "options": [
+                        {
+                            "text": "Treaty of Versailles",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Ghent",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Tordesillas",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f82041f4597.20916721\/11.jpg",
+                    "image_attribution": "Photo by Erik Mclean on Pexels"
+                },
+                {
+                    "question": "True or False: The Suez Canal was completed in 1869 and connects the Mediterranean Sea to the Red Sea.",
+                    "format": "tf",
+                    "image_query": "Suez Canal ships",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f82041f4597.20916721\/12.jpg",
+                    "image_attribution": "Photo by Earl Andre Roca on Pexels"
+                },
+                {
+                    "question": "Which of the following countries adopted the first constitution that established a democratic republic in 1789?",
+                    "format": "mc",
+                    "image_query": "historic constitution document",
+                    "options": [
+                        {
+                            "text": "France",
+                            "correct": true
+                        },
+                        {
+                            "text": "The Netherlands",
+                            "correct": false
+                        },
+                        {
+                            "text": "Germany",
+                            "correct": false
+                        },
+                        {
+                            "text": "Belgium",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f82041f4597.20916721\/13.jpg",
+                    "image_attribution": "Photo by Tara Winstead on Pexels"
+                },
+                {
+                    "question": "Which city is famous for its ancient amphitheater that hosted gladiatorial contests and public spectacles during the Roman Empire?",
+                    "format": "mc",
+                    "image_query": "ancient amphitheater",
+                    "options": [
+                        {
+                            "text": "Athens",
+                            "correct": false
+                        },
+                        {
+                            "text": "Rome",
+                            "correct": true
+                        },
+                        {
+                            "text": "Carthage",
+                            "correct": false
+                        },
+                        {
+                            "text": "Constantinople",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f82041f4597.20916721\/14.jpg",
+                    "image_attribution": "Photo by Anna Zaykina on Pexels"
+                },
+                {
+                    "question": "True or False: The Magna Carta was signed in 1215 and is considered a fundamental document for limiting the powers of the monarchy in England.",
+                    "format": "tf",
+                    "image_query": "historic document signing",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f82041f4597.20916721\/15.jpg",
+                    "image_attribution": "Photo by Graziele Rosa on Pexels"
+                }
+            ],
+            "saved_to": "logs\/qa\/20260709-231010-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260709-231010-summary.json"
+}

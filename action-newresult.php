@@ -8,14 +8,20 @@
  *   - "yesterday" -> 24 hours before the current time
  *   - anything else -> the raw date string passed in the 'date' parameter
  *
- * Before inserting, checks for a duplicate submission (same user, type, and calendar day)
- * and silently returns if one is found, preventing double-posting.
+ * An AI quiz result also passes quiz_id, which is stored in Results.ai_quiz_id. That link
+ * is what identifies which quiz was played; the date only records when it was played.
+ * Duplicate submissions are rejected per quiz when a quiz_id is given, so catching up on
+ * an earlier day's quiz no longer collides with today's. Older manual result types keep
+ * the original one-per-type-per-calendar-day rule.
  * On success, inserts a Results row and a linked QuizFeed row, then echoes the result id.
  */
 
 	require_once 'dblogin.php';
 	require_once 'security.php';
 	require_once 'getsettings.php';
+	require_once __DIR__ . '/ai-quiz-stats.php';
+
+	header('Content-Type: application/json');
 
 	// Get inputted details
 	$type       = isset($_GET['type'])       ? $conn->real_escape_string($_GET['type'])       : '';
@@ -24,6 +30,9 @@
 	$dateOption = isset($_GET['dateOption']) ? $conn->real_escape_string($_GET['dateOption']) : '';
 	$date       = isset($_GET['date'])       ? $conn->real_escape_string($_GET['date'])       : '';
 	$comment    = isset($_GET['comment'])    ? $conn->real_escape_string($_GET['comment'])    : '';
+	$aiQuizId   = isset($_GET['quiz_id'])    ? (int)$_GET['quiz_id']                          : 0;
+
+	$linkQuiz = $aiQuizId > 0 && resultsHasAiQuizId($conn);
 	// $userid is set by getsettings.php from the validated session
 	// $timezone is set by getsettings.php from the user's DB profile
 
@@ -39,13 +48,31 @@
 		$dt = $date;
 	}
 
-	// Duplicate check: compare day/month/year separately to handle time-component variation
-	$q = "SELECT * FROM Results WHERE user='$userid' AND type='$type' AND DAY(date) = DAY('$dt') and MONTH(date) = MONTH('$dt') and YEAR(date) = YEAR('$dt') and Results.status = 'active';";
+	// Duplicate check. An AI quiz is identified by its id, so the same quiz can only be
+	// posted once but two quizzes of the same type can both be played on one day.
+	if ($linkQuiz) {
+		$q = "SELECT id FROM Results WHERE user='$userid' AND ai_quiz_id='$aiQuizId' AND status = 'active' LIMIT 1;";
+	} else {
+		// Compare day/month/year separately to handle time-component variation
+		$q = "SELECT id FROM Results WHERE user='$userid' AND type='$type' AND DAY(date) = DAY('$dt') and MONTH(date) = MONTH('$dt') and YEAR(date) = YEAR('$dt') and Results.status = 'active';";
+	}
 	$result = $conn->query($q);
-	if (mysqli_num_rows($result) != 0) return;
+	if (mysqli_num_rows($result) != 0) {
+		echo json_encode([
+			'error'   => 'already_posted',
+			'message' => $linkQuiz
+				? 'You have already posted a result for this quiz.'
+				: 'You have already posted a ' . $type . ' result for this day.',
+		]);
+		return;
+	}
 
 	// Insert the result, then create a linked QuizFeed post timestamped to now (not the quiz date)
-	$q = "INSERT INTO Results (user, type, score, max, date) VALUES" . "('$userid','$type','$score','$max','$dt');";
+	if ($linkQuiz) {
+		$q = "INSERT INTO Results (user, type, score, max, date, ai_quiz_id) VALUES" . "('$userid','$type','$score','$max','$dt','$aiQuizId');";
+	} else {
+		$q = "INSERT INTO Results (user, type, score, max, date) VALUES" . "('$userid','$type','$score','$max','$dt');";
+	}
 	$result = $conn->query($q);
 	$result_id = mysqli_insert_id($conn);
 	$now = date("Y-m-d H:i:s");

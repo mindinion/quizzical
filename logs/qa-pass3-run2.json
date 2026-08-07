@@ -1,0 +1,855 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-09",
+        "stamp": "20260709-230336",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-09",
+            "log": [
+                {
+                    "time": "2026-07-09 21:03:36",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 21:03:36",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:03:39",
+                    "level": "ERROR",
+                    "message": "[NZ Trivia] Attempt 1: 2 violation(s):\n- question 1 image_query gives away the correct answer — \"Sauvignon Blanc\" is hinted in image_query \"Sauvignon Blanc vineyard\"\n- question 1 image_query repeats option text \"Sauvignon Blanc\""
+                },
+                {
+                    "time": "2026-07-09 21:03:48",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:03:49",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:03:50",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:03:50",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:04:02",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:04:02",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:04:09",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 1: 2 violation(s):\n- question 1 [fact-check]: marked answer \"2003\" rejected — England defeated New Zealand in the final of the Rugby World Cup in 2003, which was hosted in Australia.\n- question 2 [fact-check]: marked answer \"Carlton\" rejected — Carlton plays at Marvel Stadium, not the Melbourne Cricket Ground."
+                },
+                {
+                    "time": "2026-07-09 21:04:15",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 2: 2 violation(s):\n- question 1 [fact-check]: marked answer \"1999\" rejected — England did not win the Rugby World Cup in 1999; they won in 2003.\n- question 2 [fact-check]: marked answer \"Richmond\" rejected — Richmond is not known for maroon and gold colors; Brisbane is associated with those colors."
+                },
+                {
+                    "time": "2026-07-09 21:04:21",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 3: 1 violation(s):\n- question 1 [fact-check distractor]: wrong option '1991' is correct; Rugby World Cup held in Australia in 1991."
+                },
+                {
+                    "time": "2026-07-09 21:04:27",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:04:28",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 4: 2 violation(s):\n- question 1 [fact-check distractor]: wrong option '1999' is correct; Rugby World Cup was held in 1999 in Wales, not Australia.\n- question 2 [fact-check premise]: question text rejected — The final was won by Pakistan, not Australia."
+                },
+                {
+                    "time": "2026-07-09 21:04:35",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 5: 2 violation(s):\n- question 1 [fact-check distractor]: wrong option '1995' is the year Australia met England in the final, contradicting marked answer '2003'.\n- question 2 [fact-check]: marked answer \"2003\" rejected — The Cricket World Cup final where Pakistan defeated Sri Lanka was held in 1996, not 2003."
+                },
+                {
+                    "time": "2026-07-09 21:04:43",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 6: 2 violation(s):\n- question 1 [fact-check distractor]: wrong option '1999' is correct; Rugby World Cup held in Australia in 1999.\n- question 2 [fact-check]: marked answer \"1996\" rejected — The Cricket World Cup final in Melbourne where Australia defeated Sri Lanka took place in 2003, not 1996."
+                },
+                {
+                    "time": "2026-07-09 21:04:46",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 7: 2 violation(s):\n- question 1 image_query gives away the correct answer — \"2003\" is hinted in image_query \"Rugby World Cup 2003\"\n- question 1 image_query repeats option text \"2003\""
+                },
+                {
+                    "time": "2026-07-09 21:04:54",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:04:55",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 8: 1 violation(s):\n- question 2 [fact-check premise]: question text rejected — The question states that a team defeated Collingwood in the Grand Final, but Collingwood won the 2010 AFL Premiership."
+                },
+                {
+                    "time": "2026-07-09 21:04:58",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:04:59",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:05:04",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 21:05:04",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:05:06",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:05:06",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:05:08",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:05:08",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:05:17",
+                    "level": "ERROR",
+                    "message": "[Geography] Attempt 1: 1 violation(s):\n- question 1 [fact-check]: marked answer \"False\" rejected — Machu Picchu is an ancient archaeological site located in Peru."
+                },
+                {
+                    "time": "2026-07-09 21:05:24",
+                    "level": "INFO",
+                    "message": "[Geography] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:05:24",
+                    "level": "INFO",
+                    "message": "[Geography] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:05:26",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 21:05:26",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:05:30",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:05:30",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:05:33",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:05:34",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:05:35",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 1: 1 violation(s):\n- question 2 [fact-check distractor]: Assassination of John F. Kennedy is marked correct, but snippets confirm it occurred in 1963."
+                },
+                {
+                    "time": "2026-07-09 21:05:39",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:05:39",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:05:42",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:05:43",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:05:44",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 21:05:44",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:05:49",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:05:54",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:05:56",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:05:58",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:06:00",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:06:00",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 1: 1 violation(s):\n- question 2 [fact-check premise]: question text rejected — Saudi Arabia granted women the right to vote in 2011, not 1961."
+                },
+                {
+                    "time": "2026-07-09 21:06:06",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:06:07",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:06:10",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:06:11",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:06:14",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:06:15",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:06:16",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 21:06:16",
+                    "level": "INFO",
+                    "message": "[images] Q1: fetching \"wine grapes vineyard\"…"
+                },
+                {
+                    "time": "2026-07-09 21:06:17",
+                    "level": "INFO",
+                    "message": "[images] Q1: saved"
+                },
+                {
+                    "time": "2026-07-09 21:06:17",
+                    "level": "INFO",
+                    "message": "[images] Q2: fetching \"kiwi bird in nature\"…"
+                },
+                {
+                    "time": "2026-07-09 21:06:18",
+                    "level": "INFO",
+                    "message": "[images] Q2: saved"
+                },
+                {
+                    "time": "2026-07-09 21:06:18",
+                    "level": "INFO",
+                    "message": "[images] Q3: fetching \"colorful coral reef\"…"
+                },
+                {
+                    "time": "2026-07-09 21:06:18",
+                    "level": "INFO",
+                    "message": "[images] Q3: saved"
+                },
+                {
+                    "time": "2026-07-09 21:06:18",
+                    "level": "INFO",
+                    "message": "[images] Q4: fetching \"gold mining\"…"
+                },
+                {
+                    "time": "2026-07-09 21:06:19",
+                    "level": "INFO",
+                    "message": "[images] Q4: saved"
+                },
+                {
+                    "time": "2026-07-09 21:06:19",
+                    "level": "INFO",
+                    "message": "[images] Q5: fetching \"AFL Premiership trophy\"…"
+                },
+                {
+                    "time": "2026-07-09 21:06:19",
+                    "level": "INFO",
+                    "message": "[images] Q5: saved"
+                },
+                {
+                    "time": "2026-07-09 21:06:19",
+                    "level": "INFO",
+                    "message": "[images] Q6: fetching \"cricket world cup final\"…"
+                },
+                {
+                    "time": "2026-07-09 21:06:20",
+                    "level": "INFO",
+                    "message": "[images] Q6: saved"
+                },
+                {
+                    "time": "2026-07-09 21:06:20",
+                    "level": "INFO",
+                    "message": "[images] Q7: fetching \"residential evacuation planning\"…"
+                },
+                {
+                    "time": "2026-07-09 21:06:21",
+                    "level": "INFO",
+                    "message": "[images] Q7: saved"
+                },
+                {
+                    "time": "2026-07-09 21:06:21",
+                    "level": "INFO",
+                    "message": "[images] Q8: fetching \"medical facility interior\"…"
+                },
+                {
+                    "time": "2026-07-09 21:06:21",
+                    "level": "INFO",
+                    "message": "[images] Q8: saved"
+                },
+                {
+                    "time": "2026-07-09 21:06:21",
+                    "level": "INFO",
+                    "message": "[images] Q9: fetching \"ancient fortifications\"…"
+                },
+                {
+                    "time": "2026-07-09 21:06:22",
+                    "level": "INFO",
+                    "message": "[images] Q9: saved"
+                },
+                {
+                    "time": "2026-07-09 21:06:22",
+                    "level": "INFO",
+                    "message": "[images] Q10: fetching \"nuclear power plant\"…"
+                },
+                {
+                    "time": "2026-07-09 21:06:23",
+                    "level": "INFO",
+                    "message": "[images] Q10: saved"
+                },
+                {
+                    "time": "2026-07-09 21:06:23",
+                    "level": "INFO",
+                    "message": "[images] Q11: fetching \"historic treaty signing\"…"
+                },
+                {
+                    "time": "2026-07-09 21:06:23",
+                    "level": "INFO",
+                    "message": "[images] Q11: saved"
+                },
+                {
+                    "time": "2026-07-09 21:06:23",
+                    "level": "INFO",
+                    "message": "[images] Q12: fetching \"historical assassination\"…"
+                },
+                {
+                    "time": "2026-07-09 21:06:24",
+                    "level": "INFO",
+                    "message": "[images] Q12: saved"
+                },
+                {
+                    "time": "2026-07-09 21:06:24",
+                    "level": "INFO",
+                    "message": "[images] Q13: fetching \"climate change agreement\"…"
+                },
+                {
+                    "time": "2026-07-09 21:06:25",
+                    "level": "INFO",
+                    "message": "[images] Q13: saved"
+                },
+                {
+                    "time": "2026-07-09 21:06:25",
+                    "level": "INFO",
+                    "message": "[images] Q14: fetching \"independence monument\"…"
+                },
+                {
+                    "time": "2026-07-09 21:06:26",
+                    "level": "INFO",
+                    "message": "[images] Q14: saved"
+                },
+                {
+                    "time": "2026-07-09 21:06:26",
+                    "level": "INFO",
+                    "message": "[images] Q15: fetching \"peace treaty signing\"…"
+                },
+                {
+                    "time": "2026-07-09 21:06:26",
+                    "level": "INFO",
+                    "message": "[images] Q15: saved"
+                },
+                {
+                    "time": "2026-07-09 21:06:26",
+                    "level": "INFO",
+                    "message": "[images] Preview images: 15\/15 saved"
+                }
+            ],
+            "stats": {
+                "categories_retried": 5,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 15
+            },
+            "questions": [
+                {
+                    "question": "Which of the following wine types is notably produced in New Zealand and is recognized for its aromatic profile?",
+                    "format": "mc",
+                    "image_query": "wine grapes vineyard",
+                    "options": [
+                        {
+                            "text": "Chardonnay",
+                            "correct": false
+                        },
+                        {
+                            "text": "Sauvignon Blanc",
+                            "correct": true
+                        },
+                        {
+                            "text": "Riesling",
+                            "correct": false
+                        },
+                        {
+                            "text": "Merlot",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f80a85d6860.13855769\/1.jpg",
+                    "image_attribution": "Photo by Gonzalo Acuña on Pexels"
+                },
+                {
+                    "question": "True or False: New Zealand is home to the world's largest population of kiwis in the wild.",
+                    "format": "tf",
+                    "image_query": "kiwi bird in nature",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f80a85d6860.13855769\/2.jpg",
+                    "image_attribution": "Photo by Pixabay on Pexels"
+                },
+                {
+                    "question": "The Great Barrier Reef is famous for being home to which of the following marine species?",
+                    "format": "mc",
+                    "image_query": "colorful coral reef",
+                    "options": [
+                        {
+                            "text": "Giant Clams",
+                            "correct": true
+                        },
+                        {
+                            "text": "Loggerhead Turtles",
+                            "correct": false
+                        },
+                        {
+                            "text": "Bluefin Tuna",
+                            "correct": false
+                        },
+                        {
+                            "text": "Harlequin Tusk Fish",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f80a85d6860.13855769\/3.jpg",
+                    "image_attribution": "Photo by Jeffry Surianto on Pexels"
+                },
+                {
+                    "question": "Which Australian state is noted for its significant contribution to the mining of gold and is often associated with a famous gold rush?",
+                    "format": "mc",
+                    "image_query": "gold mining",
+                    "options": [
+                        {
+                            "text": "Victoria",
+                            "correct": true
+                        },
+                        {
+                            "text": "Queensland",
+                            "correct": false
+                        },
+                        {
+                            "text": "Tasmania",
+                            "correct": false
+                        },
+                        {
+                            "text": "Western Australia",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f80a85d6860.13855769\/4.jpg",
+                    "image_attribution": "Photo by Lucia Barreiros  Silva on Pexels"
+                },
+                {
+                    "question": "Which team won the AFL Premiership in 2010, securing victory in the Grand Final?",
+                    "format": "mc",
+                    "image_query": "AFL Premiership trophy",
+                    "options": [
+                        {
+                            "text": "Geelong Cats",
+                            "correct": false
+                        },
+                        {
+                            "text": "Collingwood Football Club",
+                            "correct": true
+                        },
+                        {
+                            "text": "St Kilda Saints",
+                            "correct": false
+                        },
+                        {
+                            "text": "Hawthorn Hawks",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f80a85d6860.13855769\/5.jpg",
+                    "image_attribution": "Photo by Kushie In Vietnam on Pexels"
+                },
+                {
+                    "question": "In which year did New Zealand host the Cricket World Cup, where Australia faced India in the final?",
+                    "format": "mc",
+                    "image_query": "cricket world cup final",
+                    "options": [
+                        {
+                            "text": "2011",
+                            "correct": true
+                        },
+                        {
+                            "text": "2007",
+                            "correct": false
+                        },
+                        {
+                            "text": "2003",
+                            "correct": false
+                        },
+                        {
+                            "text": "1999",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f80a85d6860.13855769\/6.jpg",
+                    "image_attribution": "Photo by Arsal Point on Pexels"
+                },
+                {
+                    "question": "What recent natural event prompted authorities to issue warnings for residents to be prepared to evacuate in Wairoa?",
+                    "format": "mc",
+                    "image_query": "residential evacuation planning",
+                    "options": [
+                        {
+                            "text": "Flooding",
+                            "correct": true
+                        },
+                        {
+                            "text": "Earthquake damage",
+                            "correct": false
+                        },
+                        {
+                            "text": "Wildfire alerts",
+                            "correct": false
+                        },
+                        {
+                            "text": "Landslide risks",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f80a85d6860.13855769\/7.jpg",
+                    "image_attribution": "Photo by Dávid Lehoczki on Pexels"
+                },
+                {
+                    "question": "The opening of Australia's first immune centre took place in which city?",
+                    "format": "mc",
+                    "image_query": "medical facility interior",
+                    "options": [
+                        {
+                            "text": "Sydney",
+                            "correct": false
+                        },
+                        {
+                            "text": "Melbourne",
+                            "correct": false
+                        },
+                        {
+                            "text": "Brisbane",
+                            "correct": false
+                        },
+                        {
+                            "text": "Canberra",
+                            "correct": true
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f80a85d6860.13855769\/8.jpg",
+                    "image_attribution": "Photo by Pavel Danilyuk on Pexels"
+                },
+                {
+                    "question": "Which of the following countries is famous for its ancient fortifications known as the Great Wall?",
+                    "format": "mc",
+                    "image_query": "ancient fortifications",
+                    "options": [
+                        {
+                            "text": "Japan",
+                            "correct": false
+                        },
+                        {
+                            "text": "China",
+                            "correct": true
+                        },
+                        {
+                            "text": "Mongolia",
+                            "correct": false
+                        },
+                        {
+                            "text": "India",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f80a85d6860.13855769\/9.jpg",
+                    "image_attribution": "Photo by Živoslav Ilić on Pexels"
+                },
+                {
+                    "question": "Which country is known for its widespread use of nuclear energy, generating approximately 75% of its electricity from nuclear power?",
+                    "format": "mc",
+                    "image_query": "nuclear power plant",
+                    "options": [
+                        {
+                            "text": "France",
+                            "correct": true
+                        },
+                        {
+                            "text": "Germany",
+                            "correct": false
+                        },
+                        {
+                            "text": "United States",
+                            "correct": false
+                        },
+                        {
+                            "text": "South Korea",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f80a85d6860.13855769\/10.jpg",
+                    "image_attribution": "Photo by Wolfgang Weiser on Pexels"
+                },
+                {
+                    "question": "In which year did the signing of the Treaty of Ghent, which ended the War of 1812 between the United States and Great Britain, take place?",
+                    "format": "mc",
+                    "image_query": "historic treaty signing",
+                    "options": [
+                        {
+                            "text": "1814",
+                            "correct": true
+                        },
+                        {
+                            "text": "1812",
+                            "correct": false
+                        },
+                        {
+                            "text": "1815",
+                            "correct": false
+                        },
+                        {
+                            "text": "1818",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f80a85d6860.13855769\/11.jpg",
+                    "image_attribution": "Photo by Manousos Kampanellis on Pexels"
+                },
+                {
+                    "question": "Which significant event is marked by the assassination of a prominent leader in Dallas, Texas, leading to widespread national mourning in 1963?",
+                    "format": "mc",
+                    "image_query": "historical assassination",
+                    "options": [
+                        {
+                            "text": "Martin Luther King Jr.",
+                            "correct": false
+                        },
+                        {
+                            "text": "John F. Kennedy",
+                            "correct": true
+                        },
+                        {
+                            "text": "Robert F. Kennedy",
+                            "correct": false
+                        },
+                        {
+                            "text": "Malcolm X",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f80a85d6860.13855769\/12.jpg",
+                    "image_attribution": "Photo by Skyler Ewing on Pexels"
+                },
+                {
+                    "question": "Which international agreement was signed in 1997 to address climate change and set binding obligations on industrialized countries to reduce greenhouse gas emissions?",
+                    "format": "mc",
+                    "image_query": "climate change agreement",
+                    "options": [
+                        {
+                            "text": "Kyoto Protocol",
+                            "correct": true
+                        },
+                        {
+                            "text": "Paris Agreement",
+                            "correct": false
+                        },
+                        {
+                            "text": "Montreal Protocol",
+                            "correct": false
+                        },
+                        {
+                            "text": "Copenhagen Accord",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f80a85d6860.13855769\/13.jpg",
+                    "image_attribution": "Photo by Quang Nguyen Vinh on Pexels"
+                },
+                {
+                    "question": "Which of the following countries officially gained independence from the Soviet Union in 1991 and is known for its significant cultural and historical heritage?",
+                    "format": "mc",
+                    "image_query": "independence monument",
+                    "options": [
+                        {
+                            "text": "Lithuania",
+                            "correct": true
+                        },
+                        {
+                            "text": "Ukraine",
+                            "correct": false
+                        },
+                        {
+                            "text": "Kazakhstan",
+                            "correct": false
+                        },
+                        {
+                            "text": "Armenia",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f80a85d6860.13855769\/14.jpg",
+                    "image_attribution": "Photo by Sonny Vermeer on Pexels"
+                },
+                {
+                    "question": "True or False: The Treaty of Versailles officially ended World War I in 1919 and imposed heavy reparations on the German Empire.",
+                    "format": "tf",
+                    "image_query": "peace treaty signing",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f80a85d6860.13855769\/15.jpg",
+                    "image_attribution": "Photo by Mathias Reding on Pexels"
+                }
+            ],
+            "saved_to": "logs\/qa\/20260709-230336-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260709-230336-summary.json"
+}

@@ -1,0 +1,541 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-10",
+        "stamp": "20260710-004754",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": true,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-10",
+            "log": [
+                {
+                    "time": "2026-07-09 22:47:54",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 22:47:57",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:48:07",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 22:48:07",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:48:15",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 22:48:15",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:48:22",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:48:23",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:48:23",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 22:48:23",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:48:26",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 22:48:26",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:48:28",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 22:48:28",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:48:30",
+                    "level": "ERROR",
+                    "message": "[Geography] Attempt 1: 1 violation(s):\n- question 1 (\"Which river in Europe flows through the capital city of Hungary?\") matches banned pattern: capital-of-a-country cliché — pick a different, less obvious question"
+                },
+                {
+                    "time": "2026-07-09 22:48:38",
+                    "level": "INFO",
+                    "message": "[Geography] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:48:39",
+                    "level": "INFO",
+                    "message": "[Geography] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:48:39",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 22:48:39",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:48:46",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 22:48:46",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:49:00",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 1: 1 violation(s):\n- question 1 [fact-check]: marked answer \"1919\" rejected — The Treaty of Trianon was signed on 4 June 1920, not in 1919."
+                },
+                {
+                    "time": "2026-07-09 22:49:12",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 22:49:12",
+                    "level": "INFO",
+                    "message": "[final-gate] Verifying all 15 questions with fresh sources…"
+                },
+                {
+                    "time": "2026-07-09 22:49:28",
+                    "level": "INFO",
+                    "message": "[final-gate] question 6 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:49:29",
+                    "level": "INFO",
+                    "message": "[final-gate] question 6 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:49:34",
+                    "level": "INFO",
+                    "message": "[final-gate] question 10 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:49:35",
+                    "level": "INFO",
+                    "message": "[final-gate] question 10 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:49:47",
+                    "level": "INFO",
+                    "message": "[final-gate] All 15 questions passed — OK to publish"
+                }
+            ],
+            "stats": {
+                "categories_retried": 2,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 0,
+                "final_gate_quiz_attempts": 1,
+                "final_gate_rejections": 0,
+                "category_cap_fallbacks": 0,
+                "final_gate_cap_fallbacks": 0,
+                "category_emergency_fallbacks": 0
+            },
+            "questions": [
+                {
+                    "question": "Which year marked the establishment of the New Zealand state-owned enterprise, New Zealand Post?",
+                    "format": "mc",
+                    "image_query": "New Zealand Post office",
+                    "options": [
+                        {
+                            "text": "1987",
+                            "correct": true
+                        },
+                        {
+                            "text": "1990",
+                            "correct": false
+                        },
+                        {
+                            "text": "1985",
+                            "correct": false
+                        },
+                        {
+                            "text": "1995",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1
+                },
+                {
+                    "question": "In which year was the Treaty of Waitangi signed, which is considered a foundational document in New Zealand's history?",
+                    "format": "mc",
+                    "image_query": "historic treaty signing",
+                    "options": [
+                        {
+                            "text": "1840",
+                            "correct": true
+                        },
+                        {
+                            "text": "1850",
+                            "correct": false
+                        },
+                        {
+                            "text": "1839",
+                            "correct": false
+                        },
+                        {
+                            "text": "1865",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2
+                },
+                {
+                    "question": "In which year did Australia become a federation, marking the unification of its states and territories into a single nation?",
+                    "format": "mc",
+                    "image_query": "federation anniversary",
+                    "options": [
+                        {
+                            "text": "1901",
+                            "correct": true
+                        },
+                        {
+                            "text": "1890",
+                            "correct": false
+                        },
+                        {
+                            "text": "1910",
+                            "correct": false
+                        },
+                        {
+                            "text": "1920",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3
+                },
+                {
+                    "question": "Which ancient group of people are known for creating the large stone structures found throughout Australia, often associated with prehistoric rituals and ceremonies?",
+                    "format": "mc",
+                    "image_query": "ancient stone structures",
+                    "options": [
+                        {
+                            "text": "Aboriginal Australians",
+                            "correct": true
+                        },
+                        {
+                            "text": "Maori",
+                            "correct": false
+                        },
+                        {
+                            "text": "Inca",
+                            "correct": false
+                        },
+                        {
+                            "text": "Celts",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4
+                },
+                {
+                    "question": "What is the home ground of the New Zealand Warriors in the National Rugby League (NRL)?",
+                    "format": "mc",
+                    "image_query": "Auckland rugby stadium",
+                    "options": [
+                        {
+                            "text": "Mt Smart Stadium",
+                            "correct": true
+                        },
+                        {
+                            "text": "Eden Park",
+                            "correct": false
+                        },
+                        {
+                            "text": "Westpac Stadium",
+                            "correct": false
+                        },
+                        {
+                            "text": "Forsyth Barr Stadium",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5
+                },
+                {
+                    "question": "True or False: The Sydney Swans wear red and white as their team colours in the Australian Football League (AFL).",
+                    "format": "tf",
+                    "image_query": "Australian football team jersey",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6
+                },
+                {
+                    "question": "What event recently led to a state of emergency being declared in Wairoa?",
+                    "format": "mc",
+                    "image_query": "emergency response",
+                    "options": [
+                        {
+                            "text": "Severe flooding",
+                            "correct": true
+                        },
+                        {
+                            "text": "Wildfires across the region",
+                            "correct": false
+                        },
+                        {
+                            "text": "A chemical spill at a factory",
+                            "correct": false
+                        },
+                        {
+                            "text": "An earthquake causing significant damage",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7
+                },
+                {
+                    "question": "Three corrections officers were stood down due to a review launched into what incident?",
+                    "format": "mc",
+                    "image_query": "prison cell interior",
+                    "options": [
+                        {
+                            "text": "A prisoner escape",
+                            "correct": true
+                        },
+                        {
+                            "text": "An attempted prison break",
+                            "correct": false
+                        },
+                        {
+                            "text": "A riot involving inmates",
+                            "correct": false
+                        },
+                        {
+                            "text": "Improper conduct during a transfer",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8
+                },
+                {
+                    "question": "Which of the following cities is known for its vibrant street culture and annual festival celebrating the arts and music?",
+                    "format": "mc",
+                    "image_query": "street festival crowd",
+                    "options": [
+                        {
+                            "text": "Cape Town",
+                            "correct": false
+                        },
+                        {
+                            "text": "Rio de Janeiro",
+                            "correct": true
+                        },
+                        {
+                            "text": "Accra",
+                            "correct": false
+                        },
+                        {
+                            "text": "Lisbon",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9
+                },
+                {
+                    "question": "True or False: The Amazon rainforest is home to more plant and animal species than any other terrestrial ecosystem on Earth.",
+                    "format": "tf",
+                    "image_query": "amazon rainforest biodiversity",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10
+                },
+                {
+                    "question": "In which year did the signing of the Treaty of Versailles take place, ending World War I?",
+                    "format": "mc",
+                    "image_query": "historic treaty document",
+                    "options": [
+                        {
+                            "text": "1919",
+                            "correct": true
+                        },
+                        {
+                            "text": "1920",
+                            "correct": false
+                        },
+                        {
+                            "text": "1918",
+                            "correct": false
+                        },
+                        {
+                            "text": "1921",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11
+                },
+                {
+                    "question": "Which of the following revolutions is known for leading to the establishment of the Soviet Union?",
+                    "format": "mc",
+                    "image_query": "revolution in Russia",
+                    "options": [
+                        {
+                            "text": "Russian Revolution",
+                            "correct": true
+                        },
+                        {
+                            "text": "Haitian Revolution",
+                            "correct": false
+                        },
+                        {
+                            "text": "French Revolution",
+                            "correct": false
+                        },
+                        {
+                            "text": "Industrial Revolution",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12
+                },
+                {
+                    "question": "The Treaty of Trianon established the borders of which country following World War I?",
+                    "format": "mc",
+                    "image_query": "historic treaty document",
+                    "options": [
+                        {
+                            "text": "Hungary",
+                            "correct": true
+                        },
+                        {
+                            "text": "Austria",
+                            "correct": false
+                        },
+                        {
+                            "text": "Czechoslovakia",
+                            "correct": false
+                        },
+                        {
+                            "text": "Romania",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13
+                },
+                {
+                    "question": "Which ancient civilization is known for the construction of the ziggurat at Ur, one of the earliest monumental structures in the world?",
+                    "format": "mc",
+                    "image_query": "ancient ziggurat ruins",
+                    "options": [
+                        {
+                            "text": "Sumerians",
+                            "correct": true
+                        },
+                        {
+                            "text": "Minoans",
+                            "correct": false
+                        },
+                        {
+                            "text": "Phoenicians",
+                            "correct": false
+                        },
+                        {
+                            "text": "Babylonians",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14
+                },
+                {
+                    "question": "In which year did the Magna Carta, a significant document in the establishment of constitutional law, get signed?",
+                    "format": "mc",
+                    "image_query": "historic legal document",
+                    "options": [
+                        {
+                            "text": "1215",
+                            "correct": true
+                        },
+                        {
+                            "text": "1302",
+                            "correct": false
+                        },
+                        {
+                            "text": "1150",
+                            "correct": false
+                        },
+                        {
+                            "text": "1400",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15
+                }
+            ],
+            "warnings": [],
+            "saved_to": "logs\/qa\/20260710-004754-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260710-004754-summary.json"
+}

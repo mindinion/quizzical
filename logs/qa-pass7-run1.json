@@ -1,0 +1,332 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-09",
+        "stamp": "20260709-235248",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 0,
+        "failed": 1
+    },
+    "runs": [
+        {
+            "ok": false,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-09",
+            "log": [
+                {
+                    "time": "2026-07-09 21:52:48",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 21:52:51",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:52:55",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:52:56",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:52:59",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:53:01",
+                    "level": "ERROR",
+                    "message": "[NZ Trivia] Attempt 1: 1 violation(s):\n- question 2 [fact-check premise]: question text rejected — Rugby World Cup is not hosted every four years; it has been held in 1987, 2011, and 2015, but not every four years since 1987."
+                },
+                {
+                    "time": "2026-07-09 21:53:03",
+                    "level": "ERROR",
+                    "message": "[NZ Trivia] Attempt 2: 1 violation(s):\n- question 2 (\"True or False: New Zealand was the first country to grant women the right to vote in 1893.\") matches superlative pattern: first-to-do-something superlative — embeds disputed \"first\" claims"
+                },
+                {
+                    "time": "2026-07-09 21:53:10",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:53:11",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:53:12",
+                    "level": "ERROR",
+                    "message": "[NZ Trivia] Attempt 3: 1 violation(s):\n- question 2 [fact-check]: marked answer \"True\" rejected — The national emblem of New Zealand does not feature a kiwi bird and a silver fern according to the snippets."
+                },
+                {
+                    "time": "2026-07-09 21:53:19",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:53:20",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:53:20",
+                    "level": "ERROR",
+                    "message": "[NZ Trivia] Attempt 4: 1 violation(s):\n- question 2 [fact-check]: marked answer \"False\" rejected — The national flower of New Zealand is the silver fern."
+                },
+                {
+                    "time": "2026-07-09 21:53:23",
+                    "level": "ERROR",
+                    "message": "[NZ Trivia] Attempt 5: 1 violation(s):\n- question 2 (\"True or False: The silver fern is recognized as the national symbol of New Zealand.\") matches banned pattern: national symbol\/animal\/bird cliché — pick a different, less obvious question"
+                },
+                {
+                    "time": "2026-07-09 21:53:31",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:53:32",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:53:33",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:53:33",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:53:43",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:53:43",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:53:47",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:53:48",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:53:51",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:53:52",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:53:53",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 1: 1 violation(s):\n- question 2 [fact-check]: marked answer \"South Australia\" rejected — South Australia won back-to-back Sheffield Shield titles, indicating they won in the 2020-2021 season, not the 2021-2022 season."
+                },
+                {
+                    "time": "2026-07-09 21:53:58",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:54:01",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 2: 2 violation(s):\n- question 1 [fact-check premise]: question text rejected — The 2019 Rugby World Cup was hosted in Japan, not England.\n- question 2 [fact-check]: marked answer \"2011\" rejected — The Australian cricket team won the ICC Cricket World Cup in 2015, not 2011, while playing in India, Sri Lanka, and Bangladesh."
+                },
+                {
+                    "time": "2026-07-09 21:54:04",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:54:05",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:54:08",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:54:08",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 3: 1 violation(s):\n- question 2 [fact-check premise]: question text rejected — The 2011 Cricket World Cup was hosted in India, Sri Lanka, and Bangladesh, not Australia and New Zealand."
+                },
+                {
+                    "time": "2026-07-09 21:54:12",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:54:13",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:54:16",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:54:17",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 4: 1 violation(s):\n- question 2 [fact-check premise]: question text rejected — The 2003 Rugby World Cup was hosted by Australia, not England."
+                },
+                {
+                    "time": "2026-07-09 21:54:20",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:54:21",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:54:24",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:54:25",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:54:26",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 5: 2 violation(s):\n- question 1 [fact-check distractor]: wrong option '2007' is correct; Rugby World Cup was held in Australia in 2003.\n- question 2 [fact-check]: marked answer \"2015\" rejected — The 2015 Cricket World Cup was held in Australia and New Zealand, but Australia triumphed in the final against New Zealand, not in 2015."
+                },
+                {
+                    "time": "2026-07-09 21:54:29",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:54:30",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:54:37",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:54:38",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 6: 1 violation(s):\n- question 2 [fact-check premise]: question text rejected — The 2007 Rugby World Cup was hosted by France, not South Africa."
+                },
+                {
+                    "time": "2026-07-09 21:54:40",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:54:41",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:54:44",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:54:45",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 7: 1 violation(s):\n- question 2 [fact-check premise]: question text rejected — The 1996 Cricket World Cup was held in India, Pakistan, and Sri Lanka, not Australia and New Zealand."
+                },
+                {
+                    "time": "2026-07-09 21:54:48",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:54:49",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:54:50",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 8: 2 violation(s):\n- question 1 [fact-check premise]: question text rejected — The 2003 Rugby World Cup was hosted by Australia, not England.\n- question 2 [fact-check premise]: question text rejected — The final was won by Pakistan, not Australia."
+                },
+                {
+                    "time": "2026-07-09 21:54:53",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:54:55",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:54:55",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 9: 2 violation(s):\n- question 1 [fact-check premise]: question text rejected — The 2003 Rugby World Cup was hosted by Australia, not England.\n- question 2 [fact-check premise]: question text rejected — The final was won by Pakistan, not Australia."
+                },
+                {
+                    "time": "2026-07-09 21:55:00",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:55:01",
+                    "level": "INFO",
+                    "message": "[Sports] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:55:04",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:55:05",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:55:06",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 10: 1 violation(s):\n- question 2 [fact-check]: marked answer \"2023\" rejected — The 2023 Cricket World Cup is hosted by India, not Australia."
+                },
+                {
+                    "time": "2026-07-09 21:55:06",
+                    "level": "ERROR",
+                    "message": "[Sports] All 10 attempts failed validation — giving up."
+                }
+            ],
+            "stats": {
+                "categories_retried": 1,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 0,
+                "final_gate_quiz_attempts": 1,
+                "final_gate_rejections": 0
+            },
+            "error": "Failed to generate 'Sports' after 10 attempts — check logs\/generate-quiz.log",
+            "saved_to": "logs\/qa\/20260709-235248-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260709-235248-summary.json"
+}

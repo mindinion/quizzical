@@ -1,0 +1,770 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-09",
+        "stamp": "20260709-225418",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-09",
+            "log": [
+                {
+                    "time": "2026-07-09 20:54:18",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 20:54:18",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:54:27",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 20:54:27",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:54:35",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:54:36",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 1: 1 violation(s):\n- question 2 [fact-check premise]: question text rejected — The flag features a large white seven-pointed star (the Commonwealth Star), not a large red star."
+                },
+                {
+                    "time": "2026-07-09 20:54:42",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:54:43",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 2: 1 violation(s):\n- question 2 [fact-check premise]: question text rejected — The Australian flag features a Commonwealth Star (seven-pointed star) but it is not in the center; it is in the lower hoist quarter."
+                },
+                {
+                    "time": "2026-07-09 20:54:51",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:54:52",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:54:53",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 3: 1 violation(s):\n- question 2 [fact-check]: marked answer \"False\" rejected — The Great Barrier Reef is the world's largest coral reef system, which is so massive it can be seen."
+                },
+                {
+                    "time": "2026-07-09 20:54:59",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:55:00",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:55:01",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 20:55:01",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:55:08",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:55:09",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 1: 1 violation(s):\n- question 2 [fact-check premise]: question text rejected — The New Zealand Warriors did not win the NRL Grand Final in 2011; they lost."
+                },
+                {
+                    "time": "2026-07-09 20:55:18",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 20:55:18",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:55:20",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 20:55:20",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:55:22",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 20:55:22",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:55:32",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 20:55:32",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:55:36",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:55:37",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:55:43",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:55:44",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:55:45",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 20:55:45",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:55:52",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:55:53",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:55:55",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:55:56",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:55:57",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 1: 1 violation(s):\n- question 2 [fact-check]: marked answer \"Kyoto Protocol\" rejected — The UN Framework Convention on Climate Change (UNFCCC) was signed in 1992, not the Kyoto Protocol."
+                },
+                {
+                    "time": "2026-07-09 20:56:10",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:56:10",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:56:12",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 20:56:12",
+                    "level": "INFO",
+                    "message": "[images] Q1: fetching \"native New Zealand bird\"…"
+                },
+                {
+                    "time": "2026-07-09 20:56:13",
+                    "level": "INFO",
+                    "message": "[images] Q1: saved"
+                },
+                {
+                    "time": "2026-07-09 20:56:13",
+                    "level": "INFO",
+                    "message": "[images] Q2: fetching \"Mount Cook summit\"…"
+                },
+                {
+                    "time": "2026-07-09 20:56:15",
+                    "level": "INFO",
+                    "message": "[images] Q2: saved"
+                },
+                {
+                    "time": "2026-07-09 20:56:15",
+                    "level": "INFO",
+                    "message": "[images] Q3: fetching \"Australian river landscape\"…"
+                },
+                {
+                    "time": "2026-07-09 20:56:16",
+                    "level": "INFO",
+                    "message": "[images] Q3: saved"
+                },
+                {
+                    "time": "2026-07-09 20:56:16",
+                    "level": "INFO",
+                    "message": "[images] Q4: fetching \"map of Australia\"…"
+                },
+                {
+                    "time": "2026-07-09 20:56:16",
+                    "level": "INFO",
+                    "message": "[images] Q4: saved"
+                },
+                {
+                    "time": "2026-07-09 20:56:16",
+                    "level": "INFO",
+                    "message": "[images] Q5: fetching \"Rugby World Cup trophy\"…"
+                },
+                {
+                    "time": "2026-07-09 20:56:16",
+                    "level": "INFO",
+                    "message": "[images] Q5: saved"
+                },
+                {
+                    "time": "2026-07-09 20:56:16",
+                    "level": "INFO",
+                    "message": "[images] Q6: fetching \"FIFA World Cup football\"…"
+                },
+                {
+                    "time": "2026-07-09 20:56:17",
+                    "level": "INFO",
+                    "message": "[images] Q6: saved"
+                },
+                {
+                    "time": "2026-07-09 20:56:17",
+                    "level": "INFO",
+                    "message": "[images] Q7: fetching \"flooded streets\"…"
+                },
+                {
+                    "time": "2026-07-09 20:56:17",
+                    "level": "INFO",
+                    "message": "[images] Q7: saved"
+                },
+                {
+                    "time": "2026-07-09 20:56:17",
+                    "level": "INFO",
+                    "message": "[images] Q8: fetching \"prison officers standing together\"…"
+                },
+                {
+                    "time": "2026-07-09 20:56:18",
+                    "level": "INFO",
+                    "message": "[images] Q8: saved"
+                },
+                {
+                    "time": "2026-07-09 20:56:18",
+                    "level": "INFO",
+                    "message": "[images] Q9: fetching \"vibrant market Marrakech\"…"
+                },
+                {
+                    "time": "2026-07-09 20:56:19",
+                    "level": "INFO",
+                    "message": "[images] Q9: saved"
+                },
+                {
+                    "time": "2026-07-09 20:56:19",
+                    "level": "INFO",
+                    "message": "[images] Q10: fetching \"Incan ruins Machu Picchu\"…"
+                },
+                {
+                    "time": "2026-07-09 20:56:19",
+                    "level": "INFO",
+                    "message": "[images] Q10: saved"
+                },
+                {
+                    "time": "2026-07-09 20:56:19",
+                    "level": "INFO",
+                    "message": "[images] Q11: fetching \"historic peace treaty\"…"
+                },
+                {
+                    "time": "2026-07-09 20:56:19",
+                    "level": "INFO",
+                    "message": "[images] Q11: saved"
+                },
+                {
+                    "time": "2026-07-09 20:56:19",
+                    "level": "INFO",
+                    "message": "[images] Q12: fetching \"historical pandemic impact\"…"
+                },
+                {
+                    "time": "2026-07-09 20:56:20",
+                    "level": "INFO",
+                    "message": "[images] Q12: saved"
+                },
+                {
+                    "time": "2026-07-09 20:56:20",
+                    "level": "INFO",
+                    "message": "[images] Q13: fetching \"Philippines independence celebration\"…"
+                },
+                {
+                    "time": "2026-07-09 20:56:20",
+                    "level": "INFO",
+                    "message": "[images] Q13: saved"
+                },
+                {
+                    "time": "2026-07-09 20:56:20",
+                    "level": "INFO",
+                    "message": "[images] Q14: fetching \"Soviet Union leader during WWII\"…"
+                },
+                {
+                    "time": "2026-07-09 20:56:21",
+                    "level": "INFO",
+                    "message": "[images] Q14: saved"
+                },
+                {
+                    "time": "2026-07-09 20:56:21",
+                    "level": "INFO",
+                    "message": "[images] Q15: fetching \"signing treaty document\"…"
+                },
+                {
+                    "time": "2026-07-09 20:56:21",
+                    "level": "INFO",
+                    "message": "[images] Q15: saved"
+                },
+                {
+                    "time": "2026-07-09 20:56:21",
+                    "level": "INFO",
+                    "message": "[images] Preview images: 15\/15 saved"
+                }
+            ],
+            "stats": {
+                "categories_retried": 3,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 15
+            },
+            "questions": [
+                {
+                    "question": "Which of the following birds is known for being an iconic symbol of New Zealand, often associated with the country's wildlife?",
+                    "format": "mc",
+                    "image_query": "native New Zealand bird",
+                    "options": [
+                        {
+                            "text": "Kea",
+                            "correct": false
+                        },
+                        {
+                            "text": "Kiwi",
+                            "correct": true
+                        },
+                        {
+                            "text": "Kākāpō",
+                            "correct": false
+                        },
+                        {
+                            "text": "Takahe",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7e4c93c552.12384676\/1.jpg",
+                    "image_attribution": "Photo by Anastasia Yudin on Pexels"
+                },
+                {
+                    "question": "In which year was the first successful ascent of Mount Cook, New Zealand's highest peak?",
+                    "format": "mc",
+                    "image_query": "Mount Cook summit",
+                    "options": [
+                        {
+                            "text": "1864",
+                            "correct": true
+                        },
+                        {
+                            "text": "1887",
+                            "correct": false
+                        },
+                        {
+                            "text": "1900",
+                            "correct": false
+                        },
+                        {
+                            "text": "1920",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7e4c93c552.12384676\/2.jpg",
+                    "image_attribution": "Photo by Shashank Brahmavar on Pexels"
+                },
+                {
+                    "question": "Which of the following is the longest river in Australia?",
+                    "format": "mc",
+                    "image_query": "Australian river landscape",
+                    "options": [
+                        {
+                            "text": "Murray River",
+                            "correct": true
+                        },
+                        {
+                            "text": "Gascoyne River",
+                            "correct": false
+                        },
+                        {
+                            "text": "Lachlan River",
+                            "correct": false
+                        },
+                        {
+                            "text": "Swan River",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7e4c93c552.12384676\/3.jpg",
+                    "image_attribution": "Photo by Pixabay on Pexels"
+                },
+                {
+                    "question": "True or False: Australia is the only country that occupies an entire continent.",
+                    "format": "tf",
+                    "image_query": "map of Australia",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7e4c93c552.12384676\/4.jpg",
+                    "image_attribution": "Photo by Catarina Sousa on Pexels"
+                },
+                {
+                    "question": "In which year did the Australian men's national rugby team, the Wallabies, achieve their victory in the Rugby World Cup final against England?",
+                    "format": "mc",
+                    "image_query": "Rugby World Cup trophy",
+                    "options": [
+                        {
+                            "text": "1995",
+                            "correct": false
+                        },
+                        {
+                            "text": "2003",
+                            "correct": true
+                        },
+                        {
+                            "text": "2007",
+                            "correct": false
+                        },
+                        {
+                            "text": "2011",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7e4c93c552.12384676\/5.jpg",
+                    "image_attribution": "Photo by César O'neill on Pexels"
+                },
+                {
+                    "question": "In which year did the New Zealand national football team qualify for the FIFA World Cup held in South Africa?",
+                    "format": "mc",
+                    "image_query": "FIFA World Cup football",
+                    "options": [
+                        {
+                            "text": "2002",
+                            "correct": false
+                        },
+                        {
+                            "text": "2006",
+                            "correct": false
+                        },
+                        {
+                            "text": "2010",
+                            "correct": true
+                        },
+                        {
+                            "text": "2014",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7e4c93c552.12384676\/6.jpg",
+                    "image_attribution": "Photo by The Six on Pexels"
+                },
+                {
+                    "question": "What recent development has led to residents in Wairoa being warned to prepare for potential evacuation due to severe weather conditions?",
+                    "format": "mc",
+                    "image_query": "flooded streets",
+                    "options": [
+                        {
+                            "text": "Increased flooding risk",
+                            "correct": true
+                        },
+                        {
+                            "text": "Wildfire threats in the area",
+                            "correct": false
+                        },
+                        {
+                            "text": "Earthquake safety concerns",
+                            "correct": false
+                        },
+                        {
+                            "text": "Tsunami warnings issued",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7e4c93c552.12384676\/7.jpg",
+                    "image_attribution": "Photo by Connor Scott McManus on Pexels"
+                },
+                {
+                    "question": "Three corrections officers in the Northern Territory were stood down with pay due to an incident involving what unfortunate event?",
+                    "format": "mc",
+                    "image_query": "prison officers standing together",
+                    "options": [
+                        {
+                            "text": "Prisoner escape",
+                            "correct": true
+                        },
+                        {
+                            "text": "Staff misconduct",
+                            "correct": false
+                        },
+                        {
+                            "text": "Facility lockdown",
+                            "correct": false
+                        },
+                        {
+                            "text": "Security breach",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7e4c93c552.12384676\/8.jpg",
+                    "image_attribution": "Photo by RDNE Stock project on Pexels"
+                },
+                {
+                    "question": "The city of Marrakech, known for its historical medina and vibrant markets, is located in which country?",
+                    "format": "mc",
+                    "image_query": "vibrant market Marrakech",
+                    "options": [
+                        {
+                            "text": "Morocco",
+                            "correct": true
+                        },
+                        {
+                            "text": "Tunisia",
+                            "correct": false
+                        },
+                        {
+                            "text": "Algeria",
+                            "correct": false
+                        },
+                        {
+                            "text": "Egypt",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7e4c93c552.12384676\/9.jpg",
+                    "image_attribution": "Photo by Tom D'Arby on Pexels"
+                },
+                {
+                    "question": "The ancient city of Machu Picchu, famous for its Incan ruins, is located in which South American country?",
+                    "format": "mc",
+                    "image_query": "Incan ruins Machu Picchu",
+                    "options": [
+                        {
+                            "text": "Peru",
+                            "correct": true
+                        },
+                        {
+                            "text": "Brazil",
+                            "correct": false
+                        },
+                        {
+                            "text": "Chile",
+                            "correct": false
+                        },
+                        {
+                            "text": "Colombia",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7e4c93c552.12384676\/10.jpg",
+                    "image_attribution": "Photo by Joaquín Garduño on Pexels"
+                },
+                {
+                    "question": "Which treaty formally ended the Mexican-American War in 1848?",
+                    "format": "mc",
+                    "image_query": "historic peace treaty",
+                    "options": [
+                        {
+                            "text": "Treaty of Guadalupe Hidalgo",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Tijuana",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of San Antonio",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Santa Ana",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7e4c93c552.12384676\/11.jpg",
+                    "image_attribution": "Photo by Beate Vogl on Pexels"
+                },
+                {
+                    "question": "True or False: The Black Death pandemic occurred in Europe during the 14th century, leading to significant population decline.",
+                    "format": "tf",
+                    "image_query": "historical pandemic impact",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7e4c93c552.12384676\/12.jpg",
+                    "image_attribution": "Photo by Anton Uniqueton on Pexels"
+                },
+                {
+                    "question": "In which year was the declaration of independence of the Philippines from Spanish rule formally recognized by the United States?",
+                    "format": "mc",
+                    "image_query": "Philippines independence celebration",
+                    "options": [
+                        {
+                            "text": "1898",
+                            "correct": true
+                        },
+                        {
+                            "text": "1901",
+                            "correct": false
+                        },
+                        {
+                            "text": "1896",
+                            "correct": false
+                        },
+                        {
+                            "text": "1902",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7e4c93c552.12384676\/13.jpg",
+                    "image_attribution": "Photo by Denniz Futalan on Pexels"
+                },
+                {
+                    "question": "Which historical figure is known for leading the Soviet Union during World War II and played a pivotal role in the defeat of Nazi Germany?",
+                    "format": "mc",
+                    "image_query": "Soviet Union leader during WWII",
+                    "options": [
+                        {
+                            "text": "Leon Trotsky",
+                            "correct": false
+                        },
+                        {
+                            "text": "Nikita Khrushchev",
+                            "correct": false
+                        },
+                        {
+                            "text": "Joseph Stalin",
+                            "correct": true
+                        },
+                        {
+                            "text": "Vladimir Lenin",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7e4c93c552.12384676\/14.jpg",
+                    "image_attribution": "Photo by Михаил Крамор on Pexels"
+                },
+                {
+                    "question": "The Treaty of Versailles, signed in 1919, officially ended which of the following conflicts?",
+                    "format": "mc",
+                    "image_query": "signing treaty document",
+                    "options": [
+                        {
+                            "text": "World War I",
+                            "correct": true
+                        },
+                        {
+                            "text": "World War II",
+                            "correct": false
+                        },
+                        {
+                            "text": "The Vietnam War",
+                            "correct": false
+                        },
+                        {
+                            "text": "The Korean War",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7e4c93c552.12384676\/15.jpg",
+                    "image_attribution": "Photo by Graziele Rosa on Pexels"
+                }
+            ],
+            "saved_to": "logs\/qa\/20260709-225418-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260709-225418-summary.json"
+}

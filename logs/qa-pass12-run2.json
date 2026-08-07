@@ -1,0 +1,611 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-10",
+        "stamp": "20260710-224813",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": true,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-10",
+            "log": [
+                {
+                    "time": "2026-07-10 20:48:13",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-10 20:48:15",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:48:18",
+                    "level": "ERROR",
+                    "message": "[NZ Trivia] Attempt 1: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"New Zealand Star\" is hinted in the question text (\"Which of the following is a well-known New Zealand variety of apple?\")\n- question 1 image_query gives away the correct answer — \"New Zealand Star\" is hinted in image_query \"New Zealand apples\""
+                },
+                {
+                    "time": "2026-07-10 20:48:29",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-10 20:48:29",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:48:31",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 1: 1 violation(s):\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-10 20:48:33",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 2: 1 violation(s):\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-10 20:48:44",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-10 20:48:44",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:48:51",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 20:48:52",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-10 20:48:54",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-10 20:48:54",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:48:57",
+                    "level": "ERROR",
+                    "message": "[NZ Current Events] Attempt 1: 1 violation(s):\n- expected 1 question(s) for 'NZ Current Events', got: {\"questions\":[{\"question\":\"A recent inquest revealed that a midwife made a wrong decision regarding a woman who died during childbirth. What was the focus of this inquest?\",\"format\":\"mc\",\"image_query\":\"hospital maternity care\",\"options\":[{\"text\":\"Birth relocation decision\",\"correct\":true},{\"text\":\"Emergency response protocols\",\"correct\":false},{\"text\":\"Pain management techniques\",\"correct\":false},{\"text\":\"Postpartum care standards\",\"correct\":false}]},{\"question\":\"In Wairoa, a state of emergency was declared due to severe weather conditions. What specifically led to this emergency?\",\"format\":\"mc\",\"image_query\":\"flooded homes\",\"options\":[{\"text\":\"Evacuation of residents\",\"correct\":false},{\"text\":\"Excessive rainfall causing flooding\",\"correct\":true},{\"text\":\"Severe windstorm damage\",\"correct\":false},{\"text\":\"Earthquake aftershocks\",\"correct\":false}]},{\"question\":\"How many homes were reported to have been flooded as damage in Wairoa was assessed?\",\"format\":\"mc\",\"image_query\":\"damaged residential area\",\"options\":[{\"text\":\"Fifty homes\",\"correct\":false},{\"text\":\"Thirty homes\",\"correct\":false},{\"text\":\"Twenty homes\",\"correct\":true},{\"text\":\"Ten homes\",\"correct\":false}]}]}"
+                },
+                {
+                    "time": "2026-07-10 20:48:59",
+                    "level": "ERROR",
+                    "message": "[NZ Current Events] Attempt 2: 1 violation(s):\n- question 1 gives away its own answer — correct answer \"Shellfish biotoxin warning\" is hinted in the question text (\"A recent report highlighted concerns regarding the health of shellfish in parts of a coastal region. What is the reason for this warning?\")"
+                },
+                {
+                    "time": "2026-07-10 20:49:02",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-10 20:49:02",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:49:04",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-10 20:49:04",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:49:07",
+                    "level": "ERROR",
+                    "message": "[Geography] Attempt 1: 2 violation(s):\n- question 1 image_query gives away the correct answer — \"Peru\" is hinted in image_query \"Inca ruins Peru\"\n- question 1 image_query repeats option text \"Peru\""
+                },
+                {
+                    "time": "2026-07-10 20:49:17",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-10 20:49:17",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:49:19",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 1: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Vienna\" is hinted in the question text (\"Which treaty marked the end of the Napoleonic Wars and established a new balance of power in Europe?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Vienna\" is hinted in image_query \"European historical treaty\""
+                },
+                {
+                    "time": "2026-07-10 20:49:21",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 2: 1 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Vienna\" is hinted in the question text (\"Which treaty, signed in 1815, aimed to restore the balance of power in Europe after the Napoleonic Wars?\")"
+                },
+                {
+                    "time": "2026-07-10 20:49:23",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 3: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Guadalupe Hidalgo\" is hinted in the question text (\"Which treaty, signed in 1848, ended the Mexican-American War and ceded significant territories to the United States?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Guadalupe Hidalgo\" is hinted in image_query \"historic treaty signing\""
+                },
+                {
+                    "time": "2026-07-10 20:49:26",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 4: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Guadalupe Hidalgo\" is hinted in the question text (\"Which treaty, signed in 1848, formally concluded the conflict between the United States and Mexico?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Guadalupe Hidalgo\" is hinted in image_query \"historic treaty document\""
+                },
+                {
+                    "time": "2026-07-10 20:49:27",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 5: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Oregon Treaty\" is hinted in the question text (\"Which treaty, signed in 1846, determined the boundary between the United States and British North America at the 49th parallel?\")\n- question 1 image_query gives away the correct answer — \"Oregon Treaty\" is hinted in image_query \"historic border treaty\""
+                },
+                {
+                    "time": "2026-07-10 20:49:30",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 6: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Guadalupe Hidalgo\" is hinted in the question text (\"Which treaty, signed in 1848, formally concluded the conflict between the United States and Mexico?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Guadalupe Hidalgo\" is hinted in image_query \"historic treaty signing\""
+                },
+                {
+                    "time": "2026-07-10 20:49:32",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 7: 1 violation(s):\n- question 1 gives away its own answer — correct answer \"Oregon Treaty\" is hinted in the question text (\"Which treaty, signed in 1846, established the boundary between the United States and British North America at the 49th parallel?\")"
+                },
+                {
+                    "time": "2026-07-10 20:49:34",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 8: 1 violation(s):\n- question 1 gives away its own answer — correct answer \"Oregon Treaty\" is hinted in the question text (\"Which treaty, signed in 1846, resolved a territorial dispute between the US and Britain, establishing a boundary in North America?\")"
+                },
+                {
+                    "time": "2026-07-10 20:49:36",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 9: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Guadalupe Hidalgo\" is hinted in the question text (\"Which treaty, signed in 1848, resulted in the United States acquiring territories that would later become California, Nevada, and Utah?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Guadalupe Hidalgo\" is hinted in image_query \"historic treaty signing\""
+                },
+                {
+                    "time": "2026-07-10 20:49:38",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 10: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"Treaty of Guadalupe Hidalgo\" is hinted in the question text (\"Which treaty, signed in 1848, ended the conflict between the United States and Mexico, resulting in significant territorial changes?\")\n- question 1 image_query gives away the correct answer — \"Treaty of Guadalupe Hidalgo\" is hinted in image_query \"historic treaty document\""
+                },
+                {
+                    "time": "2026-07-10 20:49:38",
+                    "level": "ERROR",
+                    "message": "[History] All 10 attempts failed validation — accepting best attempt (1 violation(s)) (best effort)."
+                },
+                {
+                    "time": "2026-07-10 20:49:38",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-10 20:49:38",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-10 20:49:43",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 1: 2 violation(s):\n- question 1 gives away its own answer — correct answer \"The Legend of Zelda: Breath of the Wild\" is hinted in the question text (\"Which video game features a vast open world called Hyrule and a protagonist named Link, who must rescue Princess Zelda?\")\n- question 3 (category 'General Knowledge') is NZ\/AU-specific (matched \"australia\") — this category must be global content"
+                },
+                {
+                    "time": "2026-07-10 20:49:48",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 20:49:49",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-10 20:49:52",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 20:49:52",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-10 20:49:56",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-10 20:49:57",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-10 20:49:58",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                }
+            ],
+            "stats": {
+                "categories_retried": 5,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 0,
+                "category_cap_fallbacks": 1,
+                "category_emergency_fallbacks": 0,
+                "answer_corrections": 0
+            },
+            "questions": [
+                {
+                    "question": "Which of the following is a notable type of apple variety cultivated in New Zealand?",
+                    "format": "mc",
+                    "image_query": "apple orchard",
+                    "options": [
+                        {
+                            "text": "Royal Gala",
+                            "correct": false
+                        },
+                        {
+                            "text": "Jazz",
+                            "correct": true
+                        },
+                        {
+                            "text": "Granny Smith",
+                            "correct": false
+                        },
+                        {
+                            "text": "Red Delicious",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1
+                },
+                {
+                    "question": "Which of the following animals is known for its unique nocturnal habits and live in New Zealand's forests?",
+                    "format": "mc",
+                    "image_query": "nocturnal wildlife",
+                    "options": [
+                        {
+                            "text": "Kiwi",
+                            "correct": true
+                        },
+                        {
+                            "text": "Kea",
+                            "correct": false
+                        },
+                        {
+                            "text": "Weka",
+                            "correct": false
+                        },
+                        {
+                            "text": "Takahe",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2
+                },
+                {
+                    "question": "Which famous Australian animal is known for its remarkable ability to jump long distances?",
+                    "format": "mc",
+                    "image_query": "Australian wildlife",
+                    "options": [
+                        {
+                            "text": "Kangaroo",
+                            "correct": true
+                        },
+                        {
+                            "text": "Dingo",
+                            "correct": false
+                        },
+                        {
+                            "text": "Koala",
+                            "correct": false
+                        },
+                        {
+                            "text": "Wallaby",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3
+                },
+                {
+                    "question": "Which Australian state is known for being the largest producer of wine in the country?",
+                    "format": "mc",
+                    "image_query": "vineyards Australia",
+                    "options": [
+                        {
+                            "text": "Victoria",
+                            "correct": true
+                        },
+                        {
+                            "text": "Queensland",
+                            "correct": false
+                        },
+                        {
+                            "text": "Western Australia",
+                            "correct": false
+                        },
+                        {
+                            "text": "South Australia",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4
+                },
+                {
+                    "question": "Which NRL team is known for their blue and gold colours?",
+                    "format": "mc",
+                    "image_query": "NRL team colours",
+                    "options": [
+                        {
+                            "text": "Canberra Raiders",
+                            "correct": false
+                        },
+                        {
+                            "text": "Parramatta Eels",
+                            "correct": true
+                        },
+                        {
+                            "text": "Melbourne Storm",
+                            "correct": false
+                        },
+                        {
+                            "text": "Gold Coast Titans",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5
+                },
+                {
+                    "question": "In which year was the Rugby World Cup held in New Zealand?",
+                    "format": "mc",
+                    "image_query": "Rugby World Cup",
+                    "options": [
+                        {
+                            "text": "2007",
+                            "correct": false
+                        },
+                        {
+                            "text": "2011",
+                            "correct": true
+                        },
+                        {
+                            "text": "2015",
+                            "correct": false
+                        },
+                        {
+                            "text": "2019",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6
+                },
+                {
+                    "question": "What was revealed as the most beloved song in New Zealand according to a recent survey?",
+                    "format": "mc",
+                    "image_query": "musical performance",
+                    "options": [
+                        {
+                            "text": "How Bizarre",
+                            "correct": false
+                        },
+                        {
+                            "text": "Proud Mary",
+                            "correct": false
+                        },
+                        {
+                            "text": "Waiata 100",
+                            "correct": true
+                        },
+                        {
+                            "text": "Hallelujah",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7
+                },
+                {
+                    "question": "The family of which missing woman from Toowoomba is expressing fears about her fate?",
+                    "format": "mc",
+                    "image_query": "family concern",
+                    "options": [
+                        {
+                            "text": "Jessica Smith",
+                            "correct": false
+                        },
+                        {
+                            "text": "Emily Johnson",
+                            "correct": false
+                        },
+                        {
+                            "text": "Sarah Thompson",
+                            "correct": true
+                        },
+                        {
+                            "text": "Laura White",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8
+                },
+                {
+                    "question": "Which of the following countries is home to the ancient site known for its stunning high-altitude ruins and was once the center of the Inca Empire?",
+                    "format": "mc",
+                    "image_query": "ancient stone city",
+                    "options": [
+                        {
+                            "text": "Chile",
+                            "correct": false
+                        },
+                        {
+                            "text": "Ecuador",
+                            "correct": false
+                        },
+                        {
+                            "text": "Peru",
+                            "correct": true
+                        },
+                        {
+                            "text": "Argentina",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9
+                },
+                {
+                    "question": "Which country is recognized for its unique structure, the Colosseum, an ancient amphitheater that hosted various public spectacles?",
+                    "format": "mc",
+                    "image_query": "ancient amphitheater",
+                    "options": [
+                        {
+                            "text": "Greece",
+                            "correct": false
+                        },
+                        {
+                            "text": "Italy",
+                            "correct": true
+                        },
+                        {
+                            "text": "Spain",
+                            "correct": false
+                        },
+                        {
+                            "text": "Egypt",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10
+                },
+                {
+                    "question": "Which treaty, signed in 1815, aimed to restore the balance of power in Europe after the Napoleonic Wars?",
+                    "format": "mc",
+                    "image_query": "historical European map",
+                    "options": [
+                        {
+                            "text": "Treaty of Utrecht",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Versailles",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Ghent",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Vienna",
+                            "correct": true
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11
+                },
+                {
+                    "question": "True or False: The Spanish Civil War began in 1936 and was largely a conflict between the Republicans and Nationalists.",
+                    "format": "tf",
+                    "image_query": "historical conflict scene",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12
+                },
+                {
+                    "question": "Which video game, released in 2017, allows players to explore a vast open world filled with puzzles, combat, and adventure in a fantasy setting?",
+                    "format": "mc",
+                    "image_query": "fantasy game landscape",
+                    "options": [
+                        {
+                            "text": "The Legend of Zelda: Breath of the Wild",
+                            "correct": true
+                        },
+                        {
+                            "text": "Dark Souls III",
+                            "correct": false
+                        },
+                        {
+                            "text": "Final Fantasy XV",
+                            "correct": false
+                        },
+                        {
+                            "text": "Elden Ring",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13
+                },
+                {
+                    "question": "Which gas is most abundant in the Earth's atmosphere, making up approximately 78% of it?",
+                    "format": "mc",
+                    "image_query": "earth atmosphere layers",
+                    "options": [
+                        {
+                            "text": "Oxygen",
+                            "correct": false
+                        },
+                        {
+                            "text": "Carbon dioxide",
+                            "correct": false
+                        },
+                        {
+                            "text": "Nitrogen",
+                            "correct": true
+                        },
+                        {
+                            "text": "Argon",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14
+                },
+                {
+                    "question": "True or False: The Great Wall of China was initially built to protect against invasions from the Mongol Empire.",
+                    "format": "tf",
+                    "image_query": "ancient wall structure",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15
+                }
+            ],
+            "warnings": [
+                "One or more categories accepted the last attempt after validation retries were exhausted."
+            ],
+            "saved_to": "logs\/qa\/20260710-224813-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260710-224813-summary.json"
+}

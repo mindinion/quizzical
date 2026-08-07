@@ -1,0 +1,112 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-09",
+        "stamp": "20260709-233545",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 0,
+        "failed": 1
+    },
+    "runs": [
+        {
+            "ok": false,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-09",
+            "log": [
+                {
+                    "time": "2026-07-09 21:35:45",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 21:35:47",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:35:50",
+                    "level": "ERROR",
+                    "message": "[NZ Trivia] Attempt 1: 1 violation(s):\n- question 1 (category 'NZ Trivia') has no New Zealand topic — NZ Trivia must mention NZ places, people, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:35:58",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:35:58",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:36:00",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 1: 1 violation(s):\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:36:03",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 2: 1 violation(s):\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:36:08",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 3: 1 violation(s):\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:36:10",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 4: 1 violation(s):\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:36:12",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 5: 1 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:36:15",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 6: 1 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:36:17",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 7: 3 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture\n- question 1 image_query gives away the correct answer — \"Kangaroo\" is hinted in image_query \"kangaroo jumping\"\n- question 1 image_query repeats option text \"Kangaroo\""
+                },
+                {
+                    "time": "2026-07-09 21:36:19",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 8: 4 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture\n- question 2 gives away its own answer — correct answer \"Australia Day\" is hinted in the question text (\"What is the name of the Australian holiday celebrated to commemorate the landing of the First Fleet at Port Jackson in 1788?\")\n- question 2 image_query gives away the correct answer — \"Australia Day\" is hinted in image_query \"Australia Day celebration\"\n- question 2 image_query repeats option text \"Australia Day\""
+                },
+                {
+                    "time": "2026-07-09 21:36:21",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 9: 1 violation(s):\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 21:36:24",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 10: 3 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture\n- question 1 image_query gives away the correct answer — \"Kookaburra\" is hinted in image_query \"laughing kookaburra\"\n- question 1 image_query repeats option text \"Kookaburra\""
+                },
+                {
+                    "time": "2026-07-09 21:36:24",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] All 10 attempts failed validation — giving up."
+                }
+            ],
+            "stats": {
+                "categories_retried": 1,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 0,
+                "final_gate_quiz_attempts": 1,
+                "final_gate_rejections": 0
+            },
+            "error": "Failed to generate 'Australia Trivia' after 10 attempts — check logs\/generate-quiz.log",
+            "saved_to": "logs\/qa\/20260709-233545-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260709-233545-summary.json"
+}

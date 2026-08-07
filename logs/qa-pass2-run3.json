@@ -1,0 +1,815 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-09",
+        "stamp": "20260709-225633",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-09",
+            "log": [
+                {
+                    "time": "2026-07-09 20:56:33",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 20:56:33",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:56:43",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 20:56:43",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:56:46",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 1: 1 violation(s):\n- question 1 (\"The Australian national symbol known as the Golden Wattle is primarily known for which of the following characteristics?\") matches banned pattern: national symbol\/animal\/bird cliché — pick a different, less obvious question"
+                },
+                {
+                    "time": "2026-07-09 20:56:53",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 20:56:53",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:57:03",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 20:57:03",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:57:07",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 20:57:07",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:57:10",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 20:57:10",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:57:13",
+                    "level": "ERROR",
+                    "message": "[Geography] Attempt 1: 1 violation(s):\n- question 1 gives away its own answer — correct answer \"True\" is hinted in the question text (\"The city of Istanbul is known for being located on two continents, Europe and Asia. True or False: It was previously known as Byzantium and Constantinople.\")"
+                },
+                {
+                    "time": "2026-07-09 20:57:21",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 20:57:21",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:57:27",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:57:28",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:57:33",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 20:57:33",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 20:57:41",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:57:47",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:57:48",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:57:49",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 1: 2 violation(s):\n- question 1 [fact-check premise]: question text rejected — The treaty that officially ended World War II between Japan and the Allied Powers was the San Francisco Peace Treaty, signed in 1951, not a treaty signed in 1947.\n- question 2 [fact-check]: marked answer \"Lithuania\" rejected — Lithuania adopted the Euro on January 1, 2015, but the last country to adopt it was Croatia on January 1, 2023."
+                },
+                {
+                    "time": "2026-07-09 20:57:54",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:58:00",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:58:01",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:58:01",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 2: 1 violation(s):\n- question 1 [fact-check premise]: question text rejected — The treaty that formally ended the conflict between the United States and Great Britain in 1814 is not mentioned in the snippets."
+                },
+                {
+                    "time": "2026-07-09 20:58:04",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 3: 1 violation(s):\n- question 2 (\"Which of the following countries was the first to grant women the right to vote in national elections?\") matches superlative pattern: first-to-do-something superlative — embeds disputed \"first\" claims"
+                },
+                {
+                    "time": "2026-07-09 20:58:15",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:58:16",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:58:17",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 4: 2 violation(s):\n- question 1 [fact-check distractor]: The wrong option '1946' is contradicted by snippets stating the first session was in 1946, but the Universal Declaration of Human Rights was adopted in 1948.\n- question 2 [fact-check distractor]: wrong option '1792' is marked correct but snippets state 'Proclamation of the French First Republic in September 1792'."
+                },
+                {
+                    "time": "2026-07-09 20:58:28",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:58:29",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 5: 2 violation(s):\n- question 1 [fact-check distractor]: wrong option '1945' is correct according to snippets stating the UN was established in 1945, contradicting the marked answer '1948'.\n- question 3 [fact-check premise]: question text rejected — The Constitution of India was adopted on November 26, 1949, not January 26, 1950."
+                },
+                {
+                    "time": "2026-07-09 20:58:38",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:58:39",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:58:40",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 6: 1 violation(s):\n- question 2 [fact-check distractor]: wrong option '1945' is correct according to snippet 2 which states the declaration was adopted in 1948, contradicting the marked answer."
+                },
+                {
+                    "time": "2026-07-09 20:58:51",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:58:52",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:58:53",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 7: 1 violation(s):\n- question 2 [fact-check distractor]: wrong option '1945' is in the list, but the Universal Declaration of Human Rights was adopted in '1948'."
+                },
+                {
+                    "time": "2026-07-09 20:59:01",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:59:02",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:59:03",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 8: 2 violation(s):\n- question 1 [fact-check distractor]: wrong option 'Treaty of Versailles' is contradicted by snippet 2 stating 'Treaty of Paris ends Spanish-American War'.\n- question 2 [fact-check distractor]: wrong option '1948' is correct; snippets do not mention the adoption year."
+                },
+                {
+                    "time": "2026-07-09 20:59:07",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:59:08",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:59:13",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 20:59:13",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 20:59:14",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 20:59:14",
+                    "level": "INFO",
+                    "message": "[images] Q1: fetching \"historical document signing\"…"
+                },
+                {
+                    "time": "2026-07-09 20:59:14",
+                    "level": "INFO",
+                    "message": "[images] Q1: saved"
+                },
+                {
+                    "time": "2026-07-09 20:59:14",
+                    "level": "INFO",
+                    "message": "[images] Q2: fetching \"flightless bird\"…"
+                },
+                {
+                    "time": "2026-07-09 20:59:15",
+                    "level": "INFO",
+                    "message": "[images] Q2: saved"
+                },
+                {
+                    "time": "2026-07-09 20:59:15",
+                    "level": "INFO",
+                    "message": "[images] Q3: fetching \"venomous Australian animal\"…"
+                },
+                {
+                    "time": "2026-07-09 20:59:16",
+                    "level": "INFO",
+                    "message": "[images] Q3: saved"
+                },
+                {
+                    "time": "2026-07-09 20:59:16",
+                    "level": "INFO",
+                    "message": "[images] Q4: fetching \"recognition of indigenous peoples\"…"
+                },
+                {
+                    "time": "2026-07-09 20:59:17",
+                    "level": "INFO",
+                    "message": "[images] Q4: saved"
+                },
+                {
+                    "time": "2026-07-09 20:59:17",
+                    "level": "INFO",
+                    "message": "[images] Q5: fetching \"rugby world cup\"…"
+                },
+                {
+                    "time": "2026-07-09 20:59:17",
+                    "level": "INFO",
+                    "message": "[images] Q5: saved"
+                },
+                {
+                    "time": "2026-07-09 20:59:17",
+                    "level": "INFO",
+                    "message": "[images] Q6: fetching \"Australian football team\"…"
+                },
+                {
+                    "time": "2026-07-09 20:59:17",
+                    "level": "INFO",
+                    "message": "[images] Q6: saved"
+                },
+                {
+                    "time": "2026-07-09 20:59:17",
+                    "level": "INFO",
+                    "message": "[images] Q7: fetching \"flooded neighborhood\"…"
+                },
+                {
+                    "time": "2026-07-09 20:59:19",
+                    "level": "INFO",
+                    "message": "[images] Q7: saved"
+                },
+                {
+                    "time": "2026-07-09 20:59:19",
+                    "level": "INFO",
+                    "message": "[images] Q8: fetching \"prison cell interior\"…"
+                },
+                {
+                    "time": "2026-07-09 20:59:20",
+                    "level": "INFO",
+                    "message": "[images] Q8: saved"
+                },
+                {
+                    "time": "2026-07-09 20:59:20",
+                    "level": "INFO",
+                    "message": "[images] Q9: fetching \"saffron fields\"…"
+                },
+                {
+                    "time": "2026-07-09 20:59:21",
+                    "level": "INFO",
+                    "message": "[images] Q9: saved"
+                },
+                {
+                    "time": "2026-07-09 20:59:21",
+                    "level": "INFO",
+                    "message": "[images] Q10: fetching \"Timbuktu ancient city\"…"
+                },
+                {
+                    "time": "2026-07-09 20:59:22",
+                    "level": "INFO",
+                    "message": "[images] Q10: saved"
+                },
+                {
+                    "time": "2026-07-09 20:59:22",
+                    "level": "INFO",
+                    "message": "[images] Q11: fetching \"historic treaty document\"…"
+                },
+                {
+                    "time": "2026-07-09 20:59:22",
+                    "level": "INFO",
+                    "message": "[images] Q11: saved"
+                },
+                {
+                    "time": "2026-07-09 20:59:22",
+                    "level": "INFO",
+                    "message": "[images] Q12: fetching \"ancient stone artifact\"…"
+                },
+                {
+                    "time": "2026-07-09 20:59:23",
+                    "level": "INFO",
+                    "message": "[images] Q12: saved"
+                },
+                {
+                    "time": "2026-07-09 20:59:23",
+                    "level": "INFO",
+                    "message": "[images] Q13: fetching \"historic treaty document\"…"
+                },
+                {
+                    "time": "2026-07-09 20:59:23",
+                    "level": "INFO",
+                    "message": "[images] Q13: saved"
+                },
+                {
+                    "time": "2026-07-09 20:59:23",
+                    "level": "INFO",
+                    "message": "[images] Q14: fetching \"children's rights\"…"
+                },
+                {
+                    "time": "2026-07-09 20:59:24",
+                    "level": "INFO",
+                    "message": "[images] Q14: saved"
+                },
+                {
+                    "time": "2026-07-09 20:59:24",
+                    "level": "INFO",
+                    "message": "[images] Q15: fetching \"historical organization\"…"
+                },
+                {
+                    "time": "2026-07-09 20:59:25",
+                    "level": "INFO",
+                    "message": "[images] Q15: saved"
+                },
+                {
+                    "time": "2026-07-09 20:59:25",
+                    "level": "INFO",
+                    "message": "[images] Preview images: 15\/15 saved"
+                }
+            ],
+            "stats": {
+                "categories_retried": 3,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 15
+            },
+            "questions": [
+                {
+                    "question": "In which year did New Zealand sign the Treaty of Waitangi?",
+                    "format": "mc",
+                    "image_query": "historical document signing",
+                    "options": [
+                        {
+                            "text": "1840",
+                            "correct": true
+                        },
+                        {
+                            "text": "1852",
+                            "correct": false
+                        },
+                        {
+                            "text": "1776",
+                            "correct": false
+                        },
+                        {
+                            "text": "1890",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7f02cb9e16.94532997\/1.jpg",
+                    "image_attribution": "Photo by Graziele Rosa on Pexels"
+                },
+                {
+                    "question": "Which iconic bird is known for its inability to fly and is native to New Zealand?",
+                    "format": "mc",
+                    "image_query": "flightless bird",
+                    "options": [
+                        {
+                            "text": "Kakapo",
+                            "correct": true
+                        },
+                        {
+                            "text": "Penguin",
+                            "correct": false
+                        },
+                        {
+                            "text": "Kiwi-Hawk",
+                            "correct": false
+                        },
+                        {
+                            "text": "Eagle",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7f02cb9e16.94532997\/2.jpg",
+                    "image_attribution": "Photo by Mehmet Turgut  Kirkgoz on Pexels"
+                },
+                {
+                    "question": "Which Australian animal is known for its unique ability to produce venom, with males having spurs on their hind legs?",
+                    "format": "mc",
+                    "image_query": "venomous Australian animal",
+                    "options": [
+                        {
+                            "text": "Platypus",
+                            "correct": true
+                        },
+                        {
+                            "text": "Quokka",
+                            "correct": false
+                        },
+                        {
+                            "text": "Emu",
+                            "correct": false
+                        },
+                        {
+                            "text": "Wallaby",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7f02cb9e16.94532997\/3.jpg",
+                    "image_attribution": "Photo by Meghav Gandhi on Pexels"
+                },
+                {
+                    "question": "In which year did the Australian government officially recognize the Aboriginal and Torres Strait Islander peoples as the original inhabitants of Australia?",
+                    "format": "mc",
+                    "image_query": "recognition of indigenous peoples",
+                    "options": [
+                        {
+                            "text": "1967",
+                            "correct": true
+                        },
+                        {
+                            "text": "1975",
+                            "correct": false
+                        },
+                        {
+                            "text": "1988",
+                            "correct": false
+                        },
+                        {
+                            "text": "1992",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7f02cb9e16.94532997\/4.jpg",
+                    "image_attribution": "Photo by Sóc Năng Động on Pexels"
+                },
+                {
+                    "question": "In which year was the Rugby World Cup hosted in England, marking a significant tournament in rugby history?",
+                    "format": "mc",
+                    "image_query": "rugby world cup",
+                    "options": [
+                        {
+                            "text": "2015",
+                            "correct": true
+                        },
+                        {
+                            "text": "2011",
+                            "correct": false
+                        },
+                        {
+                            "text": "2007",
+                            "correct": false
+                        },
+                        {
+                            "text": "2019",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7f02cb9e16.94532997\/5.jpg",
+                    "image_attribution": "Photo by Eric SAINT-MARTIN on Pexels"
+                },
+                {
+                    "question": "Which Australian football club is known for its distinctive yellow and black striped uniforms?",
+                    "format": "mc",
+                    "image_query": "Australian football team",
+                    "options": [
+                        {
+                            "text": "Richmond Tigers",
+                            "correct": true
+                        },
+                        {
+                            "text": "Carlton Blues",
+                            "correct": false
+                        },
+                        {
+                            "text": "Collingwood Magpies",
+                            "correct": false
+                        },
+                        {
+                            "text": "West Coast Eagles",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7f02cb9e16.94532997\/6.jpg",
+                    "image_attribution": "Photo by Franco Monsalvo on Pexels"
+                },
+                {
+                    "question": "Severe weather has recently prompted warnings for residents in which New Zealand location to be ready to evacuate due to potential flooding?",
+                    "format": "mc",
+                    "image_query": "flooded neighborhood",
+                    "options": [
+                        {
+                            "text": "Wairoa",
+                            "correct": true
+                        },
+                        {
+                            "text": "Napier",
+                            "correct": false
+                        },
+                        {
+                            "text": "Timaru",
+                            "correct": false
+                        },
+                        {
+                            "text": "Blenheim",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7f02cb9e16.94532997\/7.jpg",
+                    "image_attribution": "Photo by Tom Fisk on Pexels"
+                },
+                {
+                    "question": "Three corrections officers were stood down with pay in the Northern Territory over a situation involving a prisoner escape.  What recent narrative has emerged surrounding this incident?",
+                    "format": "mc",
+                    "image_query": "prison cell interior",
+                    "options": [
+                        {
+                            "text": "Increased scrutiny on prison management",
+                            "correct": true
+                        },
+                        {
+                            "text": "A rise in prison population",
+                            "correct": false
+                        },
+                        {
+                            "text": "A new film about prison life",
+                            "correct": false
+                        },
+                        {
+                            "text": "Calls for immediate reforms in sentencing",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7f02cb9e16.94532997\/8.jpg",
+                    "image_attribution": "Photo by Ron Lach on Pexels"
+                },
+                {
+                    "question": "Which of the following countries is known for its historical production of the spice called saffron, derived from the Crocus sativus flower?",
+                    "format": "mc",
+                    "image_query": "saffron fields",
+                    "options": [
+                        {
+                            "text": "Spain",
+                            "correct": false
+                        },
+                        {
+                            "text": "Iran",
+                            "correct": true
+                        },
+                        {
+                            "text": "Italy",
+                            "correct": false
+                        },
+                        {
+                            "text": "Morocco",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7f02cb9e16.94532997\/9.jpg",
+                    "image_attribution": "Photo by Amjed  wani on Pexels"
+                },
+                {
+                    "question": "In which year was the city of Timbuktu designated a UNESCO World Heritage Site due to its historical significance?",
+                    "format": "mc",
+                    "image_query": "Timbuktu ancient city",
+                    "options": [
+                        {
+                            "text": "1988",
+                            "correct": true
+                        },
+                        {
+                            "text": "1991",
+                            "correct": false
+                        },
+                        {
+                            "text": "2002",
+                            "correct": false
+                        },
+                        {
+                            "text": "1975",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7f02cb9e16.94532997\/10.jpg",
+                    "image_attribution": "Photo by Mike van Schoonderwalt on Pexels"
+                },
+                {
+                    "question": "Which treaty formally ended the American Revolutionary War in 1783?",
+                    "format": "mc",
+                    "image_query": "historic treaty document",
+                    "options": [
+                        {
+                            "text": "Treaty of Ghent",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Utrecht",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Versailles",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7f02cb9e16.94532997\/11.jpg",
+                    "image_attribution": "Photo by Donatello Trisolino on Pexels"
+                },
+                {
+                    "question": "True or False: The Rosetta Stone features inscriptions in three scripts, including Greek, which helped in deciphering Egyptian hieroglyphs.",
+                    "format": "tf",
+                    "image_query": "ancient stone artifact",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7f02cb9e16.94532997\/12.jpg",
+                    "image_attribution": "Photo by Joshuan Barboza on Pexels"
+                },
+                {
+                    "question": "Which treaty formally ended the Spanish-American War in 1898?",
+                    "format": "mc",
+                    "image_query": "historic treaty document",
+                    "options": [
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Versailles",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Ghent",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Utrecht",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7f02cb9e16.94532997\/13.jpg",
+                    "image_attribution": "Photo by Donatello Trisolino on Pexels"
+                },
+                {
+                    "question": "In which year did the United Nations General Assembly adopt the Convention on the Rights of the Child, a crucial document for the protection of children's rights?",
+                    "format": "mc",
+                    "image_query": "children's rights",
+                    "options": [
+                        {
+                            "text": "1989",
+                            "correct": true
+                        },
+                        {
+                            "text": "1991",
+                            "correct": false
+                        },
+                        {
+                            "text": "1985",
+                            "correct": false
+                        },
+                        {
+                            "text": "1995",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7f02cb9e16.94532997\/14.jpg",
+                    "image_attribution": "Photo by Ahmed akacha on Pexels"
+                },
+                {
+                    "question": "True or False: The League of Nations was established after World War I and aimed to prevent future conflicts through collective security.",
+                    "format": "tf",
+                    "image_query": "historical organization",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f7f02cb9e16.94532997\/15.jpg",
+                    "image_attribution": "Photo by MART  PRODUCTION on Pexels"
+                }
+            ],
+            "saved_to": "logs\/qa\/20260709-225633-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260709-225633-summary.json"
+}

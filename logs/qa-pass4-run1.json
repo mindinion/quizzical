@@ -1,0 +1,705 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-09",
+        "stamp": "20260709-231552",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-09",
+            "log": [
+                {
+                    "time": "2026-07-09 21:15:52",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 21:15:52",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:16:03",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:16:03",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:16:06",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 1: 1 violation(s):\n- question 1 gives away its own answer — correct answer \"2,300 kilometers\" is hinted in the question text (\"The Great Barrier Reef, known for its vibrant marine life, spans which approximate length in kilometers?\")"
+                },
+                {
+                    "time": "2026-07-09 21:16:17",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:16:17",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:16:20",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 1: 1 violation(s):\n- question 1 (\"In which year did the Australian national rugby league team, known as the Kangaroos, win their first Rugby League World Cup?\") matches superlative pattern: first-at-tournament superlative — ask about a specific year or edition instead"
+                },
+                {
+                    "time": "2026-07-09 21:16:26",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:16:27",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:16:28",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 21:16:28",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:16:31",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:16:31",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:16:33",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:16:33",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:16:40",
+                    "level": "INFO",
+                    "message": "[Geography] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:16:41",
+                    "level": "INFO",
+                    "message": "[Geography] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:16:41",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 21:16:41",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:16:44",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 1: 2 violation(s):\n- question 2 image_query gives away the correct answer — \"Korean War\" is hinted in image_query \"Korean War memorial\"\n- question 2 image_query repeats option text \"Korean War\""
+                },
+                {
+                    "time": "2026-07-09 21:16:51",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:16:52",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:16:53",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 21:16:53",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:17:07",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 21:17:07",
+                    "level": "INFO",
+                    "message": "[images] Q1: fetching \"constitutional convention meeting\"…"
+                },
+                {
+                    "time": "2026-07-09 21:17:08",
+                    "level": "INFO",
+                    "message": "[images] Q1: saved"
+                },
+                {
+                    "time": "2026-07-09 21:17:08",
+                    "level": "INFO",
+                    "message": "[images] Q2: fetching \"national park landscape\"…"
+                },
+                {
+                    "time": "2026-07-09 21:17:09",
+                    "level": "INFO",
+                    "message": "[images] Q2: saved"
+                },
+                {
+                    "time": "2026-07-09 21:17:09",
+                    "level": "INFO",
+                    "message": "[images] Q3: fetching \"coral reef underwater\"…"
+                },
+                {
+                    "time": "2026-07-09 21:17:09",
+                    "level": "INFO",
+                    "message": "[images] Q3: saved"
+                },
+                {
+                    "time": "2026-07-09 21:17:09",
+                    "level": "INFO",
+                    "message": "[images] Q4: fetching \"fruit orchard\"…"
+                },
+                {
+                    "time": "2026-07-09 21:17:09",
+                    "level": "INFO",
+                    "message": "[images] Q4: saved"
+                },
+                {
+                    "time": "2026-07-09 21:17:09",
+                    "level": "INFO",
+                    "message": "[images] Q5: fetching \"rugby league cup\"…"
+                },
+                {
+                    "time": "2026-07-09 21:17:10",
+                    "level": "INFO",
+                    "message": "[images] Q5: saved"
+                },
+                {
+                    "time": "2026-07-09 21:17:10",
+                    "level": "INFO",
+                    "message": "[images] Q6: fetching \"cricket team uniform\"…"
+                },
+                {
+                    "time": "2026-07-09 21:17:11",
+                    "level": "INFO",
+                    "message": "[images] Q6: saved"
+                },
+                {
+                    "time": "2026-07-09 21:17:11",
+                    "level": "INFO",
+                    "message": "[images] Q7: fetching \"emergency response\"…"
+                },
+                {
+                    "time": "2026-07-09 21:17:11",
+                    "level": "INFO",
+                    "message": "[images] Q7: saved"
+                },
+                {
+                    "time": "2026-07-09 21:17:11",
+                    "level": "INFO",
+                    "message": "[images] Q8: fetching \"prison escape scene\"…"
+                },
+                {
+                    "time": "2026-07-09 21:17:12",
+                    "level": "INFO",
+                    "message": "[images] Q8: saved"
+                },
+                {
+                    "time": "2026-07-09 21:17:12",
+                    "level": "INFO",
+                    "message": "[images] Q9: fetching \"blue buildings Chefchaouen\"…"
+                },
+                {
+                    "time": "2026-07-09 21:17:13",
+                    "level": "INFO",
+                    "message": "[images] Q9: saved"
+                },
+                {
+                    "time": "2026-07-09 21:17:13",
+                    "level": "INFO",
+                    "message": "[images] Q10: fetching \"Great Wall of China\"…"
+                },
+                {
+                    "time": "2026-07-09 21:17:13",
+                    "level": "INFO",
+                    "message": "[images] Q10: saved"
+                },
+                {
+                    "time": "2026-07-09 21:17:13",
+                    "level": "INFO",
+                    "message": "[images] Q11: fetching \"historical treaty signing\"…"
+                },
+                {
+                    "time": "2026-07-09 21:17:13",
+                    "level": "INFO",
+                    "message": "[images] Q11: saved"
+                },
+                {
+                    "time": "2026-07-09 21:17:13",
+                    "level": "INFO",
+                    "message": "[images] Q12: fetching \"military memorial\"…"
+                },
+                {
+                    "time": "2026-07-09 21:17:14",
+                    "level": "INFO",
+                    "message": "[images] Q12: saved"
+                },
+                {
+                    "time": "2026-07-09 21:17:14",
+                    "level": "INFO",
+                    "message": "[images] Q13: fetching \"historic treaty document\"…"
+                },
+                {
+                    "time": "2026-07-09 21:17:14",
+                    "level": "INFO",
+                    "message": "[images] Q13: saved"
+                },
+                {
+                    "time": "2026-07-09 21:17:14",
+                    "level": "INFO",
+                    "message": "[images] Q14: fetching \"ancient ruins of Greece\"…"
+                },
+                {
+                    "time": "2026-07-09 21:17:15",
+                    "level": "INFO",
+                    "message": "[images] Q14: saved"
+                },
+                {
+                    "time": "2026-07-09 21:17:15",
+                    "level": "INFO",
+                    "message": "[images] Q15: fetching \"Berlin Wall history\"…"
+                },
+                {
+                    "time": "2026-07-09 21:17:15",
+                    "level": "INFO",
+                    "message": "[images] Q15: saved"
+                },
+                {
+                    "time": "2026-07-09 21:17:15",
+                    "level": "INFO",
+                    "message": "[images] Preview images: 15\/15 saved"
+                }
+            ],
+            "stats": {
+                "categories_retried": 3,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 15
+            },
+            "questions": [
+                {
+                    "question": "In which year was the first New Zealand constitutional convention held, which aimed to draft a constitution for self-governance?",
+                    "format": "mc",
+                    "image_query": "constitutional convention meeting",
+                    "options": [
+                        {
+                            "text": "1857",
+                            "correct": true
+                        },
+                        {
+                            "text": "1865",
+                            "correct": false
+                        },
+                        {
+                            "text": "1870",
+                            "correct": false
+                        },
+                        {
+                            "text": "1880",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8333c00504.14082433\/1.jpg",
+                    "image_attribution": "Photo by Chris F on Pexels"
+                },
+                {
+                    "question": "In which year did the New Zealand government introduce the legislation allowing for the establishment of the country's first national park?",
+                    "format": "mc",
+                    "image_query": "national park landscape",
+                    "options": [
+                        {
+                            "text": "1952",
+                            "correct": false
+                        },
+                        {
+                            "text": "1975",
+                            "correct": true
+                        },
+                        {
+                            "text": "1964",
+                            "correct": false
+                        },
+                        {
+                            "text": "1981",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8333c00504.14082433\/2.jpg",
+                    "image_attribution": "Photo by Thomas Newland on Pexels"
+                },
+                {
+                    "question": "What is the estimated length of the Great Barrier Reef, known for its rich biodiversity?",
+                    "format": "mc",
+                    "image_query": "coral reef underwater",
+                    "options": [
+                        {
+                            "text": "2,300 kilometers",
+                            "correct": true
+                        },
+                        {
+                            "text": "1,500 kilometers",
+                            "correct": false
+                        },
+                        {
+                            "text": "3,500 kilometers",
+                            "correct": false
+                        },
+                        {
+                            "text": "1,000 kilometers",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8333c00504.14082433\/3.jpg",
+                    "image_attribution": "Photo by Francesco Ungaro on Pexels"
+                },
+                {
+                    "question": "What is the primary agricultural product that the region known as Australia's 'Fruit Bowl' is famous for?",
+                    "format": "mc",
+                    "image_query": "fruit orchard",
+                    "options": [
+                        {
+                            "text": "Stone fruits",
+                            "correct": false
+                        },
+                        {
+                            "text": "Citrus fruits",
+                            "correct": false
+                        },
+                        {
+                            "text": "Berries",
+                            "correct": false
+                        },
+                        {
+                            "text": "Vegetables",
+                            "correct": true
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8333c00504.14082433\/4.jpg",
+                    "image_attribution": "Photo by Claudia Schmalz on Pexels"
+                },
+                {
+                    "question": "In which year did the Australian national rugby league team, known as the Kangaroos, win the Rugby League World Cup held in England?",
+                    "format": "mc",
+                    "image_query": "rugby league cup",
+                    "options": [
+                        {
+                            "text": "1995",
+                            "correct": false
+                        },
+                        {
+                            "text": "2000",
+                            "correct": false
+                        },
+                        {
+                            "text": "1975",
+                            "correct": true
+                        },
+                        {
+                            "text": "1985",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8333c00504.14082433\/5.jpg",
+                    "image_attribution": "Photo by Eric SAINT-MARTIN on Pexels"
+                },
+                {
+                    "question": "True or False: The New Zealand cricket team, known as the Black Caps, wears a predominantly black uniform.",
+                    "format": "tf",
+                    "image_query": "cricket team uniform",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8333c00504.14082433\/6.jpg",
+                    "image_attribution": "Photo by Lesandu  Alokabandara on Pexels"
+                },
+                {
+                    "question": "Emergency services responded to a landslip near a petrol station in which area of New Zealand?",
+                    "format": "mc",
+                    "image_query": "emergency response",
+                    "options": [
+                        {
+                            "text": "Hutt Valley",
+                            "correct": true
+                        },
+                        {
+                            "text": "Wellington City",
+                            "correct": false
+                        },
+                        {
+                            "text": "Upper Hutt",
+                            "correct": false
+                        },
+                        {
+                            "text": "Lower Hutt",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8333c00504.14082433\/7.jpg",
+                    "image_attribution": "Photo by RDNE Stock project on Pexels"
+                },
+                {
+                    "question": "Three corrections officers were recently stood down due to an incident involving what event?",
+                    "format": "mc",
+                    "image_query": "prison escape scene",
+                    "options": [
+                        {
+                            "text": "A prisoner escape",
+                            "correct": true
+                        },
+                        {
+                            "text": "A riot in the facility",
+                            "correct": false
+                        },
+                        {
+                            "text": "An accidental injury",
+                            "correct": false
+                        },
+                        {
+                            "text": "A policy violation",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8333c00504.14082433\/8.jpg",
+                    "image_attribution": "Photo by cottonbro studio on Pexels"
+                },
+                {
+                    "question": "Which of the following countries is famous for its unique blue cities, particularly Chefchaouen?",
+                    "format": "mc",
+                    "image_query": "blue buildings Chefchaouen",
+                    "options": [
+                        {
+                            "text": "Morocco",
+                            "correct": true
+                        },
+                        {
+                            "text": "Greece",
+                            "correct": false
+                        },
+                        {
+                            "text": "Italy",
+                            "correct": false
+                        },
+                        {
+                            "text": "India",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8333c00504.14082433\/9.jpg",
+                    "image_attribution": "Photo by Diego F. Parra on Pexels"
+                },
+                {
+                    "question": "True or False: The Great Wall of China was primarily built to protect against invasions from nomadic tribes.",
+                    "format": "tf",
+                    "image_query": "Great Wall of China",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8333c00504.14082433\/10.jpg",
+                    "image_attribution": "Photo by Van Anh Nguyen on Pexels"
+                },
+                {
+                    "question": "In which year did the signing of the Treaty of Versailles, which marked the end of World War I, take place?",
+                    "format": "mc",
+                    "image_query": "historical treaty signing",
+                    "options": [
+                        {
+                            "text": "1918",
+                            "correct": false
+                        },
+                        {
+                            "text": "1919",
+                            "correct": true
+                        },
+                        {
+                            "text": "1920",
+                            "correct": false
+                        },
+                        {
+                            "text": "1921",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8333c00504.14082433\/11.jpg",
+                    "image_attribution": "Photo by Erik Mclean on Pexels"
+                },
+                {
+                    "question": "Which conflict, which involved North Korea's invasion of South Korea and intervention by the United Nations, lasted from 1950 to 1953?",
+                    "format": "mc",
+                    "image_query": "military memorial",
+                    "options": [
+                        {
+                            "text": "Vietnam War",
+                            "correct": false
+                        },
+                        {
+                            "text": "Cold War",
+                            "correct": false
+                        },
+                        {
+                            "text": "Korean War",
+                            "correct": true
+                        },
+                        {
+                            "text": "Gulf War",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8333c00504.14082433\/12.jpg",
+                    "image_attribution": "Photo by Hugo Magalhaes on Pexels"
+                },
+                {
+                    "question": "Which treaty marked the end of the Thirty Years' War in Europe, significantly altering the political landscape of the continent?",
+                    "format": "mc",
+                    "image_query": "historic treaty document",
+                    "options": [
+                        {
+                            "text": "Treaty of Utrecht",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Westphalia",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Paris",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Tordesillas",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8333c00504.14082433\/13.jpg",
+                    "image_attribution": "Photo by Donatello Trisolino on Pexels"
+                },
+                {
+                    "question": "Which ancient civilization is notable for creating a democratic system of government that influenced political thought in the modern world?",
+                    "format": "mc",
+                    "image_query": "ancient ruins of Greece",
+                    "options": [
+                        {
+                            "text": "Babylonian Civilization",
+                            "correct": false
+                        },
+                        {
+                            "text": "Egyptian Civilization",
+                            "correct": false
+                        },
+                        {
+                            "text": "Roman Civilization",
+                            "correct": false
+                        },
+                        {
+                            "text": "Greek Civilization",
+                            "correct": true
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8333c00504.14082433\/14.jpg",
+                    "image_attribution": "Photo by Melih Özmen on Pexels"
+                },
+                {
+                    "question": "In which year was the Berlin Wall officially opened, leading to the reunification of Germany?",
+                    "format": "mc",
+                    "image_query": "Berlin Wall history",
+                    "options": [
+                        {
+                            "text": "1987",
+                            "correct": false
+                        },
+                        {
+                            "text": "1989",
+                            "correct": true
+                        },
+                        {
+                            "text": "1991",
+                            "correct": false
+                        },
+                        {
+                            "text": "1993",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f8333c00504.14082433\/15.jpg",
+                    "image_attribution": "Photo by Pham Ngoc Anh on Pexels"
+                }
+            ],
+            "saved_to": "logs\/qa\/20260709-231552-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260709-231552-summary.json"
+}

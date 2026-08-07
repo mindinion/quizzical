@@ -1,0 +1,132 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-10",
+        "stamp": "20260710-001843",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": true,
+        "completed": 0,
+        "failed": 1
+    },
+    "runs": [
+        {
+            "ok": false,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-10",
+            "log": [
+                {
+                    "time": "2026-07-09 22:18:43",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 22:18:45",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:18:51",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:18:52",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:18:53",
+                    "level": "ERROR",
+                    "message": "[NZ Trivia] Attempt 1: 1 violation(s):\n- question 2 [fact-check]: marked answer \"False\" rejected — The New Zealand currency is called the kiwi dollar, as stated in snippets."
+                },
+                {
+                    "time": "2026-07-09 22:18:59",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:19:00",
+                    "level": "INFO",
+                    "message": "[NZ Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:19:00",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 22:19:00",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:19:03",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 1: 2 violation(s):\n- question 1 (\"The Australian continent is home to the world's largest coral reef system, known for its biodiversity and marine life.\") matches superlative pattern: world's-largest superlative — ask a plain factual question without record claims\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 22:19:05",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 2: 2 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 22:19:07",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 3: 1 violation(s):\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 22:19:09",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 4: 1 violation(s):\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 22:19:11",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 5: 2 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 22:19:13",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 6: 2 violation(s):\n- question 1 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 22:19:16",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 7: 3 violation(s):\n- question 1 gives away its own answer — correct answer \"Australia Day\" is hinted in the question text (\"Which of the following is a unique Australian tradition involving a day of eating, playing games, and spending time outdoors, often celebrated in January?\")\n- question 1 image_query gives away the correct answer — \"Australia Day\" is hinted in image_query \"Australian barbecue celebration\"\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 22:19:18",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 8: 1 violation(s):\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 22:19:20",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 9: 2 violation(s):\n- question 1 image_query gives away the correct answer — \"Koala\" is hinted in image_query \"koala climbing tree\"\n- question 1 image_query repeats option text \"Koala\""
+                },
+                {
+                    "time": "2026-07-09 22:19:23",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 10: 4 violation(s):\n- question 2 gives away its own answer — correct answer \"Eucalyptus\" is hinted in the question text (\"Which native Australian tree is famous for its eucalyptus oil and is a primary food source for a well-known marsupial?\")\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture\n- question 2 image_query gives away the correct answer — \"Eucalyptus\" is hinted in image_query \"eucalyptus tree\"\n- question 2 image_query repeats option text \"Eucalyptus\""
+                },
+                {
+                    "time": "2026-07-09 22:19:23",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] All 10 attempts failed validation — giving up."
+                }
+            ],
+            "stats": {
+                "categories_retried": 1,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 0,
+                "final_gate_quiz_attempts": 1,
+                "final_gate_rejections": 0
+            },
+            "error": "Failed to generate 'Australia Trivia' after 10 attempts — check logs\/generate-quiz.log",
+            "saved_to": "logs\/qa\/20260710-001843-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260710-001843-summary.json"
+}

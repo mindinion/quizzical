@@ -1,0 +1,700 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-09",
+        "stamp": "20260709-232442",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": false,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-09",
+            "log": [
+                {
+                    "time": "2026-07-09 21:24:42",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 21:24:42",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:24:50",
+                    "level": "ERROR",
+                    "message": "[NZ Trivia] Attempt 1: 1 violation(s):\n- question 1 [fact-check distractor]: wrong option '1961' is correct; New Zealand became a signatory to the Antarctic Treaty in 1961."
+                },
+                {
+                    "time": "2026-07-09 21:24:59",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:24:59",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:25:09",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 21:25:09",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:25:19",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 21:25:19",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:25:22",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:25:22",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:25:24",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 21:25:24",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:25:26",
+                    "level": "ERROR",
+                    "message": "[Geography] Attempt 1: 2 violation(s):\n- question 1 image_query gives away the correct answer — \"Peru\" is hinted in image_query \"ancient ruins Peru\"\n- question 1 image_query repeats option text \"Peru\""
+                },
+                {
+                    "time": "2026-07-09 21:25:34",
+                    "level": "INFO",
+                    "message": "[Geography] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:25:34",
+                    "level": "INFO",
+                    "message": "[Geography] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:25:36",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 21:25:36",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:25:44",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:25:45",
+                    "level": "INFO",
+                    "message": "[History] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:25:45",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 21:25:45",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 21:25:54",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 21:25:54",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 21:26:06",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 21:26:06",
+                    "level": "INFO",
+                    "message": "[images] Q1: fetching \"historical document New Zealand\"…"
+                },
+                {
+                    "time": "2026-07-09 21:26:06",
+                    "level": "INFO",
+                    "message": "[images] Q1: saved"
+                },
+                {
+                    "time": "2026-07-09 21:26:06",
+                    "level": "INFO",
+                    "message": "[images] Q2: fetching \"Antarctica treaty\"…"
+                },
+                {
+                    "time": "2026-07-09 21:26:08",
+                    "level": "INFO",
+                    "message": "[images] Q2: saved"
+                },
+                {
+                    "time": "2026-07-09 21:26:08",
+                    "level": "INFO",
+                    "message": "[images] Q3: fetching \"gliding animal Australia\"…"
+                },
+                {
+                    "time": "2026-07-09 21:26:08",
+                    "level": "INFO",
+                    "message": "[images] Q3: saved"
+                },
+                {
+                    "time": "2026-07-09 21:26:08",
+                    "level": "INFO",
+                    "message": "[images] Q4: fetching \"colorful gemstone mining\"…"
+                },
+                {
+                    "time": "2026-07-09 21:26:09",
+                    "level": "INFO",
+                    "message": "[images] Q4: saved"
+                },
+                {
+                    "time": "2026-07-09 21:26:09",
+                    "level": "INFO",
+                    "message": "[images] Q5: fetching \"Rugby World Cup final stadium\"…"
+                },
+                {
+                    "time": "2026-07-09 21:26:10",
+                    "level": "INFO",
+                    "message": "[images] Q5: saved"
+                },
+                {
+                    "time": "2026-07-09 21:26:10",
+                    "level": "INFO",
+                    "message": "[images] Q6: fetching \"Australian Open tennis\"…"
+                },
+                {
+                    "time": "2026-07-09 21:26:10",
+                    "level": "INFO",
+                    "message": "[images] Q6: saved"
+                },
+                {
+                    "time": "2026-07-09 21:26:10",
+                    "level": "INFO",
+                    "message": "[images] Q7: fetching \"flood emergency response\"…"
+                },
+                {
+                    "time": "2026-07-09 21:26:11",
+                    "level": "INFO",
+                    "message": "[images] Q7: saved"
+                },
+                {
+                    "time": "2026-07-09 21:26:11",
+                    "level": "INFO",
+                    "message": "[images] Q8: fetching \"prison facility interior\"…"
+                },
+                {
+                    "time": "2026-07-09 21:26:11",
+                    "level": "INFO",
+                    "message": "[images] Q8: saved"
+                },
+                {
+                    "time": "2026-07-09 21:26:11",
+                    "level": "INFO",
+                    "message": "[images] Q9: fetching \"ancient mountain citadel\"…"
+                },
+                {
+                    "time": "2026-07-09 21:26:12",
+                    "level": "INFO",
+                    "message": "[images] Q9: saved"
+                },
+                {
+                    "time": "2026-07-09 21:26:12",
+                    "level": "INFO",
+                    "message": "[images] Q10: fetching \"Great Wall landscape\"…"
+                },
+                {
+                    "time": "2026-07-09 21:26:13",
+                    "level": "INFO",
+                    "message": "[images] Q10: saved"
+                },
+                {
+                    "time": "2026-07-09 21:26:13",
+                    "level": "INFO",
+                    "message": "[images] Q11: fetching \"historic treaty signing\"…"
+                },
+                {
+                    "time": "2026-07-09 21:26:13",
+                    "level": "INFO",
+                    "message": "[images] Q11: saved"
+                },
+                {
+                    "time": "2026-07-09 21:26:13",
+                    "level": "INFO",
+                    "message": "[images] Q12: fetching \"historic treaty document\"…"
+                },
+                {
+                    "time": "2026-07-09 21:26:13",
+                    "level": "INFO",
+                    "message": "[images] Q12: saved"
+                },
+                {
+                    "time": "2026-07-09 21:26:13",
+                    "level": "INFO",
+                    "message": "[images] Q13: fetching \"Philippine flag history\"…"
+                },
+                {
+                    "time": "2026-07-09 21:26:14",
+                    "level": "INFO",
+                    "message": "[images] Q13: saved"
+                },
+                {
+                    "time": "2026-07-09 21:26:14",
+                    "level": "INFO",
+                    "message": "[images] Q14: fetching \"historical serfdom\"…"
+                },
+                {
+                    "time": "2026-07-09 21:26:15",
+                    "level": "INFO",
+                    "message": "[images] Q14: saved"
+                },
+                {
+                    "time": "2026-07-09 21:26:15",
+                    "level": "INFO",
+                    "message": "[images] Q15: fetching \"Berlin Wall history\"…"
+                },
+                {
+                    "time": "2026-07-09 21:26:15",
+                    "level": "INFO",
+                    "message": "[images] Q15: saved"
+                },
+                {
+                    "time": "2026-07-09 21:26:15",
+                    "level": "INFO",
+                    "message": "[images] Preview images: 15\/15 saved"
+                }
+            ],
+            "stats": {
+                "categories_retried": 2,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 15
+            },
+            "questions": [
+                {
+                    "question": "In which year was the Treaty of Waitangi signed, a significant document in New Zealand's history?",
+                    "format": "mc",
+                    "image_query": "historical document New Zealand",
+                    "options": [
+                        {
+                            "text": "1840",
+                            "correct": true
+                        },
+                        {
+                            "text": "1850",
+                            "correct": false
+                        },
+                        {
+                            "text": "1820",
+                            "correct": false
+                        },
+                        {
+                            "text": "1835",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f854e146ef9.13368256\/1.jpg",
+                    "image_attribution": "Photo by Oleg Tischenkov on Pexels"
+                },
+                {
+                    "question": "In which year did New Zealand become a signatory to the Antarctic Treaty, solidifying its commitment to scientific cooperation and environmental protection in Antarctica?",
+                    "format": "mc",
+                    "image_query": "Antarctica treaty",
+                    "options": [
+                        {
+                            "text": "1961",
+                            "correct": false
+                        },
+                        {
+                            "text": "1960",
+                            "correct": false
+                        },
+                        {
+                            "text": "1959",
+                            "correct": true
+                        },
+                        {
+                            "text": "1972",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f854e146ef9.13368256\/2.jpg",
+                    "image_attribution": "Photo by Hugo Sykes on Pexels"
+                },
+                {
+                    "question": "Which of the following animals is known for its unique ability to glide through the air in Australia?",
+                    "format": "mc",
+                    "image_query": "gliding animal Australia",
+                    "options": [
+                        {
+                            "text": "Sugar glider",
+                            "correct": true
+                        },
+                        {
+                            "text": "Blue jay",
+                            "correct": false
+                        },
+                        {
+                            "text": "Flying fox",
+                            "correct": false
+                        },
+                        {
+                            "text": "Tree kangaroo",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f854e146ef9.13368256\/3.jpg",
+                    "image_attribution": "Photo by Stuart  Robinson on Pexels"
+                },
+                {
+                    "question": "Which valuable gemstone is predominantly mined in Australia and is known for its vibrant play of color?",
+                    "format": "mc",
+                    "image_query": "colorful gemstone mining",
+                    "options": [
+                        {
+                            "text": "Topaz",
+                            "correct": false
+                        },
+                        {
+                            "text": "Opal",
+                            "correct": true
+                        },
+                        {
+                            "text": "Amethyst",
+                            "correct": false
+                        },
+                        {
+                            "text": "Sapphire",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f854e146ef9.13368256\/4.jpg",
+                    "image_attribution": "Photo by Diana ✨ on Pexels"
+                },
+                {
+                    "question": "In which year did Australia host the Rugby World Cup, with the final held at the Telstra Stadium in Sydney?",
+                    "format": "mc",
+                    "image_query": "Rugby World Cup final stadium",
+                    "options": [
+                        {
+                            "text": "2003",
+                            "correct": true
+                        },
+                        {
+                            "text": "2000",
+                            "correct": false
+                        },
+                        {
+                            "text": "2007",
+                            "correct": false
+                        },
+                        {
+                            "text": "1999",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f854e146ef9.13368256\/5.jpg",
+                    "image_attribution": "Photo by Travel with  Lenses on Pexels"
+                },
+                {
+                    "question": "Which Australian city is known for hosting the annual Australian Open, a major event in the tennis calendar?",
+                    "format": "mc",
+                    "image_query": "Australian Open tennis",
+                    "options": [
+                        {
+                            "text": "Sydney",
+                            "correct": false
+                        },
+                        {
+                            "text": "Melbourne",
+                            "correct": true
+                        },
+                        {
+                            "text": "Brisbane",
+                            "correct": false
+                        },
+                        {
+                            "text": "Perth",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f854e146ef9.13368256\/6.jpg",
+                    "image_attribution": "Photo by Claire Jasmine on Pexels"
+                },
+                {
+                    "question": "What recent emergency alert was issued to residents in Wairoa due to severe weather?",
+                    "format": "mc",
+                    "image_query": "flood emergency response",
+                    "options": [
+                        {
+                            "text": "Tsunami alert",
+                            "correct": false
+                        },
+                        {
+                            "text": "Evacuate now for flooding",
+                            "correct": true
+                        },
+                        {
+                            "text": "Wildfire warning",
+                            "correct": false
+                        },
+                        {
+                            "text": "Landslide caution",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f854e146ef9.13368256\/7.jpg",
+                    "image_attribution": "Photo by JESUS ADRIÁN SAAVEDRA on Pexels"
+                },
+                {
+                    "question": "In which Australian territory have three corrections officers been stood down with pay due to a recent prisoner escape?",
+                    "format": "mc",
+                    "image_query": "prison facility interior",
+                    "options": [
+                        {
+                            "text": "Northern Territory",
+                            "correct": true
+                        },
+                        {
+                            "text": "Queensland",
+                            "correct": false
+                        },
+                        {
+                            "text": "New South Wales",
+                            "correct": false
+                        },
+                        {
+                            "text": "Tasmania",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f854e146ef9.13368256\/8.jpg",
+                    "image_attribution": "Photo by Ron Lach on Pexels"
+                },
+                {
+                    "question": "Which country is renowned for its ancient citadel, Machu Picchu, situated high in the Andes Mountains?",
+                    "format": "mc",
+                    "image_query": "ancient mountain citadel",
+                    "options": [
+                        {
+                            "text": "Bolivia",
+                            "correct": false
+                        },
+                        {
+                            "text": "Peru",
+                            "correct": true
+                        },
+                        {
+                            "text": "Chile",
+                            "correct": false
+                        },
+                        {
+                            "text": "Ecuador",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f854e146ef9.13368256\/9.jpg",
+                    "image_attribution": "Photo by Klidjon Gozhina on Pexels"
+                },
+                {
+                    "question": "True or False: The Great Wall of China was primarily constructed to protect against invasions from nomadic tribes to the north.",
+                    "format": "tf",
+                    "image_query": "Great Wall landscape",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f854e146ef9.13368256\/10.jpg",
+                    "image_attribution": "Photo by Van Anh Nguyen on Pexels"
+                },
+                {
+                    "question": "Which of the following treaties ended World War I and imposed heavy reparations on Germany?",
+                    "format": "mc",
+                    "image_query": "historic treaty signing",
+                    "options": [
+                        {
+                            "text": "Treaty of Versailles",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Trianon",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Frankfurt",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Saint-Germain",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f854e146ef9.13368256\/11.jpg",
+                    "image_attribution": "Photo by Manousos Kampanellis on Pexels"
+                },
+                {
+                    "question": "True or False: The signing of the Treaty of Versailles occurred in 1919 and involved representatives from over 30 countries.",
+                    "format": "tf",
+                    "image_query": "historic treaty document",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f854e146ef9.13368256\/12.jpg",
+                    "image_attribution": "Photo by Donatello Trisolino on Pexels"
+                },
+                {
+                    "question": "Which year did the United States formally recognize the independence of the Philippines after the Spanish-American War?",
+                    "format": "mc",
+                    "image_query": "Philippine flag history",
+                    "options": [
+                        {
+                            "text": "1901",
+                            "correct": false
+                        },
+                        {
+                            "text": "1898",
+                            "correct": true
+                        },
+                        {
+                            "text": "1905",
+                            "correct": false
+                        },
+                        {
+                            "text": "1865",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f854e146ef9.13368256\/13.jpg",
+                    "image_attribution": "Photo by Clarence Gaspar on Pexels"
+                },
+                {
+                    "question": "Which country enacted the Emancipation Reform of 1861, which abolished serfdom and led to significant social changes?",
+                    "format": "mc",
+                    "image_query": "historical serfdom",
+                    "options": [
+                        {
+                            "text": "France",
+                            "correct": false
+                        },
+                        {
+                            "text": "Russia",
+                            "correct": true
+                        },
+                        {
+                            "text": "Germany",
+                            "correct": false
+                        },
+                        {
+                            "text": "Italy",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f854e146ef9.13368256\/14.jpg",
+                    "image_attribution": "Photo by Mikhail Nilov on Pexels"
+                },
+                {
+                    "question": "In which year did the Berlin Wall fall, symbolizing the end of the Cold War in Europe?",
+                    "format": "mc",
+                    "image_query": "Berlin Wall history",
+                    "options": [
+                        {
+                            "text": "1989",
+                            "correct": true
+                        },
+                        {
+                            "text": "1991",
+                            "correct": false
+                        },
+                        {
+                            "text": "1987",
+                            "correct": false
+                        },
+                        {
+                            "text": "1985",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15,
+                    "image_url": "uploads\/quiz-images\/preview\/6a4f854e146ef9.13368256\/15.jpg",
+                    "image_attribution": "Photo by Pham Ngoc Anh on Pexels"
+                }
+            ],
+            "saved_to": "logs\/qa\/20260709-232442-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260709-232442-summary.json"
+}

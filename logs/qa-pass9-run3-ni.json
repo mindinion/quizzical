@@ -1,0 +1,691 @@
+{
+    "meta": {
+        "type": "morning",
+        "date": "2026-07-10",
+        "stamp": "20260710-003531",
+        "runs": 1,
+        "lookback": 5,
+        "skip_images": true,
+        "completed": 1,
+        "failed": 0
+    },
+    "runs": [
+        {
+            "ok": true,
+            "run": 1,
+            "type": "morning",
+            "date": "2026-07-10",
+            "log": [
+                {
+                    "time": "2026-07-09 22:35:31",
+                    "level": "INFO",
+                    "message": "Fetching headlines…"
+                },
+                {
+                    "time": "2026-07-09 22:35:33",
+                    "level": "INFO",
+                    "message": "Generating: NZ Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:35:41",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Trivia"
+                },
+                {
+                    "time": "2026-07-09 22:35:41",
+                    "level": "INFO",
+                    "message": "Generating: Australia Trivia (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:35:43",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 1: 2 violation(s):\n- question 1 image_query gives away the correct answer — \"Kangaroo\" is hinted in image_query \"kangaroo pouch young\"\n- question 1 image_query repeats option text \"Kangaroo\""
+                },
+                {
+                    "time": "2026-07-09 22:35:50",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:35:51",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 2: 1 violation(s):\n- question 2 [fact-check premise]: question text rejected — The Dingo Fence was constructed to keep dingoes out, not specifically to protect crops from kangaroos and wallabies."
+                },
+                {
+                    "time": "2026-07-09 22:35:53",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 3: 1 violation(s):\n- question 1 image_query gives away the correct answer — \"Kangaroo\" is hinted in image_query \"kangaroos in the wild\""
+                },
+                {
+                    "time": "2026-07-09 22:35:55",
+                    "level": "ERROR",
+                    "message": "[Australia Trivia] Attempt 4: 2 violation(s):\n- question 2 (\"True or False: The Australian continent is home to the world's largest coral reef system, which is easily visible from space.\") matches superlative pattern: world's-largest superlative — ask a plain factual question without record claims\n- question 2 (category 'Australia Trivia') has no Australian topic — Australia Trivia must mention Australia, its places, or culture"
+                },
+                {
+                    "time": "2026-07-09 22:36:02",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:36:03",
+                    "level": "INFO",
+                    "message": "[Australia Trivia] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:36:03",
+                    "level": "INFO",
+                    "message": "Accepted: Australia Trivia"
+                },
+                {
+                    "time": "2026-07-09 22:36:03",
+                    "level": "INFO",
+                    "message": "Generating: Sports (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:36:10",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:36:11",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:36:13",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 1: 1 violation(s):\n- question 1 [fact-check distractor]: Wrong option 'Marvel Stadium' is mentioned as a venue for Melbourne Storm matches, contradicting the marked answer 'AAMI Park'."
+                },
+                {
+                    "time": "2026-07-09 22:36:18",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:36:19",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:36:21",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 2: 1 violation(s):\n- question 1 [fact-check]: marked answer \"AAMI Park\" rejected — The Melbourne Storm's home ground is AAMI Park, not Marvel Stadium."
+                },
+                {
+                    "time": "2026-07-09 22:36:27",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 3: 1 violation(s):\n- 'Sports' batch must include at least one domestic league question (AFL\/NRL\/Super Rugby colours, nickname, or home ground) with no World Cup or win-year angle"
+                },
+                {
+                    "time": "2026-07-09 22:36:29",
+                    "level": "ERROR",
+                    "message": "[Sports] Attempt 4: 1 violation(s):\n- 'Sports' batch must include at least one domestic league question (AFL\/NRL\/Super Rugby colours, nickname, or home ground) with no World Cup or win-year angle"
+                },
+                {
+                    "time": "2026-07-09 22:36:36",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:36:37",
+                    "level": "INFO",
+                    "message": "[Sports] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:36:39",
+                    "level": "INFO",
+                    "message": "Accepted: Sports"
+                },
+                {
+                    "time": "2026-07-09 22:36:39",
+                    "level": "INFO",
+                    "message": "Generating: NZ Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:36:42",
+                    "level": "INFO",
+                    "message": "Accepted: NZ Current Events"
+                },
+                {
+                    "time": "2026-07-09 22:36:42",
+                    "level": "INFO",
+                    "message": "Generating: Aussie Current Events (1 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:36:44",
+                    "level": "INFO",
+                    "message": "Accepted: Aussie Current Events"
+                },
+                {
+                    "time": "2026-07-09 22:36:44",
+                    "level": "INFO",
+                    "message": "Generating: Geography (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:36:47",
+                    "level": "ERROR",
+                    "message": "[Geography] Attempt 1: 2 violation(s):\n- question 2 image_query gives away the correct answer — \"Egyptian\" is hinted in image_query \"ancient Egyptian temple\"\n- question 2 image_query repeats option text \"Egyptian\""
+                },
+                {
+                    "time": "2026-07-09 22:36:56",
+                    "level": "INFO",
+                    "message": "Accepted: Geography"
+                },
+                {
+                    "time": "2026-07-09 22:36:56",
+                    "level": "INFO",
+                    "message": "Generating: History (2 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:36:58",
+                    "level": "ERROR",
+                    "message": "[History] Attempt 1: 2 violation(s):\n- question 2 image_query gives away the correct answer — \"Congress of Vienna\" is hinted in image_query \"Congress of Vienna\"\n- question 2 image_query repeats option text \"Congress of Vienna\""
+                },
+                {
+                    "time": "2026-07-09 22:37:02",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:37:03",
+                    "level": "INFO",
+                    "message": "[History] question 1 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:37:06",
+                    "level": "INFO",
+                    "message": "Accepted: History"
+                },
+                {
+                    "time": "2026-07-09 22:37:06",
+                    "level": "INFO",
+                    "message": "Generating: General Knowledge (3 question(s))"
+                },
+                {
+                    "time": "2026-07-09 22:37:09",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 1: 1 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 22:37:11",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 2: 1 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 22:37:14",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 3: 1 violation(s):\n- question 1 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 22:37:16",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 4: 1 violation(s):\n- question 2 repeats topic \"Treaty of Versailles\" already used elsewhere in this quiz"
+                },
+                {
+                    "time": "2026-07-09 22:37:19",
+                    "level": "ERROR",
+                    "message": "[General Knowledge] Attempt 5: 2 violation(s):\n- question 1 (category 'General Knowledge') uses recency language — this category must be evergreen, not current events\n- question 2 (\"The ancient city of Petra, known for its rock-cut architecture, was the capital of which civilization?\") matches banned pattern: capital-of-a-country cliché — pick a different, less obvious question"
+                },
+                {
+                    "time": "2026-07-09 22:37:28",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 2 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:37:29",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 2 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:37:32",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:37:33",
+                    "level": "INFO",
+                    "message": "[General Knowledge] question 3 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:37:34",
+                    "level": "INFO",
+                    "message": "Accepted: General Knowledge"
+                },
+                {
+                    "time": "2026-07-09 22:37:34",
+                    "level": "INFO",
+                    "message": "[final-gate] Verifying all 15 questions with fresh sources…"
+                },
+                {
+                    "time": "2026-07-09 22:37:44",
+                    "level": "INFO",
+                    "message": "[final-gate] question 4 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:37:45",
+                    "level": "INFO",
+                    "message": "[final-gate] question 4 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:37:49",
+                    "level": "INFO",
+                    "message": "[final-gate] question 6 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:37:49",
+                    "level": "INFO",
+                    "message": "[final-gate] question 6 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:37:58",
+                    "level": "INFO",
+                    "message": "[final-gate] question 11 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:37:58",
+                    "level": "INFO",
+                    "message": "[final-gate] question 11 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:38:05",
+                    "level": "INFO",
+                    "message": "[final-gate] question 14 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:38:06",
+                    "level": "INFO",
+                    "message": "[final-gate] question 14 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:38:08",
+                    "level": "INFO",
+                    "message": "[final-gate] question 15 [fact-check premise]: checking question text…"
+                },
+                {
+                    "time": "2026-07-09 22:38:08",
+                    "level": "INFO",
+                    "message": "[final-gate] question 15 [fact-check premise]: passed"
+                },
+                {
+                    "time": "2026-07-09 22:38:09",
+                    "level": "INFO",
+                    "message": "[final-gate] All 15 questions passed — OK to publish"
+                }
+            ],
+            "stats": {
+                "categories_retried": 5,
+                "fact_check_skips": 0,
+                "preview_images_fetched": 0,
+                "final_gate_quiz_attempts": 1,
+                "final_gate_rejections": 0,
+                "category_cap_fallbacks": 0,
+                "final_gate_cap_fallbacks": 0,
+                "category_emergency_fallbacks": 0
+            },
+            "questions": [
+                {
+                    "question": "In which year did New Zealand achieve its first Olympic gold medal in the Winter Games?",
+                    "format": "mc",
+                    "image_query": "Winter Olympics medal",
+                    "options": [
+                        {
+                            "text": "1980",
+                            "correct": false
+                        },
+                        {
+                            "text": "1992",
+                            "correct": true
+                        },
+                        {
+                            "text": "2002",
+                            "correct": false
+                        },
+                        {
+                            "text": "1988",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 1
+                },
+                {
+                    "question": "What is the approximate number of islands that make up New Zealand's territory?",
+                    "format": "mc",
+                    "image_query": "New Zealand islands",
+                    "options": [
+                        {
+                            "text": "300",
+                            "correct": false
+                        },
+                        {
+                            "text": "600",
+                            "correct": true
+                        },
+                        {
+                            "text": "1,200",
+                            "correct": false
+                        },
+                        {
+                            "text": "900",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Trivia",
+                    "position": 2
+                },
+                {
+                    "question": "In which year did Australia officially become a federation, leading to the establishment of the Commonwealth of Australia?",
+                    "format": "mc",
+                    "image_query": "Australian federation celebration",
+                    "options": [
+                        {
+                            "text": "1901",
+                            "correct": true
+                        },
+                        {
+                            "text": "1898",
+                            "correct": false
+                        },
+                        {
+                            "text": "1910",
+                            "correct": false
+                        },
+                        {
+                            "text": "1920",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 3
+                },
+                {
+                    "question": "True or False: Australia is home to a significant number of unique wildlife species that are found nowhere else on Earth.",
+                    "format": "tf",
+                    "image_query": "unique Australian wildlife",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Australia Trivia",
+                    "position": 4
+                },
+                {
+                    "question": "Which NRL team is known for its bright blue and white colours?",
+                    "format": "mc",
+                    "image_query": "rugby league team jersey",
+                    "options": [
+                        {
+                            "text": "Canberra Raiders",
+                            "correct": false
+                        },
+                        {
+                            "text": "Sydney Roosters",
+                            "correct": true
+                        },
+                        {
+                            "text": "Melbourne Storm",
+                            "correct": false
+                        },
+                        {
+                            "text": "New Zealand Warriors",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 5
+                },
+                {
+                    "question": "In which year was the Rugby World Cup held in New Zealand?",
+                    "format": "mc",
+                    "image_query": "rugby world cup new zealand",
+                    "options": [
+                        {
+                            "text": "2007",
+                            "correct": false
+                        },
+                        {
+                            "text": "2011",
+                            "correct": true
+                        },
+                        {
+                            "text": "2015",
+                            "correct": false
+                        },
+                        {
+                            "text": "2003",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Sports",
+                    "position": 6
+                },
+                {
+                    "question": "What prompted the declaration of a state of emergency in Wairoa?",
+                    "format": "mc",
+                    "image_query": "flooded street",
+                    "options": [
+                        {
+                            "text": "Landslides due to heavy rain",
+                            "correct": false
+                        },
+                        {
+                            "text": "Severe drought conditions",
+                            "correct": false
+                        },
+                        {
+                            "text": "Flooding during a storm",
+                            "correct": true
+                        },
+                        {
+                            "text": "A wildfire outbreak",
+                            "correct": false
+                        }
+                    ],
+                    "category": "NZ Current Events",
+                    "position": 7
+                },
+                {
+                    "question": "Three corrections officers were recently stood down following an investigation related to what event?",
+                    "format": "mc",
+                    "image_query": "police station interior",
+                    "options": [
+                        {
+                            "text": "Prisoner escape",
+                            "correct": true
+                        },
+                        {
+                            "text": "Courtroom altercation",
+                            "correct": false
+                        },
+                        {
+                            "text": "Unauthorized surveillance",
+                            "correct": false
+                        },
+                        {
+                            "text": "Breach of conduct",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Aussie Current Events",
+                    "position": 8
+                },
+                {
+                    "question": "Which of the following cities is famous for its historic amphitheater that hosted gladiatorial contests?",
+                    "format": "mc",
+                    "image_query": "historic amphitheater",
+                    "options": [
+                        {
+                            "text": "Rome",
+                            "correct": true
+                        },
+                        {
+                            "text": "Athens",
+                            "correct": false
+                        },
+                        {
+                            "text": "Carthage",
+                            "correct": false
+                        },
+                        {
+                            "text": "Constantinople",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 9
+                },
+                {
+                    "question": "Which ancient civilization is recognized for its contributions to mathematics and its significant architectural structures, including ziggurats?",
+                    "format": "mc",
+                    "image_query": "ancient architectural ruins",
+                    "options": [
+                        {
+                            "text": "Incan",
+                            "correct": false
+                        },
+                        {
+                            "text": "Sumerian",
+                            "correct": true
+                        },
+                        {
+                            "text": "Mayan",
+                            "correct": false
+                        },
+                        {
+                            "text": "Akkadian",
+                            "correct": false
+                        }
+                    ],
+                    "category": "Geography",
+                    "position": 10
+                },
+                {
+                    "question": "Which treaty, signed in 1815, aimed to restore the balance of power among European nations after the Napoleonic Wars?",
+                    "format": "mc",
+                    "image_query": "historic treaty signing",
+                    "options": [
+                        {
+                            "text": "Treaty of Versailles",
+                            "correct": false
+                        },
+                        {
+                            "text": "Treaty of Trianon",
+                            "correct": false
+                        },
+                        {
+                            "text": "Congress of Vienna",
+                            "correct": true
+                        },
+                        {
+                            "text": "Treaty of Utrecht",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 11
+                },
+                {
+                    "question": "In which year did the United Nations General Assembly adopt the Universal Declaration of Human Rights, outlining fundamental human rights for all individuals?",
+                    "format": "mc",
+                    "image_query": "human rights demonstration",
+                    "options": [
+                        {
+                            "text": "1945",
+                            "correct": false
+                        },
+                        {
+                            "text": "1948",
+                            "correct": true
+                        },
+                        {
+                            "text": "1950",
+                            "correct": false
+                        },
+                        {
+                            "text": "1960",
+                            "correct": false
+                        }
+                    ],
+                    "category": "History",
+                    "position": 12
+                },
+                {
+                    "question": "Which country was the first to adopt a national anthem that was not originally a hymn, becoming a symbol of national pride?",
+                    "format": "mc",
+                    "image_query": "flag raising ceremony",
+                    "options": [
+                        {
+                            "text": "Scotland",
+                            "correct": false
+                        },
+                        {
+                            "text": "United States",
+                            "correct": false
+                        },
+                        {
+                            "text": "France",
+                            "correct": true
+                        },
+                        {
+                            "text": "Germany",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 13
+                },
+                {
+                    "question": "Which of the following historical figures is known for promoting the end of slavery in the British Empire, leading to the Slavery Abolition Act of 1833?",
+                    "format": "mc",
+                    "image_query": "historic abolitionist meeting",
+                    "options": [
+                        {
+                            "text": "Abraham Lincoln",
+                            "correct": false
+                        },
+                        {
+                            "text": "William Wilberforce",
+                            "correct": true
+                        },
+                        {
+                            "text": "Frederick Douglass",
+                            "correct": false
+                        },
+                        {
+                            "text": "Sojourner Truth",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 14
+                },
+                {
+                    "question": "True or False: The United Nations was created in response to the failures of the League of Nations, primarily after the events of World War II.",
+                    "format": "tf",
+                    "image_query": "United Nations headquarters",
+                    "options": [
+                        {
+                            "text": "True",
+                            "correct": true
+                        },
+                        {
+                            "text": "False",
+                            "correct": false
+                        }
+                    ],
+                    "category": "General Knowledge",
+                    "position": 15
+                }
+            ],
+            "warnings": [],
+            "saved_to": "logs\/qa\/20260710-003531-run1.json"
+        }
+    ],
+    "summary_file": "logs\/qa\/20260710-003531-summary.json"
+}
