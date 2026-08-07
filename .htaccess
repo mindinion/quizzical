@@ -3,3 +3,12 @@ RewriteCond %{HTTPS} off
 RewriteRule ^deploy\.php$ - [L]
 RewriteCond %{HTTPS} off
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# The HTML shells carry the version stamps for main.js and the stylesheets, so a cached
+# shell pins a browser to the previous script long after a deploy. Revalidate them every
+# time; a 304 keeps that cheap, and the versioned assets stay cacheable.
+<IfModule mod_headers.c>
+	<FilesMatch "\.html$">
+		Header set Cache-Control "no-cache, must-revalidate"
+	</FilesMatch>
+</IfModule>
