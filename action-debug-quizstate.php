@@ -40,7 +40,9 @@ $out = [
 
 $out['quizzes'] = [];
 $q = $conn->query(
-    "SELECT z.id, z.type, z.date, z.status, z.generated_at,
+    "SELECT z.id, z.type, z.date,
+            (SELECT CONCAT(r.score, '/', r.max, ' posted ', r.date) FROM Results r
+              WHERE r.user = $uid AND r.status = 'active' AND r.ai_quiz_id = z.id LIMIT 1) AS linked_result,
             (SELECT COUNT(*) FROM AIQuestion q WHERE q.quiz_id = z.id) AS question_count,
             (SELECT COUNT(*) FROM AIAnswer a WHERE a.quiz_id = z.id AND a.user_id = $uid) AS my_answers,
             (SELECT SUM(a.is_correct) FROM AIAnswer a WHERE a.quiz_id = z.id AND a.user_id = $uid) AS my_score,

@@ -1,7 +1,8 @@
 {
-    "dry_run": true,
+    "dry_run": false,
     "log": [
-        "Results.ai_quiz_id missing \u2014 would be added."
+        "Added Results.ai_quiz_id.",
+        "Linked 68 result(s) to their quiz."
     ],
     "matched_count": 68,
     "unmatched_count": 76,
