@@ -2289,7 +2289,7 @@ document.cookie="feedItems=50";
 	}
 
 	function showWelcome(force) {
-		var WELCOME_VERSION = 'v10';
+		var WELCOME_VERSION = 'v10b';
 		if (!force && localStorage.getItem('quizzical_welcome') === WELCOME_VERSION) return;
 		$.get('welcome-v10.html', function(html) {
 			$('#WelcomeBody').html(html);
@@ -2298,7 +2298,7 @@ document.cookie="feedItems=50";
 	}
 
 	function dismissWelcome() {
-		localStorage.setItem('quizzical_welcome', 'v10');
+		localStorage.setItem('quizzical_welcome', 'v10b');
 		$('#WelcomeOverlay').fadeOut(200);
 	}
 
