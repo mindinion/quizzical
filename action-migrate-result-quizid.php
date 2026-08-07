@@ -111,7 +111,8 @@ foreach ($results as $row) {
     $bestTime = null;
     foreach ($finished[$uid] ?? [] as $cand) {
         if ($cand['type'] !== $type) continue;
-        if (isset($claimed[$cand['quiz_id']])) continue;
+        // Everyone plays the same quizzes, so a claim only rules that quiz out for this user
+        if (isset($claimed[$uid . '|' . $cand['quiz_id']])) continue;
 
         // answered_at read as server time, expressed in the user's timezone
         $dt = new DateTime($cand['finished_at'], $serverTz);
@@ -131,7 +132,7 @@ foreach ($results as $row) {
         continue;
     }
 
-    $claimed[$best['quiz_id']] = true;
+    $claimed[$uid . '|' . $best['quiz_id']] = true;
     $matches[] = [
         'result_id'   => $rid,
         'user'        => $uid,

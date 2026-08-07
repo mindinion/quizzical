@@ -32,6 +32,12 @@
 	$comment    = isset($_GET['comment'])    ? $conn->real_escape_string($_GET['comment'])    : '';
 	$aiQuizId   = isset($_GET['quiz_id'])    ? (int)$_GET['quiz_id']                          : 0;
 
+	// Clients running a cached older script post without a quiz id. Recover it from the
+	// user's answers so their result is still filed against the right quiz.
+	if ($aiQuizId <= 0) {
+		$aiQuizId = aiInferQuizIdForResult($conn, (int)$userid, $type);
+	}
+
 	$linkQuiz = $aiQuizId > 0 && resultsHasAiQuizId($conn);
 	// $userid is set by getsettings.php from the validated session
 	// $timezone is set by getsettings.php from the user's DB profile
