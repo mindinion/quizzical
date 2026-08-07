@@ -1605,8 +1605,10 @@ document.cookie="feedItems=50";
 			quiz_id:    aiQuizData.quiz_id,
 			comment:    comment
 		}, function(raw) {
-			var resp = null;
-			try { resp = JSON.parse(raw); } catch(e) {}
+			var resp = (typeof raw === 'object') ? raw : null;
+			if (!resp) {
+				try { resp = JSON.parse(raw); } catch(e) { resp = null; }
+			}
 			if (resp && resp.error) {
 				alert(resp.message || 'That result could not be posted.');
 				$('#AIQuizPostBtn').prop('disabled', false).text('Post to Feed');
