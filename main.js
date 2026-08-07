@@ -1361,7 +1361,7 @@ document.cookie="feedItems=50";
 		var elim = {};
 		eliminatedIds.forEach(function(id) { elim[parseInt(id, 10)] = true; });
 		$('#AIQuizOptions .ai-option').each(function() {
-			var optId = parseInt($(this).data('optid'), 10);
+			var optId = parseInt($(this).attr('data-optid'), 10);
 			if (elim[optId]) {
 				$(this).addClass('ai-option-eliminated');
 			}
@@ -1398,6 +1398,10 @@ document.cookie="feedItems=50";
 
 	function renderAIQuestion(idx) {
 		var q = aiQuizData.questions[idx];
+		if (!q) {
+			showAIScoreScreen();
+			return;
+		}
 		var total = aiQuizData.questions.length;
 
 		$('#AIQuizProgress').text((idx + 1) + ' / ' + total);
@@ -1414,7 +1418,8 @@ document.cookie="feedItems=50";
 		$('#AIQuizQuestion').text(q.question_text);
 		$('#AIQuizFeedback').hide().removeClass('feedback-correct feedback-wrong').text('');
 		$('#AIQuizNext').hide();
-		$('#AIQuizOptions').off('click', '.ai-option');
+		// Namespace so on/off always match (a :not() selector previously left stacked handlers).
+		$('#AIQuizOptions').off('click.aiOption');
 		$('#AIQuiz5050').off('click').on('click', useAI5050);
 
 		var html = '';
@@ -1449,17 +1454,19 @@ document.cookie="feedItems=50";
 				$('#AIQuizNext').show().text('Next \u2192');
 			}
 		} else if (!aiReviewMode) {
-			$('#AIQuizOptions').on('click', '.ai-option:not(.ai-option-eliminated)', function() {
+			$('#AIQuizOptions').on('click.aiOption', '.ai-option', function() {
 				if (aiAnswerPending || aiLifelinePending) return;
+				if ($(this).hasClass('ai-option-eliminated')) return;
 				aiAnswerPending = true;
 				updateAILifelineUi(q);
-				var optId = parseInt($(this).data('optid'));
+				var optId = parseInt($(this).attr('data-optid'), 10);
 				submitAIAnswer(q.id, optId);
 			});
 		}
 	}
 
 	function submitAIAnswer(questionId, chosenOptionId) {
+		var submitIdx = aiCurrentIdx;
 		$.get('action-submit-ai-answer.php', {
 			quiz_id:          aiQuizData.quiz_id,
 			question_id:      questionId,
@@ -1467,29 +1474,58 @@ document.cookie="feedItems=50";
 		}, function(raw) {
 			var resp = (typeof raw === 'object') ? raw : JSON.parse(raw);
 			console.log('submitAIAnswer resp:', resp);
-			if (resp.correct) aiScore++;
+			// Ignore stale responses if the player has moved on.
+			if (!aiQuizData || aiCurrentIdx !== submitIdx) {
+				aiAnswerPending = false;
+				return;
+			}
+			var q = aiQuizData.questions[submitIdx];
+			if (!q || q.id !== questionId) {
+				aiAnswerPending = false;
+				return;
+			}
+			if (resp.error) {
+				aiAnswerPending = false;
+				alert(resp.error);
+				updateAILifelineUi(q);
+				return;
+			}
+			if (!resp.already_answered && resp.correct) aiScore++;
+			q.answered = true;
+			q.chosen_option_id = chosenOptionId;
+			q.is_correct = !!resp.correct;
+			q.correct_option_id = resp.correct_option_id;
 			revealAnswer(chosenOptionId, resp.correct_option_id, resp.correct, false, resp.option_stats, resp.total_answers);
 
-			if (resp.completed) {
+			if (resp.completed || submitIdx >= aiQuizData.questions.length - 1) {
+				aiQuizData.completed = true;
 				setTimeout(showAIScoreScreen, 1200);
 			} else {
 				$('#AIQuizNext').show().text('Next \u2192');
+			}
+		}).fail(function() {
+			aiAnswerPending = false;
+			alert('Could not submit answer. Try again.');
+			if (aiQuizData && aiQuizData.questions[aiCurrentIdx]) {
+				updateAILifelineUi(aiQuizData.questions[aiCurrentIdx]);
 			}
 		});
 	}
 
 	function revealAnswer(chosenId, correctId, wasCorrect, isResume, optionStats, totalAnswers) {
-		$('#AIQuizOptions').off('click', '.ai-option');
+		$('#AIQuizOptions').off('click.aiOption');
 		var statsByOpt = {};
 		if (optionStats && optionStats.length) {
 			optionStats.forEach(function(s) { statsByOpt[s.option_id] = s.pct; });
 		}
 		var showStats = totalAnswers >= 1;
+		var correctNum = correctId != null ? parseInt(correctId, 10) : null;
+		var chosenNum = chosenId != null ? parseInt(chosenId, 10) : null;
 		$('#AIQuizOptions .ai-option').each(function() {
-			var optId = parseInt($(this).data('optid'));
-			if (optId === correctId) {
+			var optId = parseInt($(this).attr('data-optid'), 10);
+			if (correctNum != null && optId === correctNum) {
 				$(this).addClass('ai-option-correct');
-			} else if (chosenId != null && optId === chosenId && !wasCorrect) {
+			} else if (chosenNum != null && optId === chosenNum && !wasCorrect) {
 				$(this).addClass('ai-option-wrong');
 			} else {
 				$(this).addClass('ai-option-neutral');
@@ -1531,8 +1567,12 @@ document.cookie="feedItems=50";
 			return;
 		}
 
+		if (aiCurrentIdx >= aiQuizData.questions.length - 1) {
+			showAIScoreScreen();
+			return;
+		}
+		aiQuizData.questions[aiCurrentIdx].answered = true;
 		aiCurrentIdx++;
-		aiQuizData.questions[aiCurrentIdx - 1].answered = true;
 		renderAIQuestion(aiCurrentIdx);
 	}
 
@@ -1592,7 +1632,7 @@ document.cookie="feedItems=50";
 		$('#AIQuizBody').show();
 		$('#AIQuizScoreScreen').hide();
 		$('#AIQuizReviewBtn').hide();
-		$('#AIQuizOptions').off('click', '.ai-option');
+		$('#AIQuizOptions').off('click.aiOption');
 		$('#AIQuizNext').hide().text('Next \u2192');
 		$('#TabBar').show();
 		aiQuizData        = null;
