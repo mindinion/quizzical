@@ -15,6 +15,7 @@
 
 require_once 'require_auth.php';
 require_once __DIR__ . '/ai-quiz-stats.php';
+require_once __DIR__ . '/ai-lifeline.php';
 
 $quizId = isset($_GET['quiz_id']) ? (int)$_GET['quiz_id'] : 0;
 if ($quizId <= 0) { http_response_code(400); echo json_encode(['error' => 'Missing quiz_id']); exit; }
@@ -132,6 +133,9 @@ if ($revealAll) {
     $stmt->close();
 }
 
+$lifelineByQuestion = aiLifelineEliminationsForQuiz($conn, $userid, $quizId);
+$lifelineRemaining = aiLifelineRemaining($conn, $userid, $quizId);
+
 // Assemble response
 $questions = [];
 foreach ($questionsRaw as $q) {
@@ -147,6 +151,10 @@ foreach ($questionsRaw as $q) {
         'options'       => $optionsByQuestion[$qid] ?? [],
         'answered'      => $answered,
     ];
+
+    if (isset($lifelineByQuestion[$qid])) {
+        $entry['eliminated_option_ids'] = $lifelineByQuestion[$qid];
+    }
 
     if (!empty($q['image_path'])) {
         $entry['image_url'] = $q['image_path'];
@@ -178,16 +186,18 @@ foreach ($questionsRaw as $q) {
 $totalScore = array_sum(array_column($answersRaw, 'is_correct'));
 
 echo json_encode([
-    'quiz_id'        => (int)$quiz['id'],
-    'type'           => $quiz['type'],
-    'date'           => $quiz['date'],
-    'questions'      => $questions,
-    'answered_count' => $answeredCount,
-    'score_so_far'   => $totalScore,
-    'completed'      => $questionTotal > 0 && $answeredCount >= $questionTotal,
-    'can_review'     => $revealAll,
-    'posted'         => $reviewMode,
-    'review_mode'    => $reviewMode,
-    'final_score'    => $postedResult ? (int)$postedResult['score'] : null,
-    'final_max'      => $postedResult ? (int)$postedResult['max'] : ($questionTotal ?: 15),
+    'quiz_id'            => (int)$quiz['id'],
+    'type'               => $quiz['type'],
+    'date'               => $quiz['date'],
+    'questions'          => $questions,
+    'answered_count'     => $answeredCount,
+    'score_so_far'       => $totalScore,
+    'completed'          => $questionTotal > 0 && $answeredCount >= $questionTotal,
+    'can_review'         => $revealAll,
+    'posted'             => $reviewMode,
+    'review_mode'        => $reviewMode,
+    'final_score'        => $postedResult ? (int)$postedResult['score'] : null,
+    'final_max'          => $postedResult ? (int)$postedResult['max'] : ($questionTotal ?: 15),
+    'lifeline_remaining' => $lifelineRemaining,
+    'lifeline_max'       => AI_LIFELINE_MAX_PER_QUIZ,
 ]);

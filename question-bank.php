@@ -17,6 +17,13 @@ const CE_CATEGORY_TARGETS = [
     'Aussie Current Events' => 2,
 ];
 
+/** Target difficulty mix among the 11 bank slots (sum must match bank slot total). */
+const BANK_DIFFICULTY_TARGETS = [
+    'easy'   => 5,
+    'medium' => 4,
+    'hard'   => 2,
+];
+
 /** Days before a bank question can be reused. */
 const BANK_REUSE_COOLDOWN_DAYS = 90;
 
@@ -364,59 +371,152 @@ function bankRowToQuizQuestion(array $row, array $options): ?array {
 }
 
 /**
+ * Remaining difficulty quotas (easy/medium/hard counts still needed).
+ *
+ * @param array{easy?:int,medium?:int,hard?:int}|null $remaining
+ * @return array{easy:int,medium:int,hard:int}
+ */
+function bankDifficultyRemainingInit(?array $remaining = null): array {
+    $base = BANK_DIFFICULTY_TARGETS;
+    if ($remaining === null) {
+        return [
+            'easy'   => (int)$base['easy'],
+            'medium' => (int)$base['medium'],
+            'hard'   => (int)$base['hard'],
+        ];
+    }
+    return [
+        'easy'   => max(0, (int)($remaining['easy'] ?? 0)),
+        'medium' => max(0, (int)($remaining['medium'] ?? 0)),
+        'hard'   => max(0, (int)($remaining['hard'] ?? 0)),
+    ];
+}
+
+/**
+ * Prefer the difficulty with the largest remaining quota; ties prefer easy → medium → hard.
+ *
+ * @param array{easy:int,medium:int,hard:int} $remaining
+ */
+function bankPickPreferredDifficulty(array $remaining): ?string {
+    $best = null;
+    $bestQty = -1;
+    foreach (['easy', 'medium', 'hard'] as $diff) {
+        $qty = (int)($remaining[$diff] ?? 0);
+        if ($qty > $bestQty) {
+            $bestQty = $qty;
+            $best = $diff;
+        }
+    }
+    return $bestQty > 0 ? $best : null;
+}
+
+/**
+ * Fallback difficulty filters: preferred, then medium/easy/hard, then unlabeled, then any.
+ *
+ * @return list<array{diff:?string,any:bool}>
+ */
+function bankDifficultyFallbackSteps(?string $preferred): array {
+    $steps = [];
+    $seen = [];
+    if ($preferred !== null) {
+        $steps[] = ['diff' => $preferred, 'any' => false];
+        $seen[$preferred] = true;
+    }
+    foreach (['medium', 'easy', 'hard'] as $diff) {
+        if (!isset($seen[$diff])) {
+            $steps[] = ['diff' => $diff, 'any' => false];
+            $seen[$diff] = true;
+        }
+    }
+    $steps[] = ['diff' => null, 'any' => false]; // unlabeled only
+    $steps[] = ['diff' => null, 'any' => true];  // any remaining
+    return $steps;
+}
+
+/**
  * @param int[] $excludeBankIds
+ * @param array{easy:int,medium:int,hard:int}|null $difficultyRemaining mutated when questions are taken
  * @return list<array>
  */
 function bankPickQuestionsFromCategory(
     mysqli $conn,
     string $category,
     int $need,
-    array $excludeBankIds = []
+    array $excludeBankIds = [],
+    ?array &$difficultyRemaining = null
 ): array {
     if ($need <= 0) {
         return [];
     }
 
+    $remaining = bankDifficultyRemainingInit($difficultyRemaining);
     $cooldown = BANK_REUSE_COOLDOWN_DAYS;
     $selected = [];
     $bankIds = array_map('intval', $excludeBankIds);
     $triedIds = [];
-    $batchSize = 100;
-    $maxBatches = 15;
 
-    for ($batch = 0; $batch < $maxBatches && count($selected) < $need; $batch++) {
-        $exclude = array_values(array_unique(array_merge($bankIds, $triedIds)));
-        $rows = bankFetchCategoryCandidates($conn, $category, $cooldown, $batchSize, $exclude);
+    while (count($selected) < $need) {
+        $preferred = bankPickPreferredDifficulty($remaining);
+        $gotOne = false;
 
-        if (!$rows) {
-            break;
-        }
+        foreach (bankDifficultyFallbackSteps($preferred) as $step) {
+            $exclude = array_values(array_unique(array_merge($bankIds, $triedIds)));
+            $rows = bankFetchCategoryCandidates(
+                $conn,
+                $category,
+                $cooldown,
+                40,
+                $exclude,
+                $step['diff'],
+                $step['any']
+            );
+            if (!$rows) {
+                continue;
+            }
 
-        foreach ($rows as $row) {
-            if (count($selected) >= $need) {
+            foreach ($rows as $row) {
+                $bid = (int)$row['id'];
+                if (in_array($bid, $bankIds, true) || in_array($bid, $triedIds, true)) {
+                    continue;
+                }
+                $triedIds[] = $bid;
+
+                $optStmt = $conn->prepare(
+                    'SELECT position, option_text, is_correct FROM QuizQuestionBankOption WHERE bank_id = ? ORDER BY position'
+                );
+                $optStmt->bind_param('i', $bid);
+                $optStmt->execute();
+                $opts = $optStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+                $optStmt->close();
+
+                $q = bankRowToQuizQuestion($row, $opts);
+                if ($q === null) {
+                    continue;
+                }
+
+                $selected[] = $q;
+                $bankIds[] = $bid;
+
+                $actual = strtolower(trim((string)($q['difficulty'] ?? '')));
+                if (isset($remaining[$actual]) && $remaining[$actual] > 0) {
+                    $remaining[$actual]--;
+                } elseif ($preferred !== null && ($remaining[$preferred] ?? 0) > 0) {
+                    // Unlabeled / off-quota fill: consume the preferred quota.
+                    $remaining[$preferred]--;
+                }
+
+                $gotOne = true;
                 break 2;
             }
-            $bid = (int)$row['id'];
-            if (in_array($bid, $bankIds, true)) {
-                continue;
-            }
-            $triedIds[] = $bid;
-
-            $optStmt = $conn->prepare(
-                'SELECT position, option_text, is_correct FROM QuizQuestionBankOption WHERE bank_id = ? ORDER BY position'
-            );
-            $optStmt->bind_param('i', $bid);
-            $optStmt->execute();
-            $opts = $optStmt->get_result()->fetch_all(MYSQLI_ASSOC);
-            $optStmt->close();
-
-            $q = bankRowToQuizQuestion($row, $opts);
-            if ($q === null) {
-                continue;
-            }
-            $selected[] = $q;
-            $bankIds[] = $bid;
         }
+
+        if (!$gotOne) {
+            break;
+        }
+    }
+
+    if ($difficultyRemaining !== null) {
+        $difficultyRemaining = $remaining;
     }
 
     return $selected;
@@ -424,10 +524,16 @@ function bankPickQuestionsFromCategory(
 
 /**
  * @param int[] $excludeBankIds
+ * @param array{easy:int,medium:int,hard:int}|null $difficultyRemaining
  * @return list<array>
  */
-function selectGkFallbackQuestions(mysqli $conn, int $count, array $excludeBankIds = []): array {
-    return bankPickQuestionsFromCategory($conn, 'General Knowledge', $count, $excludeBankIds);
+function selectGkFallbackQuestions(
+    mysqli $conn,
+    int $count,
+    array $excludeBankIds = [],
+    ?array &$difficultyRemaining = null
+): array {
+    return bankPickQuestionsFromCategory($conn, 'General Knowledge', $count, $excludeBankIds, $difficultyRemaining);
 }
 
 /**
@@ -441,6 +547,7 @@ function selectBankQuestionsForQuiz(mysqli $conn, ?array $targets = null): array
     $targets = $targets ?? BANK_CATEGORY_TARGETS;
     $selected = [];
     $bankIds = [];
+    $difficultyRemaining = bankDifficultyRemainingInit(null);
 
     foreach ($targets as $category => $count) {
         $need = (int)$count;
@@ -448,7 +555,7 @@ function selectBankQuestionsForQuiz(mysqli $conn, ?array $targets = null): array
             continue;
         }
 
-        $picked = bankPickQuestionsFromCategory($conn, $category, $need, $bankIds);
+        $picked = bankPickQuestionsFromCategory($conn, $category, $need, $bankIds, $difficultyRemaining);
         foreach ($picked as $q) {
             $selected[] = $q;
             $bankIds[] = (int)$q['bank_id'];
@@ -460,7 +567,7 @@ function selectBankQuestionsForQuiz(mysqli $conn, ?array $targets = null): array
             if (function_exists('bumpQuizGenStat')) {
                 bumpQuizGenStat('gk_fallbacks', $shortfall);
             }
-            $fill = selectGkFallbackQuestions($conn, $shortfall, $bankIds);
+            $fill = selectGkFallbackQuestions($conn, $shortfall, $bankIds, $difficultyRemaining);
             if (count($fill) < $shortfall) {
                 throw new RuntimeException(
                     "Bank pool short for '$category' and insufficient GK fallback "
@@ -479,6 +586,7 @@ function selectBankQuestionsForQuiz(mysqli $conn, ?array $targets = null): array
 
 /**
  * @param int[] $excludeIds
+ * @param string|null $difficulty 'easy'|'medium'|'hard', or null for unlabeled only; omit filter with $difficultyFilter=false
  * @return list<array>
  */
 function bankFetchCategoryCandidates(
@@ -486,7 +594,9 @@ function bankFetchCategoryCandidates(
     string $category,
     int $cooldownDays,
     int $limit,
-    array $excludeIds = []
+    array $excludeIds = [],
+    ?string $difficulty = null,
+    bool $anyDifficulty = false
 ): array {
     $limit = max(1, min(200, $limit));
     $sql = "SELECT id, source, category, question_text, format, difficulty
@@ -495,6 +605,16 @@ function bankFetchCategoryCandidates(
               AND (last_used_at IS NULL OR last_used_at < DATE_SUB(NOW(), INTERVAL ? DAY))";
     $types = 'si';
     $params = [$category, $cooldownDays];
+
+    if (!$anyDifficulty) {
+        if ($difficulty === null) {
+            $sql .= " AND (difficulty IS NULL OR difficulty = '')";
+        } else {
+            $sql .= ' AND LOWER(difficulty) = ?';
+            $types .= 's';
+            $params[] = strtolower($difficulty);
+        }
+    }
 
     if ($excludeIds) {
         $excludeIds = array_map('intval', array_unique($excludeIds));

@@ -276,3 +276,139 @@ function bankDifficultySampleQuestions(
 
     return $list;
 }
+
+function bankDifficultyCountUnlabeled(mysqli $conn, ?string $category = null): int {
+    $sql = "SELECT COUNT(*) AS c FROM QuizQuestionBank
+            WHERE format = 'mc'
+              AND (difficulty IS NULL OR difficulty = '')";
+    $types = '';
+    $params = [];
+    if ($category) {
+        $sql .= ' AND category = ?';
+        $types = 's';
+        $params[] = $category;
+    }
+    if ($types !== '') {
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+    } else {
+        $row = $conn->query($sql)->fetch_assoc();
+    }
+    return (int)($row['c'] ?? 0);
+}
+
+/**
+ * Stable unlabeled batch for write backfill (lowest ids first).
+ *
+ * @return list<array{bank_id:int,source:string,category:string,question:string,options:list<string>,correct:string,existing_difficulty:?string}>
+ */
+function bankDifficultyFetchUnlabeledBatch(mysqli $conn, int $limit, ?string $category = null): array {
+    $limit = max(1, min(40, $limit));
+    $idSql = "SELECT id FROM QuizQuestionBank
+              WHERE format = 'mc'
+                AND (difficulty IS NULL OR difficulty = '')";
+    $types = '';
+    $params = [];
+    if ($category) {
+        $idSql .= ' AND category = ?';
+        $types = 's';
+        $params[] = $category;
+    }
+    $idSql .= ' ORDER BY id ASC LIMIT ?';
+    $types .= 'i';
+    $params[] = $limit;
+
+    $stmt = $conn->prepare($idSql);
+    if (!$stmt) {
+        return [];
+    }
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $ids = array_map(static fn(array $r): int => (int)$r['id'], $stmt->get_result()->fetch_all(MYSQLI_ASSOC));
+    $stmt->close();
+    if (!$ids) {
+        return [];
+    }
+
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $sql = "SELECT b.id, b.source, b.category, b.question_text, b.difficulty,
+                   o.position, o.option_text, o.is_correct
+            FROM QuizQuestionBank b
+            INNER JOIN QuizQuestionBankOption o ON o.bank_id = b.id
+            WHERE b.id IN ($placeholders)
+            ORDER BY b.id ASC, o.position ASC";
+    $stmt = $conn->prepare($sql);
+    $idTypes = str_repeat('i', count($ids));
+    $stmt->bind_param($idTypes, ...$ids);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $grouped = [];
+    while ($row = $result->fetch_assoc()) {
+        $id = (int)$row['id'];
+        if (!isset($grouped[$id])) {
+            $grouped[$id] = [
+                'bank_id'             => $id,
+                'source'              => (string)$row['source'],
+                'category'            => (string)$row['category'],
+                'question'            => (string)$row['question_text'],
+                'options'             => [],
+                'correct'             => '',
+                'existing_difficulty' => null,
+            ];
+        }
+        $text = (string)$row['option_text'];
+        $grouped[$id]['options'][] = $text;
+        if ((int)$row['is_correct'] === 1) {
+            $grouped[$id]['correct'] = $text;
+        }
+    }
+    $stmt->close();
+
+    $list = [];
+    foreach ($ids as $id) {
+        if (!isset($grouped[$id])) {
+            continue;
+        }
+        $q = $grouped[$id];
+        if (count($q['options']) < 2 || $q['correct'] === '') {
+            continue;
+        }
+        $list[] = $q;
+    }
+    return $list;
+}
+
+/**
+ * @param array<int, array{difficulty:string,reason?:string}> $ratings
+ * @return int rows updated
+ */
+function bankDifficultyPersistRatings(mysqli $conn, array $ratings): int {
+    if (!$ratings) {
+        return 0;
+    }
+    $stmt = $conn->prepare(
+        "UPDATE QuizQuestionBank
+         SET difficulty = ?
+         WHERE id = ?
+           AND (difficulty IS NULL OR difficulty = '')"
+    );
+    $updated = 0;
+    foreach ($ratings as $bankId => $row) {
+        $id = (int)$bankId;
+        $diff = strtolower(trim((string)($row['difficulty'] ?? '')));
+        if ($id <= 0 || !in_array($diff, ['easy', 'medium', 'hard'], true)) {
+            continue;
+        }
+        $stmt->bind_param('si', $diff, $id);
+        $stmt->execute();
+        if ($stmt->affected_rows > 0) {
+            $updated++;
+        }
+    }
+    $stmt->close();
+    return $updated;
+}

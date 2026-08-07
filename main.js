@@ -1250,6 +1250,7 @@ document.cookie="feedItems=50";
 	var aiCurrentIdx     = 0;
 	var aiScore          = 0;
 	var aiAnswerPending  = false;
+	var aiLifelinePending = false;
 	// aiPosted = a result for this quiz is already on the feed; aiReviewMode = currently
 	// walking the questions read-only, which is also allowed before posting.
 	var aiPosted         = false;
@@ -1332,6 +1333,69 @@ document.cookie="feedItems=50";
 		renderAIQuestion(0);
 	}
 
+	function aiLifelineRemainingCount() {
+		if (!aiQuizData) return 0;
+		if (aiQuizData.lifeline_remaining != null) return parseInt(aiQuizData.lifeline_remaining, 10) || 0;
+		return aiQuizData.lifeline_max || 2;
+	}
+
+	function updateAILifelineUi(q) {
+		var max = aiQuizData.lifeline_max || 2;
+		var remaining = aiLifelineRemainingCount();
+		$('#AIQuizLifelineRemaining').text(remaining + ' of ' + max + ' left');
+		var canUse = !aiPosted
+			&& !aiReviewMode
+			&& !aiQuizData.completed
+			&& q
+			&& q.format === 'mc'
+			&& !q.answered
+			&& !(q.eliminated_option_ids && q.eliminated_option_ids.length)
+			&& remaining > 0
+			&& !aiAnswerPending
+			&& !aiLifelinePending;
+		$('#AIQuiz5050').prop('disabled', !canUse);
+	}
+
+	function applyEliminatedOptions(eliminatedIds) {
+		if (!eliminatedIds || !eliminatedIds.length) return;
+		var elim = {};
+		eliminatedIds.forEach(function(id) { elim[parseInt(id, 10)] = true; });
+		$('#AIQuizOptions .ai-option').each(function() {
+			var optId = parseInt($(this).data('optid'), 10);
+			if (elim[optId]) {
+				$(this).addClass('ai-option-eliminated');
+			}
+		});
+	}
+
+	function useAI5050() {
+		if (!aiQuizData || aiLifelinePending || aiAnswerPending) return;
+		var q = aiQuizData.questions[aiCurrentIdx];
+		if (!q || q.format !== 'mc' || q.answered) return;
+		aiLifelinePending = true;
+		$('#AIQuiz5050').prop('disabled', true);
+		$.get('action-ai-5050.php', {
+			quiz_id: aiQuizData.quiz_id,
+			question_id: q.id
+		}, function(raw) {
+			var resp = (typeof raw === 'object') ? raw : JSON.parse(raw);
+			aiLifelinePending = false;
+			if (resp.error) {
+				alert(resp.error);
+				updateAILifelineUi(q);
+				return;
+			}
+			q.eliminated_option_ids = resp.eliminated_option_ids || [];
+			if (resp.remaining != null) aiQuizData.lifeline_remaining = resp.remaining;
+			applyEliminatedOptions(q.eliminated_option_ids);
+			updateAILifelineUi(q);
+		}).fail(function() {
+			aiLifelinePending = false;
+			alert('Could not use 50/50. Try again.');
+			updateAILifelineUi(q);
+		});
+	}
+
 	function renderAIQuestion(idx) {
 		var q = aiQuizData.questions[idx];
 		var total = aiQuizData.questions.length;
@@ -1350,6 +1414,8 @@ document.cookie="feedItems=50";
 		$('#AIQuizQuestion').text(q.question_text);
 		$('#AIQuizFeedback').hide().removeClass('feedback-correct feedback-wrong').text('');
 		$('#AIQuizNext').hide();
+		$('#AIQuizOptions').off('click', '.ai-option');
+		$('#AIQuiz5050').off('click').on('click', useAI5050);
 
 		var html = '';
 		q.options.forEach(function(opt) {
@@ -1360,6 +1426,8 @@ document.cookie="feedItems=50";
 				+ '</div>';
 		});
 		$('#AIQuizOptions').html(html);
+		applyEliminatedOptions(q.eliminated_option_ids);
+		updateAILifelineUi(q);
 
 		// If already answered (resume or review), show the reveal immediately
 		if (q.answered || (aiReviewMode && q.correct_option_id)) {
@@ -1371,6 +1439,8 @@ document.cookie="feedItems=50";
 				q.option_stats,
 				q.total_answers
 			);
+			applyEliminatedOptions(q.eliminated_option_ids);
+			updateAILifelineUi(q);
 			if (aiReviewMode) {
 				$('#AIQuizNext').show().text(aiCurrentIdx >= total - 1 ? 'See score \u2192' : 'Next \u2192');
 			} else if (aiCurrentIdx >= total - 1) {
@@ -1379,9 +1449,10 @@ document.cookie="feedItems=50";
 				$('#AIQuizNext').show().text('Next \u2192');
 			}
 		} else if (!aiReviewMode) {
-			$('#AIQuizOptions').on('click', '.ai-option', function() {
-				if (aiAnswerPending) return;
+			$('#AIQuizOptions').on('click', '.ai-option:not(.ai-option-eliminated)', function() {
+				if (aiAnswerPending || aiLifelinePending) return;
 				aiAnswerPending = true;
+				updateAILifelineUi(q);
 				var optId = parseInt($(this).data('optid'));
 				submitAIAnswer(q.id, optId);
 			});
@@ -1444,6 +1515,9 @@ document.cookie="feedItems=50";
 		}
 
 		aiAnswerPending = false;
+		if (aiQuizData && aiQuizData.questions[aiCurrentIdx]) {
+			updateAILifelineUi(aiQuizData.questions[aiCurrentIdx]);
+		}
 	}
 
 	function nextAIQuestion() {
@@ -1521,13 +1595,16 @@ document.cookie="feedItems=50";
 		$('#AIQuizOptions').off('click', '.ai-option');
 		$('#AIQuizNext').hide().text('Next \u2192');
 		$('#TabBar').show();
-		aiQuizData      = null;
-		aiCurrentIdx    = 0;
-		aiScore         = 0;
-		aiPosted        = false;
-		aiAnswerPending = false;
-		aiReviewMode    = false;
-		selectedQuiz    = null;
+		aiQuizData        = null;
+		aiCurrentIdx      = 0;
+		aiScore           = 0;
+		aiPosted          = false;
+		aiAnswerPending   = false;
+		aiLifelinePending = false;
+		aiReviewMode      = false;
+		selectedQuiz      = null;
+		$('#AIQuiz5050').off('click').prop('disabled', true);
+		$('#AIQuizLifelineRemaining').text('');
 		$('#QuizDropdown').val('');
 	}
 

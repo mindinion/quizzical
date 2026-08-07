@@ -414,9 +414,14 @@ function generateCategoryQuestions(
     $validatorRules = buildValidatorRulesBlock($category);
     $yearDiversityRule = buildYearAnswerDiversityPromptRule($yearAnswerCount);
     $tfCorrectRule = buildTfCorrectAnswerPromptRule($tfCorrectPreference);
-    $difficultyRule = $category === 'General Knowledge'
-        ? 'Difficulty: genuinely challenging — average players should get some wrong. For academic GK (science, inventions, civics), avoid the single most famous fact. For pop culture (film, TV, music), well-known classics are fine. Prefer names, places, and numbers over a run of year-only answers when possible.'
-        : 'Difficulty: genuinely challenging — average players should get some wrong. Do NOT ask questions whose answer is the single most famous fact about a topic (e.g. capital cities, a country\'s national animal/bird, "the" founding treaty of a nation, the primary language of a country, a famous landmark\'s most basic fact). These are trivially guessable. Ask about specific details, numbers, names, places, or lesser-known angles instead — but only facts you are confident are real and verifiable from standard reference sources, not obscure one-off records you are unsure about.';
+    $isCurrentEvents = str_contains($category, 'Current Events');
+    if ($category === 'General Knowledge') {
+        $difficultyRule = 'Difficulty: aim for an accessible daily quiz — typical players around 7–9/15 overall, knowledgeable players 10–12, a perfect 15 rare. For academic GK (science, inventions, civics), avoid the single most famous fact. For pop culture (film, TV, music), well-known classics are fine. Prefer names, places, and numbers over a run of year-only answers when possible.';
+    } elseif ($isCurrentEvents) {
+        $difficultyRule = 'Difficulty: accessible current-events trivia for a casual New Zealand audience — fair if you followed recent headlines, not insider or obscure. Across the full 15-question quiz, typical players should land around 7–9, knowledgeable players 10–12, and 15 should be rare. Prefer clear, well-covered national or major stories over tiny local footnotes. Still avoid questions whose answer is the single most famous evergreen fact about a country (e.g. capital cities, national animal/bird). Ask about a specific verifiable detail from the headlines — names, places, numbers — that a news-following player can reasonably get right.';
+    } else {
+        $difficultyRule = 'Difficulty: accessible daily-quiz level — typical players around 7–9/15 overall, knowledgeable players 10–12, a perfect 15 rare. Do NOT ask questions whose answer is the single most famous fact about a topic (e.g. capital cities, a country\'s national animal/bird, "the" founding treaty of a nation, the primary language of a country, a famous landmark\'s most basic fact). These are trivially guessable. Ask about specific details, numbers, names, places, or lesser-known angles instead — but only facts you are confident are real and verifiable from standard reference sources, not obscure one-off records you are unsure about.';
+    }
 
     $systemPrompt = <<<PROMPT
 You are writing question(s) for the "$category" section of a daily quiz for a New Zealand audience.
