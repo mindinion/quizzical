@@ -500,6 +500,34 @@
 		max-width: calc(100% - 80px);
 	}
 
+	#QuizFeedInfo.NoBubble {
+		max-width: 100%;
+		width: 100%;
+	}
+
+	#QuizFeedInfoText {
+		float: none;
+		width: auto;
+		max-width: none;
+		overflow: hidden;
+	}
+
+	#QuizFeedInfoText.NoBubble {
+		max-width: none;
+	}
+
+	#QuizFeedInfoStatus {
+		max-width: none;
+	}
+
+	#QuizFeedInfoComment.Primary {
+		width: 100%;
+	}
+
+	#CommentComposer {
+		max-width: none;
+	}
+
 	#QuizFeedBubble {
 		position: static;
 		float: right;

@@ -467,15 +467,74 @@ document.cookie="feedItems=50";
 
 	function renderAttachments(attachments) {
 		if (!attachments || !attachments.length) return '';
-		var html = '';
+		var imageHtml = '';
+		var otherHtml = '';
 		attachments.forEach(function(a) {
 			if (a.file_type === 'image') {
-				html += '<div class="attachment-wrap"><img src="action-getattachment.php?id=' + a.attachid + '" class="attachment-thumb" onclick="openAttachModal(\'action-getattachment.php?id=' + a.attachid + '\')"></div>';
+				imageHtml += '<div class="attachment-wrap"><img src="action-getattachment.php?id=' + a.attachid + '" class="attachment-thumb" onclick="openAttachGallery(this)"></div>';
 			} else {
-				html += '<div class="attachment-wrap"><a href="action-getattachment.php?id=' + a.attachid + '" class="attachment-link">&#x1F4CE; ' + a.original_name + '</a></div>';
+				otherHtml += '<div class="attachment-wrap"><a href="action-getattachment.php?id=' + a.attachid + '" class="attachment-link">&#x1F4CE; ' + a.original_name + '</a></div>';
 			}
 		});
+		var html = '';
+		if (imageHtml) html += '<div class="attachment-gallery">' + imageHtml + '</div>';
+		html += otherHtml;
 		return html;
+	}
+
+	var attachGalleryUrls = [];
+	var attachGalleryIndex = 0;
+
+	function openAttachGallery(imgEl) {
+		var $gallery = $(imgEl).closest('.attachment-gallery');
+		attachGalleryUrls = [];
+		attachGalleryIndex = 0;
+		$gallery.find('.attachment-thumb').each(function(i) {
+			var src = this.getAttribute('src') || this.src;
+			attachGalleryUrls.push(src.split('?')[0]);
+			if (this === imgEl) attachGalleryIndex = i;
+		});
+		showAttachModalAt(attachGalleryIndex);
+	}
+
+	function showAttachModalAt(index) {
+		if (!attachGalleryUrls.length) return;
+		attachGalleryIndex = Math.max(0, Math.min(index, attachGalleryUrls.length - 1));
+		$('#AttachModalImg').attr('src', attachGalleryUrls[attachGalleryIndex]);
+		updateAttachNavButtons();
+		if (!$('#AttachModal').is(':visible')) {
+			$('#AttachModal').fadeIn(150);
+		}
+	}
+
+	function updateAttachNavButtons() {
+		var multi = attachGalleryUrls.length > 1;
+		$('#AttachModalPrev, #AttachModalNext').css('display', multi ? 'flex' : 'none');
+		$('#AttachModalPrev').prop('disabled', attachGalleryIndex <= 0);
+		$('#AttachModalNext').prop('disabled', attachGalleryIndex >= attachGalleryUrls.length - 1);
+		$('#AttachModalCounter').toggle(multi).text((attachGalleryIndex + 1) + ' / ' + attachGalleryUrls.length);
+	}
+
+	function attachModalPrev() {
+		if (attachGalleryIndex > 0) showAttachModalAt(attachGalleryIndex - 1);
+	}
+
+	function attachModalNext() {
+		if (attachGalleryIndex < attachGalleryUrls.length - 1) showAttachModalAt(attachGalleryIndex + 1);
+	}
+
+	function openAttachModal(src) {
+		attachGalleryUrls = [src.split('?')[0]];
+		attachGalleryIndex = 0;
+		showAttachModalAt(0);
+	}
+
+	function closeAttachModal() {
+		$('#AttachModal').fadeOut(150);
+		$('#AttachModalImg').attr('src', '');
+		attachGalleryUrls = [];
+		attachGalleryIndex = 0;
+		$('#AttachModalPrev, #AttachModalNext, #AttachModalCounter').hide();
 	}
 
 	function renderCommentCard(comment) {
@@ -559,16 +618,6 @@ document.cookie="feedItems=50";
 			"</div>" +
 			"<div id='ReplyAttachPreview_" + quizFeedId + "' style='display:none'></div>" +
 		"</div>";
-	}
-
-	function openAttachModal(src) {
-		$('#AttachModalImg').attr('src', src);
-		$('#AttachModal').fadeIn(150);
-	}
-
-	function closeAttachModal() {
-		$('#AttachModal').fadeOut(150);
-		$('#AttachModalImg').attr('src', '');
 	}
 
 	function displayResults(resultsJson, preLoad, append) {
@@ -1334,6 +1383,7 @@ document.cookie="feedItems=50";
 			$('#AIQuizNext').hide().text('Next \u2192');
 			$('#AIQuizModal').show();
 			$('#TabBar').hide();
+			$(document).on('keydown.aiQuiz', handleAIQuizKeydown);
 
 			if (aiReviewMode) {
 				aiCurrentIdx = 0;
@@ -1607,6 +1657,15 @@ document.cookie="feedItems=50";
 		renderAIQuestion(aiCurrentIdx);
 	}
 
+	function handleAIQuizKeydown(e) {
+		if (!$('#AIQuizModal').is(':visible')) return;
+		if (e.key !== 'Enter' && e.keyCode !== 13) return;
+		if ($(e.target).is('textarea, input, select')) return;
+		if (!$('#AIQuizNext').is(':visible') || aiAnswerPending || aiLifelinePending) return;
+		e.preventDefault();
+		nextAIQuestion();
+	}
+
 	function showAIScoreScreen() {
 		$('#AIQuizBody').hide();
 		var maxScore = aiQuizData.final_max || aiQuizData.questions.length || 15;
@@ -1662,6 +1721,7 @@ document.cookie="feedItems=50";
 
 	function closeAIQuiz() {
 		$('#AIQuizModal').hide();
+		$(document).off('keydown.aiQuiz');
 		$('#AIQuizBody').show();
 		$('#AIQuizScoreScreen').hide();
 		$('#AIQuizReviewBtn').hide();
@@ -2045,6 +2105,20 @@ document.cookie="feedItems=50";
 				$preview: $('#ReplyAttachPreview_' + quizFeedId),
 				$attachBtn: $('[data-replyattachid="' + quizFeedId + '"]')
 			});
+		});
+
+		// Lightbox: arrow keys and Escape
+		$(document).on('keydown.attachModal', function(e) {
+			if (!$('#AttachModal').is(':visible')) return;
+			if (e.key === 'ArrowLeft' || e.keyCode === 37) {
+				e.preventDefault();
+				attachModalPrev();
+			} else if (e.key === 'ArrowRight' || e.keyCode === 39) {
+				e.preventDefault();
+				attachModalNext();
+			} else if (e.key === 'Escape' || e.keyCode === 27) {
+				closeAttachModal();
+			}
 		});
 
 		// Paste images from clipboard into composer or reply boxes
