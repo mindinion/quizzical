@@ -6,7 +6,7 @@
 
 <script src="jquery.js"></script>
 <script src="cropper.min.js"></script>
-<script src="main.js?id=96"></script>
+<script src="main.js?id=97"></script>
 
 
 
@@ -29,9 +29,9 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-		<link href="styles-main.css?id=1295" type="text/css" rel="stylesheet" />
+		<link href="styles-main.css?id=1296" type="text/css" rel="stylesheet" />
 		<link href="styles-profile.css?id=23" type="text/css" rel="stylesheet" />
-		<link href="styles-rankings.css?id=15" type="text/css" rel="stylesheet" />
+		<link href="styles-rankings.css?id=16" type="text/css" rel="stylesheet" />
 		<link href="cropper.min.css" type="text/css" rel="stylesheet" />
 		<link rel="icon" type="image/png" href="quizzical_logo.png">
 	</head>
@@ -247,12 +247,12 @@
 
 	<div id="AttachModal" onclick="closeAttachModal()" style="display:none">
 		<div id="AttachModalInner" onclick="event.stopPropagation()">
-			<button type="button" id="AttachModalPrev" onclick="attachModalPrev()" aria-label="Previous image" style="display:none">&#x2039;</button>
 			<div id="AttachModalImageWrap">
+				<button type="button" id="AttachModalPrev" onclick="attachModalPrev()" aria-label="Previous image" style="display:none">&#x2039;</button>
 				<img id="AttachModalImg" src="" alt="">
+				<button type="button" id="AttachModalNext" onclick="attachModalNext()" aria-label="Next image" style="display:none">&#x203A;</button>
 				<span id="AttachModalCounter" style="display:none"></span>
 			</div>
-			<button type="button" id="AttachModalNext" onclick="attachModalNext()" aria-label="Next image" style="display:none">&#x203A;</button>
 			<button id="AttachModalClose" onclick="closeAttachModal()">&#x2715;</button>
 		</div>
 	</div>

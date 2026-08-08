@@ -502,8 +502,9 @@ document.cookie="feedItems=50";
 		attachGalleryIndex = Math.max(0, Math.min(index, attachGalleryUrls.length - 1));
 		$('#AttachModalImg').attr('src', attachGalleryUrls[attachGalleryIndex]);
 		updateAttachNavButtons();
-		if (!$('#AttachModal').is(':visible')) {
-			$('#AttachModal').fadeIn(150);
+		var $modal = $('#AttachModal');
+		if (!$modal.is(':visible')) {
+			$modal.css('display', 'flex').hide().fadeIn(150);
 		}
 	}
 
@@ -663,7 +664,7 @@ document.cookie="feedItems=50";
 			if (resultId == null) {
 				$('*[data-quizfeed="' + quizfeedId + '"]').html("<div id=QuizFeedInfo data-quizfeedinfo=" + quizfeedId + " class=NoBubble>");
 				$('*[data-quizfeedinfo="' + quizfeedId + '"]').html(photoHtml);
-				$('*[data-quizfeedinfo="' + quizfeedId + '"]').append("<div id=QuizFeedInfoText class=nobubble data-quizfeedtext=" + quizfeedId + ">");
+				$('*[data-quizfeedinfo="' + quizfeedId + '"]').append("<div id=QuizFeedInfoText class=NoBubble data-quizfeedtext=" + quizfeedId + ">");
 
 			} else {
 				$('*[data-quizfeed="' + quizfeedId + '"]').html("<div id=QuizFeedInfo data-quizfeedinfo=" + quizfeedId + " >");
@@ -776,7 +777,7 @@ document.cookie="feedItems=50";
 		$info.append($photo);
 
 		var $text = $('<div>').attr({ id: 'QuizFeedInfoText', 'data-quizfeedtext': postId });
-		if (!opts.isResult) $text.addClass('nobubble');
+		if (!opts.isResult) $text.addClass('NoBubble');
 
 		var $name = $('<div>').attr({ id: 'QuizFeedInfoName', 'data-quizfeedname': postId });
 		$name.append(document.createTextNode(getSetting('first_name') + ' ' + getSetting('last_name')));

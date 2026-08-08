@@ -1235,30 +1235,34 @@ A {}
 	position: relative;
 	max-width: 92vw;
 	max-height: 88vh;
-	display: flex;
-	align-items: center;
-	gap: 10px;
 }
 
 #AttachModalImageWrap {
 	position: relative;
-	max-width: calc(92vw - 120px);
+	display: inline-block;
+	max-width: 92vw;
 	max-height: 88vh;
+	vertical-align: middle;
 }
 
 #AttachModalImg {
 	display: block;
-	max-width: 100%;
+	max-width: 92vw;
 	max-height: 88vh;
+	width: auto;
+	height: auto;
 	border-radius: 6px;
 }
 
 #AttachModalPrev,
 #AttachModalNext {
-	flex-shrink: 0;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 1102;
 	width: 44px;
 	height: 44px;
-	background: rgba(255, 255, 255, 0.15);
+	background: rgba(0, 0, 0, 0.45);
 	border: none;
 	border-radius: 50%;
 	color: #fff;
@@ -1269,6 +1273,14 @@ A {}
 	align-items: center;
 	justify-content: center;
 	padding: 0 0 2px;
+}
+
+#AttachModalPrev {
+	left: 8px;
+}
+
+#AttachModalNext {
+	right: 8px;
 }
 
 #AttachModalPrev:hover:not(:disabled),

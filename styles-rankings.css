@@ -493,27 +493,37 @@
 		max-width: none;
 	}
 
-	/* Feed bubbles: make compact and float right alongside info,
-	   rather than overlapping it with absolute positioning */
+	/* Feed layout: flex row so text uses all space beside avatar and bubble */
+	#QuizFeedItem {
+		display: flex;
+		flex-wrap: nowrap;
+		align-items: flex-start;
+		gap: 8px;
+		float: none;
+		width: 100%;
+		box-sizing: border-box;
+	}
+
 	#QuizFeedInfo {
+		flex: 1 1 0;
 		min-width: 0;
-		max-width: calc(100% - 80px);
+		max-width: none;
+		width: auto;
+		float: none;
 	}
 
 	#QuizFeedInfo.NoBubble {
-		max-width: 100%;
-		width: 100%;
+		max-width: none;
+		width: auto;
 	}
 
-	#QuizFeedInfoText {
+	#QuizFeedInfoText,
+	#QuizFeedInfoText.NoBubble,
+	#QuizFeedInfoText.nobubble {
 		float: none;
 		width: auto;
 		max-width: none;
 		overflow: hidden;
-	}
-
-	#QuizFeedInfoText.NoBubble {
-		max-width: none;
 	}
 
 	#QuizFeedInfoStatus {
@@ -529,8 +539,9 @@
 	}
 
 	#QuizFeedBubble {
+		flex: 0 0 auto;
+		float: none;
 		position: static;
-		float: right;
 		min-width: 0;
 		width: 70px;
 		height: auto;
