@@ -51,6 +51,7 @@
 		Comment.id AS comment_id,
 		Commenter.first_name AS comment_first_name,
 		Commenter.last_name AS comment_last_name,
+		Commenter.pic_filename AS comment_pic_filename,
 		Commenter.id AS comment_user_id,
 		Comment.comment AS comment_comment,
 		Comment.timestamp AS comment_timestamp,
@@ -125,6 +126,7 @@
 		public $commentid = "";
 		public $comment_first_name = "";
 		public $comment_last_name = "";
+		public $comment_pic_filename = "";
 		public $comment_comment = "";
 		public $comment_timestamp = "";
 		public $comment_user_id = "";
@@ -208,6 +210,7 @@
 						$newComment[$count_comments]->commentid = $commentid;
 						$newComment[$count_comments]->comment_first_name = $row['comment_first_name'];
 						$newComment[$count_comments]->comment_last_name = $row['comment_last_name'];
+						$newComment[$count_comments]->comment_pic_filename = $row['comment_pic_filename'];
 						$newComment[$count_comments]->comment_comment = $row['comment_comment'];
 						$newComment[$count_comments]->comment_timestamp = $row['comment_timestamp'];
 						$newComment[$count_comments]->comment_user_id = $row['comment_user_id'];

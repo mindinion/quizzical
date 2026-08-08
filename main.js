@@ -144,6 +144,15 @@ document.cookie="feedItems=50";
 	
 	
 	function showReplyBox (id ) {
+		var $composer = $('.ReplyComposer[data-replycomposer="' + id + '"]');
+		if ($composer.length) {
+			if ($composer.is(':hidden')) {
+				$composer.show().find('.QuizFeedInfoReplyInput').focus();
+			} else {
+				$composer.hide();
+			}
+			return;
+		}
 		var $textarea = $('*[data-replyboxid="' + id + '"]');
 		var $attachBtn = $('*[data-replyattachid="' + id + '"]');
 		var $postBtn = $('*[data-replypostbtnid="' + id + '"]');
@@ -469,6 +478,89 @@ document.cookie="feedItems=50";
 		return html;
 	}
 
+	function renderCommentCard(comment) {
+		var commentid = comment.commentid;
+		var name = comment.comment_first_name + " " + comment.comment_last_name;
+		var ts = comment.comment_timestamp;
+		var commentAgo = ts ? moment.tz(ts, getSetting("old_timezone")).tz(getSetting("timezone")).fromNow() : '';
+		var picFilename = comment.comment_pic_filename;
+		var picSrc = (picFilename && picFilename !== 'null') ? picFilename + '?t=' + Date.now() : 'profileicon.png';
+		var commentAttachHtml = renderAttachments(comment.attachments);
+		var deleteLink = (comment.comment_user_id == getSetting("user_id"))
+			? "<span class='QuizFeedInfoDelete' onclick='deleteComment(" + commentid + ");'>Delete</span>"
+			: "";
+
+		return "<div class='CommentCard' data-comment='" + commentid + "'>" +
+			"<div class='CommentCard-header'>" +
+				"<div class='CommentCard-avatar'><img src='" + picSrc + "' width='28' height='28' loading='lazy' onerror=\"this.onerror=null;this.src='profileicon.png'\"></div>" +
+				"<div class='CommentCard-meta'>" +
+					"<span class='CommentCard-name'>" + name + "</span>" +
+					"<span class='comment-timestamp'>" + commentAgo + "</span>" +
+				"</div>" +
+			"</div>" +
+			"<div class='CommentCard-body'>" +
+				"<div class='CommentText'>" + autoLinkUrls(comment.comment_comment || '') + "</div>" +
+				commentAttachHtml +
+			"</div>" +
+			"<div class='CommentCard-footer'>" +
+				"<span class='CommentCard-dig-summary'></span>" +
+				"<span class='DigCommentLink' data-linkcommentid='" + commentid + "'></span>" +
+				deleteLink +
+			"</div>" +
+		"</div>";
+	}
+
+	function applyCommentDigs(comment, myuserid) {
+		var commentid = comment.commentid;
+		var $summary = $('[data-comment="' + commentid + '"] .CommentCard-dig-summary');
+		var $link = $('[data-linkcommentid="' + commentid + '"]');
+		var digLink;
+
+		if (comment.digs != null && comment.digs.length > 0) {
+			var digs = comment.digs;
+			var names = "";
+			var context = "digs";
+			var digCount = 0;
+			var mineFlag = 0;
+			digs.forEach(function(dig) {
+				if (dig.digstatus != "deleted") {
+					var mine = (dig.dig_user_id == myuserid) ? 1 : 0;
+					var handle = mine ? "You" : dig.dig_first_name;
+					names += handle;
+					if (digCount == (digs.length - 2)) names += " and ";
+					else if (digCount == (digs.length - 1)) names += "";
+					else names += ", ";
+					digCount++;
+					if (mine) mineFlag = 1;
+				}
+			});
+			if (digCount > 1 || mineFlag > 0) context = "dig";
+
+			if (mineFlag) {
+				digLink = "<span class='DigCommentLink' onclick='undigComment(" + commentid + ");'>Undig</span>";
+			} else {
+				digLink = "<span class='DigCommentLink' onclick='digComment(" + commentid + "," + myuserid + ");'>Dig</span>";
+			}
+
+			$summary.text(names + " " + context + " this");
+			$link.html(digLink);
+		} else {
+			digLink = "<span class='DigCommentLink' onclick='digComment(" + commentid + "," + myuserid + ");'>Dig</span>";
+			$link.html(digLink);
+		}
+	}
+
+	function renderReplyComposer(quizFeedId) {
+		return "<div class='ReplyComposer' data-replycomposer='" + quizFeedId + "' style='display:none'>" +
+			"<textarea rows='3' class='QuizFeedInfoReplyInput' onkeydown='sendComment(event," + quizFeedId + ")' data-replyboxid='" + quizFeedId + "' placeholder='Write a reply...'></textarea>" +
+			"<div class='ReplyComposer-actions'>" +
+				"<label class='reply-attach-btn' data-replyattachid='" + quizFeedId + "'>Attach<input type='file' multiple class='reply-file-input' data-replyfileid='" + quizFeedId + "' accept='image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt' style='display:none'></label>" +
+				"<button class='reply-post-btn' data-replypostbtnid='" + quizFeedId + "' onclick='sendComment({keyCode:13}," + quizFeedId + ")'>Post</button>" +
+			"</div>" +
+			"<div id='ReplyAttachPreview_" + quizFeedId + "' style='display:none'></div>" +
+		"</div>";
+	}
+
 	function openAttachModal(src) {
 		$('#AttachModalImg').attr('src', src);
 		$('#AttachModal').fadeIn(150);
@@ -559,72 +651,17 @@ document.cookie="feedItems=50";
 			if (userId == getSetting("user_id"))
 			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("- <span id=QuizFeedInfoDelete data-deleteid=" + quizfeedId + " onclick='deletePost(" + quizfeedId + ");'>Delete </span>");    				
 			
-			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<textarea rows=3 class=QuizFeedInfoReplyInput onkeydown='sendComment(event," + quizfeedId + ")' data-replyboxid=" + quizfeedId + " style=display:none;></textarea>");    				
-			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<label class='reply-attach-btn' data-replyattachid=" + quizfeedId + " style='display:none'>Attach<input type='file' multiple class='reply-file-input' data-replyfileid=" + quizfeedId + " accept='image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt' style='display:none'></label>");
-			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<button class='reply-post-btn' data-replypostbtnid=" + quizfeedId + " onclick='sendComment({keyCode:13}," + quizfeedId + ")' style='display:none'>Post</button>");
-			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id='ReplyAttachPreview_" + quizfeedId + "' style='display:none'></div>");
+			$('*[data-quizfeedtext="' + quizfeedId + '"]').append(renderReplyComposer(quizfeedId));
 
 			// Grab the comments data for the post and display them
 			if (result.comments != null && result.comments.length > 0) {
-				var comments = result.comments;
-				comments.forEach(function(comment) {
-					var commentid = comment.commentid;
-					var text = comment.comment_comment;
-					var name = comment.comment_first_name + " " + comment.comment_last_name;
-					var commentUserId = comment.comment_user_id;
-					var ts = comment.comment_timestamp;
-					var commentAgo = ts ? moment.tz(ts, getSetting("old_timezone")).tz(getSetting("timezone")).fromNow() : '';
-					var deleteLink = (commentUserId == getSetting("user_id")) ? " - <span class='QuizFeedInfoDelete' onclick='deleteComment(" + commentid + ");'>Delete</span>" : "";
-					var commentAttachHtml = renderAttachments(comment.attachments);
-					$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div class=Comments><div class=CommentRow><div class=CommentName>" + name + "<div class='comment-meta'><span class='comment-timestamp'>" + commentAgo + "</span>" + deleteLink + "</div></div><div class='QuizFeedInfoComment OtherUser' data-comment=" + commentid + "><div class=CommentText>" + autoLinkUrls(text || '') + "</div>" + commentAttachHtml + "<div class=DigsComment data-commentid=" + commentid +"><span class='DigCommentLink' data-linkcommentid=" + commentid + " > </span></div></div></div>");
-				
-					// Grab the digs data for each comment and display them
-					window.res = comment.digs;
-					if (comment.digs != null && comment.digs.length > 0) {
-						var digs = comment.digs;
-						var names = "";
-						var context = "digs";
-						var digCount = 0;
-						var mineFlag = 0;
-						digs.forEach(function(dig) {
-							if (dig.digstatus != "deleted" ) {
-								mine = 0;
-								digUserId = dig.dig_user_id;
-								if (digUserId == myuserid) mine = 1;
-								if (mine ) handle = "You "; 
-									else handle = dig.dig_first_name;
-								names += handle;
-								if (digCount == (digs.length-2)) {				// If the current dig is the second last dig, write 'and'
-									names += " and ";
-								} else if (digCount == (digs.length-1)) { 		// If the current dig is the last dig, write ''
-									names += "";
-								} else {										// Otherwise, write ','
-									names += ", ";
-								}	
-								digCount++;
-								mineFlag = mine;
-							}
-						});
-						if (digCount > 1 || mineFlag > 0) context = "dig";
-				
-						// Determine dig/undig, depending on whether a dig is theirs or not
-						if (mine) {
-							digLink = "<span id='DigCommentLink' data-linkcommentid=" + commentid + " onclick='undigComment(" + commentid + ");'> Undig</span>";
-						} else {
-							digLink = "<span id='DigCommentLink' data-linkcommentid=" + commentid + " onclick='digComment(" + commentid + "," + myuserid + ");'> Dig</span>";
-						}
-						
-						// Show the digs, as well as the link to dig/undig
-						$('*[data-comment="' + commentid + '"]').append("<div class=DigsComment>" + names + " "  + context + " this</div>");
-								
-						$('*[data-linkcommentid="' + commentid + '"]').html(digLink);
-					} else {
-						digLink = "<span id='DigCommentLink' data-linkcommentid=" + commentid + " onclick='digComment(" + commentid + "," + myuserid + ");'> Dig</span>";
-						$('*[data-linkcommentid="' + commentid + '"]').html(digLink);
-					}
-							
-				
-				
+				var $commentsWrap = $("<div class='Comments'></div>");
+				result.comments.forEach(function(comment) {
+					$commentsWrap.append(renderCommentCard(comment));
+				});
+				$('*[data-quizfeedtext="' + quizfeedId + '"]').append($commentsWrap);
+				result.comments.forEach(function(comment) {
+					applyCommentDigs(comment, myuserid);
 				});
 			}
 			
@@ -713,13 +750,7 @@ document.cookie="feedItems=50";
 		$text.append($('<span>').attr({ id: 'QuizFeedInfoDigLink', 'data-dig': postId }).on('click', function() { digPost(postId); }).text('Dig '));
 		$text.append(document.createTextNode('- '));
 		$text.append($('<span>').attr({ id: 'QuizFeedInfoDelete', 'data-deleteid': postId }).on('click', function() { deletePost(postId); }).text('Delete '));
-		$text.append($('<textarea>').attr({ rows: 3, 'class': 'QuizFeedInfoReplyInput', 'data-replyboxid': postId, style: 'display:none;' }).on('keydown', function(e) { sendComment(e, postId); }));
-		var $replyAttachLabel = $('<label>').addClass('reply-attach-btn').attr({ 'data-replyattachid': postId, style: 'display:none' }).html('Attach');
-		var $replyFileInput = $('<input>').attr({ type: 'file', multiple: true, 'class': 'reply-file-input', 'data-replyfileid': postId, accept: 'image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt', style: 'display:none' });
-		$replyAttachLabel.append($replyFileInput);
-		$text.append($replyAttachLabel);
-		$text.append($('<button>').addClass('reply-post-btn').attr({ 'data-replypostbtnid': postId, style: 'display:none' }).text('Post').on('click', function() { sendComment({ keyCode: 13 }, postId); }));
-		$text.append($('<div>').attr({ id: 'ReplyAttachPreview_' + postId, style: 'display:none' }));
+		$text.append($(renderReplyComposer(postId)));
 
 		$info.append($text);
 		$item.append($info);

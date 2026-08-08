@@ -680,36 +680,175 @@ A {}
 	line-height:110%;
 	color:black;
 }
+
+/* ── Feed comments (threaded cards) ── */
+
+.Comments {
+	margin-top: 10px;
+	margin-left: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding-bottom: 1px;
+}
+
+.CommentCard {
+	background: #fff;
+	border: 1px solid #e8e0d0;
+	border-radius: 8px;
+	padding: 8px 10px;
+	box-sizing: border-box;
+}
+
+.CommentCard-header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 4px;
+}
+
+.CommentCard-avatar img {
+	border-radius: 50%;
+	display: block;
+	width: 28px;
+	height: 28px;
+	object-fit: cover;
+}
+
+.CommentCard-meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 4px 6px;
+	min-width: 0;
+}
+
+.CommentCard-name {
+	font-size: 12px;
+	font-weight: bold;
+	color: #333;
+	font-family: verdana, arial;
+}
+
+.CommentCard-body {
+	padding-left: 36px;
+}
+
+.CommentCard-footer {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px 10px;
+	padding-left: 36px;
+	margin-top: 6px;
+	font-size: 11px;
+	font-family: verdana, arial;
+	color: #999;
+}
+
+.CommentCard-dig-summary {
+	color: #DB944D;
+	font-size: 11px;
+}
+
+.CommentCard-footer .QuizFeedInfoDelete {
+	margin-left: 0;
+	font-size: 11px;
+}
+
+.CommentText {
+	font-size: 13px;
+	line-height: 1.35;
+	color: #333;
+	font-family: verdana, arial;
+	word-wrap: break-word;
+}
+
+/* Legacy two-column layout (div-quizfeed.php fallback) */
 .CommentRow {
 	display: flex;
-	align-items: stretch;
-	background-color: #F2F2F2;
+	flex-direction: column;
+	background-color: #fff;
+	border: 1px solid #e8e0d0;
+	border-radius: 8px;
+	padding: 8px 10px;
 }
 
 .CommentName {
-	font-size: 10px;
-	color: black;
+	font-size: 12px;
+	color: #333;
 	font-weight: bold;
-	padding: 4px 8px 5px 10px;
-	background-color: #c2d6d6;
+	padding: 0;
+	background-color: transparent;
 	flex-shrink: 0;
-	width: 175px;
+	width: auto;
 	box-sizing: border-box;
 }
 
 .comment-meta {
 	font-weight: normal;
 	margin-top: 2px;
-	white-space: nowrap;
+	white-space: normal;
 }
 
 .OtherUser {
-	font-size: 10px;
-	padding: 4px 0 5px 8px;
-	color: #403F3D;
-	background-color: #F2F2F2;
+	font-size: 13px;
+	padding: 4px 0 0;
+	color: #333;
+	background-color: transparent;
 	flex: 1;
 	min-width: 0;
+}
+
+.ReplyComposer {
+	margin-top: 8px;
+	background: #fff;
+	border: 1px solid #e8e0d0;
+	border-radius: 10px;
+	padding: 10px 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	box-sizing: border-box;
+}
+
+.ReplyComposer .QuizFeedInfoReplyInput {
+	width: 100%;
+	min-height: 38px;
+	max-height: 120px;
+	font-size: 14px;
+	font-family: verdana, arial;
+	border: none;
+	outline: none;
+	resize: none;
+	color: #333;
+	background: transparent;
+	box-sizing: border-box;
+	display: block;
+}
+
+.ReplyComposer-actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	justify-content: flex-end;
+}
+
+.ReplyComposer-actions .reply-attach-btn,
+.ReplyComposer-actions .reply-post-btn {
+	margin-top: 0;
+	margin-left: 0;
+}
+
+.ReplyComposer-actions .reply-post-btn {
+	background: #cc5500;
+	border-radius: 6px;
+	padding: 7px 18px;
+	font-size: 13px;
+}
+
+.ReplyComposer-actions .reply-post-btn:hover {
+	background: #b34a00;
 }
 
 #QuizFeedInfoReplyLink {
@@ -751,8 +890,20 @@ A {}
 .DigsComment{
 	padding-right:10px;
 	color:DB944D;
-	right:0px;
-	position:relative;
+	font-size: 11px;
+}
+
+.DigCommentLink,
+#DigCommentLink {
+	color: #999;
+	cursor: pointer;
+	font-size: 11px;
+	font-family: verdana, arial;
+}
+
+.DigCommentLink:hover,
+#DigCommentLink:hover {
+	text-decoration: underline;
 }
 
 #QuizFeedBubble {
@@ -881,9 +1032,6 @@ A {}
 	text-align:center;
 }
 
-.Comments {
-	padding-bottom:1px;
-}
 
 #Footer {
 	background-color:fee9cd;
@@ -916,9 +1064,6 @@ A {}
 	padding-right:10px;
 }
 
-.CommentText {
-
-}
 
 #BlurredImage {
 	background-image: url("k_stick.jpg");
@@ -1172,6 +1317,19 @@ A {}
 	#MainContent {
 		top: 136px;
 		background: white;
+	}
+	.Comments {
+		margin-left: 0;
+	}
+	.CommentCard-body,
+	.CommentCard-footer {
+		padding-left: 0;
+	}
+	.CommentRow {
+		flex-direction: column;
+	}
+	.CommentName {
+		width: 100%;
 	}
 }
 
