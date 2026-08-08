@@ -493,19 +493,23 @@
 		max-width: none;
 	}
 
-	/* Feed: full-width post, score bubble stacked below */
+	/* Feed: full-width post, score bubble on its own row below (right-aligned) */
 	#QuizFeedItem {
-		display: block;
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
 		float: none;
 		width: 100%;
 		box-sizing: border-box;
 	}
 
 	#QuizFeedInfo {
+		order: 1;
 		width: 100%;
 		max-width: 100%;
 		min-width: 0;
 		float: none;
+		overflow: hidden;
 		box-sizing: border-box;
 	}
 
@@ -536,10 +540,12 @@
 	}
 
 	#QuizFeedBubble {
-		clear: both;
-		float: right;
+		order: 2;
+		align-self: flex-end;
+		float: none;
+		clear: none;
 		position: static;
-		display: inline-block;
+		display: block;
 		width: auto;
 		max-width: 240px;
 		min-width: 0;
