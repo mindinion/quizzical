@@ -491,7 +491,7 @@ document.cookie="feedItems=50";
 		attachGalleryIndex = 0;
 		$gallery.find('.attachment-thumb').each(function(i) {
 			var src = this.getAttribute('src') || this.src;
-			attachGalleryUrls.push(src.split('?')[0]);
+			attachGalleryUrls.push(src);
 			if (this === imgEl) attachGalleryIndex = i;
 		});
 		showAttachModalAt(attachGalleryIndex);
@@ -503,8 +503,8 @@ document.cookie="feedItems=50";
 		$('#AttachModalImg').attr('src', attachGalleryUrls[attachGalleryIndex]);
 		updateAttachNavButtons();
 		var $modal = $('#AttachModal');
-		if (!$modal.is(':visible')) {
-			$modal.css('display', 'flex').hide().fadeIn(150);
+		if (!$modal.hasClass('attach-modal-open')) {
+			$modal.addClass('attach-modal-open').css({ display: 'flex', opacity: 0 }).animate({ opacity: 1 }, 150);
 		}
 	}
 
@@ -525,13 +525,16 @@ document.cookie="feedItems=50";
 	}
 
 	function openAttachModal(src) {
-		attachGalleryUrls = [src.split('?')[0]];
+		attachGalleryUrls = [src];
 		attachGalleryIndex = 0;
 		showAttachModalAt(0);
 	}
 
 	function closeAttachModal() {
-		$('#AttachModal').fadeOut(150);
+		var $modal = $('#AttachModal');
+		$modal.animate({ opacity: 0 }, 150, function() {
+			$modal.removeClass('attach-modal-open').css('display', 'none');
+		});
 		$('#AttachModalImg').attr('src', '');
 		attachGalleryUrls = [];
 		attachGalleryIndex = 0;

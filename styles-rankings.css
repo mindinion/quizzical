@@ -537,14 +537,14 @@
 
 	#QuizFeedBubble {
 		clear: both;
-		float: none;
+		float: right;
 		position: static;
 		display: inline-block;
 		width: auto;
 		max-width: 240px;
 		min-width: 0;
 		height: auto;
-		margin: 10px 10px 0 80px;
+		margin: 10px 10px 0 0;
 		padding: 10px 12px 8px;
 		right: auto;
 		font-size: 11px;

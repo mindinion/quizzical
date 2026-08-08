@@ -1231,6 +1231,10 @@ A {}
 	justify-content: center;
 }
 
+#AttachModal.attach-modal-open {
+	display: flex !important;
+}
+
 #AttachModalInner {
 	position: relative;
 	max-width: 92vw;
@@ -1252,6 +1256,8 @@ A {}
 	width: auto;
 	height: auto;
 	border-radius: 6px;
+	position: relative;
+	z-index: 1101;
 }
 
 #AttachModalPrev,
