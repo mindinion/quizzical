@@ -5,8 +5,12 @@
 
 require_once __DIR__ . '/ai-quiz-stats.php';
 
-function quizFeedHasDiscussionColumns(mysqli $conn): bool {
+/** Pass $fresh after altering the table, otherwise the cached answer is stale. */
+function quizFeedHasDiscussionColumns(mysqli $conn, bool $fresh = false): bool {
     static $has = null;
+    if ($fresh) {
+        $has = null;
+    }
     if ($has === null) {
         $r = $conn->query("SHOW COLUMNS FROM QuizFeed LIKE 'ai_quiz_id'");
         $has = $r && $r->num_rows > 0;
@@ -14,23 +18,37 @@ function quizFeedHasDiscussionColumns(mysqli $conn): bool {
     return $has;
 }
 
-function quizFeedEnsureDiscussionColumns(mysqli $conn): bool {
-    if (quizFeedHasDiscussionColumns($conn)) {
+function quizFeedEnsureDiscussionColumns(mysqli $conn, ?string &$error = null): bool {
+    if (quizFeedHasDiscussionColumns($conn, true)) {
         return true;
     }
-    if (!$conn->query(
-        "ALTER TABLE `QuizFeed`
-         ADD COLUMN `ai_quiz_id` int UNSIGNED DEFAULT NULL,
-         ADD COLUMN `quiz_type` varchar(50) DEFAULT NULL,
-         ADD COLUMN `quiz_date` date DEFAULT NULL"
-    )) {
-        return false;
+
+    // Added one at a time so a partially migrated table can still be completed.
+    $columns = [
+        'ai_quiz_id' => "ADD COLUMN `ai_quiz_id` int UNSIGNED DEFAULT NULL",
+        'quiz_type'  => "ADD COLUMN `quiz_type` varchar(50) DEFAULT NULL",
+        'quiz_date'  => "ADD COLUMN `quiz_date` date DEFAULT NULL",
+    ];
+    foreach ($columns as $name => $clause) {
+        $existing = $conn->query("SHOW COLUMNS FROM QuizFeed LIKE '$name'");
+        if ($existing && $existing->num_rows > 0) {
+            continue;
+        }
+        if (!$conn->query("ALTER TABLE `QuizFeed` $clause")) {
+            $error = $conn->error;
+            return false;
+        }
     }
-    $conn->query(
-        "ALTER TABLE `QuizFeed`
-         ADD KEY `idx_quiz_discussion` (`ai_quiz_id`, `quiz_type`, `quiz_date`)"
-    );
-    return quizFeedHasDiscussionColumns($conn);
+
+    $index = $conn->query("SHOW INDEX FROM QuizFeed WHERE Key_name = 'idx_quiz_discussion'");
+    if (!$index || $index->num_rows === 0) {
+        $conn->query(
+            "ALTER TABLE `QuizFeed`
+             ADD KEY `idx_quiz_discussion` (`ai_quiz_id`, `quiz_type`, `quiz_date`)"
+        );
+    }
+
+    return quizFeedHasDiscussionColumns($conn, true);
 }
 
 /** @return array{key: string, ai_quiz_id: int|null, quiz_type: string|null, quiz_date: string|null} */

@@ -11,8 +11,15 @@ require_once __DIR__ . '/quiz-feed-helper.php';
 
 header('Content-Type: application/json');
 
-$ok = quizFeedEnsureDiscussionColumns($conn);
-echo json_encode([
+$error = null;
+$ok = quizFeedEnsureDiscussionColumns($conn, $error);
+
+$response = [
     'ok'    => $ok,
-    'ready' => quizFeedHasDiscussionColumns($conn),
-]);
+    'ready' => quizFeedHasDiscussionColumns($conn, true),
+];
+if (!$ok && $error) {
+    $response['error'] = $error;
+}
+
+echo json_encode($response);
