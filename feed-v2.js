@@ -48,11 +48,12 @@ function displayQuizFeed(resultsJson, preLoad, append) {
 function renderWeeklyStrip() {
 	if (typeof feedWeeklyLeaders === 'undefined' || !feedWeeklyLeaders.length) return;
 
-	var medals = ['\uD83E\uDD47', '\uD83E\uDD48', '\uD83E\uDD49'];
-	var html = '<div class="WeeklyStrip"><span class="WeeklyStrip-label">This week</span>';
+	var html = '<div class="WeeklyStrip">';
 	feedWeeklyLeaders.forEach(function(r, i) {
-		html += '<span class="WeeklyStrip-entry">' + medals[i] + ' ' + escapeHtml(r.first_name)
-			+ ' <span class="WeeklyStrip-pct">' + r.avg_pct + '%</span></span>';
+		html += '<span class="WeeklyStrip-pill WeeklyStrip-pill-' + (i + 1) + '">'
+			+ '<span class="WeeklyStrip-rank">' + (i + 1) + '</span>'
+			+ escapeHtml(r.first_name)
+			+ '<span class="WeeklyStrip-pct">' + r.avg_pct + '%</span></span>';
 	});
 	html += '</div>';
 
@@ -97,12 +98,18 @@ function renderClassicFeedPost(myuserid, $container, fields) {
 	var comment = fields.comment;
 	var itemClass = fields.itemClass || '';
 
+	var imgHtml = '<img src="' + picSrc + '" height="50" width="50" loading="lazy" onerror="this.onerror=null;this.src=\'profileicon.png\'">';
+	if (fields.quizRank) {
+		imgHtml = '<div class="feed-rank-wrap' + quizRankRingClass(fields.quizRank) + '">'
+			+ imgHtml + '<span class="feed-rank-badge">' + fields.quizRank + '</span></div>';
+	}
+
 	$container.append('<div id="QuizFeedItem" class="' + itemClass + '" data-quizfeed="' + quizfeedId + '">');
 	$('*[data-quizfeed="' + quizfeedId + '"]').html(
 		'<div id="QuizFeedInfo" data-quizfeedinfo="' + quizfeedId + '" class="NoBubble">'
 	);
 	$('*[data-quizfeedinfo="' + quizfeedId + '"]').html(
-		'<div id="QuizFeedInfoPhoto" data-userid="' + userId + '"><img src="' + picSrc + '" height="50" width="50" loading="lazy" onerror="this.onerror=null;this.src=\'profileicon.png\'"></div>'
+		'<div id="QuizFeedInfoPhoto" data-userid="' + userId + '">' + imgHtml + '</div>'
 	);
 	$('*[data-quizfeedinfo="' + quizfeedId + '"]').append(
 		'<div id="QuizFeedInfoText" data-quizfeedtext="' + quizfeedId + '" class="NoBubble">'
@@ -125,13 +132,8 @@ function renderClassicFeedPost(myuserid, $container, fields) {
 		);
 	}
 	if (fields.score != null && fields.max != null) {
-		var scoreLine = fields.score + '/' + fields.max;
-		if (fields.quizRank) {
-			scoreLine = formatQuizRankLabel(fields.quizRank) + ' · ' + scoreLine;
-		}
-		var rankClass = fields.quizRank && fields.quizRank <= 3 ? ' QuizCard-scoreRank-' + fields.quizRank : '';
 		$('*[data-quizfeedtext="' + quizfeedId + '"]').append(
-			'<div id="QuizFeedInfoStatus" class="' + rankClass.trim() + '">' + scoreLine + '</div>'
+			'<div id="QuizFeedInfoStatus">Scored ' + fields.score + '/' + fields.max + '</div>'
 		);
 	}
 	if (comment) {
@@ -192,18 +194,11 @@ function v2ApplyPostDigs(quizfeedId, digs, myuserid) {
 	$('*[data-quizfeedtext="' + quizfeedId + '"]').append('<div id="Digs">' + names + ' ' + context + ' this</div>');
 }
 
-function formatQuizRankLabel(rank) {
-	var n = parseInt(rank, 10);
-	if (!n) return '';
-	var mod100 = n % 100;
-	var suffix = 'th';
-	if (mod100 < 11 || mod100 > 13) {
-		var mod10 = n % 10;
-		if (mod10 === 1) suffix = 'st';
-		else if (mod10 === 2) suffix = 'nd';
-		else if (mod10 === 3) suffix = 'rd';
-	}
-	return n + suffix;
+function quizRankRingClass(rank) {
+	if (rank === 1) return ' rank-gold';
+	if (rank === 2) return ' rank-silver';
+	if (rank === 3) return ' rank-bronze';
+	return '';
 }
 
 function formatPlayedCount(count) {
@@ -296,26 +291,26 @@ function renderQuizCardDiscussion(quiz, myuserid, $group) {
 		$text.append($comments);
 	}
 
+	var $trigger = $('<span class="QuizCard-discussTrigger">Discuss this quiz</span>');
+	$text.append($trigger);
+
 	if (shellId > 0) {
+		$trigger.on('click', function() {
+			showReplyBox(shellId);
+		});
 		$text.append(
-			'<span class="QuizCard-discussTrigger" onclick="showReplyBox(' + shellId + ');">Discuss this quiz</span>'
-			+ '<span class="QuizCard-discussSep"> · </span>'
+			'<span class="QuizCard-discussSep"> · </span>'
 			+ '<span id="QuizFeedInfoDigLink" data-dig="' + shellId + '" onclick="digPost(' + shellId + ');">Dig</span>'
 		);
 		$text.append(renderReplyComposer(shellId));
 	} else {
-		var qid = quiz.quiz_id || 0;
-		$text.append(
-			'<span class="QuizCard-discussTrigger" onclick="showQuizDiscussionComposer(' + qid + ');">Discuss this quiz</span>'
-		);
-		$text.append(
-			'<div class="QuizCard-newDiscussion" data-new-discussion-quiz="' + qid + '" style="display:none">'
-			+ '<textarea rows="2" class="QuizFeedInfoReplyInput" placeholder="Comment on this quiz..." '
-			+ 'data-quiz-disc-input="' + qid + '"></textarea>'
-			+ '<button type="button" class="reply-post-btn" onclick="sendQuizDiscussionComment(' + qid + ','
-			+ JSON.stringify(quiz.quiz_type) + ',' + JSON.stringify(quiz.quiz_date) + ')">Post</button>'
-			+ '</div>'
-		);
+		// No discussion shell yet — the first comment creates it server-side.
+		var $composer = buildQuizDiscussionComposer(quiz);
+		$text.append($composer);
+		$trigger.on('click', function() {
+			if ($composer.is(':hidden')) $composer.show().find('textarea').focus();
+			else $composer.hide();
+		});
 	}
 
 	$info.append($text);
@@ -336,33 +331,51 @@ function openQuizFromFeedCard(quizType, quizDate, quizId) {
 	openQuizFromFeed(quizType, quizDate, quizId);
 }
 
-function showQuizDiscussionComposer(quizId) {
-	$('.QuizCard-newDiscussion[data-new-discussion-quiz="' + quizId + '"]').show().find('textarea').focus();
+function buildQuizDiscussionComposer(quiz) {
+	var $composer = $('<div class="ReplyComposer QuizCard-newDiscussion" style="display:none"></div>');
+	var $input = $('<textarea rows="2" class="QuizFeedInfoReplyInput" placeholder="Start the discussion..."></textarea>');
+	var $post = $('<button type="button" class="reply-post-btn">Post</button>');
+	var $actions = $('<div class="ReplyComposer-actions"></div>').append($post);
+	$composer.append($input).append($actions);
+
+	$post.on('click', function() {
+		submitQuizDiscussionComment(quiz, $input, $post);
+	});
+	$input.on('keydown', function(e) {
+		if (e.keyCode === 13 && !e.shiftKey) {
+			e.preventDefault();
+			submitQuizDiscussionComment(quiz, $input, $post);
+		}
+	});
+	return $composer;
 }
 
-function sendQuizDiscussionComment(quizId, quizType, quizDate) {
-	var $input = $('textarea[data-quiz-disc-input="' + quizId + '"]');
+function submitQuizDiscussionComment(quiz, $input, $post) {
 	var comment = ($input.val() || '').trim();
 	if (!comment) return;
 	$input.prop('disabled', true);
+	$post.prop('disabled', true);
+
 	$.get('action-newquizcomment.php', {
 		comment: comment,
-		quiz_id: quizId || 0,
-		type: quizType || '',
-		date: quizDate || '',
+		quiz_id: quiz.quiz_id || 0,
+		type: quiz.quiz_type || '',
+		date: quiz.quiz_date || '',
 		timezone: getSetting('timezone')
 	}, function(raw) {
-		var data = typeof raw === 'object' ? raw : JSON.parse(raw);
-		if (data.error) {
+		var data = (typeof raw === 'object') ? raw : JSON.parse(raw);
+		if (data && data.error) {
 			alert(data.error === 'migration_required'
 				? 'Quiz discussion needs a one-time setup — open action-setup-feed-quiz.php while logged in.'
 				: 'Could not post comment.');
 			$input.prop('disabled', false);
+			$post.prop('disabled', false);
 			return;
 		}
 		downloadResults(1);
 	}).fail(function() {
 		alert('Could not post comment.');
 		$input.prop('disabled', false);
+		$post.prop('disabled', false);
 	});
 }
