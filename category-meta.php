@@ -195,6 +195,89 @@ function categoryFetchUserStats(mysqli $conn, int $groupId, string $period, ?arr
     return $byUser;
 }
 
+/**
+ * Users tied for first place in one category (same accuracy and answer count).
+ *
+ * @param list<array{userid: int, avg_pct: int, answers: int}> $entries
+ * @return list<array{userid: int, avg_pct: int, answers: int}>
+ */
+function categoryPickGroupLeaders(array $entries): array {
+    if (!$entries) {
+        return [];
+    }
+    usort($entries, function ($a, $b) {
+        if ($a['avg_pct'] !== $b['avg_pct']) {
+            return $b['avg_pct'] <=> $a['avg_pct'];
+        }
+        if ($a['answers'] !== $b['answers']) {
+            return $b['answers'] <=> $a['answers'];
+        }
+        return $a['userid'] <=> $b['userid'];
+    });
+    $bestPct = $entries[0]['avg_pct'];
+    $bestAnswers = $entries[0]['answers'];
+    return array_values(array_filter(
+        $entries,
+        fn($e) => $e['avg_pct'] === $bestPct && $e['answers'] === $bestAnswers
+    ));
+}
+
+/**
+ * Categories where this user is #1 in the group for the period.
+ *
+ * @return list<array{category: string, emoji: string, avg_pct: int, answers: int}>
+ */
+function categoryFetchUserLeaderCategories(
+    mysqli $conn,
+    int $groupId,
+    int $userId,
+    string $period = 'monthly'
+): array {
+    $minAnswers = categoryMinAnswers($period);
+    $allStats = categoryFetchUserStats($conn, $groupId, $period, null);
+    $byCategory = [];
+
+    foreach ($allStats as $uid => $userRows) {
+        foreach ($userRows as $row) {
+            if ($row['answers'] < $minAnswers) {
+                continue;
+            }
+            $byCategory[$row['category']][] = [
+                'userid'  => (int)$uid,
+                'avg_pct' => (int)$row['avg_pct'],
+                'answers' => (int)$row['answers'],
+            ];
+        }
+    }
+
+    $leaderIn = [];
+    foreach ($byCategory as $cat => $entries) {
+        foreach (categoryPickGroupLeaders($entries) as $leader) {
+            if ($leader['userid'] === $userId) {
+                $leaderIn[] = [
+                    'category' => $cat,
+                    'emoji'    => categoryEmoji($cat),
+                    'avg_pct'  => $leader['avg_pct'],
+                    'answers'  => $leader['answers'],
+                ];
+                break;
+            }
+        }
+    }
+
+    $order = array_flip(CATEGORY_DISPLAY_ORDER);
+    usort($leaderIn, function ($a, $b) use ($order) {
+        $oa = $order[$a['category']] ?? 9999;
+        $ob = $order[$b['category']] ?? 9999;
+        if ($oa !== $ob) {
+            return $oa <=> $ob;
+        }
+        return strcmp($a['category'], $b['category']);
+    });
+
+    return $leaderIn;
+}
+
 function categoryFetchFeedSpecialties(mysqli $conn, int $groupId, array $userIds): array {
     $userIds = array_values(array_unique(array_map('intval', $userIds)));
     if (!$userIds) {
