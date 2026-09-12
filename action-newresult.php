@@ -20,6 +20,7 @@
 	require_once 'security.php';
 	require_once 'getsettings.php';
 	require_once __DIR__ . '/ai-quiz-stats.php';
+	require_once __DIR__ . '/quiz-feed-helper.php';
 
 	header('Content-Type: application/json');
 
@@ -85,6 +86,20 @@
 	$q = "INSERT INTO QuizFeed (result_id, user_id, comment, timestamp) VALUES" . "('$result_id', '$userid', '$comment', '$now');";
 	$result = $conn->query($q);
 	$post_id = mysqli_insert_id($conn);
+
+	if (quizFeedHasDiscussionColumns($conn)) {
+		if ($linkQuiz) {
+			$shellDate = null;
+			$zq = $conn->query("SELECT date FROM AIQuiz WHERE id = " . (int)$aiQuizId . " LIMIT 1");
+			if ($zq && $zrow = $zq->fetch_assoc()) {
+				$shellDate = $zrow['date'];
+			}
+			ensureQuizShell($conn, (int)$userid, (int)$aiQuizId, $type, $shellDate, $timezone);
+		} else {
+			ensureQuizShell($conn, (int)$userid, null, $type, substr($dt, 0, 10), $timezone);
+		}
+	}
+
 	echo json_encode(['result_id' => $result_id, 'post_id' => $post_id]);
 
 
