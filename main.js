@@ -624,18 +624,38 @@ document.cookie="feedItems=50";
 		$('#FeedSpecialtyPopover').fadeOut(100);
 	}
 
+	function positionFeedSpecialtyPopover($anchor) {
+		var $pop = $('#FeedSpecialtyPopover');
+		if (!$anchor || !$anchor.length || !$pop.is(':visible')) return;
+		var rect = $anchor[0].getBoundingClientRect();
+		var margin = 10;
+		var gap = 6;
+		var popWidth = $pop.outerWidth();
+		var popHeight = $pop.outerHeight();
+		var winW = $(window).width();
+		var winH = $(window).height();
+		var left = Math.max(margin, Math.min(rect.left, winW - popWidth - margin));
+		var top = rect.bottom + gap;
+		if (top + popHeight > winH - margin) {
+			var above = rect.top - gap - popHeight;
+			top = above >= margin ? above : margin;
+		}
+		$pop.css({ top: top, left: left });
+	}
+
 	function showFeedSpecialtyPopover($anchor, userId) {
 		var $pop = $('#FeedSpecialtyPopover');
 		if ($pop.is(':visible') && $pop.data('userid') === userId) {
 			hideFeedSpecialtyPopover();
 			return;
 		}
-		var rect = $anchor[0].getBoundingClientRect();
-		var left = Math.max(10, Math.min(rect.left, $(window).width() - 240));
 		$pop.data('userid', userId)
+			.data('anchor', $anchor)
 			.html('<div class="feed-specialty-loading">Loading…</div>')
-			.css({ top: rect.bottom + 6, left: left })
-			.fadeIn(150);
+			.css({ top: 0, left: 0 })
+			.fadeIn(150, function() {
+				positionFeedSpecialtyPopover($anchor);
+			});
 
 		$.get('action-getusercategories.php', {
 			groupid: getSetting('group_id'),
@@ -674,10 +694,12 @@ document.cookie="feedItems=50";
 
 			if ($pop.data('userid') === userId) {
 				$pop.html(html);
+				positionFeedSpecialtyPopover($pop.data('anchor'));
 			}
 		}).fail(function() {
 			if ($pop.data('userid') === userId) {
 				$pop.html('<div class="feed-specialty-popover-empty">Could not load categories.</div>');
+				positionFeedSpecialtyPopover($pop.data('anchor'));
 			}
 		});
 	}

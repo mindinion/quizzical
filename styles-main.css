@@ -223,6 +223,11 @@ TextArea {}
 	position: fixed;
 	z-index: 9001;
 	max-width: 220px;
+	max-height: min(60vh, 320px);
+	overflow-x: hidden;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+	overscroll-behavior: contain;
 	background: #fff;
 	border: 1px solid #ecdec8;
 	border-radius: 8px;
@@ -299,6 +304,14 @@ TextArea {}
 .feed-specialty-loading {
 	color: #888;
 	font-size: 12px;
+}
+
+@media (max-width: 600px) {
+	#FeedSpecialtyPopover {
+		max-width: min(280px, calc(100vw - 20px));
+		max-height: calc(100dvh - 24px);
+		max-height: calc(100vh - 24px);
+	}
 }
 
 #AIQuizLifelineBanner {
