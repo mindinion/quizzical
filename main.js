@@ -86,9 +86,10 @@ document.cookie="feedItems=50";
 
 	function isFeedV2() {
 		try {
-			return localStorage.getItem('quizzical_feed_v2') === '1';
+			// Default is the quiz-centric feed. Rollback: localStorage.setItem('quizzical_feed_v2', '0') then reload.
+			return localStorage.getItem('quizzical_feed_v2') !== '0';
 		} catch (e) {
-			return false;
+			return true;
 		}
 	}
 
@@ -102,23 +103,6 @@ document.cookie="feedItems=50";
 		} else {
 			displayResults(data, preLoad, append);
 		}
-	}
-
-	function toggleFeedV2() {
-		var next = isFeedV2() ? '0' : '1';
-		try {
-			localStorage.setItem('quizzical_feed_v2', next);
-			sessionStorage.removeItem('results_v2');
-			sessionStorage.removeItem('results');
-		} catch (e) {}
-		updateFeedToggleLabel();
-		downloadResults(1);
-	}
-
-	function updateFeedToggleLabel() {
-		var $btn = $('#FeedModeToggle');
-		if (!$btn.length) return;
-		$btn.text(isFeedV2() ? 'Classic feed' : 'Quiz feed');
 	}
 
 	function parseFeedJson(data) {
@@ -2851,22 +2835,21 @@ document.cookie="feedItems=50";
 	}
 
 	function showWelcome(force) {
-		var WELCOME_VERSION = 'v12';
+		var WELCOME_VERSION = 'v13';
 		if (!force && localStorage.getItem('quizzical_welcome') === WELCOME_VERSION) return;
-		$.get('welcome-v12.html?id=1', function(html) {
+		$.get('welcome-v13.html?id=1', function(html) {
 			$('#WelcomeBody').html(html);
 			$('#WelcomeOverlay').fadeIn(200);
 		});
 	}
 
 	function dismissWelcome() {
-		localStorage.setItem('quizzical_welcome', 'v12');
+		localStorage.setItem('quizzical_welcome', 'v13');
 		$('#WelcomeOverlay').fadeOut(200);
 	}
 
 	$( document ).ready(function() {
 		if (!document.getElementById("MainContent")) return;
-		updateFeedToggleLabel();
 		getSettings();
 		activateListeners();
 		$("#userid").val(getCookie("userid"));

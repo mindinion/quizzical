@@ -2327,30 +2327,6 @@ A {}
 	font-weight: bold;
 }
 
-/* --- Feed v2 toggle --- */
-
-#FeedModeToggle {
-	background: none;
-	border: 1px solid #cc5500;
-	color: #cc5500;
-	border-radius: 20px;
-	padding: 5px 11px;
-	font-family: verdana, arial, sans-serif;
-	font-size: 11px;
-	font-weight: bold;
-	cursor: pointer;
-	margin-right: 8px;
-	white-space: nowrap;
-}
-
-@media (max-width: 600px) {
-	#FeedModeToggle {
-		font-size: 10px;
-		padding: 4px 8px;
-		margin-right: 4px;
-	}
-}
-
 /* --- Quiz feed v2 grouping (classic look) --- */
 
 .FeedGroup {

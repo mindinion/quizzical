@@ -1,6 +1,6 @@
 /**
  * Quiz-centric feed (v2). Loaded alongside main.js.
- * Rollback: set localStorage quizzical_feed_v2 to 0, or remove this script tag.
+ * Rollback to classic feed: localStorage.setItem('quizzical_feed_v2', '0') then reload.
  */
 
 function parseFeedItems(data) {
