@@ -1156,11 +1156,46 @@ document.cookie="feedItems=50";
 		$('#RankingsMain').html(html);
 	}
 
-	function render5050CategoryDetail(categories) {
-		if (!categories || !categories.length) {
-			return '<div class="detail-empty">No category breakdown for this period</div>';
+	function render5050PositionHistogram(positions) {
+		if (!positions || !positions.length) return '';
+		var maxUses = 0;
+		positions.forEach(function(p) {
+			if (p.uses > maxUses) maxUses = p.uses;
+		});
+		if (!maxUses) return '';
+
+		var html = '<div class="lifeline-position-chart">';
+		html += '<div class="lifeline-position-title">When they use 50/50 <span class="info-icon" data-tip="Question number in the quiz. Left = early burners, right = hoarders saving lifelines for later.">i</span></div>';
+		html += '<div class="lifeline-position-bars">';
+		positions.forEach(function(p) {
+			var pct = maxUses ? Math.round((p.uses / maxUses) * 100) : 0;
+			if (p.uses > 0 && pct < 18) pct = 18;
+			html += '<div class="lifeline-position-col" title="Q' + p.position + ': ' + p.uses + ' use' + (p.uses === 1 ? '' : 's') + '">';
+			html += '<div class="lifeline-position-bar-wrap">';
+			html += '<div class="lifeline-position-bar' + (p.uses ? ' lifeline-position-bar-active' : '') + '" style="height:' + pct + '%"></div>';
+			html += '</div>';
+			html += '<div class="lifeline-position-label">' + p.position + '</div>';
+			html += '</div>';
+		});
+		html += '</div></div>';
+		return html;
+	}
+
+	function render5050PlayerDetail(detail) {
+		if (!detail) {
+			return '<div class="detail-empty">No 50/50 breakdown for this period</div>';
 		}
-		var html = '<div class="lifeline-detail-categories">';
+		var categories = detail.categories || [];
+		var positions = detail.positions || [];
+		var html = render5050PositionHistogram(positions);
+
+		if (!categories.length) {
+			if (!html) return '<div class="detail-empty">No category breakdown for this period</div>';
+			return html;
+		}
+
+		html += '<div class="lifeline-detail-section-title">By category</div>';
+		html += '<div class="lifeline-detail-categories">';
 		categories.forEach(function(c) {
 			html += '<div class="lifeline-category-row">';
 			html += '<span class="lifeline-category-label">' + escapeHtml(c.emoji) + ' ' + escapeHtml(c.category) + '</span>';
@@ -1182,7 +1217,7 @@ document.cookie="feedItems=50";
 			return;
 		}
 		var $detail = $('<div class="detail-panel" id="' + detailId + '"></div>');
-		$detail.html(render5050CategoryDetail(lifeline5050ByUser[userid] || []));
+		$detail.html(render5050PlayerDetail(lifeline5050ByUser[userid] || null));
 		$row.after($detail);
 		$row.addClass('row-expanded');
 	}
@@ -1194,7 +1229,10 @@ document.cookie="feedItems=50";
 
 		lifeline5050ByUser = {};
 		players.forEach(function(r) {
-			lifeline5050ByUser[r.userid] = r.categories || [];
+			lifeline5050ByUser[r.userid] = {
+				categories: r.categories || [],
+				positions: r.positions || []
+			};
 		});
 
 		if (!group.uses) {
@@ -1209,7 +1247,7 @@ document.cookie="feedItems=50";
 		html += ' <span class="info-icon" data-tip="Success = got the question right after using 50/50. Burned = used 50/50 and still got it wrong.">i</span>';
 		html += '</div>';
 
-		html += '<div class="rankings-section-title">50/50 players <span class="info-icon" data-tip="Ranked by hit rate after using 50/50. Tap a name to see which categories they use lifelines on. Players with ' + minUses + '+ uses rank above those with fewer.">i</span></div>';
+		html += '<div class="rankings-section-title">50/50 players <span class="info-icon" data-tip="Ranked by hit rate after using 50/50. Tap a name to see when and where they use lifelines. Players with ' + minUses + '+ uses rank above those with fewer.">i</span></div>';
 
 		if (!players.length) {
 			html += '<div class="lifeline-rankings-empty">No lifeline uses in this period yet.</div>';

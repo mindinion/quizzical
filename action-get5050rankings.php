@@ -48,6 +48,7 @@ $sql = "SELECT
             u.last_name,
             u.pic_filename,
             $catExpr AS source_category,
+            q.position,
             a.is_correct
         FROM AILifeline l
         INNER JOIN AIAnswer a ON a.user_id = l.user_id AND a.question_id = l.question_id
@@ -93,10 +94,16 @@ foreach ($rows as $row) {
             'uses'         => 0,
             'successes'    => 0,
             'categories'   => [],
+            'positions'    => array_fill(1, 15, 0),
         ];
     }
     $byUser[$uid]['uses']++;
     $byUser[$uid]['successes'] += $correct;
+
+    $pos = (int)$row['position'];
+    if ($pos >= 1 && $pos <= 15) {
+        $byUser[$uid]['positions'][$pos]++;
+    }
 
     if (!isset($byUser[$uid]['categories'][$cat])) {
         $byUser[$uid]['categories'][$cat] = ['uses' => 0, 'successes' => 0];
@@ -125,6 +132,14 @@ foreach ($byUser as $user) {
         return strcmp($a['category'], $b['category']);
     });
 
+    $positions = [];
+    for ($p = 1; $p <= 15; $p++) {
+        $positions[] = [
+            'position' => $p,
+            'uses'     => (int)($user['positions'][$p] ?? 0),
+        ];
+    }
+
     $players[] = [
         'userid'       => $user['userid'],
         'first_name'   => $user['first_name'],
@@ -135,6 +150,7 @@ foreach ($byUser as $user) {
         'success_pct'  => (int)round($user['successes'] / $user['uses'] * 100),
         'qualified'    => $user['uses'] >= $minUses,
         'categories'   => $categories,
+        'positions'    => $positions,
     ];
 }
 
