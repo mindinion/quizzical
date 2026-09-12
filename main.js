@@ -105,6 +105,8 @@ document.cookie="feedItems=50";
 		var next = isFeedV2() ? '0' : '1';
 		try {
 			localStorage.setItem('quizzical_feed_v2', next);
+			sessionStorage.removeItem('results_v2');
+			sessionStorage.removeItem('results');
 		} catch (e) {}
 		updateFeedToggleLabel();
 		downloadResults(1);
@@ -114,6 +116,23 @@ document.cookie="feedItems=50";
 		var $btn = $('#FeedModeToggle');
 		if (!$btn.length) return;
 		$btn.text(isFeedV2() ? 'Classic feed' : 'Quiz feed');
+	}
+
+	function parseFeedJson(data) {
+		if (data == null) return [];
+		if (Array.isArray(data)) return data;
+		if (typeof data === 'string') {
+			try {
+				return JSON.parse(data);
+			} catch (e) {
+				return [];
+			}
+		}
+		return [];
+	}
+
+	function storeFeedCache(cacheKey, data) {
+		sessionStorage[cacheKey] = typeof data === 'string' ? data : JSON.stringify(data);
 	}
 
 	function expandFeed() {
@@ -132,7 +151,7 @@ document.cookie="feedItems=50";
 			{ groupid: groupid, offset: feedOffset },
 			function(data) {
 				$('*[data-loader=quizfeedmore]').remove();
-				var newResults = JSON.parse(data);
+				var newResults = parseFeedJson(data);
 				feedLoading = false;
 				if (newResults.length === 0) {
 					feedExhausted = true;
@@ -488,13 +507,13 @@ document.cookie="feedItems=50";
 				if (sessionStorage.getItem(cacheKey) != data || firstTime == 1) {
 					displayFeedData(data, 0);
 				} else if (!isFeedV2()) {
-					resultsObj = JSON.parse(data);
+					resultsObj = parseFeedJson(data);
 					results = $.map(resultsObj, function(el) { return el; });
 					loadBubbles(results);
 				}
 				$('*[data-loader=quizfeed]').remove();
-				sessionStorage[cacheKey] = data;
-				feedOffset = JSON.parse(data).length;
+				storeFeedCache(cacheKey, data);
+				feedOffset = parseFeedJson(data).length;
 			}
 		);
 	}

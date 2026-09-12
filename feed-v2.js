@@ -3,12 +3,25 @@
  * Rollback: set localStorage quizzical_feed_v2 to 0, or remove this script tag.
  */
 
+function parseFeedItems(data) {
+	if (data == null) return [];
+	if (Array.isArray(data)) return data;
+	if (typeof data === 'string') {
+		try {
+			return JSON.parse(data);
+		} catch (e) {
+			return [];
+		}
+	}
+	return [];
+}
+
 function displayQuizFeed(resultsJson, preLoad, append) {
 	if (!append) {
 		$('#QuizFeed').html('');
 	}
 
-	var items = JSON.parse(resultsJson);
+	var items = parseFeedItems(resultsJson);
 	var myuserid = getSetting('user_id');
 
 	items.forEach(function(item) {
