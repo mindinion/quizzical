@@ -2495,43 +2495,50 @@ A {}
 	float: left;
 	width: 100%;
 	box-sizing: border-box;
-	padding: 4px 10px 14px;
 	display: flex;
 	flex-wrap: wrap;
-	gap: 6px;
-}
-
-.WeeklyStrip-pill {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	padding: 5px 12px 5px 5px;
-	border-radius: 999px;
-	background: #f4f0ea;
-	font-family: verdana, arial;
-	font-size: 12px;
-	color: #444;
-	white-space: nowrap;
-}
-
-.WeeklyStrip-rank {
-	width: 18px;
-	height: 18px;
-	border-radius: 50%;
-	display: inline-flex;
-	align-items: center;
 	justify-content: center;
+	gap: 30px;
+	margin: 2px 0 16px;
+	padding: 18px 12px 16px;
+	background: #faf6f0;
+	border-radius: 12px;
+}
+
+.WeeklyLeader {
+	font-family: verdana, arial;
+	text-align: center;
+	min-width: 62px;
+}
+
+.WeeklyLeader-photo {
+	margin-bottom: 9px;
+}
+
+.WeeklyLeader-photo img {
+	border-radius: 50%;
+	display: block;
+	width: 46px;
+	height: 46px;
+}
+
+.WeeklyLeader .feed-rank-badge {
+	width: 19px;
+	height: 19px;
 	font-size: 10px;
+	bottom: -1px;
+	right: -3px;
+}
+
+.WeeklyLeader-name {
+	font-size: 13px;
 	font-weight: bold;
 	color: #333;
-	background: #ccc;
 }
 
-.WeeklyStrip-pill-1 .WeeklyStrip-rank { background: #FFD700; }
-.WeeklyStrip-pill-2 .WeeklyStrip-rank { background: #C0C0C0; }
-.WeeklyStrip-pill-3 .WeeklyStrip-rank { background: #CD7F32; color: #fff; }
-
-.WeeklyStrip-pct {
-	color: #999;
+.WeeklyLeader-pct {
+	font-size: 12px;
+	color: #96795a;
+	margin-top: 3px;
 }
 

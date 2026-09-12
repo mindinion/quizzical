@@ -50,10 +50,19 @@ function renderWeeklyStrip() {
 
 	var html = '<div class="WeeklyStrip">';
 	feedWeeklyLeaders.forEach(function(r, i) {
-		html += '<span class="WeeklyStrip-pill WeeklyStrip-pill-' + (i + 1) + '">'
-			+ '<span class="WeeklyStrip-rank">' + (i + 1) + '</span>'
-			+ escapeHtml(r.first_name)
-			+ '<span class="WeeklyStrip-pct">' + r.avg_pct + '%</span></span>';
+		var rank = i + 1;
+		var picSrc = (r.pic_filename && r.pic_filename !== 'null')
+			? r.pic_filename + '?t=' + Date.now()
+			: 'profileicon.png';
+		html += '<div class="WeeklyLeader" data-userid="' + r.userid + '">'
+			+ '<div class="feed-rank-wrap' + quizRankRingClass(rank) + ' WeeklyLeader-photo">'
+			+ '<img src="' + picSrc + '" width="46" height="46" loading="lazy"'
+			+ ' onerror="this.onerror=null;this.src=\'profileicon.png\'">'
+			+ '<span class="feed-rank-badge">' + rank + '</span>'
+			+ '</div>'
+			+ '<div class="WeeklyLeader-name">' + escapeHtml(r.first_name) + '</div>'
+			+ '<div class="WeeklyLeader-pct">' + r.avg_pct + '%</div>'
+			+ '</div>';
 	});
 	html += '</div>';
 
