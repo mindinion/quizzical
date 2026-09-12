@@ -372,6 +372,9 @@ function submitQuizDiscussionComment(quiz, $input, $post) {
 			$post.prop('disabled', false);
 			return;
 		}
+		if (data && data.post_id) {
+			$.get('action-emailcomment.php', { postId: data.post_id });
+		}
 		downloadResults(1);
 	}).fail(function() {
 		alert('Could not post comment.');

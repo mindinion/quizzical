@@ -12,13 +12,20 @@
 
 	require_once 'require_auth.php';
 	require_once 'config.php';
+	require_once __DIR__ . '/quiz-feed-helper.php';
 	// $userid set by require_auth.php from validated session
 
 	$postId = isset($_GET['postId']) ? (int)$_GET['postId'] : 0;
 
+	$hasQuizColumns = quizFeedHasDiscussionColumns($conn);
+	$quizCols = $hasQuizColumns
+		? "QuizFeed.ai_quiz_id, QuizFeed.quiz_type, QuizFeed.quiz_date"
+		: "NULL AS ai_quiz_id, NULL AS quiz_type, NULL AS quiz_date";
+
 	// Fetch post details — original poster, post content, linked result if any
 	$q = "SELECT
-			QuizFeed.id, QuizFeed.comment, QuizFeed.user_id AS poster_id,
+			QuizFeed.id, QuizFeed.comment, QuizFeed.user_id AS poster_id, QuizFeed.result_id,
+			$quizCols,
 			Users.first_name, Users.last_name, Users.email, Users.default_group,
 			Results.score, Results.max, Results.type, Results.date
 		FROM QuizFeed
@@ -28,6 +35,15 @@
 	$result = $conn->query($q);
 	$post = mysqli_fetch_assoc($result);
 	if (!$post) exit;
+
+	// A quiz discussion shell has no author and no body — its QuizFeed.user_id is
+	// only whoever happened to create it, so it must not be treated as a poster.
+	$isQuizDiscussion = $post['result_id'] === null
+		&& ($post['ai_quiz_id'] !== null
+			|| ($post['quiz_type'] !== null && $post['quiz_type'] !== ''));
+	$quizTitle = $isQuizDiscussion
+		? feedQuizTitle($conn, $post['ai_quiz_id'] !== null ? (int)$post['ai_quiz_id'] : null, $post['quiz_type'], $post['quiz_date'])
+		: '';
 
 	$posterId   = $post['poster_id'];
 	$posterName = htmlspecialchars($post['first_name'] . ' ' . $post['last_name']);
@@ -52,7 +68,11 @@
 	if ($r) while ($row = mysqli_fetch_assoc($r)) $attachNames[] = htmlspecialchars($row['original_name']);
 
 	// Build the post context block (what the comment was on)
-	if ($post['score'] !== null) {
+	if ($isQuizDiscussion) {
+		$postContext = '<p style="margin:0 0 4px;font-size:11px;color:#a07040;text-transform:uppercase;letter-spacing:0.5px;">Quiz discussion</p>
+			<p style="margin:0 0 16px;font-size:13px;color:#666;background:#fff8f0;border-left:4px solid #e0c8a8;padding:10px 14px;border-radius:4px;">'
+			. htmlspecialchars($quizTitle) . '</p>';
+	} elseif ($post['score'] !== null) {
 		$postContext = '<p style="margin:0 0 4px;font-size:11px;color:#a07040;text-transform:uppercase;letter-spacing:0.5px;">Original post</p>
 			<p style="margin:0 0 16px;font-size:13px;color:#666;background:#fff8f0;border-left:4px solid #e0c8a8;padding:10px 14px;border-radius:4px;">
 			' . $posterName . ' scored ' . htmlspecialchars($post['score']) . '/' . htmlspecialchars($post['max']) . ' in the ' . htmlspecialchars($post['type']) . ' quiz on ' . date('j F Y', strtotime($post['date'])) .
@@ -78,19 +98,49 @@
 	// Track who has been emailed to avoid duplicates
 	$emailed = [];
 
-	// 1. Notify the original poster (always, unless they're the commenter)
-	if ($posterId != $userid) {
+	// 1. Notify the original poster (always, unless they're the commenter).
+	// Skipped for quiz discussions, which have no author.
+	if (!$isQuizDiscussion && $posterId != $userid) {
 		$html = mailHtml('<p style="margin:0 0 16px;font-size:15px;color:#333;"><strong>' . $commenterName . '</strong> commented on your post.</p>' . $postContext . $commentBlock . $ctaBtn);
 		sendMail($conn, $posterEmail, "New comment on your post", $html, false, true);
 		$emailed[$posterId] = true;
 	}
 
-	// 2. Notify previous commenters (always) and other group members (notify_message only)
-	// Single query: get all group members with a flag for whether they previously commented
+	// Matches the results belonging to the quiz under discussion, so the people who
+	// played it can be notified the same way previous commenters are.
+	$playedCondition = '0';
+	if ($isQuizDiscussion) {
+		$quizType = $post['quiz_type'];
+		$quizDate = $post['quiz_date'];
+		if ($post['ai_quiz_id'] !== null) {
+			$zq = $conn->query("SELECT type, date FROM AIQuiz WHERE id = " . (int)$post['ai_quiz_id'] . " LIMIT 1");
+			if ($zq && $zrow = $zq->fetch_assoc()) {
+				$quizType = 'Quizzical ' . $zrow['type'];
+				$quizDate = $quizDate ?: $zrow['date'];
+			}
+		}
+
+		$match = [];
+		if ($post['ai_quiz_id'] !== null && resultsHasAiQuizId($conn)) {
+			$match[] = "Results.ai_quiz_id = " . (int)$post['ai_quiz_id'];
+		}
+		if ($quizType !== null && $quizType !== '' && $quizDate) {
+			$match[] = "(Results.type = '" . $conn->real_escape_string($quizType) . "'"
+				. " AND DATE(Results.date) = '" . $conn->real_escape_string($quizDate) . "')";
+		}
+		if ($match) {
+			$playedCondition = '(' . implode(' OR ', $match) . ')';
+		}
+	}
+
+	// 2. Notify previous commenters and (for quizzes) players, always; other group
+	// members only if notify_message = 1
 	$q = "SELECT Users.id, Users.email, Users.notify_message,
-			MAX(CASE WHEN Comment.user_id = Users.id THEN 1 ELSE 0 END) AS has_commented
+			MAX(CASE WHEN Comment.user_id = Users.id THEN 1 ELSE 0 END) AS has_commented,
+			MAX(CASE WHEN Results.user = Users.id THEN 1 ELSE 0 END) AS has_played
 		FROM Users
 		LEFT JOIN Comment ON Comment.quizfeed_id = $postId AND Comment.user_id = Users.id AND Comment.status = 'active'
+		LEFT JOIN Results ON Results.user = Users.id AND Results.status = 'active' AND $playedCondition
 		WHERE Users.default_group = $groupid
 		GROUP BY Users.id";
 	$result = $conn->query($q);
@@ -98,19 +148,33 @@
 		$id = $row['id'];
 		if ($id == $userid) continue;             // skip the commenter
 		if (isset($emailed[$id])) continue;        // skip already emailed
-		if ($id == $posterId) continue;            // skip original poster (done above)
+		if (!$isQuizDiscussion && $id == $posterId) continue;  // poster done above
 
 		$isPreviousCommenter = $row['has_commented'];
+		$hasPlayed = $row['has_played'];
 		$hasNotifyOn = $row['notify_message'];
 
-		if ($isPreviousCommenter || $hasNotifyOn) {
+		if ($isQuizDiscussion) {
+			if (!$isPreviousCommenter && !$hasPlayed && !$hasNotifyOn) continue;
+			if ($isPreviousCommenter) {
+				$intro = '<p style="margin:0 0 16px;font-size:15px;color:#333;"><strong>' . $commenterName . '</strong> added a comment to a quiz discussion you\'re part of.</p>';
+			} elseif ($hasPlayed) {
+				$intro = '<p style="margin:0 0 16px;font-size:15px;color:#333;"><strong>' . $commenterName . '</strong> commented on a quiz you played.</p>';
+			} else {
+				$intro = '<p style="margin:0 0 16px;font-size:15px;color:#333;"><strong>' . $commenterName . '</strong> commented on a quiz.</p>';
+			}
+			$subject = "New comment on a Quizzical quiz";
+		} else {
+			if (!$isPreviousCommenter && !$hasNotifyOn) continue;
 			$intro = $isPreviousCommenter
 				? '<p style="margin:0 0 16px;font-size:15px;color:#333;"><strong>' . $commenterName . '</strong> commented on a post you\'ve also commented on.</p>'
 				: '<p style="margin:0 0 16px;font-size:15px;color:#333;"><strong>' . $commenterName . '</strong> commented on a post by ' . $posterName . '.</p>';
-			$html = mailHtml($intro . $postContext . $commentBlock . $ctaBtn);
-			sendMail($conn, $row['email'], "New comment on Quizzical", $html, false, true);
-			$emailed[$id] = true;
+			$subject = "New comment on Quizzical";
 		}
+
+		$html = mailHtml($intro . $postContext . $commentBlock . $ctaBtn);
+		sendMail($conn, $row['email'], $subject, $html, false, true);
+		$emailed[$id] = true;
 	}
 
 	echo count($emailed);
