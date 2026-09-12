@@ -1058,6 +1058,7 @@ document.cookie="feedItems=50";
 	function applyFeedRankBadges() {
 		if (!Object.keys(feedTopRankers).length) return;
 		$('#QuizFeed [data-userid]').each(function() {
+			if ($(this).closest('.QuizCard-group').length) return;
 			var uid = parseInt($(this).data('userid'));
 			var rank = feedTopRankers[uid];
 			if (!rank || $(this).find('.feed-rank-wrap').length) return;

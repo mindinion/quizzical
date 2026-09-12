@@ -99,8 +99,13 @@ function renderClassicFeedPost(opts, myuserid, $container, fields) {
 		);
 	}
 	if (fields.score != null && fields.max != null) {
+		var scoreLine = 'Scored ' + fields.score + '/' + fields.max;
+		if (fields.quizRank) {
+			scoreLine = formatQuizRankLabel(fields.quizRank) + ' · ' + scoreLine;
+		}
+		var rankClass = fields.quizRank && fields.quizRank <= 3 ? ' QuizCard-scoreRank-' + fields.quizRank : '';
 		$('*[data-quizfeedtext="' + quizfeedId + '"]').append(
-			'<div id="QuizFeedInfoStatus">Scored ' + fields.score + '/' + fields.max + '</div>'
+			'<div id="QuizFeedInfoStatus" class="' + rankClass.trim() + '">' + scoreLine + '</div>'
 		);
 	}
 	if (comment) {
@@ -161,25 +166,25 @@ function v2ApplyPostDigs(quizfeedId, digs, myuserid) {
 	$('*[data-quizfeedtext="' + quizfeedId + '"]').append('<div id="Digs">' + names + ' ' + context + ' this</div>');
 }
 
-function buildQuizCardBubble(quiz) {
-	var isQuizzical = /^Quizzical /i.test(quiz.quiz_type || '');
-	var qType = quiz.quiz_type || '';
-	var qDate = quiz.quiz_date || '';
-	var qId = quiz.quiz_id || 0;
-	var message;
-	if (quiz.my_status) {
-		message = 'You scored ' + quiz.my_status.score + '/' + quiz.my_status.max + ' in this quiz.<br><span class="bubble-action">Tap to review</span>';
-	} else {
-		message = "You haven't done this quiz yet.<br><span class=\"bubble-action\">Tap to play</span>";
+function formatQuizRankLabel(rank) {
+	var n = parseInt(rank, 10);
+	if (!n) return '';
+	var mod100 = n % 100;
+	var suffix = 'th';
+	if (mod100 < 11 || mod100 > 13) {
+		var mod10 = n % 10;
+		if (mod10 === 1) suffix = 'st';
+		else if (mod10 === 2) suffix = 'nd';
+		else if (mod10 === 3) suffix = 'rd';
 	}
-	var classes = 'ScreenHide' + (isQuizzical ? ' quiz-bubble-clickable' : '');
-	var $bubble = $('<div id="QuizFeedBubble" class="' + classes + '">' + message + '</div>');
-	if (isQuizzical) {
-		$bubble.on('click', function() {
-			openQuizFromFeedCard(qType, qDate, qId);
-		});
-	}
-	return $bubble;
+	return n + suffix;
+}
+
+function formatPlayedCount(count) {
+	var n = parseInt(count, 10) || 0;
+	if (n === 0) return 'No scores yet';
+	if (n === 1) return '1 played';
+	return n + ' played';
 }
 
 function renderQuizCard(quiz, myuserid) {
@@ -188,19 +193,33 @@ function renderQuizCard(quiz, myuserid) {
 	$('#QuizFeed').append($group);
 
 	var played = quiz.participation ? quiz.participation.done : 0;
-	var total = quiz.participation ? quiz.participation.total : 0;
 	var ago = quiz.last_activity
 		? moment.tz(quiz.last_activity, getSetting('old_timezone')).tz(getSetting('timezone')).fromNow()
 		: '';
+	var isQuizzical = /^Quizzical /i.test(quiz.quiz_type || '');
+	var qType = quiz.quiz_type || '';
+	var qDate = quiz.quiz_date || '';
+	var qId = quiz.quiz_id || 0;
 
 	var $header = $('<div id="QuizFeedItem" class="QuizCard-header"></div>');
-	var $info = $('<div id="QuizFeedInfo"></div>');
+	var $info = $('<div id="QuizFeedInfo" class="NoBubble"></div>');
 	var $text = $('<div id="QuizFeedInfoText" class="NoBubble"></div>');
-	$text.append('<div id="QuizFeedInfoStatus">' + escapeHtml(quiz.title || 'Quiz') + '</div>');
-	$text.append('<div id="QuizFeedInfoTimestamp">' + played + ' of ' + total + ' played' + (ago ? ' · ' + ago : '') + '</div>');
+	$text.append('<div class="QuizCard-title">' + escapeHtml(quiz.title || 'Quiz') + '</div>');
+	var metaParts = [formatPlayedCount(played)];
+	if (ago) metaParts.push(ago);
+	$text.append('<div class="QuizCard-meta">' + metaParts.join(' · ') + '</div>');
+	if (isQuizzical) {
+		var actionLabel = quiz.my_status
+			? 'Review your score (' + quiz.my_status.score + '/' + quiz.my_status.max + ')'
+			: 'Play this quiz';
+		var $action = $('<a href="javascript:void(0)" class="QuizCard-headerLink">' + actionLabel + '</a>');
+		$action.on('click', function() {
+			openQuizFromFeedCard(qType, qDate, qId);
+		});
+		$text.append($action);
+	}
 	$info.append($text);
 	$header.append($info);
-	$header.append(buildQuizCardBubble(quiz));
 	$group.append($header);
 
 	if (!quiz.results || quiz.results.length === 0) {
@@ -222,6 +241,7 @@ function renderQuizCard(quiz, myuserid) {
 				specialty_category: r.specialty_category,
 				score: r.score,
 				max: r.max,
+				quizRank: r.rank,
 				itemClass: 'QuizCard-score'
 			});
 		});
@@ -234,11 +254,14 @@ function renderQuizCardDiscussion(quiz, myuserid, $group) {
 	var shellId = quiz.quiz_post_id || 0;
 	var $item = $('<div id="QuizFeedItem" class="QuizCard-discussion"></div>');
 	var $info = $('<div id="QuizFeedInfo" class="NoBubble"></div>');
-	var $text = $('<div id="QuizFeedInfoText" class="NoBubble"></div>');
+	$info.append('<div id="QuizFeedInfoPhoto" class="QuizCard-discussionSpacer" aria-hidden="true"></div>');
+	var $text = $('<div id="QuizFeedInfoText" class="NoBubble QuizCard-discussionText"></div>');
 
 	if (shellId > 0) {
 		$text.attr('data-quizfeedtext', shellId);
 	}
+
+	$text.append('<div class="QuizCard-discussionLabel">Discuss this quiz</div>');
 
 	if (quiz.quiz_comments && quiz.quiz_comments.length) {
 		var $comments = $('<div class="Comments"></div>');
