@@ -2382,6 +2382,7 @@ A {}
 
 .QuizCard-header#QuizFeedItem {
 	display: flex;
+	flex-direction: row;
 	flex-wrap: nowrap;
 	align-items: center;
 	justify-content: space-between;
@@ -2411,6 +2412,12 @@ A {}
 	min-width: 0;
 	padding: 0;
 	flex: 1 1 auto;
+	order: 0;
+}
+
+.QuizCard-header#QuizFeedItem .QuizCard-pill {
+	order: 0;
+	align-self: center;
 }
 
 .QuizCard-header#QuizFeedItem #QuizFeedInfoText.QuizCard-headerText {

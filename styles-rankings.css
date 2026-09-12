@@ -679,8 +679,9 @@
 		max-width: none;
 	}
 
-	/* Feed: full-width post, score bubble on its own row below (right-aligned) */
-	#QuizFeedItem {
+	/* Feed: full-width post, score bubble on its own row below (right-aligned).
+	   Quiz card headers keep the side-by-side title + pill layout from styles-main.css. */
+	#QuizFeedItem:not(.QuizCard-header):not(.QuizCard-header-post) {
 		display: flex;
 		flex-direction: column;
 		align-items: stretch;
@@ -689,7 +690,7 @@
 		box-sizing: border-box;
 	}
 
-	#QuizFeedInfo {
+	#QuizFeedItem:not(.QuizCard-header):not(.QuizCard-header-post) #QuizFeedInfo {
 		order: 1;
 		width: 100%;
 		max-width: 100%;
