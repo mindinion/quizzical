@@ -19,6 +19,7 @@
 
 	require_once 'require_auth.php';
 	require_once __DIR__ . '/ai-quiz-stats.php';
+	require_once __DIR__ . '/category-meta.php';
 
 	if (isset($_GET['groupid'])) $groupid = sanitizeString($_GET['groupid']);
 	$offset = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;
@@ -110,6 +111,8 @@
 		public $comments = [];
 		public $digs = [];
 		public $attachments = [];
+		public $specialty_category = null;
+		public $specialty_emoji = null;
 	}
 
 	class Result  {
@@ -305,5 +308,23 @@
 		}
 	}
 
-    echo json_encode(array_values($results ?? []));
+	$posts = array_values($results ?? []);
+	if ($posts && aiQuestionHasColumn($conn, 'source_category')) {
+		$posterIds = [];
+		foreach ($posts as $post) {
+			if (!empty($post->poster_id)) {
+				$posterIds[] = (int)$post->poster_id;
+			}
+		}
+		$specialties = categoryFetchFeedSpecialties($conn, (int)$groupid, $posterIds);
+		foreach ($posts as $post) {
+			$uid = (int)$post->poster_id;
+			if (isset($specialties[$uid])) {
+				$post->specialty_category = $specialties[$uid]['category'];
+				$post->specialty_emoji = $specialties[$uid]['emoji'];
+			}
+		}
+	}
+
+    echo json_encode($posts);
 ?>

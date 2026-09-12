@@ -6,7 +6,7 @@
 
 <script src="jquery.js"></script>
 <script src="cropper.min.js"></script>
-<script src="main.js?id=99"></script>
+<script src="main.js?id=100"></script>
 
 
 
@@ -29,9 +29,9 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-		<link href="styles-main.css?id=1297" type="text/css" rel="stylesheet" />
+		<link href="styles-main.css?id=1298" type="text/css" rel="stylesheet" />
 		<link href="styles-profile.css?id=23" type="text/css" rel="stylesheet" />
-		<link href="styles-rankings.css?id=20" type="text/css" rel="stylesheet" />
+		<link href="styles-rankings.css?id=21" type="text/css" rel="stylesheet" />
 		<link href="cropper.min.css" type="text/css" rel="stylesheet" />
 		<link rel="icon" type="image/png" href="quizzical_logo.png">
 	</head>
@@ -86,10 +86,9 @@
 					<div class="period-tab" id="Period-yearly" onclick="switchPeriod('yearly')">Yearly</div>
 					<div class="period-tab" id="Period-alltime" onclick="switchPeriod('alltime')">All Time</div>
 				</div>
-				<div id="TypeFilterTabs">
-					<div class="type-tab type-active" id="TypeTab-quizzical" onclick="switchTypeFilter('quizzical')">Quizzical</div>
-					<div class="type-tab" id="TypeTab-stuff" onclick="switchTypeFilter('stuff')">Stuff</div>
-					<div class="type-tab" id="TypeTab-all" onclick="switchTypeFilter('all')">All Types</div>
+				<div id="RankingsLayerTabs">
+					<div class="type-tab type-active" id="LayerTab-overall" onclick="switchRankingsLayer('overall')">Overall</div>
+					<div class="type-tab" id="LayerTab-categories" onclick="switchRankingsLayer('categories')">Categories</div>
 				</div>
 			</div>
 			<div id="RankingsMain"></div>

@@ -205,6 +205,12 @@ TextArea {}
 
 }
 
+.feed-specialty {
+	font-weight: normal;
+	margin-left: 4px;
+	cursor: default;
+}
+
 #NewResultScore	{
 	width:62px;
 	height:62px;

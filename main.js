@@ -613,6 +613,11 @@ document.cookie="feedItems=50";
 		}
 	}
 
+	function feedSpecialtyBadge(emoji, category) {
+		if (!emoji || !category) return '';
+		return ' <span class="feed-specialty" title="' + escapeHtml(category) + '">' + escapeHtml(emoji) + '</span>';
+	}
+
 	function renderReplyComposer(quizFeedId) {
 		return "<div class='ReplyComposer' data-replycomposer='" + quizFeedId + "' style='display:none'>" +
 			"<textarea rows='3' class='QuizFeedInfoReplyInput' onkeydown='sendComment(event," + quizFeedId + ")' data-replyboxid='" + quizFeedId + "' placeholder='Write a reply...'></textarea>" +
@@ -692,7 +697,8 @@ document.cookie="feedItems=50";
 
 
 			// Create the different quizitem elements
-			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=QuizFeedInfoName data-quizfeedname=" + quizfeedId + ">" + nameFirst + " " + nameLast );
+			var specialtyHtml = feedSpecialtyBadge(result.specialty_emoji, result.specialty_category);
+			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=QuizFeedInfoName data-quizfeedname=" + quizfeedId + ">" + nameFirst + " " + nameLast + specialtyHtml);
 			$('*[data-quizfeedname="' + quizfeedId + '"]').append("<div id=QuizFeedInfoTimestamp data-quizfeedts=" + quizfeedId + ">" + ago );
 			if (resultId != null) $('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=QuizFeedInfoStatus>Scored " + score + "/" + max + " in the " + Date.parse(date).toString("MMM dd") + " " + formatFeedQuizType(type) + " quiz </div id=QuizFeedInfoStatus>");
 			$('*[data-quizfeedname="' + quizfeedId + '"]').append("<a href='javascript:deletePost(" + quizfeedId + ") class=Underline> Delete </a>" );
@@ -784,6 +790,9 @@ document.cookie="feedItems=50";
 
 		var $name = $('<div>').attr({ id: 'QuizFeedInfoName', 'data-quizfeedname': postId });
 		$name.append(document.createTextNode(getSetting('first_name') + ' ' + getSetting('last_name')));
+		if (opts.specialty_emoji && opts.specialty_category) {
+			$name.append($('<span>').addClass('feed-specialty').attr('title', opts.specialty_category).text(opts.specialty_emoji));
+		}
 		$name.append($('<div>').attr({ id: 'QuizFeedInfoTimestamp', 'data-quizfeedts': postId }).text('just now'));
 		$name.append($('<a>').attr('href', 'javascript:deletePost(' + postId + ')').addClass('Underline').text(' Delete '));
 		$text.append($name);
@@ -939,7 +948,7 @@ document.cookie="feedItems=50";
 	var rankingsLoaded = false;
 	var currentPbs = [];
 	var feedTopRankers = {};
-	var rankingsTypeFilter = 'quizzical';
+	var rankingsLayer = 'overall';
 	var quizList = [];
 	var selectedQuiz = null;
 
@@ -968,18 +977,12 @@ document.cookie="feedItems=50";
 		loadRankings(period);
 	}
 
-	function switchTypeFilter(filter) {
-		rankingsTypeFilter = filter;
+	function switchRankingsLayer(layer) {
+		rankingsLayer = layer;
 		rankingsLoaded = false;
-		$('.type-tab').removeClass('type-active');
-		$('#TypeTab-' + filter).addClass('type-active');
+		$('#RankingsLayerTabs .type-tab').removeClass('type-active');
+		$('#LayerTab-' + layer).addClass('type-active');
 		loadRankings(rankingsCurrentPeriod);
-	}
-
-	function toggleTypeFilter() {
-		var order = ['quizzical', 'stuff', 'all'];
-		var idx = order.indexOf(rankingsTypeFilter);
-		switchTypeFilter(order[(idx + 1) % order.length]);
 	}
 
 	function loadRankings(period) {
@@ -988,10 +991,19 @@ document.cookie="feedItems=50";
 		$('#RankingsMain').html("<img src='ajax-loader.gif' class='Loader'>");
 		$('#RankingsMostImproved').html('');
 		$('#RankingsPersonalBests').html('');
+
+		if (rankingsLayer === 'categories') {
+			$.get("action-getcategoryrankings.php", { groupid: groupid, period: period }, function(data) {
+				rankingsLoaded = true;
+				renderCategoryRankings(JSON.parse(data), period, myUserid);
+			});
+			return;
+		}
+
 		$.when(
-			$.get("action-getrankings.php", { groupid: groupid, period: period, typefilter: rankingsTypeFilter }),
-			$.get("action-getstreaks.php", { groupid: groupid, typefilter: rankingsTypeFilter }),
-			$.get("action-getpersonalbests.php", { groupid: groupid, period: period, typefilter: rankingsTypeFilter })
+			$.get("action-getrankings.php", { groupid: groupid, period: period, typefilter: 'quizzical' }),
+			$.get("action-getstreaks.php", { groupid: groupid, typefilter: 'quizzical' }),
+			$.get("action-getpersonalbests.php", { groupid: groupid, period: period, typefilter: 'quizzical' })
 		).done(function(rankingsResp, streaksResp, pbResp) {
 			var rankings = JSON.parse(rankingsResp[0]);
 			var streaks  = JSON.parse(streaksResp[0]);
@@ -999,6 +1011,46 @@ document.cookie="feedItems=50";
 			rankingsLoaded = true;
 			renderRankings(rankings, streaks, pbs, period, myUserid);
 		});
+	}
+
+	function renderCategoryRankings(payload, period, myUserid) {
+		var categories = payload.categories || [];
+		if (!categories.length) {
+			$('#RankingsMain').html('<div class="category-rankings-empty">No category rankings yet for this period — play more quizzes to unlock them.</div>');
+			return;
+		}
+
+		var html = '<div class="category-rankings-intro">Accuracy by topic (min ' + payload.min_answers + ' answers)</div>';
+		categories.forEach(function(block) {
+			html += '<div class="category-rankings-block">';
+			html += '<div class="category-rankings-title">' + escapeHtml(block.emoji) + ' ' + escapeHtml(block.category) + '</div>';
+			html += '<div class="rankings-table category-rankings-table">';
+			html += '<div class="rankings-header-row category-rankings-header">';
+			html += '<span class="rh-place">#</span>';
+			html += '<span class="rh-name">Name</span>';
+			html += '<span class="rh-avg">Acc</span>';
+			html += '<span class="rh-part">Qs</span>';
+			html += '</div>';
+
+			block.rankings.forEach(function(r, idx) {
+				var place = idx + 1;
+				var placeSuffix = place === 1 ? 'st' : place === 2 ? 'nd' : place === 3 ? 'rd' : 'th';
+				var rowClass = 'rankings-row' + (r.userid === myUserid ? ' rankings-row-me' : '');
+				html += '<div class="' + rowClass + '">';
+				html += '<span class="r-place">' + place + placeSuffix + '</span>';
+				html += '<span class="r-photo-name">';
+				html += '<img src="' + (r.pic_filename || 'profileicon.png') + '?t=' + Date.now() + '" class="r-photo" loading="lazy" onerror="this.onerror=null;this.src=\'profileicon.png\'">';
+				html += '<span class="r-name">' + escapeHtml(r.first_name) + ' ' + escapeHtml(r.last_name) + '</span>';
+				html += '</span>';
+				html += '<span class="r-avg">' + r.avg_pct + '%</span>';
+				html += '<span class="r-part"><span class="participation">' + r.answers + '</span></span>';
+				html += '</div>';
+			});
+
+			html += '</div></div>';
+		});
+
+		$('#RankingsMain').html(html);
 	}
 
 	function renderRankings(rankings, streaks, pbs, period, myUserid) {
@@ -1162,7 +1214,7 @@ document.cookie="feedItems=50";
 		$row.after($detail);
 		$row.addClass('row-expanded');
 		$.get('action-getuserresults.php',
-			{ groupid: getSetting('group_id'), userid: userid, period: period, typefilter: rankingsTypeFilter },
+			{ groupid: getSetting('group_id'), userid: userid, period: period, typefilter: 'quizzical' },
 			function(data) {
 				$detail.html(renderResultsDetail(JSON.parse(data), period));
 			}
