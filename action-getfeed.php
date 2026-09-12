@@ -212,7 +212,11 @@ foreach (feedTodaysAiQuizzes($conn) as $todayQuiz) {
         'quiz_type'     => $qType,
         'quiz_date'     => $qDate,
         'title'         => feedQuizTitle($conn, $todayQuiz['quiz_id'], $qType, $qDate),
-        'last_activity' => feedMaxActivityTimestamp($activity) ?: ($qDate . ' 00:00:00'),
+        // With no results or comments yet, a quiz is as recent as its arrival, which
+        // also keeps the morning and afternoon quiz from tying on the same date.
+        'last_activity' => feedMaxActivityTimestamp($activity)
+            ?: (feedServerTimestampToUser($todayQuiz['generated_at'] ?? null, $viewerTimezone)
+                ?: ($qDate . ' 00:00:00')),
         'participation' => ['done' => 0, 'total' => $memberTotal],
         'my_status'     => $myStatus,
         'quiz_post_id'  => $shell ? (int)$shell->postid : 0,

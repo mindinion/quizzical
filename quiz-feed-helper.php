@@ -160,21 +160,22 @@ function ensureQuizShell(
     return (int)$conn->insert_id;
 }
 
-/** @return list<array{type: string, date: string, quiz_id: int}> */
+/** @return list<array{type: string, date: string, quiz_id: int, generated_at: string}> */
 function feedTodaysAiQuizzes(mysqli $conn): array {
     $nztz = new DateTimeZone('Pacific/Auckland');
     $today = (new DateTime('now', $nztz))->format('Y-m-d');
     $out = [];
     $q = $conn->query(
-        "SELECT id, type, date FROM AIQuiz
+        "SELECT id, type, date, generated_at FROM AIQuiz
          WHERE status = 'active' AND date = '$today'
          ORDER BY FIELD(type, 'Morning', 'Afternoon')"
     );
     while ($q && $row = $q->fetch_assoc()) {
         $out[] = [
-            'type'    => $row['type'],
-            'date'    => $row['date'],
-            'quiz_id' => (int)$row['id'],
+            'type'         => $row['type'],
+            'date'         => $row['date'],
+            'quiz_id'      => (int)$row['id'],
+            'generated_at' => $row['generated_at'],
         ];
     }
     return $out;
