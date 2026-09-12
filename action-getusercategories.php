@@ -32,6 +32,8 @@ usort($rows, function ($a, $b) {
     return strcmp($a['category'], $b['category']);
 });
 
+$bestAt = categoryPickBest($rows, categoryFeedMinAnswers());
+
 $top = array_slice($rows, 0, 3);
 $out = [];
 foreach ($top as $row) {
@@ -43,4 +45,8 @@ foreach ($top as $row) {
     ];
 }
 
-echo json_encode(['categories' => $out, 'period' => 'monthly']);
+echo json_encode([
+    'best_at'    => $bestAt,
+    'categories' => $out,
+    'period'     => 'monthly',
+]);

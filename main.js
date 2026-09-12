@@ -615,7 +615,9 @@ document.cookie="feedItems=50";
 
 	function feedSpecialtyBadge(emoji, category, userId) {
 		if (!emoji || !category || !userId) return '';
-		return ' <span class="feed-specialty feed-specialty-clickable" data-userid="' + userId + '" title="Tap for category breakdown">' + escapeHtml(emoji) + '</span>';
+		return ' <span class="feed-specialty feed-specialty-clickable" data-userid="' + userId
+			+ '" data-specialty-category="' + escapeHtml(category) + '" data-specialty-emoji="' + escapeHtml(emoji)
+			+ '" title="Tap for category breakdown">' + escapeHtml(emoji) + '</span>';
 	}
 
 	function hideFeedSpecialtyPopover() {
@@ -641,13 +643,31 @@ document.cookie="feedItems=50";
 		}, function(raw) {
 			var data = (typeof raw === 'object') ? raw : JSON.parse(raw);
 			var cats = data.categories || [];
-			var html = '<div class="feed-specialty-popover-title">Last 30 days</div>';
+			var best = data.best_at || null;
+			if (!best) {
+				var hintCat = $anchor.data('specialty-category');
+				var hintEmoji = $anchor.data('specialty-emoji');
+				if (hintCat && hintEmoji) {
+					best = { category: hintCat, emoji: hintEmoji, avg_pct: null };
+				}
+			}
+			var html = '';
+			if (best && best.category) {
+				html += '<div class="feed-specialty-popover-best">Best at '
+					+ '<span class="feed-specialty-pop-emoji">' + escapeHtml(best.emoji) + '</span> '
+					+ escapeHtml(best.category)
+					+ (best.avg_pct != null ? ' <span class="feed-specialty-pop-pct">' + best.avg_pct + '%</span>' : '')
+					+ '</div>';
+			}
+			html += '<div class="feed-specialty-popover-title">Top categories (last 30 days)</div>';
 			if (!cats.length) {
 				html += '<div class="feed-specialty-popover-empty">Not enough category data yet.</div>';
 			} else {
 				html += '<ul class="feed-specialty-popover-list">';
 				cats.forEach(function(c) {
-					html += '<li><span class="feed-specialty-pop-emoji">' + escapeHtml(c.emoji) + '</span>'
+					var isBest = best && c.category === best.category;
+					html += '<li' + (isBest ? ' class="feed-specialty-pop-best-row"' : '') + '>'
+						+ '<span class="feed-specialty-pop-emoji">' + escapeHtml(c.emoji) + '</span>'
 						+ '<span class="feed-specialty-pop-label">' + escapeHtml(c.category) + '</span>'
 						+ '<span class="feed-specialty-pop-pct">' + c.avg_pct + '%</span></li>';
 				});
@@ -838,7 +858,12 @@ document.cookie="feedItems=50";
 		if (opts.specialty_emoji && opts.specialty_category) {
 			$name.append($('<span>')
 				.addClass('feed-specialty feed-specialty-clickable')
-				.attr({ 'data-userid': myId, title: 'Tap for category breakdown' })
+				.attr({
+					'data-userid': myId,
+					'data-specialty-category': opts.specialty_category,
+					'data-specialty-emoji': opts.specialty_emoji,
+					title: 'Tap for category breakdown'
+				})
 				.text(opts.specialty_emoji));
 		}
 		$name.append($('<div>').attr({ id: 'QuizFeedInfoTimestamp', 'data-quizfeedts': postId }).text('just now'));

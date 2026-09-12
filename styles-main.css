@@ -233,6 +233,16 @@ TextArea {}
 	color: #444;
 }
 
+.feed-specialty-popover-best {
+	font-size: 13px;
+	font-weight: bold;
+	color: #444;
+	line-height: 1.4;
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #f0e6d8;
+}
+
 .feed-specialty-popover-title {
 	font-size: 10px;
 	font-weight: bold;
@@ -240,6 +250,10 @@ TextArea {}
 	letter-spacing: 0.05em;
 	color: #999;
 	margin-bottom: 8px;
+}
+
+.feed-specialty-pop-best-row .feed-specialty-pop-label {
+	font-weight: bold;
 }
 
 .feed-specialty-popover-list {
