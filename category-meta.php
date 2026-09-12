@@ -3,6 +3,9 @@
  * Category labels, emojis, display order, and helpers for category rankings / feed specialty.
  */
 
+// Provides aiQuestionHasColumn(), which the stat helpers below rely on.
+require_once __DIR__ . '/ai-quiz-stats.php';
+
 const CATEGORY_EMOJI_DEFAULT = '🧩';
 
 const CATEGORY_DISPLAY_ORDER = [
@@ -276,6 +279,64 @@ function categoryFetchUserLeaderCategories(
     });
 
     return $leaderIn;
+}
+
+/**
+ * Each user's strongest category within each given quiz, for the badge on a quiz
+ * card's score rows. Unlike the 30-day specialty this is scored on a handful of
+ * questions, so it ranks by correct answers first and accuracy second.
+ *
+ * @param list<int> $quizIds
+ * @return array<int, array<int, array{category: string, emoji: string, correct: int, answers: int}>>
+ *         keyed by quiz id, then user id
+ */
+function categoryFetchQuizBests(mysqli $conn, array $quizIds): array {
+    $quizIds = array_values(array_filter(array_unique(array_map('intval', $quizIds))));
+    if (!$quizIds || !aiQuestionHasColumn($conn, 'source_category')) {
+        return [];
+    }
+
+    $catExpr = categorySourceCategorySql('q');
+    $idList = implode(',', $quizIds);
+    $rows = $conn->query(
+        "SELECT a.quiz_id, a.user_id,
+                $catExpr AS source_category,
+                COUNT(*) AS answers,
+                SUM(a.is_correct) AS correct
+         FROM AIAnswer a
+         INNER JOIN AIQuestion q ON q.id = a.question_id
+         WHERE a.quiz_id IN ($idList)
+         GROUP BY a.quiz_id, a.user_id, $catExpr"
+    );
+    if (!$rows) {
+        return [];
+    }
+
+    $byQuiz = [];
+    while ($row = $rows->fetch_assoc()) {
+        $category = trim((string)$row['source_category']);
+        $correct = (int)$row['correct'];
+        if ($category === '' || $correct < 1) {
+            continue;
+        }
+        $quizId = (int)$row['quiz_id'];
+        $userId = (int)$row['user_id'];
+        $answers = max(1, (int)$row['answers']);
+        $current = $byQuiz[$quizId][$userId] ?? null;
+
+        if ($current === null
+            || $correct > $current['correct']
+            || ($correct === $current['correct']
+                && $correct / $answers > $current['correct'] / $current['answers'])) {
+            $byQuiz[$quizId][$userId] = [
+                'category' => $category,
+                'emoji'    => categoryEmoji($category),
+                'correct'  => $correct,
+                'answers'  => $answers,
+            ];
+        }
+    }
+    return $byQuiz;
 }
 
 function categoryFetchFeedSpecialties(mysqli $conn, int $groupId, array $userIds): array {

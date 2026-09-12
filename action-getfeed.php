@@ -227,6 +227,22 @@ foreach (feedTodaysAiQuizzes($conn) as $todayQuiz) {
     ];
 }
 
+// Inside a quiz card the badge should describe that quiz, not the last 30 days.
+$quizBests = categoryFetchQuizBests(
+    $conn,
+    array_values(array_filter(array_column($quizCards, 'quiz_id')))
+);
+foreach ($quizCards as &$card) {
+    $bests = $quizBests[(int)$card['quiz_id']] ?? [];
+    foreach ($card['results'] as &$r) {
+        $best = $bests[(int)$r['poster_id']] ?? null;
+        $r['specialty_category'] = $best ? $best['category'] : null;
+        $r['specialty_emoji'] = $best ? $best['emoji'] : null;
+    }
+    unset($r);
+}
+unset($card);
+
 $feedItems = [];
 
 foreach ($standalonePosts as $post) {
