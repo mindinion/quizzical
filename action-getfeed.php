@@ -15,6 +15,8 @@ header('Content-Type: application/json');
 
 $groupid = isset($_GET['groupid']) ? (int)$_GET['groupid'] : 0;
 $offset = isset($_GET['offset']) ? max(0, (int)$_GET['offset']) : 0;
+$viewerTimezone = isset($_GET['timezone']) && $_GET['timezone'] !== ''
+    ? $_GET['timezone'] : 'Pacific/Auckland';
 $limit = 50;
 $windowDays = 90;
 
@@ -97,7 +99,7 @@ foreach ($resultPostsByKey as $key => $bundle) {
     foreach ($posts as $post) {
         $activity[] = $post->post_timestamp;
         foreach ($post->comments as $c) {
-            $activity[] = $c->comment_timestamp;
+            $activity[] = feedServerTimestampToUser($c->comment_timestamp, $viewerTimezone);
         }
         $resultsOut[] = [
             'rank'              => $rank++,
@@ -124,7 +126,7 @@ foreach ($resultPostsByKey as $key => $bundle) {
     if ($shell) {
         $activity[] = $shell->post_timestamp;
         foreach ($shell->comments as $c) {
-            $activity[] = $c->comment_timestamp;
+            $activity[] = feedServerTimestampToUser($c->comment_timestamp, $viewerTimezone);
         }
     }
 
@@ -180,7 +182,7 @@ foreach (feedTodaysAiQuizzes($conn) as $todayQuiz) {
     if ($shell) {
         $activity[] = $shell->post_timestamp;
         foreach ($shell->comments as $c) {
-            $activity[] = $c->comment_timestamp;
+            $activity[] = feedServerTimestampToUser($c->comment_timestamp, $viewerTimezone);
         }
     }
     $qType = 'Quizzical ' . $todayQuiz['type'];

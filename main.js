@@ -148,7 +148,7 @@ document.cookie="feedItems=50";
 		var groupid = getSetting("group_id");
 		$("#QuizFeed").append("<img src='ajax-loader.gif' data-loader=quizfeedmore class=Loader></img>");
 		$.get(feedApiUrl(),
-			{ groupid: groupid, offset: feedOffset },
+			{ groupid: groupid, offset: feedOffset, timezone: getSetting("timezone") },
 			function(data) {
 				$('*[data-loader=quizfeedmore]').remove();
 				var newResults = parseFeedJson(data);
@@ -501,7 +501,7 @@ document.cookie="feedItems=50";
 
 		// Now download and display the most recent results
 		$.get(feedApiUrl(),
-			{ groupid: groupid, offset: 0 },
+			{ groupid: groupid, offset: 0, timezone: getSetting("timezone") },
 			function(data) {
 				var cacheKey = isFeedV2() ? 'results_v2' : 'results';
 				if (sessionStorage.getItem(cacheKey) != data || firstTime == 1) {

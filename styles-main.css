@@ -2353,21 +2353,21 @@ A {}
 
 /* --- Quiz feed v2 grouping (classic look) --- */
 
-.QuizCard-group {
+.FeedGroup {
 	float: left;
 	width: 100%;
 	clear: both;
 	margin-bottom: 26px;
 }
 
-.QuizCard-group::after {
+.FeedGroup::after {
 	content: '';
 	display: block;
 	clear: both;
 }
 
 /* Rows no longer reserve space for the classic right-hand bubble. */
-.QuizCard-group #QuizFeedInfo {
+.FeedGroup #QuizFeedInfo {
 	float: none;
 	width: 100%;
 	min-width: 0;
@@ -2375,7 +2375,7 @@ A {}
 	padding-left: 10px;
 }
 
-.QuizCard-group #QuizFeedInfoText {
+.FeedGroup #QuizFeedInfoText {
 	width: calc(100% - 72px);
 	max-width: none;
 }
@@ -2392,6 +2392,11 @@ A {}
 	background: #fff4e2;
 	border-radius: 12px;
 	box-sizing: border-box;
+}
+
+.QuizCard-header-post#QuizFeedItem {
+	padding-top: 14px;
+	padding-bottom: 14px;
 }
 
 .QuizCard-header #QuizFeedInfo {

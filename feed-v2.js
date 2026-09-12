@@ -77,7 +77,17 @@ function renderWeeklyStrip() {
 }
 
 function renderV2StandalonePost(result, myuserid) {
-	renderClassicFeedPost(myuserid, $('#QuizFeed'), {
+	var $group = $('<div class="FeedGroup"></div>');
+	$('#QuizFeed').append($group);
+
+	var $header = $('<div id="QuizFeedItem" class="QuizCard-header QuizCard-header-post"></div>');
+	var $info = $('<div id="QuizFeedInfo" class="NoBubble"></div>');
+	$info.append('<div id="QuizFeedInfoText" class="NoBubble QuizCard-headerText">'
+		+ '<div class="QuizCard-title">Group post</div></div>');
+	$header.append($info);
+	$group.append($header);
+
+	renderClassicFeedPost(myuserid, $group, {
 		postId: result.postid,
 		userId: result.poster_id,
 		picFilename: result.poster_filename,
@@ -219,12 +229,13 @@ function formatPlayedCount(count) {
 
 function renderQuizCard(quiz, myuserid) {
 	var cardKey = quiz.feed_key || ('quiz-' + (quiz.quiz_id || quiz.quiz_date));
-	var $group = $('<div class="QuizCard-group" data-quiz-card="' + cardKey + '"></div>');
+	var $group = $('<div class="FeedGroup QuizCard-group" data-quiz-card="' + cardKey + '"></div>');
 	$('#QuizFeed').append($group);
 
 	var played = quiz.participation ? quiz.participation.done : 0;
+	// Already normalised to the viewer's timezone server-side, same as post timestamps.
 	var ago = quiz.last_activity
-		? moment.tz(quiz.last_activity, getSetting('old_timezone')).tz(getSetting('timezone')).fromNow()
+		? moment.tz(quiz.last_activity, getSetting('timezone')).fromNow()
 		: '';
 	var isQuizzical = /^Quizzical /i.test(quiz.quiz_type || '');
 	var qType = quiz.quiz_type || '';

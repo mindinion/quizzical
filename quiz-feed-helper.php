@@ -180,6 +180,27 @@ function feedTodaysAiQuizzes(mysqli $conn): array {
     return $out;
 }
 
+/**
+ * Comment rows take their timestamp from the database clock, while QuizFeed rows are
+ * written in the posting user's timezone. Converting comments to the viewer's timezone
+ * lets both be compared and displayed as one value. See action-getsettings.php, which
+ * reports this same server timezone to the client as old_timezone.
+ */
+const FEED_SERVER_TIMEZONE = 'Australia/Melbourne';
+
+function feedServerTimestampToUser(?string $ts, string $userTimezone): ?string {
+    if ($ts === null || $ts === '') {
+        return null;
+    }
+    try {
+        $dt = new DateTime($ts, new DateTimeZone(FEED_SERVER_TIMEZONE));
+        $dt->setTimezone(new DateTimeZone($userTimezone));
+        return $dt->format('Y-m-d H:i:s');
+    } catch (Exception $e) {
+        return $ts;
+    }
+}
+
 function feedMaxActivityTimestamp(array $timestamps): ?string {
     $best = null;
     foreach ($timestamps as $ts) {
