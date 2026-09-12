@@ -1094,6 +1094,14 @@ document.cookie="feedItems=50";
 			return;
 		}
 
+		if (rankingsLayer === '5050') {
+			$.get("action-get5050rankings.php", { groupid: groupid, period: period }, function(data) {
+				rankingsLoaded = true;
+				render5050Rankings(JSON.parse(data), period, myUserid);
+			});
+			return;
+		}
+
 		$.when(
 			$.get("action-getrankings.php", { groupid: groupid, period: period, typefilter: 'quizzical' }),
 			$.get("action-getstreaks.php", { groupid: groupid, typefilter: 'quizzical' }),
@@ -1143,6 +1151,72 @@ document.cookie="feedItems=50";
 
 			html += '</div></div>';
 		});
+
+		$('#RankingsMain').html(html);
+	}
+
+	function render5050Rankings(payload, period, myUserid) {
+		var group = payload.group || {};
+		var players = payload.players || [];
+		var categories = payload.categories || [];
+		var minUses = payload.min_uses || 4;
+
+		if (!group.uses) {
+			$('#RankingsMain').html('<div class="lifeline-rankings-empty">No 50/50 data yet for this period — use a lifeline during a quiz to start tracking.</div>');
+			return;
+		}
+
+		var html = '<div class="lifeline-rankings-intro">';
+		html += 'Group: <strong>' + group.uses + '</strong> lifelines used · ';
+		html += '<strong>' + group.success_pct + '%</strong> success';
+		html += ' · <strong>' + group.burned + '</strong> burned';
+		html += ' <span class="info-icon" data-tip="Success = got the question right after using 50/50. Burned = used 50/50 and still got it wrong.">i</span>';
+		html += '</div>';
+
+		html += '<div class="rankings-section-title">Best 50/50 judgment <span class="info-icon" data-tip="Ranked by success rate after using 50/50 (min ' + minUses + ' uses in this period).">i</span></div>';
+
+		if (!players.length) {
+			html += '<div class="lifeline-rankings-empty">Not enough lifeline uses yet — need at least ' + minUses + ' per player.</div>';
+		} else {
+			html += '<div class="rankings-table lifeline-rankings-table">';
+			html += '<div class="rankings-header-row lifeline-rankings-header">';
+			html += '<span class="rh-place">#</span>';
+			html += '<span class="rh-name">Name</span>';
+			html += '<span class="rh-avg">Hit</span>';
+			html += '<span class="rh-part">Uses</span>';
+			html += '</div>';
+
+			players.forEach(function(r, idx) {
+				var place = idx + 1;
+				var placeSuffix = place === 1 ? 'st' : place === 2 ? 'nd' : place === 3 ? 'rd' : 'th';
+				var rowClass = 'rankings-row' + (r.userid === myUserid ? ' rankings-row-me' : '');
+				html += '<div class="' + rowClass + '">';
+				html += '<span class="r-place">' + place + placeSuffix + '</span>';
+				html += '<span class="r-photo-name">';
+				html += '<img src="' + (r.pic_filename || 'profileicon.png') + '?t=' + Date.now() + '" class="r-photo" loading="lazy" onerror="this.onerror=null;this.src=\'profileicon.png\'">';
+				html += '<span class="r-name">' + escapeHtml(r.first_name) + ' ' + escapeHtml(r.last_name) + '</span>';
+				html += '</span>';
+				html += '<span class="r-avg">' + r.success_pct + '%</span>';
+				html += '<span class="r-part"><span class="participation">' + r.uses + '</span></span>';
+				html += '</div>';
+			});
+
+			html += '</div>';
+		}
+
+		if (categories.length) {
+			html += '<div class="rankings-section-title">Where lifelines get used <span class="info-icon" data-tip="Categories where the group used 50/50 most often in this period.">i</span></div>';
+			html += '<div class="lifeline-category-list">';
+			categories.forEach(function(c) {
+				html += '<div class="lifeline-category-row">';
+				html += '<span class="lifeline-category-label">' + escapeHtml(c.emoji) + ' ' + escapeHtml(c.category) + '</span>';
+				html += '<span class="lifeline-category-stats">';
+				html += c.uses + ' uses · ' + c.success_pct + '% hit · ' + c.burned + ' burned';
+				html += '</span>';
+				html += '</div>';
+			});
+			html += '</div>';
+		}
 
 		$('#RankingsMain').html(html);
 	}

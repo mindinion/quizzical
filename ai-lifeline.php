@@ -5,6 +5,11 @@
 
 const AI_LIFELINE_MAX_PER_QUIZ = 2;
 
+/** Minimum lifeline uses in a period before a player appears on the 50/50 leaderboard. */
+function lifelineMinUses(string $period): int {
+    return $period === 'weekly' ? 4 : 6;
+}
+
 function ensureAiLifelineTable(mysqli $conn): void {
     static $ready = false;
     if ($ready) {
