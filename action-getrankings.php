@@ -13,6 +13,7 @@
 
 	require_once 'require_auth.php';
 	require_once 'security.php';
+	require_once __DIR__ . '/category-meta.php';
 
 	if (isset($_GET['groupid'])) $groupid = sanitizeString($_GET['groupid']);
 	$period     = isset($_GET['period'])     ? sanitizeString($_GET['period'])     : 'weekly';
@@ -103,6 +104,19 @@
 			];
 		}
 	}
+
+	// Specialty emoji, so the feed's leader block can carry the same badge as posts
+	$specialties = categoryFetchFeedSpecialties(
+		$conn,
+		(int)$groupid,
+		array_column($rankings, 'userid')
+	);
+	foreach ($rankings as &$entry) {
+		$best = $specialties[$entry['userid']] ?? null;
+		$entry['specialty_category'] = $best ? $best['category'] : null;
+		$entry['specialty_emoji'] = $best ? $best['emoji'] : null;
+	}
+	unset($entry);
 
 	echo json_encode($rankings);
 ?>

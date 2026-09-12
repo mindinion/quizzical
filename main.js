@@ -673,11 +673,14 @@ document.cookie="feedItems=50";
 		}
 	}
 
-	function feedSpecialtyBadge(emoji, category, userId) {
+	// quizId scopes the popover to a single quiz instead of the last 30 days.
+	function feedSpecialtyBadge(emoji, category, userId, quizId) {
 		if (!emoji || !category || !userId) return '';
+		var quizAttr = quizId ? ' data-quiz-id="' + quizId + '"' : '';
+		var title = quizId ? 'Tap for this quiz\'s categories' : 'Tap for category breakdown';
 		return ' <span class="feed-specialty feed-specialty-clickable" data-userid="' + userId
 			+ '" data-specialty-category="' + escapeHtml(category) + '" data-specialty-emoji="' + escapeHtml(emoji)
-			+ '" title="Tap for category breakdown">' + escapeHtml(emoji) + '</span>';
+			+ '"' + quizAttr + ' title="' + title + '">' + escapeHtml(emoji) + '</span>';
 	}
 
 	function hideFeedSpecialtyPopover() {
@@ -703,19 +706,26 @@ document.cookie="feedItems=50";
 		$pop.css({ top: top, left: left });
 	}
 
-	function showFeedSpecialtyPopover($anchor, userId) {
+	function showFeedSpecialtyPopover($anchor, userId, quizId) {
 		var $pop = $('#FeedSpecialtyPopover');
-		if ($pop.is(':visible') && $pop.data('userid') === userId) {
+		var key = userId + ':' + (quizId || 0);
+		if ($pop.is(':visible') && $pop.data('popkey') === key) {
 			hideFeedSpecialtyPopover();
 			return;
 		}
 		$pop.data('userid', userId)
+			.data('popkey', key)
 			.data('anchor', $anchor)
 			.html('<div class="feed-specialty-loading">Loading…</div>')
 			.css({ top: 0, left: 0 })
 			.fadeIn(150, function() {
 				positionFeedSpecialtyPopover($anchor);
 			});
+
+		if (quizId) {
+			showQuizSpecialtyPopover($pop, key, userId, quizId);
+			return;
+		}
 
 		$.get('action-getusercategories.php', {
 			groupid: getSetting('group_id'),
@@ -752,12 +762,45 @@ document.cookie="feedItems=50";
 				html += '</ul>';
 			}
 
-			if ($pop.data('userid') === userId) {
+			if ($pop.data('popkey') === key) {
 				$pop.html(html);
 				positionFeedSpecialtyPopover($pop.data('anchor'));
 			}
 		}).fail(function() {
-			if ($pop.data('userid') === userId) {
+			if ($pop.data('popkey') === key) {
+				$pop.html('<div class="feed-specialty-popover-empty">Could not load categories.</div>');
+				positionFeedSpecialtyPopover($pop.data('anchor'));
+			}
+		});
+	}
+
+	function showQuizSpecialtyPopover($pop, key, userId, quizId) {
+		$.get('action-getuserquizcategories.php', {
+			quiz_id: quizId,
+			userid: userId
+		}, function(raw) {
+			var data = (typeof raw === 'object') ? raw : JSON.parse(raw);
+			var cats = data.categories || [];
+			var html = '<div class="feed-specialty-popover-title">Categories in this quiz</div>';
+
+			if (!cats.length) {
+				html += '<div class="feed-specialty-popover-empty">No category data for this quiz.</div>';
+			} else {
+				html += '<ul class="feed-specialty-popover-list">';
+				cats.forEach(function(c) {
+					html += '<li><span class="feed-specialty-pop-emoji">' + escapeHtml(c.emoji) + '</span>'
+						+ '<span class="feed-specialty-pop-label">' + escapeHtml(c.category) + '</span>'
+						+ '<span class="feed-specialty-pop-pct">' + c.correct + '/' + c.answers + '</span></li>';
+				});
+				html += '</ul>';
+			}
+
+			if ($pop.data('popkey') === key) {
+				$pop.html(html);
+				positionFeedSpecialtyPopover($pop.data('anchor'));
+			}
+		}).fail(function() {
+			if ($pop.data('popkey') === key) {
 				$pop.html('<div class="feed-specialty-popover-empty">Could not load categories.</div>');
 				positionFeedSpecialtyPopover($pop.data('anchor'));
 			}
@@ -2428,7 +2471,11 @@ document.cookie="feedItems=50";
 		$(document).on('click', '.feed-specialty-clickable', function(e) {
 			e.stopPropagation();
 			$('#InfoTooltip').fadeOut(100);
-			showFeedSpecialtyPopover($(this), parseInt($(this).data('userid'), 10));
+			showFeedSpecialtyPopover(
+				$(this),
+				parseInt($(this).data('userid'), 10),
+				parseInt($(this).data('quiz-id'), 10) || 0
+			);
 		});
 		$(document).on('click', '#FeedSpecialtyPopover', function(e) {
 			e.stopPropagation();

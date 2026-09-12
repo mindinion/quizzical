@@ -60,7 +60,8 @@ function renderWeeklyStrip() {
 			+ ' onerror="this.onerror=null;this.src=\'profileicon.png\'">'
 			+ '<span class="feed-rank-badge">' + rank + '</span>'
 			+ '</div>'
-			+ '<div class="WeeklyLeader-name">' + escapeHtml(r.first_name) + '</div>'
+			+ '<div class="WeeklyLeader-name">' + escapeHtml(r.first_name)
+			+ feedSpecialtyBadge(r.specialty_emoji, r.specialty_category, r.userid) + '</div>'
 			+ '<div class="WeeklyLeader-pct">' + r.avg_pct + '%</div>'
 			+ '</div>';
 	});
@@ -135,7 +136,9 @@ function renderClassicFeedPost(myuserid, $container, fields) {
 	);
 
 	var ago = ts ? moment.tz(ts, getSetting('timezone')).fromNow() : '';
-	var specialtyHtml = feedSpecialtyBadge(fields.specialty_emoji, fields.specialty_category, userId);
+	var specialtyHtml = feedSpecialtyBadge(
+		fields.specialty_emoji, fields.specialty_category, userId, fields.quizId
+	);
 
 	$('*[data-quizfeedtext="' + quizfeedId + '"]').append(
 		'<div id="QuizFeedInfoName" data-quizfeedname="' + quizfeedId + '">' + nameFirst + ' ' + nameLast + specialtyHtml
@@ -283,6 +286,7 @@ function renderQuizCard(quiz, myuserid) {
 				score: r.score,
 				max: r.max,
 				quizRank: r.rank,
+				quizId: quiz.quiz_id || 0,
 				hideInlineDelete: true,
 				itemClass: 'QuizCard-score'
 			});
