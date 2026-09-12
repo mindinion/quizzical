@@ -2357,9 +2357,7 @@ A {}
 	float: left;
 	width: 100%;
 	clear: both;
-	margin-bottom: 28px;
-	padding-bottom: 6px;
-	border-bottom: 2px solid rgba(230, 115, 0, 0.22);
+	margin-bottom: 26px;
 }
 
 .QuizCard-group::after {
@@ -2368,22 +2366,42 @@ A {}
 	clear: both;
 }
 
+/* Rows no longer reserve space for the classic right-hand bubble. */
+.QuizCard-group #QuizFeedInfo {
+	float: none;
+	width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+	padding-left: 10px;
+}
+
+.QuizCard-group #QuizFeedInfoText {
+	width: calc(100% - 72px);
+	max-width: none;
+}
+
 .QuizCard-header#QuizFeedItem {
+	position: relative;
 	padding: 0;
-	margin-bottom: 2px;
+	margin-bottom: 4px;
 	background: #fff8ed;
-	border-bottom: 1px solid rgba(180, 120, 50, 0.18);
+	border-top: 2px solid #e67300;
+	border-bottom: 1px solid rgba(180, 120, 50, 0.15);
 }
 
 .QuizCard-header #QuizFeedInfo {
-	min-width: 98%;
-	padding: 14px 12px 12px;
-	float: none;
+	padding: 13px 12px 12px;
+}
+
+.QuizCard-header #QuizFeedInfoText.QuizCard-headerText {
+	width: 100%;
+	padding-right: 86px;
+	box-sizing: border-box;
 }
 
 .QuizCard-title {
 	font-family: verdana, arial;
-	font-size: 16px;
+	font-size: 17px;
 	font-weight: bold;
 	color: #222;
 	line-height: 1.25;
@@ -2392,33 +2410,57 @@ A {}
 .QuizCard-meta {
 	font-family: verdana, arial;
 	font-size: 12px;
-	color: #666;
+	color: #7a6a5a;
 	margin-top: 4px;
 }
 
-.QuizCard-headerLink {
-	display: inline-block;
-	margin-top: 8px;
+.QuizCard-pill {
+	position: absolute;
+	top: 14px;
+	right: 12px;
+	border: none;
+	border-radius: 14px;
+	padding: 6px 15px;
 	font-family: verdana, arial;
-	font-size: 13px;
+	font-size: 12px;
 	font-weight: bold;
-	color: #cc5500;
-	text-decoration: underline;
 	cursor: pointer;
+	background: #e67300;
+	color: #fff;
+}
+
+.QuizCard-pill-done {
+	background: #fff;
+	color: #cc5500;
+	border: 1px solid rgba(204, 85, 0, 0.4);
 }
 
 .QuizCard-score#QuizFeedItem {
-	padding-top: 8px;
+	padding-top: 10px;
 	padding-bottom: 12px;
 }
 
-.QuizCard-discussion#QuizFeedItem {
-	padding-top: 10px;
-	padding-bottom: 16px;
-	border-top: 1px dashed rgba(180, 120, 50, 0.2);
-	margin-top: 4px;
+.QuizCard-group #QuizFeedInfoStatus {
+	font-size: 14px;
+	max-width: none;
 }
 
+#QuizFeedInfoStatus.QuizCard-scoreRank-1 {
+	font-weight: bold;
+	color: #cc5500;
+}
+
+#QuizFeedInfoStatus.QuizCard-scoreRank-2,
+#QuizFeedInfoStatus.QuizCard-scoreRank-3 {
+	font-weight: bold;
+}
+
+.QuizCard-discussion#QuizFeedItem {
+	padding-top: 4px;
+	padding-bottom: 6px;
+}
+
+/* Keeps the discussion links on the same left edge as each score row's actions. */
 .QuizCard-discussionSpacer {
 	visibility: hidden;
 	max-width: 50px;
@@ -2427,23 +2469,22 @@ A {}
 	height: 1px;
 }
 
-.QuizCard-discussionText {
-	float: left;
-	width: 70%;
-	font-family: verdana;
-}
-
-.QuizCard-discussionLabel {
+.QuizCard-discussTrigger {
 	font-family: verdana, arial;
 	font-size: 13px;
 	font-weight: bold;
 	color: #cc5500;
-	margin-bottom: 6px;
+	cursor: pointer;
 }
 
-.QuizCard-scoreRank-1 { font-weight: bold; }
-.QuizCard-scoreRank-2 { font-weight: bold; }
-.QuizCard-scoreRank-3 { font-weight: bold; }
+.QuizCard-discussTrigger:hover {
+	text-decoration: underline;
+}
+
+.QuizCard-discussSep {
+	color: #bbb;
+	font-size: 12px;
+}
 
 .QuizCard-emptyHint {
 	font-family: verdana, arial;
@@ -2451,6 +2492,32 @@ A {}
 	color: #888;
 	padding: 0 12px 10px 82px;
 	clear: both;
+}
+
+.WeeklyStrip {
+	float: left;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 9px 12px 11px;
+	font-family: verdana, arial;
+	font-size: 12px;
+	color: #444;
+	border-bottom: 1px solid rgba(180, 120, 50, 0.15);
+}
+
+.WeeklyStrip-label {
+	font-weight: bold;
+	color: #cc5500;
+	margin-right: 8px;
+}
+
+.WeeklyStrip-entry {
+	margin-right: 10px;
+	white-space: nowrap;
+}
+
+.WeeklyStrip-pct {
+	color: #999;
 }
 
 .QuizCard-newDiscussion {

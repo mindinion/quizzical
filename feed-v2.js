@@ -35,13 +35,39 @@ function displayQuizFeed(resultsJson, preLoad, append) {
 	if (!append) {
 		var composerHtml = '<div id="CommentComposer"><textarea id="NewCommentTextArea" placeholder="Post a comment to the group..."></textarea><div id="ComposerActions"><label id="ComposerAttachBtn">Attach<input type="file" multiple id="ComposerFileInput" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" style="display:none"></label><button id="NewCommentSubmit" onclick="postComment()" style="display:none">Post</button></div><div id="ComposerAttachPreview" style="display:none"></div></div>';
 		$('#QuizFeed').prepend(composerHtml);
+		renderWeeklyStrip();
 	}
 
 	applyFeedRankBadges();
 }
 
+/**
+ * Weekly leaderboard context, shown once at the top of the feed so that
+ * per-quiz placement stays the only ranking inside a quiz card.
+ */
+function renderWeeklyStrip() {
+	if (typeof feedWeeklyLeaders === 'undefined' || !feedWeeklyLeaders.length) return;
+
+	var medals = ['\uD83E\uDD47', '\uD83E\uDD48', '\uD83E\uDD49'];
+	var html = '<div class="WeeklyStrip"><span class="WeeklyStrip-label">This week</span>';
+	feedWeeklyLeaders.forEach(function(r, i) {
+		html += '<span class="WeeklyStrip-entry">' + medals[i] + ' ' + escapeHtml(r.first_name)
+			+ ' <span class="WeeklyStrip-pct">' + r.avg_pct + '%</span></span>';
+	});
+	html += '</div>';
+
+	var $existing = $('#QuizFeed .WeeklyStrip');
+	if ($existing.length) {
+		$existing.replaceWith(html);
+		return;
+	}
+	var $composer = $('#QuizFeed #CommentComposer');
+	if ($composer.length) $composer.after(html);
+	else $('#QuizFeed').prepend(html);
+}
+
 function renderV2StandalonePost(result, myuserid) {
-	renderClassicFeedPost(result, myuserid, $('#QuizFeed'), {
+	renderClassicFeedPost(myuserid, $('#QuizFeed'), {
 		postId: result.postid,
 		userId: result.poster_id,
 		picFilename: result.poster_filename,
@@ -60,7 +86,7 @@ function renderV2StandalonePost(result, myuserid) {
 	});
 }
 
-function renderClassicFeedPost(opts, myuserid, $container, fields) {
+function renderClassicFeedPost(myuserid, $container, fields) {
 	var quizfeedId = fields.postId;
 	var picFilename = fields.picFilename;
 	var picSrc = (picFilename && picFilename !== 'null') ? picFilename + '?t=' + Date.now() : 'profileicon.png';
@@ -93,13 +119,13 @@ function renderClassicFeedPost(opts, myuserid, $container, fields) {
 			'<div id="QuizFeedInfoTimestamp" data-quizfeedts="' + quizfeedId + '">' + ago + ' '
 		);
 	}
-	if (userId == myuserid) {
+	if (userId == myuserid && !fields.hideInlineDelete) {
 		$('*[data-quizfeedname="' + quizfeedId + '"]').append(
 			'<a href="javascript:deletePost(' + quizfeedId + ')" class="Underline"> Delete </a>'
 		);
 	}
 	if (fields.score != null && fields.max != null) {
-		var scoreLine = 'Scored ' + fields.score + '/' + fields.max;
+		var scoreLine = fields.score + '/' + fields.max;
 		if (fields.quizRank) {
 			scoreLine = formatQuizRankLabel(fields.quizRank) + ' · ' + scoreLine;
 		}
@@ -203,30 +229,30 @@ function renderQuizCard(quiz, myuserid) {
 
 	var $header = $('<div id="QuizFeedItem" class="QuizCard-header"></div>');
 	var $info = $('<div id="QuizFeedInfo" class="NoBubble"></div>');
-	var $text = $('<div id="QuizFeedInfoText" class="NoBubble"></div>');
+	var $text = $('<div id="QuizFeedInfoText" class="NoBubble QuizCard-headerText"></div>');
 	$text.append('<div class="QuizCard-title">' + escapeHtml(quiz.title || 'Quiz') + '</div>');
 	var metaParts = [formatPlayedCount(played)];
 	if (ago) metaParts.push(ago);
 	$text.append('<div class="QuizCard-meta">' + metaParts.join(' · ') + '</div>');
-	if (isQuizzical) {
-		var actionLabel = quiz.my_status
-			? 'Review your score (' + quiz.my_status.score + '/' + quiz.my_status.max + ')'
-			: 'Play this quiz';
-		var $action = $('<a href="javascript:void(0)" class="QuizCard-headerLink">' + actionLabel + '</a>');
-		$action.on('click', function() {
-			openQuizFromFeedCard(qType, qDate, qId);
-		});
-		$text.append($action);
-	}
 	$info.append($text);
 	$header.append($info);
+	if (isQuizzical) {
+		var $pill = quiz.my_status
+			? $('<button type="button" class="QuizCard-pill QuizCard-pill-done">'
+				+ quiz.my_status.score + '/' + quiz.my_status.max + '</button>')
+			: $('<button type="button" class="QuizCard-pill QuizCard-pill-play">Play</button>');
+		$pill.on('click', function() {
+			openQuizFromFeedCard(qType, qDate, qId);
+		});
+		$header.append($pill);
+	}
 	$group.append($header);
 
 	if (!quiz.results || quiz.results.length === 0) {
 		$group.append('<div class="QuizCard-emptyHint">No scores yet — be the first.</div>');
 	} else {
 		(quiz.results || []).forEach(function(r) {
-			renderClassicFeedPost(null, myuserid, $group, {
+			renderClassicFeedPost(myuserid, $group, {
 				postId: r.post_id,
 				userId: r.poster_id,
 				picFilename: r.poster_filename,
@@ -242,6 +268,7 @@ function renderQuizCard(quiz, myuserid) {
 				score: r.score,
 				max: r.max,
 				quizRank: r.rank,
+				hideInlineDelete: true,
 				itemClass: 'QuizCard-score'
 			});
 		});
@@ -255,13 +282,11 @@ function renderQuizCardDiscussion(quiz, myuserid, $group) {
 	var $item = $('<div id="QuizFeedItem" class="QuizCard-discussion"></div>');
 	var $info = $('<div id="QuizFeedInfo" class="NoBubble"></div>');
 	$info.append('<div id="QuizFeedInfoPhoto" class="QuizCard-discussionSpacer" aria-hidden="true"></div>');
-	var $text = $('<div id="QuizFeedInfoText" class="NoBubble QuizCard-discussionText"></div>');
+	var $text = $('<div id="QuizFeedInfoText" class="NoBubble"></div>');
 
 	if (shellId > 0) {
 		$text.attr('data-quizfeedtext', shellId);
 	}
-
-	$text.append('<div class="QuizCard-discussionLabel">Discuss this quiz</div>');
 
 	if (quiz.quiz_comments && quiz.quiz_comments.length) {
 		var $comments = $('<div class="Comments"></div>');
@@ -273,14 +298,15 @@ function renderQuizCardDiscussion(quiz, myuserid, $group) {
 
 	if (shellId > 0) {
 		$text.append(
-			'<span id="QuizFeedInfoReplyLink" onclick="showReplyBox(' + shellId + ');"> Comment </span>'
-			+ ' - <span id="QuizFeedInfoDigLink" data-dig="' + shellId + '" onclick="digPost(' + shellId + ');">Dig </span>'
+			'<span class="QuizCard-discussTrigger" onclick="showReplyBox(' + shellId + ');">Discuss this quiz</span>'
+			+ '<span class="QuizCard-discussSep"> · </span>'
+			+ '<span id="QuizFeedInfoDigLink" data-dig="' + shellId + '" onclick="digPost(' + shellId + ');">Dig</span>'
 		);
 		$text.append(renderReplyComposer(shellId));
 	} else {
 		var qid = quiz.quiz_id || 0;
 		$text.append(
-			'<span id="QuizFeedInfoReplyLink" onclick="showQuizDiscussionComposer(' + qid + ');"> Comment </span>'
+			'<span class="QuizCard-discussTrigger" onclick="showQuizDiscussionComposer(' + qid + ');">Discuss this quiz</span>'
 		);
 		$text.append(
 			'<div class="QuizCard-newDiscussion" data-new-discussion-quiz="' + qid + '" style="display:none">'

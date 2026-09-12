@@ -1073,8 +1073,10 @@ document.cookie="feedItems=50";
 		var groupid = getSetting('group_id');
 		$.get('action-getrankings.php', { groupid: groupid, period: 'weekly', typefilter: 'quizzical' }, function(data) {
 			feedTopRankers = {};
-			JSON.parse(data).slice(0, 3).forEach(function(r, i) { feedTopRankers[r.userid] = i + 1; });
+			feedWeeklyLeaders = JSON.parse(data).slice(0, 3);
+			feedWeeklyLeaders.forEach(function(r, i) { feedTopRankers[r.userid] = i + 1; });
 			applyFeedRankBadges();
+			if (isFeedV2() && typeof renderWeeklyStrip === 'function') renderWeeklyStrip();
 		});
 	}
 
@@ -1103,6 +1105,7 @@ document.cookie="feedItems=50";
 	var rankingsLoaded = false;
 	var currentPbs = [];
 	var feedTopRankers = {};
+	var feedWeeklyLeaders = [];
 	var rankingsLayer = 'overall';
 	var lifeline5050ByUser = {};
 	var quizList = [];
