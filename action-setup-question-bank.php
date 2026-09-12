@@ -37,7 +37,7 @@ if (!bankSetupTokenIsValid(is_string($token) ? $token : null)) {
 }
 
 $mode = isset($body['mode']) ? strtolower(trim((string)$body['mode'])) : 'all';
-$validModes = ['migrate', 'seed-full', 'seed-incremental', 'seed-otqa', 'seed-otdb-full', 'repair-otqa', 'repair-quality', 'status', 'all'];
+$validModes = ['migrate', 'seed-full', 'seed-incremental', 'seed-otqa', 'seed-otdb-full', 'repair-otqa', 'repair-quality', 'backfill-source-category', 'status', 'all'];
 if (!in_array($mode, $validModes, true)) {
     $mode = 'all';
 }
@@ -54,6 +54,11 @@ try {
                 'Geography'         => bankCountValidAvailable($conn, 'Geography'),
                 'History'           => bankCountValidAvailable($conn, 'History'),
                 'General Knowledge' => bankCountValidAvailable($conn, 'General Knowledge'),
+            ] : [],
+            'source_category' => bankTableExists($conn) ? [
+                'bank'      => bankSourceCategoryCounts($conn),
+                'published' => bankSourceCategoryCounts($conn, 'AIQuestion'),
+                'bank_unset'=> bankCountUnsetSourceCategory($conn),
             ] : [],
         ];
         $conn->close();
@@ -115,6 +120,11 @@ try {
             'History' => bankCountValidAvailable($conn, 'History'),
             'General Knowledge' => bankCountValidAvailable($conn, 'General Knowledge'),
         ];
+    } elseif ($mode === 'backfill-source-category') {
+        if (!bankTableExists($conn)) {
+            throw new RuntimeException('QuizQuestionBank table missing — run migrate first');
+        }
+        $out['steps']['backfill_source_category'] = bankBackfillSourceCategories($conn);
     } elseif ($mode === 'seed-incremental') {
         if (!bankTableExists($conn)) {
             throw new RuntimeException('QuizQuestionBank table missing — run migrate first');
@@ -144,6 +154,7 @@ function runQuestionBankMigration(mysqli $conn): array {
           `question_text`   text NOT NULL,
           `format`          enum('mc','tf') NOT NULL DEFAULT 'mc',
           `difficulty`      varchar(10) DEFAULT NULL,
+          `source_category` varchar(80) DEFAULT NULL,
           `attribution`     varchar(255) DEFAULT NULL,
           `imported_at`     datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
           `last_used_at`    datetime DEFAULT NULL,
@@ -174,7 +185,12 @@ function runQuestionBankMigration(mysqli $conn): array {
     }
 
     $added = [];
-    foreach (['bank_id' => 'int UNSIGNED DEFAULT NULL', 'source' => 'varchar(30) DEFAULT NULL', 'difficulty' => 'varchar(10) DEFAULT NULL'] as $col => $def) {
+    foreach ([
+        'bank_id' => 'int UNSIGNED DEFAULT NULL',
+        'source' => 'varchar(30) DEFAULT NULL',
+        'difficulty' => 'varchar(10) DEFAULT NULL',
+        'source_category' => 'varchar(80) DEFAULT NULL',
+    ] as $col => $def) {
         $r = $conn->query("SHOW COLUMNS FROM AIQuestion LIKE '$col'");
         if ($r && $r->num_rows > 0) {
             continue;
@@ -185,7 +201,12 @@ function runQuestionBankMigration(mysqli $conn): array {
         $added[] = $col;
     }
 
-    return ['tables' => $tables, 'aiquestion_columns' => $added];
+    $sourceCols = bankEnsureSourceCategoryColumns($conn);
+    return [
+        'tables' => $tables,
+        'aiquestion_columns' => $added,
+        'source_category_columns' => $sourceCols,
+    ];
 }
 
 function bankSetupTokenIsValid(?string $token): bool {

@@ -31,6 +31,8 @@ require_once __DIR__ . '/dblogin.php';
 require_once __DIR__ . '/ai-quiz-stats.php';
 require_once __DIR__ . '/quiz-generator.php';
 
+bankEnsureSourceCategoryColumns($conn);
+
 $nztz = new DateTimeZone('Pacific/Auckland');
 $today = (new DateTime('now', $nztz))->format('Y-m-d');
 
@@ -74,7 +76,12 @@ try {
 
     $hasBankCols = aiQuestionHasBankColumns($conn);
     $hasDifficultyCol = aiQuestionHasColumn($conn, 'difficulty');
-    if ($hasBankCols && $hasDifficultyCol) {
+    $hasSourceCatCol = aiQuestionHasColumn($conn, 'source_category');
+    if ($hasBankCols && $hasDifficultyCol && $hasSourceCatCol) {
+        $stmtQ = $conn->prepare(
+            "INSERT INTO AIQuestion (quiz_id, position, question_text, category, format, bank_id, source, difficulty, source_category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        );
+    } elseif ($hasBankCols && $hasDifficultyCol) {
         $stmtQ = $conn->prepare(
             "INSERT INTO AIQuestion (quiz_id, position, question_text, category, format, bank_id, source, difficulty) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
         );
@@ -101,8 +108,14 @@ try {
         $bankId   = !empty($q['bank_id']) ? (int)$q['bank_id'] : null;
         $source   = $q['source'] ?? ($bankId ? 'bank' : 'ai');
         $difficulty = !empty($q['difficulty']) ? (string)$q['difficulty'] : null;
+        $sourceCategory = trim((string)($q['source_category'] ?? ''));
+        if ($sourceCategory === '') {
+            $sourceCategory = $category;
+        }
 
-        if ($hasBankCols && $hasDifficultyCol) {
+        if ($hasBankCols && $hasDifficultyCol && $hasSourceCatCol) {
+            $stmtQ->bind_param('iisssisss', $quizId, $pos, $text, $category, $format, $bankId, $source, $difficulty, $sourceCategory);
+        } elseif ($hasBankCols && $hasDifficultyCol) {
             $stmtQ->bind_param('iisssiss', $quizId, $pos, $text, $category, $format, $bankId, $source, $difficulty);
         } elseif ($hasBankCols) {
             $stmtQ->bind_param('iisssis', $quizId, $pos, $text, $category, $format, $bankId, $source);

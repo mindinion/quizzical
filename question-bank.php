@@ -58,6 +58,37 @@ const OPENTRIVIAQA_CATEGORY_MAP = [
     'world'           => 'General Knowledge',
 ];
 
+/** OpenTDB category ID => original topic label (kept for rankings; quiz slots still use OPENTDB_CATEGORY_MAP). */
+const OPENTDB_SOURCE_CATEGORY_NAMES = [
+    9  => 'General Knowledge',
+    17 => 'Science & Nature',
+    18 => 'Science: Computers',
+    19 => 'Science: Mathematics',
+    20 => 'Mythology',
+    22 => 'Geography',
+    23 => 'History',
+    27 => 'Animals',
+];
+
+/** OpenTriviaQA filename => original topic label. */
+const OPENTRIVIAQA_SOURCE_CATEGORY_NAMES = [
+    'geography'          => 'Geography',
+    'history'            => 'History',
+    'general'            => 'General Knowledge',
+    'science'            => 'Science',
+    'science-technology' => 'Science & Technology',
+    'sports'             => 'Sports',
+    'art'                => 'Art',
+    'literature'         => 'Literature',
+    'music'              => 'Music',
+    'movies'             => 'Movies',
+    'television'         => 'Television',
+    'food'               => 'Food',
+    'people'             => 'People',
+    'words'              => 'Words',
+    'world'              => 'World',
+];
+
 const BANK_IMPORT_SKIP_PATTERNS = [
     '/\bcapital (city )?of\b/i',
     '/\bopera house\b/i',
@@ -97,6 +128,53 @@ function bankImageQueryForQuestion(string $category, int $bankId): string {
 function bankTableExists(mysqli $conn): bool {
     $r = $conn->query("SHOW TABLES LIKE 'QuizQuestionBank'");
     return $r && $r->num_rows > 0;
+}
+
+function bankColumnExists(mysqli $conn, string $table, string $column, bool $refresh = false): bool {
+    static $cache = [];
+    $key = $table . '.' . $column;
+    if ($refresh || !array_key_exists($key, $cache)) {
+        $t = $conn->real_escape_string($table);
+        $c = $conn->real_escape_string($column);
+        $r = $conn->query("SHOW COLUMNS FROM `$t` LIKE '$c'");
+        $cache[$key] = $r && $r->num_rows > 0;
+    }
+    return $cache[$key];
+}
+
+function bankHasSourceCategoryColumn(mysqli $conn, string $table = 'QuizQuestionBank'): bool {
+    return bankColumnExists($conn, $table, 'source_category');
+}
+
+/**
+ * Adds source_category to the bank and to published quiz questions if missing.
+ * @return list<string>
+ */
+function bankEnsureSourceCategoryColumns(mysqli $conn): array {
+    $added = [];
+    $targets = [
+        'QuizQuestionBank' => 'varchar(80) DEFAULT NULL',
+        'AIQuestion'       => 'varchar(80) DEFAULT NULL',
+    ];
+    foreach ($targets as $table => $def) {
+        if (!bankTableExists($conn) && $table === 'QuizQuestionBank') {
+            continue;
+        }
+        $r = $conn->query("SHOW TABLES LIKE '$table'");
+        if (!$r || $r->num_rows === 0) {
+            continue;
+        }
+        if (bankColumnExists($conn, $table, 'source_category')) {
+            continue;
+        }
+        if (!$conn->query("ALTER TABLE `$table` ADD COLUMN `source_category` $def")) {
+            throw new RuntimeException("ALTER $table.source_category failed: " . $conn->error);
+        }
+        if (bankColumnExists($conn, $table, 'source_category', true)) {
+            $added[] = "$table.source_category";
+        }
+    }
+    return $added;
 }
 
 function bankSourceId(string $source, string $questionText): string {
@@ -355,18 +433,23 @@ function bankRowToQuizQuestion(array $row, array $options): ?array {
     }
 
     $cat = $row['category'];
+    $sourceCategory = trim((string)($row['source_category'] ?? ''));
+    if ($sourceCategory === '') {
+        $sourceCategory = $cat;
+    }
     $bankId = (int)$row['id'];
     $imageQuery = bankImageQueryForQuestion($cat, $bankId);
 
     return [
-        'question'    => $questionText,
-        'format'      => $format,
-        'category'    => $cat,
-        'image_query' => $imageQuery,
-        'options'     => $opts,
-        'bank_id'     => $bankId,
-        'source'      => $row['source'],
-        'difficulty'  => $row['difficulty'] ?? null,
+        'question'         => $questionText,
+        'format'           => $format,
+        'category'         => $cat,
+        'source_category'  => $sourceCategory,
+        'image_query'      => $imageQuery,
+        'options'          => $opts,
+        'bank_id'          => $bankId,
+        'source'           => $row['source'],
+        'difficulty'       => $row['difficulty'] ?? null,
     ];
 }
 
@@ -599,7 +682,10 @@ function bankFetchCategoryCandidates(
     bool $anyDifficulty = false
 ): array {
     $limit = max(1, min(200, $limit));
-    $sql = "SELECT id, source, category, question_text, format, difficulty
+    $sourceCatSelect = bankHasSourceCategoryColumn($conn)
+        ? ', source_category'
+        : '';
+    $sql = "SELECT id, source, category, question_text, format, difficulty$sourceCatSelect
             FROM QuizQuestionBank
             WHERE category = ?
               AND (last_used_at IS NULL OR last_used_at < DATE_SUB(NOW(), INTERVAL ? DAY))";
@@ -718,23 +804,34 @@ function bankInsertQuestion(mysqli $conn, array $q): bool {
     $format = $q['format'];
     $difficulty = $q['difficulty'] ?? null;
     $attribution = $q['attribution'] ?? null;
+    $sourceCategory = trim((string)($q['source_category'] ?? ''));
+    if ($sourceCategory === '') {
+        $sourceCategory = $category;
+    }
+    $hasSourceCat = bankHasSourceCategoryColumn($conn);
 
-    $stmt = $conn->prepare(
-        'INSERT IGNORE INTO QuizQuestionBank (source, source_id, category, question_text, format, difficulty, attribution)
-         VALUES (?, ?, ?, ?, ?, ?, ?)'
-    );
-    $stmt->bind_param('sssssss', $source, $sourceId, $category, $text, $format, $difficulty, $attribution);
+    if ($hasSourceCat) {
+        $stmt = $conn->prepare(
+            'INSERT IGNORE INTO QuizQuestionBank (source, source_id, category, question_text, format, difficulty, attribution, source_category)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+        );
+        $stmt->bind_param('ssssssss', $source, $sourceId, $category, $text, $format, $difficulty, $attribution, $sourceCategory);
+    } else {
+        $stmt = $conn->prepare(
+            'INSERT IGNORE INTO QuizQuestionBank (source, source_id, category, question_text, format, difficulty, attribution)
+             VALUES (?, ?, ?, ?, ?, ?, ?)'
+        );
+        $stmt->bind_param('sssssss', $source, $sourceId, $category, $text, $format, $difficulty, $attribution);
+    }
     $stmt->execute();
     $inserted = $stmt->affected_rows > 0;
     $bankId = $inserted ? (int)$conn->insert_id : 0;
     $stmt->close();
 
     if (!$inserted) {
-        $find = $conn->prepare('SELECT id FROM QuizQuestionBank WHERE source = ? AND source_id = ? LIMIT 1');
-        $find->bind_param('ss', $source, $sourceId);
-        $find->execute();
-        $row = $find->get_result()->fetch_assoc();
-        $find->close();
+        if ($hasSourceCat && $sourceCategory !== '') {
+            bankApplySourceCategory($conn, $source, $sourceId, $sourceCategory, $text);
+        }
         return false;
     }
 
@@ -755,7 +852,7 @@ function bankInsertQuestion(mysqli $conn, array $q): bool {
 /**
  * @return list<array> normalised question structs ready for bankInsertQuestion
  */
-function bankNormaliseOpenTdbResult(array $item, string $category): ?array {
+function bankNormaliseOpenTdbResult(array $item, string $category, ?int $categoryId = null): ?array {
     $question = bankNormalizeQuestionText($item['question'] ?? '');
     if ($question === '' || bankQuestionShouldSkip($question)) {
         return null;
@@ -792,10 +889,11 @@ function bankNormaliseOpenTdbResult(array $item, string $category): ?array {
     }
 
     return [
-        'source'        => 'opentdb',
-        'source_id'     => bankSourceId('opentdb', $question),
-        'category'      => $category,
-        'question_text' => $question,
+        'source'           => 'opentdb',
+        'source_id'        => bankSourceId('opentdb', $question),
+        'category'         => $category,
+        'source_category'  => bankOpenTdbSourceCategory($item, $category, $categoryId),
+        'question_text'    => $question,
         'format'        => $format,
         'difficulty'    => $item['difficulty'] ?? null,
         'attribution'   => 'Open Trivia DB (CC BY-SA 4.0)',
@@ -856,7 +954,7 @@ function bankSeedOpenTdb(mysqli $conn, bool $full = false): array {
                 break;
             }
             foreach ($results as $item) {
-                $q = bankNormaliseOpenTdbResult($item, $quizzicalCat);
+                $q = bankNormaliseOpenTdbResult($item, $quizzicalCat, (int)$catId);
                 if ($q && bankInsertQuestion($conn, $q)) {
                     $added[$quizzicalCat]++;
                 }
@@ -872,7 +970,7 @@ function bankSeedOpenTdb(mysqli $conn, bool $full = false): array {
  * Parse OpenTriviaQA category file content.
  * @return list<array>
  */
-function bankParseOpenTriviaQaFile(string $content, string $quizzicalCat): array {
+function bankParseOpenTriviaQaFile(string $content, string $quizzicalCat, string $sourceFile = ''): array {
     $questions = [];
     $blocks = preg_split('/\n\s*\n/', trim($content));
     foreach ($blocks as $block) {
@@ -911,10 +1009,11 @@ function bankParseOpenTriviaQaFile(string $content, string $quizzicalCat): array
         }
 
         $questions[] = [
-            'source'        => 'opentriviaqa',
-            'source_id'     => bankSourceId('opentriviaqa', $question),
-            'category'      => $quizzicalCat,
-            'question_text' => $question,
+            'source'           => 'opentriviaqa',
+            'source_id'        => bankSourceId('opentriviaqa', $question),
+            'category'         => $quizzicalCat,
+            'source_category'  => bankOpenTriviaQaSourceCategory($sourceFile, $quizzicalCat),
+            'question_text'    => $question,
             'format'        => 'mc',
             'difficulty'    => null,
             'attribution'   => 'OpenTriviaQA (CC BY-SA 4.0)',
@@ -924,26 +1023,33 @@ function bankParseOpenTriviaQaFile(string $content, string $quizzicalCat): array
     return $questions;
 }
 
+function bankFetchOpenTriviaQaFile(string $file): ?string {
+    $url = 'https://raw.githubusercontent.com/uberspot/OpenTriviaQA/master/categories/' . rawurlencode($file);
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 60,
+        CURLOPT_FOLLOWLOCATION => true,
+    ]);
+    $content = curl_exec($ch);
+    $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    if ($code !== 200 || !$content) {
+        return null;
+    }
+    return $content;
+}
+
 function bankSeedOpenTriviaQa(mysqli $conn): array {
     $added = ['Geography' => 0, 'History' => 0, 'General Knowledge' => 0];
-    $baseUrl = 'https://raw.githubusercontent.com/uberspot/OpenTriviaQA/master/categories/';
 
     foreach (OPENTRIVIAQA_CATEGORY_MAP as $file => $quizzicalCat) {
-        $url = $baseUrl . rawurlencode($file);
-        $ch = curl_init($url);
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT        => 60,
-            CURLOPT_FOLLOWLOCATION => true,
-        ]);
-        $content = curl_exec($ch);
-        $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        if ($code !== 200 || !$content) {
+        $content = bankFetchOpenTriviaQaFile($file);
+        if ($content === null) {
             continue;
         }
 
-        foreach (bankParseOpenTriviaQaFile($content, $quizzicalCat) as $q) {
+        foreach (bankParseOpenTriviaQaFile($content, $quizzicalCat, $file) as $q) {
             if (bankInsertQuestion($conn, $q)) {
                 $added[$quizzicalCat]++;
             }
@@ -1040,4 +1146,187 @@ function bankTotalCounts(mysqli $conn): array {
         }
     }
     return $out;
+}
+
+function bankOpenTdbSourceCategory(array $item, string $fallback, ?int $categoryId = null): string {
+    $fromItem = trim((string)($item['category'] ?? ''));
+    if ($fromItem !== '') {
+        return $fromItem;
+    }
+    if ($categoryId !== null && isset(OPENTDB_SOURCE_CATEGORY_NAMES[$categoryId])) {
+        return OPENTDB_SOURCE_CATEGORY_NAMES[$categoryId];
+    }
+    return $fallback;
+}
+
+function bankOpenTriviaQaSourceCategory(string $sourceFile, string $fallback): string {
+    return OPENTRIVIAQA_SOURCE_CATEGORY_NAMES[$sourceFile] ?? $fallback;
+}
+
+function bankSourceCategoryEmptySql(string $alias = ''): string {
+    $col = $alias === '' ? 'source_category' : $alias . '.source_category';
+    return "($col IS NULL OR $col = '')";
+}
+
+/** @return int rows updated */
+function bankApplySourceCategory(
+    mysqli $conn,
+    string $source,
+    string $sourceId,
+    string $sourceCategory,
+    ?string $questionText = null
+): int {
+    if (!bankHasSourceCategoryColumn($conn) || $sourceCategory === '') {
+        return 0;
+    }
+    $empty = bankSourceCategoryEmptySql();
+    if ($questionText !== null && $questionText !== '') {
+        $stmt = $conn->prepare(
+            "UPDATE QuizQuestionBank SET source_category = ?
+             WHERE source = ? AND $empty AND (source_id = ? OR question_text = ?)"
+        );
+        $stmt->bind_param('ssss', $sourceCategory, $source, $sourceId, $questionText);
+    } else {
+        $stmt = $conn->prepare(
+            "UPDATE QuizQuestionBank SET source_category = ?
+             WHERE source = ? AND $empty AND source_id = ?"
+        );
+        $stmt->bind_param('sss', $sourceCategory, $source, $sourceId);
+    }
+    $stmt->execute();
+    $n = $stmt->affected_rows;
+    $stmt->close();
+    return $n > 0 ? $n : 0;
+}
+
+function bankSourceCategoryCounts(mysqli $conn, string $table = 'QuizQuestionBank'): array {
+    $out = [];
+    if (!bankHasSourceCategoryColumn($conn, $table)) {
+        return $out;
+    }
+    $r = $conn->query(
+        "SELECT COALESCE(NULLIF(source_category, ''), '(unset)') AS source_category, COUNT(*) AS total
+         FROM `$table` GROUP BY COALESCE(NULLIF(source_category, ''), '(unset)')
+         ORDER BY total DESC"
+    );
+    if ($r) {
+        while ($row = $r->fetch_assoc()) {
+            $out[$row['source_category']] = (int)$row['total'];
+        }
+    }
+    return $out;
+}
+
+function bankCountUnsetSourceCategory(mysqli $conn, string $table = 'QuizQuestionBank'): int {
+    if (!bankHasSourceCategoryColumn($conn, $table)) {
+        return 0;
+    }
+    $empty = bankSourceCategoryEmptySql();
+    $r = $conn->query("SELECT COUNT(*) AS cnt FROM `$table` WHERE $empty");
+    $row = $r ? $r->fetch_assoc() : null;
+    return $row ? (int)$row['cnt'] : 0;
+}
+
+function bankBackfillOpenTriviaQaSourceCategories(mysqli $conn): int {
+    $updated = 0;
+    foreach (OPENTRIVIAQA_CATEGORY_MAP as $file => $quizzicalCat) {
+        $content = bankFetchOpenTriviaQaFile($file);
+        if ($content === null) {
+            continue;
+        }
+        $label = bankOpenTriviaQaSourceCategory($file, $quizzicalCat);
+        foreach (bankParseOpenTriviaQaFile($content, $quizzicalCat, $file) as $q) {
+            $updated += bankApplySourceCategory(
+                $conn,
+                'opentriviaqa',
+                $q['source_id'],
+                $label,
+                $q['question_text']
+            );
+        }
+    }
+    return $updated;
+}
+
+function bankBackfillOpenTdbSourceCategories(mysqli $conn): int {
+    $updated = 0;
+    $token = bankOpenTdbSessionToken();
+    foreach (OPENTDB_CATEGORY_MAP as $catId => $quizzicalCat) {
+        $label = OPENTDB_SOURCE_CATEGORY_NAMES[$catId] ?? $quizzicalCat;
+        for ($i = 0; $i < 40; $i++) {
+            $results = bankFetchOpenTdbCategory((int)$catId, 50, $token);
+            if (!$results) {
+                break;
+            }
+            foreach ($results as $item) {
+                $q = bankNormaliseOpenTdbResult($item, $quizzicalCat, (int)$catId);
+                if (!$q) {
+                    continue;
+                }
+                $updated += bankApplySourceCategory(
+                    $conn,
+                    'opentdb',
+                    $q['source_id'],
+                    $q['source_category'] ?? $label,
+                    $q['question_text']
+                );
+            }
+            usleep(350000);
+        }
+    }
+    return $updated;
+}
+
+function bankCopySourceCategoryToPublishedQuestions(mysqli $conn): int {
+    if (!bankHasSourceCategoryColumn($conn, 'AIQuestion') || !bankHasSourceCategoryColumn($conn)) {
+        return 0;
+    }
+    $ok = $conn->query(
+        "UPDATE AIQuestion q
+         INNER JOIN QuizQuestionBank b ON q.bank_id = b.id
+         SET q.source_category = b.source_category
+         WHERE (q.source_category IS NULL OR q.source_category = '')
+           AND b.source_category IS NOT NULL AND b.source_category != ''"
+    );
+    return $ok ? $conn->affected_rows : 0;
+}
+
+function bankFillRemainingSourceCategories(mysqli $conn, string $table): int {
+    if (!bankHasSourceCategoryColumn($conn, $table)) {
+        return 0;
+    }
+    $ok = $conn->query(
+        "UPDATE `$table`
+         SET source_category = category
+         WHERE source_category IS NULL OR source_category = ''"
+    );
+    return $ok ? $conn->affected_rows : 0;
+}
+
+/**
+ * Recover original source topics for existing bank rows and copy them onto
+ * already-published quiz questions that still have a bank_id.
+ *
+ * @return array<string, mixed>
+ */
+function bankBackfillSourceCategories(mysqli $conn): array {
+    $addedCols = bankEnsureSourceCategoryColumns($conn);
+    $otqa = bankBackfillOpenTriviaQaSourceCategories($conn);
+    $otdb = bankBackfillOpenTdbSourceCategories($conn);
+    $filledBank = bankFillRemainingSourceCategories($conn, 'QuizQuestionBank');
+    $copied = bankCopySourceCategoryToPublishedQuestions($conn);
+    $filledPublished = bankFillRemainingSourceCategories($conn, 'AIQuestion');
+
+    return [
+        'columns_added'               => $addedCols,
+        'bank_updated_otqa'           => $otqa,
+        'bank_updated_otdb'           => $otdb,
+        'bank_filled_from_slot'       => $filledBank,
+        'published_from_bank'         => $copied,
+        'published_filled'            => $filledPublished,
+        'bank_unset_remaining'        => bankCountUnsetSourceCategory($conn),
+        'published_unset'             => bankCountUnsetSourceCategory($conn, 'AIQuestion'),
+        'bank_by_source_category'     => bankSourceCategoryCounts($conn),
+        'published_by_source_category'=> bankSourceCategoryCounts($conn, 'AIQuestion'),
+    ];
 }

@@ -23,6 +23,7 @@ $statements = [
       `question_text`   text NOT NULL,
       `format`          enum('mc','tf') NOT NULL DEFAULT 'mc',
       `difficulty`      varchar(10) DEFAULT NULL,
+      `source_category` varchar(80) DEFAULT NULL,
       `attribution`     varchar(255) DEFAULT NULL,
       `imported_at`     datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
       `last_used_at`    datetime DEFAULT NULL,
@@ -51,9 +52,10 @@ foreach ($statements as $sql) {
 }
 
 $alterColumns = [
-    'bank_id'    => 'ALTER TABLE `AIQuestion` ADD COLUMN `bank_id` int UNSIGNED DEFAULT NULL',
-    'source'     => 'ALTER TABLE `AIQuestion` ADD COLUMN `source` varchar(30) DEFAULT NULL',
-    'difficulty' => 'ALTER TABLE `AIQuestion` ADD COLUMN `difficulty` varchar(10) DEFAULT NULL',
+    'bank_id'          => 'ALTER TABLE `AIQuestion` ADD COLUMN `bank_id` int UNSIGNED DEFAULT NULL',
+    'source'           => 'ALTER TABLE `AIQuestion` ADD COLUMN `source` varchar(30) DEFAULT NULL',
+    'difficulty'       => 'ALTER TABLE `AIQuestion` ADD COLUMN `difficulty` varchar(10) DEFAULT NULL',
+    'source_category'  => 'ALTER TABLE `AIQuestion` ADD COLUMN `source_category` varchar(80) DEFAULT NULL',
 ];
 
 foreach ($alterColumns as $col => $sql) {
@@ -67,6 +69,17 @@ foreach ($alterColumns as $col => $sql) {
         exit(1);
     }
     echo "OK: added AIQuestion.$col\n";
+}
+
+$bankCol = $conn->query("SHOW COLUMNS FROM QuizQuestionBank LIKE 'source_category'");
+if ($bankCol && $bankCol->num_rows === 0) {
+    if (!$conn->query("ALTER TABLE `QuizQuestionBank` ADD COLUMN `source_category` varchar(80) DEFAULT NULL")) {
+        fwrite(STDERR, "ALTER failed (QuizQuestionBank.source_category): " . $conn->error . "\n");
+        exit(1);
+    }
+    echo "OK: added QuizQuestionBank.source_category\n";
+} else {
+    echo "Skip: QuizQuestionBank.source_category already exists\n";
 }
 
 echo "Migration complete.\n";

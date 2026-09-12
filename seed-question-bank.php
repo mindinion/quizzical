@@ -7,6 +7,7 @@
  * Usage:
  *   php seed-question-bank.php --full       Initial bulk import
  *   php seed-question-bank.php --incremental   Weekly top-up (OpenTDB only)
+ *   php seed-question-bank.php --backfill-categories  Recover source topics on existing rows
  */
 
 if (php_sapi_name() !== 'cli') {
@@ -20,8 +21,9 @@ require_once __DIR__ . '/question-bank.php';
 
 $full = in_array('--full', $argv, true);
 $incremental = in_array('--incremental', $argv, true);
-if (!$full && !$incremental) {
-    fwrite(STDERR, "Usage: php seed-question-bank.php --full|--incremental\n");
+$backfill = in_array('--backfill-categories', $argv, true);
+if (!$full && !$incremental && !$backfill) {
+    fwrite(STDERR, "Usage: php seed-question-bank.php --full|--incremental|--backfill-categories\n");
     exit(1);
 }
 
@@ -32,10 +34,28 @@ if (!bankTableExists($conn)) {
     exit(1);
 }
 
-$modeLabel = $full ? 'full' : 'incremental';
+$modeLabel = $backfill ? 'backfill-categories' : ($full ? 'full' : 'incremental');
 $log = [];
 
 try {
+    bankEnsureSourceCategoryColumns($conn);
+
+    if ($backfill) {
+        $log[] = 'Backfilling source categories from OpenTriviaQA and OpenTDB…';
+        $result = bankBackfillSourceCategories($conn);
+        foreach ($result as $key => $value) {
+            $log[] = "  $key: " . (is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value);
+        }
+        $subject = 'Quizzical: source category backfill complete';
+        notifySeedSuperusers($conn, $subject, implode("\n", $log), false);
+        foreach ($log as $line) {
+            echo $line . "\n";
+        }
+        echo "Done.\n";
+        $conn->close();
+        exit(0);
+    }
+
     $log[] = "Seeding question bank ($modeLabel)…";
 
     $otqa = [];
