@@ -179,11 +179,24 @@
 	width: 48px;
 }
 
-.lifeline-category-list {
-	background: #fff;
-	border: 1px solid #ecdec8;
-	border-radius: 10px;
-	overflow: hidden;
+.lifeline-row-unqualified .r-place {
+	color: #ddd;
+}
+
+.lifeline-detail-categories {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.lifeline-detail-categories .lifeline-category-row {
+	padding: 6px 0;
+	border-bottom: 1px solid #f0e6d8;
+}
+
+.lifeline-detail-categories .lifeline-category-row:last-child {
+	border-bottom: none;
+	padding-bottom: 0;
 }
 
 .lifeline-category-row {

@@ -1043,6 +1043,7 @@ document.cookie="feedItems=50";
 	var currentPbs = [];
 	var feedTopRankers = {};
 	var rankingsLayer = 'overall';
+	var lifeline5050ByUser = {};
 	var quizList = [];
 	var selectedQuiz = null;
 
@@ -1155,11 +1156,46 @@ document.cookie="feedItems=50";
 		$('#RankingsMain').html(html);
 	}
 
+	function render5050CategoryDetail(categories) {
+		if (!categories || !categories.length) {
+			return '<div class="detail-empty">No category breakdown for this period</div>';
+		}
+		var html = '<div class="lifeline-detail-categories">';
+		categories.forEach(function(c) {
+			html += '<div class="lifeline-category-row">';
+			html += '<span class="lifeline-category-label">' + escapeHtml(c.emoji) + ' ' + escapeHtml(c.category) + '</span>';
+			html += '<span class="lifeline-category-stats">';
+			html += c.uses + ' uses · ' + c.success_pct + '% hit · ' + c.burned + ' burned';
+			html += '</span>';
+			html += '</div>';
+		});
+		html += '</div>';
+		return html;
+	}
+
+	function toggle5050Detail($row, userid) {
+		var detailId = 'detail-5050-' + userid;
+		var $existing = $('#' + detailId);
+		if ($existing.length) {
+			$existing.slideToggle(150);
+			$row.toggleClass('row-expanded');
+			return;
+		}
+		var $detail = $('<div class="detail-panel" id="' + detailId + '"></div>');
+		$detail.html(render5050CategoryDetail(lifeline5050ByUser[userid] || []));
+		$row.after($detail);
+		$row.addClass('row-expanded');
+	}
+
 	function render5050Rankings(payload, period, myUserid) {
 		var group = payload.group || {};
 		var players = payload.players || [];
-		var categories = payload.categories || [];
 		var minUses = payload.min_uses || 4;
+
+		lifeline5050ByUser = {};
+		players.forEach(function(r) {
+			lifeline5050ByUser[r.userid] = r.categories || [];
+		});
 
 		if (!group.uses) {
 			$('#RankingsMain').html('<div class="lifeline-rankings-empty">No 50/50 data yet for this period — use a lifeline during a quiz to start tracking.</div>');
@@ -1173,10 +1209,10 @@ document.cookie="feedItems=50";
 		html += ' <span class="info-icon" data-tip="Success = got the question right after using 50/50. Burned = used 50/50 and still got it wrong.">i</span>';
 		html += '</div>';
 
-		html += '<div class="rankings-section-title">Best 50/50 judgment <span class="info-icon" data-tip="Ranked by success rate after using 50/50 (min ' + minUses + ' uses in this period).">i</span></div>';
+		html += '<div class="rankings-section-title">50/50 players <span class="info-icon" data-tip="Ranked by hit rate after using 50/50. Tap a name to see which categories they use lifelines on. Players with ' + minUses + '+ uses rank above those with fewer.">i</span></div>';
 
 		if (!players.length) {
-			html += '<div class="lifeline-rankings-empty">Not enough lifeline uses yet — need at least ' + minUses + ' per player.</div>';
+			html += '<div class="lifeline-rankings-empty">No lifeline uses in this period yet.</div>';
 		} else {
 			html += '<div class="rankings-table lifeline-rankings-table">';
 			html += '<div class="rankings-header-row lifeline-rankings-header">';
@@ -1186,12 +1222,14 @@ document.cookie="feedItems=50";
 			html += '<span class="rh-part">Uses</span>';
 			html += '</div>';
 
-			players.forEach(function(r, idx) {
-				var place = idx + 1;
-				var placeSuffix = place === 1 ? 'st' : place === 2 ? 'nd' : place === 3 ? 'rd' : 'th';
+			var rank = 0;
+			players.forEach(function(r) {
+				if (r.qualified) rank++;
+				var placeLabel = r.qualified ? (rank + (rank === 1 ? 'st' : rank === 2 ? 'nd' : rank === 3 ? 'rd' : 'th')) : '–';
 				var rowClass = 'rankings-row' + (r.userid === myUserid ? ' rankings-row-me' : '');
-				html += '<div class="' + rowClass + '">';
-				html += '<span class="r-place">' + place + placeSuffix + '</span>';
+				if (!r.qualified) rowClass += ' lifeline-row-unqualified';
+				html += '<div class="' + rowClass + '" data-userid="' + r.userid + '" data-expandtype="5050">';
+				html += '<span class="r-place">' + placeLabel + '</span>';
 				html += '<span class="r-photo-name">';
 				html += '<img src="' + (r.pic_filename || 'profileicon.png') + '?t=' + Date.now() + '" class="r-photo" loading="lazy" onerror="this.onerror=null;this.src=\'profileicon.png\'">';
 				html += '<span class="r-name">' + escapeHtml(r.first_name) + ' ' + escapeHtml(r.last_name) + '</span>';
@@ -1201,20 +1239,6 @@ document.cookie="feedItems=50";
 				html += '</div>';
 			});
 
-			html += '</div>';
-		}
-
-		if (categories.length) {
-			html += '<div class="rankings-section-title">Where lifelines get used <span class="info-icon" data-tip="Categories where the group used 50/50 most often in this period.">i</span></div>';
-			html += '<div class="lifeline-category-list">';
-			categories.forEach(function(c) {
-				html += '<div class="lifeline-category-row">';
-				html += '<span class="lifeline-category-label">' + escapeHtml(c.emoji) + ' ' + escapeHtml(c.category) + '</span>';
-				html += '<span class="lifeline-category-stats">';
-				html += c.uses + ' uses · ' + c.success_pct + '% hit · ' + c.burned + ' burned';
-				html += '</span>';
-				html += '</div>';
-			});
 			html += '</div>';
 		}
 
@@ -2329,6 +2353,8 @@ document.cookie="feedItems=50";
 			var expandtype = $row.data('expandtype');
 			if (expandtype === 'pb') {
 				togglePbDetail($row, userid);
+			} else if (expandtype === '5050') {
+				toggle5050Detail($row, userid);
 			} else {
 				toggleDetail($row, userid, expandtype, rankingsCurrentPeriod);
 			}

@@ -2,7 +2,7 @@
 /**
  * action-get5050rankings.php
  *
- * 50/50 lifeline stats for a group and period: player success rates and usage by category.
+ * 50/50 lifeline stats for a group and period: player success rates with per-user category breakdown.
  * period: weekly | monthly | yearly | alltime
  */
 
@@ -19,11 +19,10 @@ if (!in_array($period, ['weekly', 'monthly', 'yearly', 'alltime'], true)) {
 }
 
 $empty = [
-    'period'      => $period,
-    'min_uses'    => lifelineMinUses($period),
-    'group'       => ['uses' => 0, 'success_pct' => null, 'burned' => 0],
-    'players'     => [],
-    'categories'  => [],
+    'period'   => $period,
+    'min_uses' => lifelineMinUses($period),
+    'group'    => ['uses' => 0, 'success_pct' => null, 'burned' => 0],
+    'players'  => [],
 ];
 
 if (!$groupid) {
@@ -73,7 +72,6 @@ if (!$rows) {
 $groupUses = 0;
 $groupSuccess = 0;
 $byUser = [];
-$byCategory = [];
 
 foreach ($rows as $row) {
     $correct = (int)$row['is_correct'];
@@ -94,23 +92,39 @@ foreach ($rows as $row) {
             'pic_filename' => $row['pic_filename'],
             'uses'         => 0,
             'successes'    => 0,
+            'categories'   => [],
         ];
     }
     $byUser[$uid]['uses']++;
     $byUser[$uid]['successes'] += $correct;
 
-    if (!isset($byCategory[$cat])) {
-        $byCategory[$cat] = ['uses' => 0, 'successes' => 0];
+    if (!isset($byUser[$uid]['categories'][$cat])) {
+        $byUser[$uid]['categories'][$cat] = ['uses' => 0, 'successes' => 0];
     }
-    $byCategory[$cat]['uses']++;
-    $byCategory[$cat]['successes'] += $correct;
+    $byUser[$uid]['categories'][$cat]['uses']++;
+    $byUser[$uid]['categories'][$cat]['successes'] += $correct;
 }
 
 $players = [];
 foreach ($byUser as $user) {
-    if ($user['uses'] < $minUses) {
-        continue;
+    $categories = [];
+    foreach ($user['categories'] as $catName => $stats) {
+        $uses = $stats['uses'];
+        $categories[] = [
+            'category'    => $catName,
+            'emoji'       => categoryEmoji($catName),
+            'uses'        => $uses,
+            'burned'      => $uses - $stats['successes'],
+            'success_pct' => (int)round($stats['successes'] / $uses * 100),
+        ];
     }
+    usort($categories, function ($a, $b) {
+        if ($a['uses'] !== $b['uses']) {
+            return $b['uses'] <=> $a['uses'];
+        }
+        return strcmp($a['category'], $b['category']);
+    });
+
     $players[] = [
         'userid'       => $user['userid'],
         'first_name'   => $user['first_name'],
@@ -119,10 +133,15 @@ foreach ($byUser as $user) {
         'uses'         => $user['uses'],
         'burned'       => $user['uses'] - $user['successes'],
         'success_pct'  => (int)round($user['successes'] / $user['uses'] * 100),
+        'qualified'    => $user['uses'] >= $minUses,
+        'categories'   => $categories,
     ];
 }
 
 usort($players, function ($a, $b) {
+    if ($a['qualified'] !== $b['qualified']) {
+        return $b['qualified'] <=> $a['qualified'];
+    }
     if ($a['success_pct'] !== $b['success_pct']) {
         return $b['success_pct'] <=> $a['success_pct'];
     }
@@ -132,34 +151,13 @@ usort($players, function ($a, $b) {
     return strcmp($a['first_name'], $b['first_name']);
 });
 
-$categories = [];
-foreach (categorySortKeys(array_keys($byCategory)) as $cat) {
-    $stats = $byCategory[$cat];
-    $uses = $stats['uses'];
-    $categories[] = [
-        'category'    => $cat,
-        'emoji'       => categoryEmoji($cat),
-        'uses'        => $uses,
-        'burned'      => $uses - $stats['successes'],
-        'success_pct' => (int)round($stats['successes'] / $uses * 100),
-    ];
-}
-
-usort($categories, function ($a, $b) {
-    if ($a['uses'] !== $b['uses']) {
-        return $b['uses'] <=> $a['uses'];
-    }
-    return strcmp($a['category'], $b['category']);
-});
-
 echo json_encode([
-    'period'     => $period,
-    'min_uses'   => $minUses,
-    'group'      => [
+    'period'   => $period,
+    'min_uses' => $minUses,
+    'group'    => [
         'uses'        => $groupUses,
         'burned'      => $groupUses - $groupSuccess,
         'success_pct' => (int)round($groupSuccess / $groupUses * 100),
     ],
-    'players'    => $players,
-    'categories' => $categories,
+    'players'  => $players,
 ]);
