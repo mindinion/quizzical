@@ -1228,7 +1228,7 @@ document.cookie="feedItems=50";
 				var placeLabel = r.qualified ? (rank + (rank === 1 ? 'st' : rank === 2 ? 'nd' : rank === 3 ? 'rd' : 'th')) : '–';
 				var rowClass = 'rankings-row' + (r.userid === myUserid ? ' rankings-row-me' : '');
 				if (!r.qualified) rowClass += ' lifeline-row-unqualified';
-				html += '<div class="' + rowClass + '" data-userid="' + r.userid + '" data-expandtype="5050">';
+				html += '<div class="' + rowClass + '" data-userid="' + r.userid + '" data-expandtype="lifeline">';
 				html += '<span class="r-place">' + placeLabel + '</span>';
 				html += '<span class="r-photo-name">';
 				html += '<img src="' + (r.pic_filename || 'profileicon.png') + '?t=' + Date.now() + '" class="r-photo" loading="lazy" onerror="this.onerror=null;this.src=\'profileicon.png\'">';
@@ -2353,7 +2353,7 @@ document.cookie="feedItems=50";
 			var expandtype = $row.data('expandtype');
 			if (expandtype === 'pb') {
 				togglePbDetail($row, userid);
-			} else if (expandtype === '5050') {
+			} else if (expandtype === 'lifeline') {
 				toggle5050Detail($row, userid);
 			} else {
 				toggleDetail($row, userid, expandtype, rankingsCurrentPeriod);
