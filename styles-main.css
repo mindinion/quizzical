@@ -211,6 +211,100 @@ TextArea {}
 	cursor: default;
 }
 
+.feed-specialty-clickable {
+	cursor: pointer;
+}
+
+.feed-specialty-clickable:hover {
+	opacity: 0.85;
+}
+
+#FeedSpecialtyPopover {
+	position: fixed;
+	z-index: 9001;
+	max-width: 220px;
+	background: #fff;
+	border: 1px solid #ecdec8;
+	border-radius: 8px;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+	padding: 10px 12px;
+	font-family: verdana, arial;
+	font-size: 12px;
+	color: #444;
+}
+
+.feed-specialty-popover-title {
+	font-size: 10px;
+	font-weight: bold;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: #999;
+	margin-bottom: 8px;
+}
+
+.feed-specialty-popover-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.feed-specialty-popover-list li {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 0;
+}
+
+.feed-specialty-pop-emoji {
+	flex-shrink: 0;
+	width: 18px;
+	text-align: center;
+}
+
+.feed-specialty-pop-label {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.feed-specialty-pop-pct {
+	font-weight: bold;
+	color: #cc5500;
+	flex-shrink: 0;
+}
+
+.feed-specialty-popover-empty,
+.feed-specialty-loading {
+	color: #888;
+	font-size: 12px;
+}
+
+#AIQuizLifelineBanner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	margin: 12px 0 4px;
+	padding: 10px 12px;
+	background: #fff8ed;
+	border: 1px solid #f0dcc0;
+	border-radius: 8px;
+	font-family: verdana, arial;
+	font-size: 12px;
+	color: #6b4a20;
+}
+
+.ai-lifeline-banner-text {
+	flex: 1;
+	line-height: 1.35;
+}
+
+.ai-lifeline-banner-info {
+	flex-shrink: 0;
+}
+
 #NewResultScore	{
 	width:62px;
 	height:62px;

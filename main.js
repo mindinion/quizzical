@@ -613,9 +613,54 @@ document.cookie="feedItems=50";
 		}
 	}
 
-	function feedSpecialtyBadge(emoji, category) {
-		if (!emoji || !category) return '';
-		return ' <span class="feed-specialty" title="' + escapeHtml(category) + '">' + escapeHtml(emoji) + '</span>';
+	function feedSpecialtyBadge(emoji, category, userId) {
+		if (!emoji || !category || !userId) return '';
+		return ' <span class="feed-specialty feed-specialty-clickable" data-userid="' + userId + '" title="Tap for category breakdown">' + escapeHtml(emoji) + '</span>';
+	}
+
+	function hideFeedSpecialtyPopover() {
+		$('#FeedSpecialtyPopover').fadeOut(100);
+	}
+
+	function showFeedSpecialtyPopover($anchor, userId) {
+		var $pop = $('#FeedSpecialtyPopover');
+		if ($pop.is(':visible') && $pop.data('userid') === userId) {
+			hideFeedSpecialtyPopover();
+			return;
+		}
+		var rect = $anchor[0].getBoundingClientRect();
+		var left = Math.max(10, Math.min(rect.left, $(window).width() - 240));
+		$pop.data('userid', userId)
+			.html('<div class="feed-specialty-loading">Loading…</div>')
+			.css({ top: rect.bottom + 6, left: left })
+			.fadeIn(150);
+
+		$.get('action-getusercategories.php', {
+			groupid: getSetting('group_id'),
+			userid: userId
+		}, function(raw) {
+			var data = (typeof raw === 'object') ? raw : JSON.parse(raw);
+			var cats = data.categories || [];
+			var html = '<div class="feed-specialty-popover-title">Last 30 days</div>';
+			if (!cats.length) {
+				html += '<div class="feed-specialty-popover-empty">Not enough category data yet.</div>';
+			} else {
+				html += '<ul class="feed-specialty-popover-list">';
+				cats.forEach(function(c) {
+					html += '<li><span class="feed-specialty-pop-emoji">' + escapeHtml(c.emoji) + '</span>'
+						+ '<span class="feed-specialty-pop-label">' + escapeHtml(c.category) + '</span>'
+						+ '<span class="feed-specialty-pop-pct">' + c.avg_pct + '%</span></li>';
+				});
+				html += '</ul>';
+			}
+			if ($pop.data('userid') === userId) {
+				$pop.html(html);
+			}
+		}).fail(function() {
+			if ($pop.data('userid') === userId) {
+				$pop.html('<div class="feed-specialty-popover-empty">Could not load categories.</div>');
+			}
+		});
 	}
 
 	function renderReplyComposer(quizFeedId) {
@@ -697,7 +742,7 @@ document.cookie="feedItems=50";
 
 
 			// Create the different quizitem elements
-			var specialtyHtml = feedSpecialtyBadge(result.specialty_emoji, result.specialty_category);
+			var specialtyHtml = feedSpecialtyBadge(result.specialty_emoji, result.specialty_category, userId);
 			$('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=QuizFeedInfoName data-quizfeedname=" + quizfeedId + ">" + nameFirst + " " + nameLast + specialtyHtml);
 			$('*[data-quizfeedname="' + quizfeedId + '"]').append("<div id=QuizFeedInfoTimestamp data-quizfeedts=" + quizfeedId + ">" + ago );
 			if (resultId != null) $('*[data-quizfeedtext="' + quizfeedId + '"]').append("<div id=QuizFeedInfoStatus>Scored " + score + "/" + max + " in the " + Date.parse(date).toString("MMM dd") + " " + formatFeedQuizType(type) + " quiz </div id=QuizFeedInfoStatus>");
@@ -791,7 +836,10 @@ document.cookie="feedItems=50";
 		var $name = $('<div>').attr({ id: 'QuizFeedInfoName', 'data-quizfeedname': postId });
 		$name.append(document.createTextNode(getSetting('first_name') + ' ' + getSetting('last_name')));
 		if (opts.specialty_emoji && opts.specialty_category) {
-			$name.append($('<span>').addClass('feed-specialty').attr('title', opts.specialty_category).text(opts.specialty_emoji));
+			$name.append($('<span>')
+				.addClass('feed-specialty feed-specialty-clickable')
+				.attr({ 'data-userid': myId, title: 'Tap for category breakdown' })
+				.text(opts.specialty_emoji));
 		}
 		$name.append($('<div>').attr({ id: 'QuizFeedInfoTimestamp', 'data-quizfeedts': postId }).text('just now'));
 		$name.append($('<a>').attr('href', 'javascript:deletePost(' + postId + ')').addClass('Underline').text(' Delete '));
@@ -1476,6 +1524,29 @@ document.cookie="feedItems=50";
 		return aiQuizData.lifeline_max || 2;
 	}
 
+	function aiLifelinesUsedCount() {
+		var max = aiQuizData ? (aiQuizData.lifeline_max || 2) : 2;
+		return max - aiLifelineRemainingCount();
+	}
+
+	function updateAILifelineBanner(idx) {
+		var $banner = $('#AIQuizLifelineBanner');
+		if (!aiQuizData || aiPosted || aiReviewMode) {
+			$banner.hide();
+			return;
+		}
+		var remaining = aiLifelineRemainingCount();
+		if (idx >= 9 && aiLifelinesUsedCount() === 0 && remaining > 0) {
+			var label = remaining === 1 ? 'lifeline' : 'lifelines';
+			$banner.find('.ai-lifeline-banner-text').text(
+				'You still have ' + remaining + ' fifty-fifty ' + label + ' this quiz.'
+			);
+			$banner.show();
+		} else {
+			$banner.hide();
+		}
+	}
+
 	function updateAILifelineUi(q) {
 		var max = aiQuizData.lifeline_max || 2;
 		var remaining = aiLifelineRemainingCount();
@@ -1570,6 +1641,7 @@ document.cookie="feedItems=50";
 		$('#AIQuizOptions').html(html);
 		applyEliminatedOptions(q.eliminated_option_ids);
 		updateAILifelineUi(q);
+		updateAILifelineBanner(idx);
 
 		// If already answered (resume or review), show the reveal immediately
 		if (q.answered || (aiReviewMode && q.correct_option_id)) {
@@ -1794,6 +1866,7 @@ document.cookie="feedItems=50";
 		selectedQuiz      = null;
 		$('#AIQuiz5050').off('click').prop('disabled', true);
 		$('#AIQuizLifelineRemaining').text('');
+		$('#AIQuizLifelineBanner').hide();
 		$('#QuizDropdown').val('');
 	}
 
@@ -2098,6 +2171,7 @@ document.cookie="feedItems=50";
 		// Info icon tooltips — tap/click to show, tap anywhere else to dismiss
 		$(document).on('click', '.info-icon, .streak-badge[data-tip]', function(e) {
 			e.stopPropagation();
+			hideFeedSpecialtyPopover();
 			var tip = $(this).data('tip');
 			var offset = $(this).offset();
 			var left = Math.min(offset.left - 50, $(window).width() - 220);
@@ -2105,8 +2179,17 @@ document.cookie="feedItems=50";
 				.css({ top: offset.top + 20, left: Math.max(10, left) })
 				.fadeIn(150);
 		});
+		$(document).on('click', '.feed-specialty-clickable', function(e) {
+			e.stopPropagation();
+			$('#InfoTooltip').fadeOut(100);
+			showFeedSpecialtyPopover($(this), parseInt($(this).data('userid'), 10));
+		});
+		$(document).on('click', '#FeedSpecialtyPopover', function(e) {
+			e.stopPropagation();
+		});
 		$(document).on('click', function() {
 			$('#InfoTooltip').fadeOut(100);
+			hideFeedSpecialtyPopover();
 		});
 
 		// Ghosts section toggle (works for both rankings and PB ghost sections)
