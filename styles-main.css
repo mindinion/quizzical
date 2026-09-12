@@ -252,6 +252,12 @@ TextArea {}
 	margin-bottom: 8px;
 }
 
+.feed-specialty-popover-section {
+	margin-top: 12px;
+	padding-top: 10px;
+	border-top: 1px solid #f0e6d8;
+}
+
 .feed-specialty-pop-best-row .feed-specialty-pop-label {
 	font-weight: bold;
 }

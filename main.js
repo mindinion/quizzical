@@ -642,8 +642,24 @@ document.cookie="feedItems=50";
 			userid: userId
 		}, function(raw) {
 			var data = (typeof raw === 'object') ? raw : JSON.parse(raw);
+			var cats = data.categories || [];
 			var leaderIn = data.leader_in || [];
-			var html = '<div class="feed-specialty-popover-title">#1 in the group (last 30 days)</div>';
+			var html = '';
+
+			html += '<div class="feed-specialty-popover-title">Top categories (last 30 days)</div>';
+			if (!cats.length) {
+				html += '<div class="feed-specialty-popover-empty">Not enough category data yet.</div>';
+			} else {
+				html += '<ul class="feed-specialty-popover-list">';
+				cats.forEach(function(c) {
+					html += '<li><span class="feed-specialty-pop-emoji">' + escapeHtml(c.emoji) + '</span>'
+						+ '<span class="feed-specialty-pop-label">' + escapeHtml(c.category) + '</span>'
+						+ '<span class="feed-specialty-pop-pct">' + c.avg_pct + '%</span></li>';
+				});
+				html += '</ul>';
+			}
+
+			html += '<div class="feed-specialty-popover-title feed-specialty-popover-section">#1 in the group (last 30 days)</div>';
 			if (!leaderIn.length) {
 				html += '<div class="feed-specialty-popover-empty">Not #1 in any category yet.</div>';
 			} else {
@@ -655,6 +671,7 @@ document.cookie="feedItems=50";
 				});
 				html += '</ul>';
 			}
+
 			if ($pop.data('userid') === userId) {
 				$pop.html(html);
 			}
