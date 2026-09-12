@@ -57,6 +57,9 @@ document.cookie="feedItems=50";
 		function(data,status){
 			if (status == "success") {
 				downloadResults(1);
+				// Deleting a result moves averages, so the weekly standings can change.
+				rankingsLoaded = false;
+				fetchFeedRankers();
 			} else {
 				alert("Result Not Deleted");
 			}
@@ -413,6 +416,7 @@ document.cookie="feedItems=50";
 				downloadResults(1);
 				rankingsLoaded = false;
 				if ($('#RankingsPanel').is(':visible')) loadRankings(rankingsCurrentPeriod);
+				fetchFeedRankers();
 				document.getElementById("NewScoreType").value = 'Quizzical Morning';
 				document.getElementById("NewResultScore").value = '';
 				document.getElementById("NewResultTotal").value = '15';
@@ -1098,15 +1102,26 @@ document.cookie="feedItems=50";
 	}
 	
 	
+	// Rewrites every badge from feedTopRankers rather than only adding missing ones,
+	// so someone who drops out of the top three loses their badge on the next pass.
 	function applyFeedRankBadges() {
-		if (!Object.keys(feedTopRankers).length) return;
 		$('#QuizFeed [data-userid]').each(function() {
-			if ($(this).closest('.QuizCard-group').length) return;
-			var uid = parseInt($(this).data('userid'));
-			var rank = feedTopRankers[uid];
-			if (!rank || $(this).find('.feed-rank-wrap').length) return;
+			var $holder = $(this);
+			// Quiz cards show per-quiz placement, and the strip draws its own rings.
+			if ($holder.closest('.QuizCard-group, .WeeklyStrip').length) return;
+
+			var $img = $holder.find('img').first();
+			if (!$img.length) return;
+
+			var $stale = $img.closest('.feed-rank-wrap');
+			if ($stale.length) {
+				$stale.find('.feed-rank-badge').remove();
+				$img.unwrap();
+			}
+
+			var rank = feedTopRankers[parseInt($holder.data('userid'))];
+			if (!rank) return;
 			var rankClass = rank === 1 ? 'rank-gold' : rank === 2 ? 'rank-silver' : 'rank-bronze';
-			var $img = $(this).find('img');
 			$img.wrap('<div class="feed-rank-wrap ' + rankClass + '">');
 			$img.after('<span class="feed-rank-badge">' + rank + '</span>');
 		});
@@ -1115,8 +1130,16 @@ document.cookie="feedItems=50";
 	function fetchFeedRankers() {
 		var groupid = getSetting('group_id');
 		$.get('action-getrankings.php', { groupid: groupid, period: 'weekly', typefilter: 'quizzical' }, function(data) {
+			var rankings;
+			// Parse before overwriting state, so a bad response leaves the strip as it was.
+			try {
+				rankings = JSON.parse(data);
+			} catch (e) {
+				console.error('Could not read weekly rankings', e);
+				return;
+			}
 			feedTopRankers = {};
-			feedWeeklyLeaders = JSON.parse(data).slice(0, 3);
+			feedWeeklyLeaders = rankings.slice(0, 3);
 			feedWeeklyLeaders.forEach(function(r, i) { feedTopRankers[r.userid] = i + 1; });
 			applyFeedRankBadges();
 			if (isFeedV2() && typeof renderWeeklyStrip === 'function') renderWeeklyStrip();
